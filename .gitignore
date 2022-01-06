@@ -1,5 +1,4 @@
 # Custom
-./Bot/configs/config.json
 
 
 # Logs
@@ -106,3 +105,4 @@ dist
 
 # TernJS port file
 .tern-port
+!/Bot/configs/config.json
