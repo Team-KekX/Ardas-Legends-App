@@ -1,0 +1,7 @@
+{
+  "name": "Arda's Legend Discord Bot JS",
+  "version": "1.0.0",
+  "dependencies": {
+    "@discordjs/builders": "^0.11.0"
+  }
+}
