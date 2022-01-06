@@ -1,3 +1,7 @@
+# Custom
+./Bot/configs/config.json
+
+
 # Logs
 logs
 *.log
