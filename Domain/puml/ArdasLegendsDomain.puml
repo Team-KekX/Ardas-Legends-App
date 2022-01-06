@@ -1,0 +1,49 @@
+@startuml
+class Region <<Entity>> {
+    id_Key: Integer
+    name: String
+    claimedBy: Faction
+    neighboringRegions: List<Region>
+    claimbuilds: List<ClaimBuilds>
+}
+
+class ClaimBuilds <<Entity>> {
+    name_Key: String
+    builtBy: Player
+    ownedBy: Faction
+    type: ClaimBuildType
+    productionSites: List<ProductionSite>
+    coordinates: Coordinates
+}
+
+enum ClaimBuildType {
+    HAMLET
+    VILLAGE
+    TOWN
+    CAPITAL
+    KEEP
+    CASTLE
+    STRONGHOLD
+}
+
+class ProductionSite <<Value Object>> {
+    type: ProductionSiteType
+    producedResource: String
+    amountInStacks: Integer
+    traders: String
+}
+
+enum ProductionSiteType {
+    FARM
+    FISHING_LODGE
+    MINE
+    QUARRY
+    MAN_FLESH_PIT
+    SLAUGHTERHOUSE
+    HUNTING_LODGE
+    ORCHARD
+    LUMBER_CAMP
+    WORKSHOP
+}
+
+@enduml
