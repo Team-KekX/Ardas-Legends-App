@@ -30,7 +30,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const path = './commands/subcommands/';
+        const path = './Bot/commands/subcommands/';
         const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('dice_')));
         const commands = {};
         for (const file of files){
