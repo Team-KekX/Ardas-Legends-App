@@ -7,13 +7,13 @@ class Region <<Entity>> {
     claimbuilds: List<ClaimBuilds>
 }
 
-class ClaimBuilds <<Entity>> {
+class ClaimBuild <<Entity>> {
     name_Key: String
     builtBy: Player
     ownedBy: Faction
     type: ClaimBuildType
     productionSites: List<ProductionSite>
-    coordinates: Coordinates
+    coordinates: Coordinate
 }
 
 enum ClaimBuildType {
@@ -24,6 +24,36 @@ enum ClaimBuildType {
     KEEP
     CASTLE
     STRONGHOLD
+}
+
+class Faction <<Entity>> {
+    name_Key: String
+    factionLeader: Player
+    armies: List<Army>
+    players:  List<Player>
+    regions: List<Region>
+    claimbuilds: List<ClaimBuilds>
+    colorcode: String
+}
+
+class Player <<Entity>> {
+    ign_Key: String
+    discordID_Key: String
+    faction: Faction
+    rpChar: RPChar
+}
+
+class RPChar <<Entity>> {
+    name_Key: String
+    player: Player
+    currentRegion: Region
+    boundTo:
+}
+
+class Coordinate <<Value Object>> {
+    x: Integer
+    y: Integer
+    z: Integer
 }
 
 class ProductionSite <<Value Object>> {
@@ -45,5 +75,24 @@ enum ProductionSiteType {
     LUMBER_CAMP
     WORKSHOP
 }
+
+Region "Claimbuilds" -  ClaimBuild
+Region - "Neighboring Regions" Region
+Region -down- RPChar
+
+Faction "Faction" -down- " " Region
+Faction -right "Players" Player
+Faction -left- "Armies" Army
+Faction -up- "Claimbuilds" ClaimBuild
+
+ClaimBuild - "Player" Player
+ClaimBuild -right- ClaimBuildType
+ClaimBuild -left- "Productionsites" ProductionSite
+ClaimBuild -up- Coordinate
+
+ProductionSite -left- ProductionSiteType
+
+
+RPChar - Player
 
 @enduml
