@@ -13,6 +13,7 @@ class ClaimBuild <<Entity>> {
     ownedBy: Faction
     type: ClaimBuildType
     productionSites: List<ProductionSite>
+    specialBuildings: List<SpecialBuilding>
     coordinates: Coordinate
 }
 
@@ -76,23 +77,65 @@ enum ProductionSiteType {
     WORKSHOP
 }
 
+enum SpecialBuilding {
+    HOUSE_OF_HEALING
+    EMBASSY
+    HARBOUR
+    STABLES
+    BANK
+    INN
+    MARKET
+    SHOP
+    WALL
+}
+
+class Army <<Entity>> {
+    name_Key: String
+    faction: Faction
+    units: List<Unit>
+    currentRegion: Region
+    originalClaimbuild: ClaimBuild
+    boundTo: RPChar
+    freeTokens: Integer
+    sieges: List<String>
+}
+
+class Unit <<Entity>> {
+    unitType: UnitType
+    count: Integer
+}
+
+class UnitType <<Entity>> {
+    unitName: String
+    tokenCost: Integer
+}
+
 Region "Claimbuilds" -  ClaimBuild
 Region - "Neighboring Regions" Region
 Region -down- RPChar
 
-Faction "Faction" -down- " " Region
+Faction "Faction" -down- Region
 Faction -right "Players" Player
-Faction -left- "Armies" Army
+Faction -left "Armies" Army
 Faction -up- "Claimbuilds" ClaimBuild
 
 ClaimBuild - "Player" Player
 ClaimBuild -right- ClaimBuildType
-ClaimBuild -left- "Productionsites" ProductionSite
 ClaimBuild -up- Coordinate
+ClaimBuild - Army
+
+ProductionSite - ClaimBuild
+SpecialBuilding - ClaimBuild
 
 ProductionSite -left- ProductionSiteType
 
 
 RPChar - Player
+
+Army -down- Unit
+Army - Region
+Army - RPChar
+
+UnitType - Unit
 
 @enduml
