@@ -3,18 +3,20 @@ class Region <<Entity>> {
     id_Key: Integer
     name: String
     claimedBy: Faction
-    neighboringRegions: List<Region>
     claimbuilds: List<ClaimBuilds>
+    neighboringRegions: List<Region>
 }
 
 class ClaimBuild <<Entity>> {
     name_Key: String
-    builtBy: Player
-    ownedBy: Faction
     type: ClaimBuildType
+    ownedBy: Faction
+    coordinates: Coordinate
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
-    coordinates: Coordinate
+    stationedArmy: Army
+    createdArmies: List<Army>
+    builtBy: Player
 }
 
 enum ClaimBuildType {
@@ -91,13 +93,21 @@ enum SpecialBuilding {
 
 class Army <<Entity>> {
     name_Key: String
+    armyType: ArmyType
     faction: Faction
-    units: List<Unit>
     currentRegion: Region
-    originalClaimbuild: ClaimBuild
     boundTo: RPChar
-    freeTokens: Integer
+    units: List<Unit>
     sieges: List<String>
+    stationedAt: ClaimBuild
+    freeTokens: Integer
+    originalClaimbuild: ClaimBuild
+}
+
+enum ArmyType {
+    ARMY
+    TRADING_COMPANY
+    ARMED_TRADERS
 }
 
 class Unit <<Entity>> {
@@ -110,16 +120,16 @@ class UnitType <<Entity>> {
     tokenCost: Integer
 }
 
-Region "Claimbuilds" -  ClaimBuild
-Region - "Neighboring Regions" Region
+Region -  ClaimBuild
+Region - Region
 Region -down- RPChar
 
-Faction "Faction" -down- Region
-Faction -right "Players" Player
-Faction -left "Armies" Army
-Faction -up- "Claimbuilds" ClaimBuild
+Faction -down- Region
+Faction -right Player
+Faction -left Army
+Faction -up- ClaimBuild
 
-ClaimBuild - "Player" Player
+ClaimBuild - Player
 ClaimBuild -right- ClaimBuildType
 ClaimBuild -up- Coordinate
 ClaimBuild - Army
@@ -135,6 +145,8 @@ RPChar - Player
 Army -down- Unit
 Army - Region
 Army - RPChar
+
+ArmyType - Army
 
 UnitType - Unit
 
