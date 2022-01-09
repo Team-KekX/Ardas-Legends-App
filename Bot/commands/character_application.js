@@ -31,6 +31,20 @@ module.exports = {
         const message = await interaction.fetchReply();
         await message.react('👍');
         await message.react('👎');
+
+        const filter = (reaction, user) => {
+            return reaction.emoji.name === '👍';
+        };
+
+        message.awaitReactions({ filter, max: 2, time: 30000, errors: ['time'] })
+            .then(collected => console.log(collected.size))
+            .catch(collected => {
+                const reactions = message.reactions.cache;
+                console.log(reactions.get('👍'));
+                console.log(`After a minute, only ${collected.size} out of 5 reacted.`);
+            });
+
+
         return 1;
     },
 };

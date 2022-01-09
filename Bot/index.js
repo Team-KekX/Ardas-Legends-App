@@ -4,7 +4,7 @@ const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./configs/config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS], partials: ['MESSAGE', 'CHANNEL', 'REACTION'] } );
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./Bot/commands').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./Bot/events').filter(file => file.endsWith('.js'));
