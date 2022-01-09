@@ -10,10 +10,10 @@ import java.util.List;
 
 public class Region {
 
-    public Integer id;
-    public String name;
-    public Faction claimedBy;
-    public List<ClaimBuild> claimBuilds;
-    public List<Region> neighboringRegions;
+    public Integer id; //unique, the region id
+    public String name; //the name of the region
+    public List<Faction> claimedBy; //the list of factions which the region is claimed by
+    public List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
+    public List<Region> neighboringRegions; //list of neighboring regions
 
 }

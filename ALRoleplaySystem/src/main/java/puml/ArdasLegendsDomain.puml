@@ -17,7 +17,7 @@ class ClaimBuild <<Entity>> {
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
     traders: String
-    builtBy: Player
+    builtBy: List<Player>
 }
 
 enum ClaimBuildType {
@@ -52,7 +52,7 @@ class RPChar <<Entity>> {
     name_Key: String
     player: Player
     currentRegion: Region
-    boundTo:
+    boundTo: Army
 }
 
 class Coordinate <<Value Object>> {
@@ -61,7 +61,7 @@ class Coordinate <<Value Object>> {
     z: Integer
 }
 
-class ProductionSite <<Value Object>> {
+class ProductionSite <<Entity>> {
     type: ProductionSiteType
     producedResource: String
     amount: Integer
@@ -81,6 +81,7 @@ enum ProductionSiteType {
 }
 
 enum SpecialBuilding {
+    WATCHTOWER
     HOUSE_OF_HEALING
     EMBASSY
     HARBOUR
