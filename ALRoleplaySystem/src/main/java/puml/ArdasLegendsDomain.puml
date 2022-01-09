@@ -2,7 +2,7 @@
 class Region <<Entity>> {
     id_Key: Integer
     name: String
-    claimedBy: Faction
+    claimedBy: List<Faction>
     claimbuilds: List<ClaimBuilds>
     neighboringRegions: List<Region>
 }
@@ -12,10 +12,11 @@ class ClaimBuild <<Entity>> {
     type: ClaimBuildType
     ownedBy: Faction
     coordinates: Coordinate
+    stationedArmies: List<Army>
+    createdArmies: List<Army>
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
-    stationedArmy: Army
-    createdArmies: List<Army>
+    traders: String
     builtBy: Player
 }
 
@@ -36,6 +37,7 @@ class Faction <<Entity>> {
     players:  List<Player>
     regions: List<Region>
     claimbuilds: List<ClaimBuilds>
+    allies: List<Faction>
     colorcode: String
 }
 
@@ -62,8 +64,7 @@ class Coordinate <<Value Object>> {
 class ProductionSite <<Value Object>> {
     type: ProductionSiteType
     producedResource: String
-    amountInStacks: Integer
-    traders: String
+    amount: Integer
 }
 
 enum ProductionSiteType {
@@ -128,6 +129,7 @@ Faction -down- Region
 Faction -right Player
 Faction -left Army
 Faction -up- ClaimBuild
+Faction - Faction
 
 ClaimBuild - Player
 ClaimBuild -right- ClaimBuildType
