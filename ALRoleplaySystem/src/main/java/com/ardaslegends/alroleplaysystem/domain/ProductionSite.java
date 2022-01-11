@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 
 public class ProductionSite {
-    public ProductionSiteType type; //unique, type of production site, e.g. FARM
-    public String producedResource; //the resource this production site produces
-    public Integer amount; //the amount
+    private ProductionSiteType type; //unique, type of production site, e.g. FARM
+    private String producedResource; //the resource this production site produces
+    private Integer amount; //the amount
 }

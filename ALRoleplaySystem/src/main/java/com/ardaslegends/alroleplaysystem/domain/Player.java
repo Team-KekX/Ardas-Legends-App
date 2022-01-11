@@ -8,9 +8,9 @@ import lombok.Data;
 
 public class Player {
 
-    public String ign; //unique, ingame name of the player
-    public String discordID; //unique, the ID of the player's discord account
-    public Faction faction; //the faction this character belongs to
-    public RPChar rpChar; //the player's rp character
+    private String ign; //unique, ingame name of the player
+    private String discordID; //unique, the ID of the player's discord account
+    private Faction faction; //the faction this character belongs to
+    private RPChar rpChar; //the player's rp character
 
 }

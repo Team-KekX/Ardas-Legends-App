@@ -8,7 +8,7 @@ import lombok.Data;
 
 public class Unit {
 
-    public UnitType unitType; //The kind of unit, e.g. Gondor Soldier
-    public Integer count; //how many of those units are in the army
+    private UnitType unitType; //The kind of unit, e.g. Gondor Soldier
+    private Integer count; //how many of those units are in the army
 
 }

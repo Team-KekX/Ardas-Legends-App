@@ -8,7 +8,7 @@ import lombok.Data;
 
 public class UnitType {
 
-    public String unitName; //unique, the name of this Unit
-    public Integer tokenCost; //how much tokens this unit costs
+    private String unitName; //unique, the name of this Unit
+    private Integer tokenCost; //how much tokens this unit costs
 
 }
