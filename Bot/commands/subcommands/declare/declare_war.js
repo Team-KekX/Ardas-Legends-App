@@ -24,6 +24,8 @@ module.exports = {
         //using a blankspace as a separator
         attacker = arr_attacker.join(" ");
         defender = arr_defender.join(" ");
+        console.log(attacker);
+        console.log(defender);
         await interaction.reply(`@${attacker} declare war on @${defender}`);
     },
 };
