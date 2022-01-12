@@ -1,11 +1,11 @@
 
 module.exports = {
     async execute(interaction) {
-        let name=interaction.options.getString('name').toLowerCase();
+        let name=interaction.options.getString('army-name').toLowerCase();
         //split the above strings into arrays of strings
         //whenever a blank space is encountered
 
-        const arr_name = attacker.split(" ");
+        const arr_name = name.split(" ");
 
         //loop through each element of the array and capitalize the first letter.
 
