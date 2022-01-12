@@ -1,6 +1,5 @@
 
 module.exports = {
-    // TO BE EXPANDED
     async execute(interaction) {
         let name=interaction.options.getString('armed-company-name');
         let food=interaction.options.getString('food-type');
