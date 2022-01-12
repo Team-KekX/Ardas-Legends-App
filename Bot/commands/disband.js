@@ -10,7 +10,7 @@ module.exports = {
                 .setName('army')
                 .setDescription('Disbands an army')
                 .addStringOption(option =>
-                    option.setName('name')
+                    option.setName('army-name')
                         .setDescription('The name of the army')
                         .setRequired(true))
         )
@@ -19,7 +19,7 @@ module.exports = {
                 .setName('trader')
                 .setDescription('Disbands a trader company')
                 .addStringOption(option =>
-                    option.setName('name')
+                    option.setName('trader-name')
                         .setDescription('The name of the trader company')
                         .setRequired(true))
         )
@@ -29,7 +29,7 @@ module.exports = {
                 .setDescription('Breaks the armed company into separate trader and army. If a character was bound' +
                     'then he is unbound from both.')
                 .addStringOption(option =>
-                    option.setName('name')
+                    option.setName('armed-company-name')
                         .setDescription('The name of the armed company')
                         .setRequired(true))
         ),
