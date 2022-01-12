@@ -2,9 +2,17 @@
 class Region <<Entity>> {
     id_Key: String
     name: String
+    regionType: RegionType
     claimedBy: List<Faction>
     claimbuilds: List<ClaimBuilds>
     neighboringRegions: List<Region>
+}
+
+enum RegionType {
+    SEA
+    SHORE
+    LAND
+    MOUNTAIN
 }
 
 class ClaimBuild <<Entity>> {

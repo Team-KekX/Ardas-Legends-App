@@ -12,6 +12,7 @@ public class Region {
 
     private String id; //unique, the region id
     private String name; //the name of the region (prob also unique)
+    private RegionType regionType; // type of the region
     private List<Faction> claimedBy; //the list of factions which the region is claimed by
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
     private List<Region> neighboringRegions; //list of neighboring regions
