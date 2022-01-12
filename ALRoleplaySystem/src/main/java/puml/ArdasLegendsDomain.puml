@@ -133,6 +133,7 @@ class UnitType <<Value Object>> {
 Region -  ClaimBuild
 Region - Region
 Region -down- RPChar
+RegionType -up- Region
 
 Faction -down- Region
 Faction -right Player
