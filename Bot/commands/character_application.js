@@ -16,7 +16,7 @@ module.exports = {
                 .setDescription('Paste your application here')
                 .setRequired(true)),
     async execute(interaction) {
-        let name=interaction.options.getString('character-name');
+        let name=interaction.options.getString('character-name').toLowerCase();
         const application=interaction.options.getString('application');
         const arr_name = name.split(" ");
         for (let i = 0; i < arr_name.length; i++) {

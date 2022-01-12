@@ -1,8 +1,8 @@
 
 module.exports = {
     async execute(interaction) {
-        let attacker=interaction.options.getString('attacker-faction');
-        let defender=interaction.options.getString('defender-faction');
+        let attacker=interaction.options.getString('attacker-faction').toLowerCase();
+        let defender=interaction.options.getString('defender-faction').toLowerCase();
         const guild = interaction.client.guilds.cache.get("926452447243825192");
         //split the above strings into arrays of strings
         //whenever a blank space is encountered
@@ -26,6 +26,6 @@ module.exports = {
         defender = arr_defender.join(" ");
         const attacker_role = guild.roles.cache.find(role => role.name === `${attacker}`);
         const defender_role = guild.roles.cache.find(role => role.name === `${defender}`);
-        await interaction.reply(`<@&${attacker_role.id}> declare war on <@&${defender_role.id}>`);
+        await interaction.reply(`<@&${attacker_role.id}> declare war on <@&${defender_role.id}>.`);
     },
 };
