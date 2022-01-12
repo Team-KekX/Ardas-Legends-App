@@ -1,4 +1,3 @@
-const utilities = require('../../utils/utilities');
 
 module.exports = {
     async execute(interaction) {

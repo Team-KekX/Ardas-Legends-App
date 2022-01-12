@@ -88,12 +88,12 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const path = './Bot/commands/subcommands/';
+        const path = './Bot/commands/subcommands/move/';
         const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('move_')));
         const commands = {};
         for (const file of files) {
             const name = file.split('move_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/' + file);
+            commands[name] = require('./subcommands/move/' + file);
         }
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
