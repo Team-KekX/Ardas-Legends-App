@@ -26,8 +26,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('armed-company')
-                .setDescription('Breaks the armed company into separate trader and army. If a character was bound' +
-                    'then he is unbound from both.')
+                .setDescription('Breaks the armed company into separate trader and army. Character gets unbound.')
                 .addStringOption(option =>
                     option.setName('armed-company-name')
                         .setDescription('The name of the armed company')
