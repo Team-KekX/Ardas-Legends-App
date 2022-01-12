@@ -1,4 +1,5 @@
-
+// Needs further implementation to ping all concerned users
+// By fetching the assigned users for each participating army
 module.exports = {
     async execute(interaction) {
         let target=interaction.options.getString('target').toLowerCase();
@@ -32,8 +33,8 @@ module.exports = {
         defender = arr_defender.join(" ");
         target = arr_target.join(" ");
 
-        const attacker_list = attacker.split(",");
-        const defender_list = defender.split(",");
+        //const attacker_list = attacker.split(",");
+        //const defender_list = defender.split(",");
         const author = interaction.user.username;
         if (target.equals('Fieldbattle')){
             await interaction.reply(`@${author} declared a field battle. The attackers will consist of ${attacker}
