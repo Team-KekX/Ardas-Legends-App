@@ -1,10 +1,10 @@
 
 module.exports = {
     async execute(interaction) {
-        let target=interaction.options.getString('target');
-        let attacker=interaction.options.getString('attacker-list');
-        let defender=interaction.options.getString('defender-list');
-        let warcamp_coordinates=interaction.options.getString('war-camp-coordinates');
+        let target=interaction.options.getString('target').toLowerCase();
+        let attacker=interaction.options.getString('attacker-list').toLowerCase();
+        let defender=interaction.options.getString('defender-list').toLowerCase();
+        let warcamp_coordinates=interaction.options.getString('war-camp-coordinates').toLowerCase();
 
         //split the above strings into arrays of strings
         //whenever a blank space is encountered

@@ -1,7 +1,7 @@
 
 module.exports = {
     async execute(interaction) {
-        let name=interaction.options.getString('character-name');
+        let name=interaction.options.getString('character-name').toLowerCase();
         const start=interaction.options.getInteger('start-region');
         const destination=interaction.options.getInteger('destination-region');
 

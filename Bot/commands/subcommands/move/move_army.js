@@ -2,8 +2,8 @@
 module.exports = {
     // TO BE EXPANDED
     async execute(interaction) {
-        let name=interaction.options.getString('army-name');
-        let food=interaction.options.getString('food-type');
+        let name=interaction.options.getString('army-name').toLowerCase();
+        let food=interaction.options.getString('food-type').toLowerCase();
         const start=interaction.options.getInteger('start-region');
         const destination=interaction.options.getInteger('destination-region');
 
