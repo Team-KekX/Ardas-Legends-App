@@ -2,7 +2,7 @@
 module.exports = {
     async execute(interaction) {
         let name=interaction.options.getString('trader-name').toLowerCase();
-        let character=interaction.options.getString('character_name').toLowerCase();
+        let character=interaction.options.getString('character-name').toLowerCase();
         //split the above strings into arrays of strings
         //whenever a blank space is encountered
 
