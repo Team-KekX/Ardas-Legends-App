@@ -1,6 +1,6 @@
 @startuml
 class Region <<Entity>> {
-    id_Key: Integer
+    id_Key: String
     name: String
     claimedBy: List<Faction>
     claimbuilds: List<ClaimBuilds>
@@ -117,7 +117,7 @@ class Unit <<Entity>> {
     count: Integer
 }
 
-class UnitType <<Entity>> {
+class UnitType <<Value Object>> {
     unitName: String
     tokenCost: Integer
 }
