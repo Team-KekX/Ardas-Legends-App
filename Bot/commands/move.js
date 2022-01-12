@@ -64,6 +64,27 @@ module.exports = {
                     option.setName('food-type')
                         .setDescription('The food used to pay the movement')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('armed-company')
+                .setDescription('Move an armed trading company')
+                .addStringOption(option =>
+                    option.setName('armed-company-name')
+                        .setDescription('The armed company\'s name')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('start-region')
+                        .setDescription('The region from where the army starts moving')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('destination-region')
+                        .setDescription('The destination of the army')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('food-type')
+                        .setDescription('The food used to pay the movement')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
