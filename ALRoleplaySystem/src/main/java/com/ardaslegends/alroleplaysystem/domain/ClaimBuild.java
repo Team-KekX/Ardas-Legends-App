@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ClaimBuild {
     private String name; //unique, name of the claimbuild
+    private String region; //the Id of the region the claimbuild is in
     private ClaimBuildType type; //Type of claimbuild, e.g. HAMLET
     private Faction ownedBy; //faction which owns this CB
     private Coordinate coordinates; //coordinate locations

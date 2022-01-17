@@ -17,6 +17,7 @@ enum RegionType {
 
 class ClaimBuild <<Entity>> {
     name_Key: String
+    region: String
     type: ClaimBuildType
     ownedBy: Faction
     coordinates: Coordinate
