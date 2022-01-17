@@ -23,6 +23,7 @@ class ClaimBuild <<Entity>> {
     coordinates: Coordinate
     stationedArmies: List<Army>
     createdArmies: List<Army>
+    createdTradingCompanies: List<Army>
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
     traders: String

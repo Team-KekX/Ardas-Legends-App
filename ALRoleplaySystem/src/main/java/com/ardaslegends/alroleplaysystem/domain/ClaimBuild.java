@@ -15,7 +15,8 @@ public class ClaimBuild {
     private Faction ownedBy; //faction which owns this CB
     private Coordinate coordinates; //coordinate locations
     private List<Army> stationedArmies; //armies which are stationed in this CB
-    private List<Army> createdArmies; //armies which where created from this CB. Usually only 1 army, but capitals can create 2
+    private List<Army> createdArmies; //armies which were created from this CB. Usually only 1 army, but capitals can create 2
+    private List<Army> createdTradingCompanies; //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
     private List<ProductionSite> productionSites; //the production sites in this cb
     private List<SpecialBuilding> specialBuildings; //special buildings in this cb, e.g. House of Healing
     private String traders; //traders in this CB. e.g. Dwarven Smith. Only relevant for staff so they know which traders need to be added
