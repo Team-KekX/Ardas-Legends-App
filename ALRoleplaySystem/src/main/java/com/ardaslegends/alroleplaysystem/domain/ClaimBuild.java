@@ -20,5 +20,6 @@ public class ClaimBuild {
     private List<ProductionSite> productionSites; //the production sites in this cb
     private List<SpecialBuilding> specialBuildings; //special buildings in this cb, e.g. House of Healing
     private String traders; //traders in this CB. e.g. Dwarven Smith. Only relevant for staff so they know which traders need to be added
+    private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
     private List<Player> builtBy; //the player who built the CB
 }

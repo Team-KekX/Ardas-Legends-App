@@ -26,6 +26,7 @@ class ClaimBuild <<Entity>> {
     createdTradingCompanies: List<Army>
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
+    numberOfHouses: String
     traders: String
     builtBy: List<Player>
 }
