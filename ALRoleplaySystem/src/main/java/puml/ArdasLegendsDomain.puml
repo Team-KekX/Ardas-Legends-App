@@ -1,23 +1,34 @@
 @startuml
 class Region <<Entity>> {
-    id_Key: Integer
+    id_Key: String
     name: String
+    regionType: RegionType
     claimedBy: List<Faction>
     claimbuilds: List<ClaimBuilds>
     neighboringRegions: List<Region>
 }
 
+enum RegionType {
+    SEA
+    SHORE
+    LAND
+    MOUNTAIN
+}
+
 class ClaimBuild <<Entity>> {
     name_Key: String
+    region: String
     type: ClaimBuildType
     ownedBy: Faction
     coordinates: Coordinate
     stationedArmies: List<Army>
     createdArmies: List<Army>
+    createdTradingCompanies: List<Army>
     productionSites: List<ProductionSite>
     specialBuildings: List<SpecialBuilding>
+    numberOfHouses: String
     traders: String
-    builtBy: Player
+    builtBy: List<Player>
 }
 
 enum ClaimBuildType {
@@ -52,7 +63,7 @@ class RPChar <<Entity>> {
     name_Key: String
     player: Player
     currentRegion: Region
-    boundTo:
+    boundTo: Army
 }
 
 class Coordinate <<Value Object>> {
@@ -61,7 +72,7 @@ class Coordinate <<Value Object>> {
     z: Integer
 }
 
-class ProductionSite <<Value Object>> {
+class ProductionSite <<Entity>> {
     type: ProductionSiteType
     producedResource: String
     amount: Integer
@@ -81,6 +92,7 @@ enum ProductionSiteType {
 }
 
 enum SpecialBuilding {
+    WATCHTOWER
     HOUSE_OF_HEALING
     EMBASSY
     HARBOUR
@@ -116,7 +128,7 @@ class Unit <<Entity>> {
     count: Integer
 }
 
-class UnitType <<Entity>> {
+class UnitType <<Value Object>> {
     unitName: String
     tokenCost: Integer
 }
@@ -124,6 +136,7 @@ class UnitType <<Entity>> {
 Region -  ClaimBuild
 Region - Region
 Region -down- RPChar
+RegionType -up- Region
 
 Faction -down- Region
 Faction -right Player
