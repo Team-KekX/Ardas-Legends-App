@@ -1,11 +1,11 @@
 package com.ardaslegends.alroleplaysystem.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
 
 public class Army {
@@ -21,4 +21,27 @@ public class Army {
     private Integer freeTokens; //how many free unit tokens this army has left
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
 
+    public void setCurrentRegion(Region currentRegion) {
+        this.currentRegion = currentRegion;
+    }
+
+    public void setBoundTo(RPChar boundTo) {
+        this.boundTo = boundTo;
+    }
+
+    public void setUnits(List<Unit> units) {
+        this.units = units;
+    }
+
+    public void setSieges(List<String> sieges) {
+        this.sieges = sieges;
+    }
+
+    public void setStationedAt(ClaimBuild stationedAt) {
+        this.stationedAt = stationedAt;
+    }
+
+    public void setFreeTokens(Integer freeTokens) {
+        this.freeTokens = freeTokens;
+    }
 }

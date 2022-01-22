@@ -1,13 +1,13 @@
 package com.ardaslegends.alroleplaysystem.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 
 public class ProductionSite {
-    private ProductionSiteType type; //unique, type of production site, e.g. FARM
-    private String producedResource; //the resource this production site produces
-    private Integer amount; //the amount
+    private final ProductionSiteType type; //unique, type of production site, e.g. FARM
+    private final String producedResource; //the resource this production site produces
+    private final Integer amount; //the amount
 }

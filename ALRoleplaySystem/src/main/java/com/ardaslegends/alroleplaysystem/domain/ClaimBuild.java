@@ -1,11 +1,11 @@
 package com.ardaslegends.alroleplaysystem.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
 
 public class ClaimBuild {
@@ -22,4 +22,40 @@ public class ClaimBuild {
     private String traders; //traders in this CB. e.g. Dwarven Smith. Only relevant for staff so they know which traders need to be added
     private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
     private List<Player> builtBy; //the player who built the CB
+
+    public void setType(ClaimBuildType type) {
+        this.type = type;
+    }
+
+    public void setOwnedBy(Faction ownedBy) {
+        this.ownedBy = ownedBy;
+    }
+
+    public void setStationedArmies(List<Army> stationedArmies) {
+        this.stationedArmies = stationedArmies;
+    }
+
+    public void setCreatedArmies(List<Army> createdArmies) {
+        this.createdArmies = createdArmies;
+    }
+
+    public void setCreatedTradingCompanies(List<Army> createdTradingCompanies) {
+        this.createdTradingCompanies = createdTradingCompanies;
+    }
+
+    public void setProductionSites(List<ProductionSite> productionSites) {
+        this.productionSites = productionSites;
+    }
+
+    public void setSpecialBuildings(List<SpecialBuilding> specialBuildings) {
+        this.specialBuildings = specialBuildings;
+    }
+
+    public void setTraders(String traders) {
+        this.traders = traders;
+    }
+
+    public void setNumberOfHouses(String numberOfHouses) {
+        this.numberOfHouses = numberOfHouses;
+    }
 }

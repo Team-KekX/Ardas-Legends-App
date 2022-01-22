@@ -1,14 +1,14 @@
 package com.ardaslegends.alroleplaysystem.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 
 public class UnitType {
 
-    private String unitName; //unique, the name of this Unit
-    private Integer tokenCost; //how much tokens this unit costs
+    private final String unitName; //unique, the name of this Unit
+    private final Integer tokenCost; //how much tokens this unit costs
 
 }

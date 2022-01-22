@@ -1,15 +1,15 @@
 package com.ardaslegends.alroleplaysystem.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 
 public class Coordinate {
 
-    private Integer x;
-    private Integer y;
-    private Integer z;
+    private final Integer x;
+    private final Integer y;
+    private final Integer z;
 
 }
