@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {MessageEmbed} = require("discord.js");
+const {capitalizeFirstLetters} = require("../utils/utilities");
 
 // Needs to be further implemented.
 // Reaction counting is currently not implemented.
@@ -16,13 +17,8 @@ module.exports = {
                 .setDescription('Paste your application here')
                 .setRequired(true)),
     async execute(interaction) {
-        let name=interaction.options.getString('character-name').toLowerCase();
+        const name=capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
         const application=interaction.options.getString('application');
-        const arr_name = name.split(" ");
-        for (let i = 0; i < arr_name.length; i++) {
-            arr_name[i] = arr_name[i].charAt(0).toUpperCase() + arr_name[i].slice(1);
-        }
-        name = arr_name.join(" ");
 
         const application_embed = new MessageEmbed()
             .setTitle(`${name} character application.`)
