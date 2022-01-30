@@ -45,7 +45,7 @@ module.exports = {
         return separateLongTextLocal(text,look_for_format);
     },
     capitalizeFirstLetters(text){
-        const arr_text = text.split(" ");
+        const arr_text = text.split(/(?:,|.| )+/);
         for (let i = 0; i < arr_text.length; i++) {
             arr_text[i] = arr_text[i].charAt(0).toUpperCase() + arr_text[i].slice(1);
         }

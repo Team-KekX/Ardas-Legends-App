@@ -7,15 +7,15 @@ module.exports = {
         .setDescription('Lets an army/trader/character or armed company disembark from a ship.')
         .addStringOption(option =>
             option.setName('passenger-name')
-                .setDescription('The army\'s name')
+                .setDescription('The army\'s/trader\'s or character\'s name')
                 .setRequired(true))
         .addIntegerOption(option =>
             option.setName('region')
-                .setDescription('The siege equipment chosen')
+                .setDescription('The destination land region')
                 .setRequired(true)),
     async execute(interaction) {
         const name=capitalizeFirstLetters(interaction.options.getString('passenger-name').toLowerCase());
         const region=interaction.options.getInteger('region');
-        await interaction.reply(`${name} has picked up siege equipment (${siege}) at ${claimbuild}.`);
+        await interaction.reply(`${name} has disembarked from a ship to region ${region}.`);
     },
 };
