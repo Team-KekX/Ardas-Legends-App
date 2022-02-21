@@ -123,12 +123,12 @@ enum ArmyType {
     ARMED_TRADERS
 }
 
-class Unit <<Entity>> {
+class Unit <<Value Object>> {
     unitType: UnitType
     count: Integer
 }
 
-class UnitType <<Value Object>> {
+class UnitType <<Entity>> {
     unitName: String
     tokenCost: Integer
 }
