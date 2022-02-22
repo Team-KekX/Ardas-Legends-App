@@ -4,7 +4,7 @@ class Region <<Entity>> {
     name: String
     regionType: RegionType
     claimedBy: List<Faction>
-    claimbuilds: List<ClaimBuilds>
+    claimbuilds: List<ClaimBuilds> |By Claimbuild|
     neighboringRegions: List<Region>
 }
 
@@ -44,10 +44,10 @@ enum ClaimBuildType {
 class Faction <<Entity>> {
     name_Key: String
     factionLeader: Player
-    armies: List<Army>
-    players:  List<Player>
-    regions: List<Region>
-    claimbuilds: List<ClaimBuilds>
+    armies: List<Army> |By Army|
+    players:  List<Player> |By Player|
+    regions: List<Region> |By Region|
+    claimbuilds: List<ClaimBuilds> |By Claimbuild|
     allies: List<Faction>
     colorcode: String
 }
@@ -56,7 +56,7 @@ class Player <<Entity>> {
     ign_Key: String
     discordID_Key: String
     faction: Faction
-    rpChar: RPChar
+    rpChar: RPChar |By RPChar|
 }
 
 class RPChar <<Entity>> {
