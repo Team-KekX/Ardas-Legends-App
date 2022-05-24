@@ -1,7 +1,7 @@
 package com.ardaslegends.security;
 
 import com.ardaslegends.data.entity.User;
-import com.ardaslegends.data.service.UserRepository;
+import com.ardaslegends.data.repository.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import java.util.Optional;
