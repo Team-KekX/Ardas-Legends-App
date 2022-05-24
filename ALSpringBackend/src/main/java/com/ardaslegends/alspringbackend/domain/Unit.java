@@ -23,10 +23,8 @@ public class Unit {
     @ManyToOne
     @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_type"))
     private UnitType unitType; //The kind of unit, e.g. Gondor Soldier
-    private Integer count; //how many of those units are in the army
+    private Integer count; //maximum aamount of those units that are in the army
+    private Integer amountAlive; //current alive soldiers
 
-    public void setCount(Integer count) {
-        this.count = count;
-    }
 
 }
