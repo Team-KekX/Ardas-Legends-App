@@ -1,14 +1,18 @@
 package com.ardaslegends.alspringbackend.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "claimbuilds")
