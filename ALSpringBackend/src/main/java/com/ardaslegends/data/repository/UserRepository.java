@@ -1,4 +1,4 @@
-package com.ardaslegends.data.service;
+package com.ardaslegends.data.repository;
 
 import com.ardaslegends.data.entity.User;
 import java.util.UUID;

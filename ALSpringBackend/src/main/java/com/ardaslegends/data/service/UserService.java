@@ -3,6 +3,8 @@ package com.ardaslegends.data.service;
 import com.ardaslegends.data.entity.User;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.ardaslegends.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
