@@ -1,7 +1,7 @@
 package com.ardaslegends.security;
 
 import com.ardaslegends.data.entity.User;
-import com.ardaslegends.data.service.UserRepository;
+import com.ardaslegends.data.repository.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
