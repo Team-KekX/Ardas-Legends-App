@@ -47,8 +47,7 @@ public class ClaimBuild {
     @OneToMany(mappedBy = "originalClaimbuild")
     private List<Army> createdTradingCompanies; //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "production_sites", foreignKey = @ForeignKey(name = "fk_production_sites"))
+    @OneToMany
     private List<ProductionSite> productionSites; //the production sites in this cb
 
     @ElementCollection(targetClass = SpecialBuilding.class)

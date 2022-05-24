@@ -40,9 +40,10 @@ public class Army {
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     @NotNull(message = "Army: boundTo must not be null")
     private RPChar boundTo; //rp character the army is currently bound to
-    @ElementCollection
+    @OneToMany
     @NotEmpty(message = "Army: units must not be empty")
     private List<Unit> units; //the units in this army contains
+    @ElementCollection
     private List<String> sieges; //list of siege equipment this
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "stationed_at", foreignKey = @ForeignKey(name = "fk_stationed_at"))

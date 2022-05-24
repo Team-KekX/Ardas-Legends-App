@@ -28,7 +28,7 @@ public class Player {
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
-    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "player")
+    @OneToOne(cascade = CascadeType.REMOVE)
     private RPChar rpChar; //the player's rp character
 
 }

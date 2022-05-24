@@ -25,7 +25,7 @@ public class Region {
     @Enumerated(EnumType.STRING)
     private RegionType regionType; // type of the region
 
-    @ManyToMany(mappedBy = "regions")
+    @ManyToMany
     private List<Faction> claimedBy; //the list of factions which the region is claimed by
 
     @OneToMany(mappedBy = "ownedBy")

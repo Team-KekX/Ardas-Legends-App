@@ -12,7 +12,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 
-@Embeddable
+@Entity
+@Table(name = "units")
 public class Unit {
 
     @Id
