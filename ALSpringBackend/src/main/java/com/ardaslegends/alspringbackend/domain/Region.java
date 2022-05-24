@@ -3,19 +3,32 @@ package com.ardaslegends.alspringbackend.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
 
+@Entity
+@Table(name = "regions")
 public class Region {
 
-    private final String id; //unique, the region id
-    private final String name; //the name of the region (prob also unique)
-    private final RegionType regionType; // type of the region
+    @Id
+    private String id; //unique, the region id
+
+    private String name; //the name of the region (prob also unique)
+
+    @Enumerated(EnumType.STRING)
+    private RegionType regionType; // type of the region
+
+    @ManyToMany(mappedBy = "regions")
     private List<Faction> claimedBy; //the list of factions which the region is claimed by
+
+    @OneToMany(mappedBy = "ownedBy")
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
-    private final List<Region> neighboringRegions; //list of neighboring regions
+
+    @OneToMany
+    private List<Region> neighboringRegions; //list of neighboring regions
 
     public void setClaimedBy(List<Faction> claimedBy) {
         this.claimedBy = claimedBy;
