@@ -1,15 +1,22 @@
 package com.ardaslegends.alspringbackend.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Embeddable;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
+@Embeddable
 public class Coordinate {
 
-    private final Integer x;
-    private final Integer y;
-    private final Integer z;
+    private Integer x;
+    private Integer y;
+    private Integer z;
 
 }
