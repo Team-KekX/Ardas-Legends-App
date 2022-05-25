@@ -1,14 +1,13 @@
 package com.ardaslegends.data.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -26,7 +25,10 @@ public class Region {
     private RegionType regionType; // type of the region
 
     @ManyToMany
-    private List<Faction> claimedBy; //the list of factions which the region is claimed by
+    @JoinTable(name = "faction_claimed_regions",
+            joinColumns = { @JoinColumn(name = "fk_region", foreignKey = @ForeignKey(name = "fk_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "fk_faction", foreignKey = @ForeignKey(name = "fk_faction")) })
+    private Set<Faction> claimedBy; //the list of factions which the region is claimed by
 
     @OneToMany(mappedBy = "ownedBy")
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
@@ -34,12 +36,5 @@ public class Region {
     @OneToMany
     private List<Region> neighboringRegions; //list of neighboring regions
 
-    public void setClaimedBy(List<Faction> claimedBy) {
-        this.claimedBy = claimedBy;
-    }
-
-    public void setClaimBuilds(List<ClaimBuild> claimBuilds) {
-        this.claimBuilds = claimBuilds;
-    }
 
 }
