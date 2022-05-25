@@ -11,5 +11,6 @@ public enum ProductionSiteType {
     ORCHARD,
     LUMBER_CAMP,
     WORKSHOP,
-    INCOME
+    INCOME,
+    PEARL_FISHER
 }

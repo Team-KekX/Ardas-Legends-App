@@ -99,6 +99,7 @@ enum ProductionSiteType {
     LUMBER_CAMP
     WORKSHOP
     INCOME
+    PEARL_FISHER
 }
 
 enum SpecialBuilding {
