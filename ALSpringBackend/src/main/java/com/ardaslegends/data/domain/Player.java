@@ -1,14 +1,13 @@
 package com.ardaslegends.data.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.atmosphere.config.service.Get;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,7 +27,7 @@ public class Player {
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private RPChar rpChar; //the player's rp character
 
 }

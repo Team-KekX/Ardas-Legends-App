@@ -37,16 +37,16 @@ public class ClaimBuild {
     @NotNull(message = "Claimbuild: Coordinate must not be null")
     private Coordinate coordinates; //coordinate locations
 
-    @OneToMany(mappedBy = "stationedAt")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "stationedAt")
     private List<Army> stationedArmies; //armies which are stationed in this CB
 
-    @OneToMany(mappedBy = "originalClaimbuild")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
     private List<Army> createdArmies; //armies which were created from this CB. Usually only 1 army, but capitals can create 2
 
-    @OneToMany(mappedBy = "originalClaimbuild")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
     private List<Army> createdTradingCompanies; //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
 
-    @OneToMany(mappedBy = "claimbuild")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "claimbuild")
     private List<ProductionClaimbuild> productionSites; //the production sites in this cb
 
     @ElementCollection(targetClass = SpecialBuilding.class)
@@ -60,7 +60,7 @@ public class ClaimBuild {
 
     private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "claimbuild_builders",
             joinColumns = { @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))},
             inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_player_id")) })

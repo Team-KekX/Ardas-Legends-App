@@ -1,13 +1,11 @@
 package com.ardaslegends.data.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,11 +18,11 @@ public class Unit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_type"))
     private UnitType unitType; //The kind of unit, e.g. Gondor Soldier
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "army", foreignKey = @ForeignKey(name = "fk_army"))
     private Army army; // The army in which these units are
 

@@ -1,14 +1,12 @@
 package com.ardaslegends.data.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,12 +28,5 @@ public class RPChar {
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Army boundTo; //the army that is bound to this character
 
-    public void setCurrentRegion(Region currentRegion) {
-        this.currentRegion = currentRegion;
-    }
-
-    public void setBoundTo(Army boundTo) {
-        this.boundTo = boundTo;
-    }
 
 }
