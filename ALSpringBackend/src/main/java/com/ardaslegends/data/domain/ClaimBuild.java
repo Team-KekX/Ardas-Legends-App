@@ -1,9 +1,6 @@
 package com.ardaslegends.data.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -48,10 +46,12 @@ public class ClaimBuild {
     @OneToMany(mappedBy = "originalClaimbuild")
     private List<Army> createdTradingCompanies; //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
 
-    @OneToMany
-    private List<ProductionSite> productionSites; //the production sites in this cb
+    @OneToMany(mappedBy = "claimbuild")
+    private List<ProductionClaimbuild> productionSites; //the production sites in this cb
 
     @ElementCollection(targetClass = SpecialBuilding.class)
+    @CollectionTable(name = "claimbuild_special_buildings",
+            joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id")))
     @Column(name = "special_buildings")
     @Enumerated(EnumType.STRING)
     private List<SpecialBuilding> specialBuildings; //special buildings in this cb, e.g. House of Healing
@@ -66,40 +66,5 @@ public class ClaimBuild {
             inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_player_id")) })
     private Set<Player> builtBy; //the player who built the CB
 
-    public void setType(ClaimBuildType type) {
-        this.type = type;
-    }
-
-    public void setOwnedBy(Faction ownedBy) {
-        this.ownedBy = ownedBy;
-    }
-
-    public void setStationedArmies(List<Army> stationedArmies) {
-        this.stationedArmies = stationedArmies;
-    }
-
-    public void setCreatedArmies(List<Army> createdArmies) {
-        this.createdArmies = createdArmies;
-    }
-
-    public void setCreatedTradingCompanies(List<Army> createdTradingCompanies) {
-        this.createdTradingCompanies = createdTradingCompanies;
-    }
-
-    public void setProductionSites(List<ProductionSite> productionSites) {
-        this.productionSites = productionSites;
-    }
-
-    public void setSpecialBuildings(List<SpecialBuilding> specialBuildings) {
-        this.specialBuildings = specialBuildings;
-    }
-
-    public void setTraders(String traders) {
-        this.traders = traders;
-    }
-
-    public void setNumberOfHouses(String numberOfHouses) {
-        this.numberOfHouses = numberOfHouses;
-    }
 
 }
