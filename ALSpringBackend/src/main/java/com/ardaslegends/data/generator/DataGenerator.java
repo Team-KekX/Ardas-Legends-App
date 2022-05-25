@@ -2,7 +2,7 @@ package com.ardaslegends.data.generator;
 
 import com.ardaslegends.data.Role;
 import com.ardaslegends.data.entity.User;
-import com.ardaslegends.data.service.UserRepository;
+import com.ardaslegends.data.repository.UserRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import java.util.Collections;
 import java.util.Set;

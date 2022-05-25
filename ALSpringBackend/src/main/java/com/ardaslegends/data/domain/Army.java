@@ -1,4 +1,4 @@
-package com.ardaslegends.alspringbackend.domain;
+package com.ardaslegends.data.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
