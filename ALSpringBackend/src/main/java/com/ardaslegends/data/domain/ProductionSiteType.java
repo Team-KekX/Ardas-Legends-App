@@ -10,5 +10,6 @@ public enum ProductionSiteType {
     HUNTING_LODGE,
     ORCHARD,
     LUMBER_CAMP,
-    WORKSHOP
+    WORKSHOP,
+    INCOME
 }
