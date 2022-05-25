@@ -26,15 +26,18 @@ public class Region {
 
     @ManyToMany
     @JoinTable(name = "faction_claimed_regions",
-            joinColumns = { @JoinColumn(name = "fk_region", foreignKey = @ForeignKey(name = "fk_region"))},
-            inverseJoinColumns = { @JoinColumn(name = "fk_faction", foreignKey = @ForeignKey(name = "fk_faction")) })
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
     private Set<Faction> claimedBy; //the list of factions which the region is claimed by
 
     @OneToMany(mappedBy = "ownedBy")
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
 
-    @OneToMany
-    private List<Region> neighboringRegions; //list of neighboring regions
+    @ManyToMany
+    @JoinTable(name = "region_neighbours",
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_neighbour")) })
+    private Set<Region> neighboringRegions; //list of neighboring regions
 
 
 }
