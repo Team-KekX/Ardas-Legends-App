@@ -24,7 +24,7 @@ class ClaimBuild <<Entity>> {
     stationedArmies: List<Army>
     createdArmies: List<Army>
     createdTradingCompanies: List<Army>
-    productionSites: List<ProductionSite>
+    productionSites: List<ProductionClaimbuild>
     specialBuildings: List<SpecialBuilding>
     numberOfHouses: String
     traders: String
@@ -76,7 +76,13 @@ class ProductionSite <<Entity>> {
     id_Key: Long
     type: ProductionSiteType
     producedResource: String
-    amount: Integer
+    amountProduced: Integer
+}
+
+class ProductionClaimbuild <<Entity>> {
+    claimbuild: ClaimBuild
+    productionSite: ProductionSite
+    count: integer
 }
 
 enum ProductionSiteType {
@@ -150,7 +156,8 @@ ClaimBuild -right- ClaimBuildType
 ClaimBuild -up- Coordinate
 ClaimBuild - Army
 
-ProductionSite - ClaimBuild
+ProductionSite - ProductionClaimbuild
+ProductionClaimbuild - ClaimBuild
 SpecialBuilding - ClaimBuild
 
 ProductionSite -left- ProductionSiteType
