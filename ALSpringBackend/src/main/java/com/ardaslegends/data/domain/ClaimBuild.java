@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -59,8 +60,11 @@ public class ClaimBuild {
 
     private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
 
-    @OneToMany
-    private List<Player> builtBy; //the player who built the CB
+    @ManyToMany
+    @JoinTable(name = "claimbuild_builders",
+            joinColumns = { @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))},
+            inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_player_id")) })
+    private Set<Player> builtBy; //the player who built the CB
 
     public void setType(ClaimBuildType type) {
         this.type = type;
