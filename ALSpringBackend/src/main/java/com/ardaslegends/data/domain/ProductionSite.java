@@ -23,7 +23,10 @@ public class ProductionSite {
     @Enumerated(EnumType.STRING)
     private ProductionSiteType type; //unique, type of production site, e.g. FARM
 
+    @Column(name = "produced_resource")
     private String producedResource; //the resource this production site produces
-    private Integer amount; //the amount
+
+    @Column(name = "amount_produced")
+    private Integer amountProduced; //the amount
 
 }
