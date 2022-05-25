@@ -20,6 +20,6 @@ public class UnitType {
     @Id
     private String unitName; //unique, the name of this Unit
     @NotNull(message = "UnitType: tokenCost must not be null")
-    private Integer tokenCost; //how much tokens this unit costs
+    private Double tokenCost; //how much tokens this unit costs
 
 }

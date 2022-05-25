@@ -141,7 +141,7 @@ class Unit <<Value Object>> {
 
 class UnitType <<Entity>> {
     unitName: String
-    tokenCost: Integer
+    tokenCost: Double
 }
 
 Region -  ClaimBuild
