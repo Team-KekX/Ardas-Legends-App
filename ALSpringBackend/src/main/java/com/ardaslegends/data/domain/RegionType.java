@@ -1,9 +1,12 @@
 package com.ardaslegends.data.domain;
 
 public enum RegionType {
-
     SEA,
     LAND,
-    SHORE,
-    MOUNTAIN
+    MOUNTAIN,
+    FOREST,
+    JUNGLE,
+    DESERT,
+    ICE,
+    SWAMP
 }
