@@ -8,5 +8,6 @@ public enum RegionType {
     JUNGLE,
     DESERT,
     ICE,
-    SWAMP
+    SWAMP,
+    HILL
 }
