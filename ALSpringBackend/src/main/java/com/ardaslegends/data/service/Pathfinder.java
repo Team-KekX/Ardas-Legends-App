@@ -1,3 +1,4 @@
+/**
 public class Pathfinder {
   private final GameMap _map;
   private final Pathfinder _pathfinder;
@@ -17,6 +18,7 @@ public class Pathfinder {
    * Find the shortest path
    * Return an object which contains the path and sum of weights
    */
+/**
   public Pair<Integer[], Integer> findShortestWay(
     int startRegionID,
     int endRegionID,
@@ -110,4 +112,4 @@ public class Pathfinder {
     int cost = smallestWeights.get(endRegion);
     return new Pair<path, cost>;
   }
-}
+}**/
