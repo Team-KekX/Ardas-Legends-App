@@ -1,4 +1,4 @@
-package com.ardas.legends.domain;
+package com.ardaslegends.domain;
 
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.domain.RegionType;
