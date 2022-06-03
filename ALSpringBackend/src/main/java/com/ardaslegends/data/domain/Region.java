@@ -14,7 +14,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "regions")
-public class Region {
+public final class Region extends AbstractDomainEntity {
 
     @Id
     private String id; //unique, the region id

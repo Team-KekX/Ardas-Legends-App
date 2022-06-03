@@ -5,7 +5,7 @@ const {token} = require('./configs/bot_token.json');
 
 // Create a new client instance
 const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
     partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 });
 client.commands = new Collection();

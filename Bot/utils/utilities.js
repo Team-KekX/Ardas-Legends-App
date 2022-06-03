@@ -1,11 +1,12 @@
 const fs = require("fs");
+const {staffRoles} = require("../configs/config.json");
 
 function isLongText(text) {
     return text.length >= 1900;
 }
 
-function detectEndOfWord(text, position, look_for_format) {
-    const slice = text.slice(position);
+function detectEndOfWord(text, position, look_for_format){
+    const slice=text.slice(position);
     if (!look_for_format) {
         for (const char of slice) {
             position += 1;
@@ -57,6 +58,10 @@ function addSubcommands(parentCommand, hasAdminSubcommands) {
     return commands;
 }
 
+function isStaffMember(interaction) {
+    return staffRoles.some(role => interaction.member.roles.cache.has(role));
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -69,6 +74,6 @@ module.exports = {
         }
         return arr_text.join(" ");
     },
-    addSubcommands: addSubcommands
-
+    addSubcommands: addSubcommands,
+    isMemberStaff: isStaffMember
 };
