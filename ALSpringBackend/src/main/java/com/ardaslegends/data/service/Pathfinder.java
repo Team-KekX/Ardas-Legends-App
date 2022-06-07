@@ -13,8 +13,8 @@ import com.ardaslegends.data.domain.RegionType;
 import com.ardaslegends.data.repository.RegionRepository;
 
 class Path{
-  private int _cost;
-  private ArrayList<String> _path;
+  private final int _cost;
+  private final ArrayList<String> _path;
 
   public Path(int cost, ArrayList<String> path){
     this._cost=cost;
@@ -28,8 +28,6 @@ class Path{
   public ArrayList<String> getPath(){
     return this._path;
   }
-
-
 }
 
 public class Pathfinder {
@@ -85,7 +83,7 @@ public class Pathfinder {
     //loop through nodes
     while (true) {
       //get the shortest path so far from start to currentNode
-      int dist = smallestWeights.get(currentNode);
+      final int dist = smallestWeights.get(currentNode);
 
       //iterate over current child's nodes and process
       Set<Region> neighbourRegions = currentNode.getNeighboringRegions();
@@ -115,9 +113,9 @@ public class Pathfinder {
 
 
         //if we already have a distance to neighbourRegion, compare with this distance
-        if (prevNodes.containsKey(neighbourRegion.getId())) {
+        if (prevNodes.containsKey(neighbourRegion)) {
           //get the recorded smallest distance
-          int altDist = smallestWeights.get(neighbourRegion);
+          final int altDist = smallestWeights.get(neighbourRegion);
 
           //if this distance is better, update the smallest distance + prev node
           if (thisDist < altDist) {
@@ -140,22 +138,19 @@ public class Pathfinder {
       }
 
       //pull the next node to visit, if any
-      Region temp = nodesToVisitQueue.remove(0);
-      if (temp == null) {
+      currentNode = nodesToVisitQueue.remove(0);
+      if (currentNode == null) {
         throw new Error("nodes to visit is empty");
       }
-      currentNode = temp;
     }
 
     //get the shortest path into an array
     ArrayList<String> path = new ArrayList<>();
 
     currentNode = endRegion;
-    while (currentNode != startRegion) {
+    while (currentNode.getId() != startRegion.getId()) {
       path.add(currentNode.getId());
-
-      Region temp = prevNodes.get(currentNode);
-      currentNode = temp;
+      currentNode = prevNodes.get(currentNode);
     }
     path.add(startRegion.getId());
 
