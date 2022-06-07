@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.Region;
+import com.ardaslegends.data.domain.RegionType;
 import com.ardaslegends.data.repository.RegionRepository;
 
 class Path{
@@ -54,7 +55,8 @@ public class Pathfinder {
   public Path findShortestWay(
     String startRegionID,
     String endRegionID,
-    Player player
+    Player player,
+    boolean isLeaderMove
   ){
     Optional<Region> startRegionOpt = this._regionRepository.findById(startRegionID);
     Optional<Region> endRegionOpt = this._regionRepository.findById(endRegionID);
@@ -98,6 +100,18 @@ public class Pathfinder {
 
         // CALCULATE COST
         int thisDist=0;
+        // Check if we are embarking or disembarking
+        if((currentNode.getRegionType()!=RegionType.SEA && neighbourRegion.getRegionType()==RegionType.SEA) ||
+           (currentNode.getRegionType()==RegionType.SEA && neighbourRegion.getRegionType()!=RegionType.SEA)) {
+          thisDist++;
+        }
+        else{
+          thisDist=dist + neighbourRegion.getCost();
+          // Check if there is no army bound to character
+          if(player.getRpChar().getBoundTo()==null && !isLeaderMove){
+            thisDist/=2;
+          }
+       }
 
 
         //if we already have a distance to neighbourRegion, compare with this distance
