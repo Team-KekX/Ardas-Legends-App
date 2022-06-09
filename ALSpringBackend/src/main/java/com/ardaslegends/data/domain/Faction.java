@@ -31,7 +31,12 @@ public class Faction {
     private Set<Region> regions; //all regions this faction claims
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")
     private List<ClaimBuild> claimBuilds; //all claimbuilds of this faction
-    
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "faction_allies",
+            joinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))},
+            inverseJoinColumns = { @JoinColumn(name = "ally_faction", foreignKey = @ForeignKey(name = "fk_ally_faction")) })
+    private List<Faction> allies; //allies of this faction
     private String colorcode; //the faction's colorcode, used for painting the map
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
