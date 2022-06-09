@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.domain.RegionType;
@@ -98,6 +99,16 @@ public class Pathfinder {
 
         // CALCULATE COST
         int thisDist=0;
+
+        // Check if we can move to that region as an army
+        if(player.getRpChar().getBoundTo()!=null || isLeaderMove){
+          /*
+          if(!player.getFaction().getAllies().stream().anyMatch(faction -> neighbourRegion.getClaimedBy().contains(faction))){
+            thisDist+=1000;
+          }
+          */
+        }
+
         // Check if we are embarking or disembarking
         if((currentNode.getRegionType()!=RegionType.SEA && neighbourRegion.getRegionType()==RegionType.SEA) ||
            (currentNode.getRegionType()==RegionType.SEA && neighbourRegion.getRegionType()!=RegionType.SEA)) {

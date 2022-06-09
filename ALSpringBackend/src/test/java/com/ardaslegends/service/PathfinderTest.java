@@ -8,6 +8,9 @@ import com.ardaslegends.data.domain.RPChar;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.domain.RegionType;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.Pathfinder;
+
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +22,9 @@ public class PathfinderTest {
 
     @Autowired
     private RegionRepository repository;
+    private Pathfinder pathfinder;
+    private Player player;
+    private Faction faction_good;
 
     @BeforeAll
     void setup() {
@@ -32,8 +38,8 @@ public class PathfinderTest {
         Region rs1 = new Region("1.S", "one_sea", RegionType.SEA, null, null, null);
         Region rs2 = new Region("2.S", "two_sea", RegionType.SEA, null, null, null);
 
-        Player player = new Player("VernonRoche", "VernonRocheDiscord", null, null);
-        Faction faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
+        player = new Player("VernonRoche", "VernonRocheDiscord", null, null);
+        faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
         Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
 
         Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15, null);
@@ -79,5 +85,28 @@ public class PathfinderTest {
         rs2.addNeighbour(r3);
         rs2.addNeighbour(r6);
         rs2.addNeighbour(rs1);
+
+        repository.saveAll(List.of(r1,r2,r3,r4,r5,r6,rs1,rs2));
+        pathfinder = Pathfinder.getInstance(repository);
+    }
+
+    @Test
+    void ensureNormalMoveSucceeds(){
+        pathfinder.findShortestWay("1", "2", player, isLeaderMove)
+    }
+
+    @Test
+    void ensureEmbarkingSucceeds(){
+        
+    }
+
+    @Test
+    void ensureThatMoveInEnemyFails(){
+        
+    }
+
+    @Test
+    void ensureMoveThroughSeaWorks(){
+        
     }
 }
