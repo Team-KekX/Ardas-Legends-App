@@ -92,7 +92,7 @@ public class PathfinderTest {
 
     @Test
     void ensureNormalMoveSucceeds(){
-        pathfinder.findShortestWay("1", "2", player, isLeaderMove)
+        pathfinder.findShortestWay("1", "2", player, false);
     }
 
     @Test
