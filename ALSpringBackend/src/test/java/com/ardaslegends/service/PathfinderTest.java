@@ -10,37 +10,38 @@ import com.ardaslegends.data.domain.RegionType;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.Pathfinder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
+
 public class PathfinderTest {
 
-    @Autowired
-    private RegionRepository repository;
-    private Pathfinder pathfinder;
-    private Player player;
-    private Faction faction_good;
+    private static RegionRepository repository = mock(RegionRepository.class);
+    private static Pathfinder pathfinder;
+    private static Player player;
+    private static Faction faction_good;
 
     @BeforeAll
-    void setup() {
+    static void setup() {
         // Initialize Data
-        Region r1 = new Region("1", "one", RegionType.LAND, null, null, null);
-        Region r2 = new Region("2", "two", RegionType.MOUNTAIN, null, null, null);
-        Region r3 = new Region("3", "three", RegionType.LAND, null, null, null);
-        Region r4 = new Region("4", "four", RegionType.HILL, null, null, null);
-        Region r5 = new Region("5", "five", RegionType.LAND, null, null, null);
-        Region r6 = new Region("6", "six", RegionType.LAND, null, null, null);
-        Region rs1 = new Region("1.S", "one_sea", RegionType.SEA, null, null, null);
-        Region rs2 = new Region("2.S", "two_sea", RegionType.SEA, null, null, null);
+        Region r1 = new Region("1", "one", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region r2 = new Region("2", "two", RegionType.MOUNTAIN, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region r3 = new Region("3", "three", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region r4 = new Region("4", "four", RegionType.HILL, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region r5 = new Region("5", "five", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region r6 = new Region("6", "six", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region rs1 = new Region("1.S", "one_sea", RegionType.SEA, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        Region rs2 = new Region("2.S", "two_sea", RegionType.SEA, new HashSet<>(), new ArrayList<>(), new HashSet<>());
 
         player = new Player("VernonRoche", "VernonRocheDiscord", null, null);
-        faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
-        Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
+        faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
+        Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
 
         Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15, null);
         RPChar rpchar = new RPChar("Aldwin", player, r1, army);
@@ -86,7 +87,6 @@ public class PathfinderTest {
         rs2.addNeighbour(r6);
         rs2.addNeighbour(rs1);
 
-        repository.saveAll(List.of(r1,r2,r3,r4,r5,r6,rs1,rs2));
         pathfinder = Pathfinder.getInstance(repository);
     }
 
