@@ -4,15 +4,23 @@ const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./configs/config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS], partials: ['MESSAGE', 'CHANNEL', 'REACTION'] } );
+const client = new Client({
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION']
+});
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./Bot/commands').filter(file => file.endsWith('.js'));
+const adminCommandFiles = fs.readdirSync('./Bot/commands/admin').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./Bot/events').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     // Set a new item in the Collection
     // With the key as the command name and the value as the exported module
+    client.commands.set(command.data.name, command);
+}
+for (const file of adminCommandFiles) {
+    const command = require(`./commands/admin/${file}`);
     client.commands.set(command.data.name, command);
 }
 for (const file of eventFiles) {
