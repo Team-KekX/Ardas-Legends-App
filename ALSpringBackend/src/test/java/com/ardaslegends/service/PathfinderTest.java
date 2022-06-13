@@ -110,6 +110,8 @@ public class PathfinderTest {
     @Test
     void ensureEmbarkingSucceeds() {
         Path path = pathfinder.findShortestWay("2", "1.S", player, false);
+        System.out.println(path.getPath());
+        System.out.println(path.getCost());
         assertTrue(path.getPath().size() == 2 && path.getCost() == 1);
     }
 
@@ -122,6 +124,8 @@ public class PathfinderTest {
     @Test
     void ensureMoveThroughSeaWorks() {
         Path path = pathfinder.findShortestWay("2", "6", player, false);
+        System.out.println(path.getPath());
+        System.out.println(path.getCost());
         assertTrue(path.getPath().size() == 4 && path.getCost() == RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
         assertFalse(path.getPath().contains("3"));
 
