@@ -35,10 +35,10 @@ public class Army {
     @NotNull(message = "Army: Region must not be null")
     private Region currentRegion; //region the army is currently in
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(mappedBy = "rpChar.boundTo")
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     @NotNull(message = "Army: boundTo must not be null")
-    private RPChar boundTo; //rp character the army is currently bound to
+    private Player boundTo; //rp character the army is currently bound to
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")
     @NotEmpty(message = "Army: units must not be empty")
