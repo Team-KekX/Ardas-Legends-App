@@ -27,7 +27,7 @@ public class Player {
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @Embedded
     private RPChar rpChar; //the player's rp character
 
 }
