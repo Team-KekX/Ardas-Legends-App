@@ -58,12 +58,11 @@ class Player <<Entity>> {
     ign_Key: String
     discordID_Key: String
     faction: Faction
-    rpChar: RPChar |By RPChar|
+    rpChar: RPChar
 }
 
-class RPChar <<Entity>> {
-    name_Key: String
-    player: Player
+class RPChar <<Embeddable>> {
+    name: String
     currentRegion: Region
     boundTo: Army
 }
@@ -120,7 +119,7 @@ class Army <<Entity>> {
     armyType: ArmyType
     faction: Faction
     currentRegion: Region
-    boundTo: RPChar
+    boundTo: Player
     units: List<Unit>
     sieges: List<String>
     stationedAt: ClaimBuild
