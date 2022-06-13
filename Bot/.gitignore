@@ -1,5 +1,6 @@
 # Custom
-Bot/configs/config.json
+configs/config.json
+package-lock.json
 
 # Logs
 logs
