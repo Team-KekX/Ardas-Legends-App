@@ -1,34 +1,30 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.Army;
-import com.ardaslegends.data.domain.ArmyType;
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.domain.Region;
-import com.ardaslegends.data.domain.RegionType;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.Path;
 import com.ardaslegends.data.service.Pathfinder;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DataJpaTest
 public class PathfinderTest {
 
-    private static RegionRepository repository = mock(RegionRepository.class);
-    private static Pathfinder pathfinder;
-    private static Player player;
-    private static Faction faction_good;
+    @Autowired
+    private RegionRepository repository;
+    private Pathfinder pathfinder;
+    private Player player;
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void testData() {
         // Initialize Data
         Region r1 = new Region("1", "one", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
         Region r2 = new Region("2", "two", RegionType.MOUNTAIN, new HashSet<>(), new ArrayList<>(), new HashSet<>());
@@ -40,11 +36,15 @@ public class PathfinderTest {
         Region rs2 = new Region("2.S", "two_sea", RegionType.SEA, new HashSet<>(), new ArrayList<>(), new HashSet<>());
 
         player = new Player("VernonRoche", "VernonRocheDiscord", null, null);
-        faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
+        Faction faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
         Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
 
         Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15, null);
         RPChar rpchar = new RPChar("Aldwin", player, r1, army);
+
+        ClaimBuild claimbuild = new ClaimBuild("claimbuild", r2, ClaimBuildType.CAPITAL, faction_good,
+                new Coordinate(1, 1, 1), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>(), "none", "4", new HashSet<>());
 
         // Set up relations
         r1.getClaimedBy().add(faction_good);
@@ -58,6 +58,10 @@ public class PathfinderTest {
         faction_good.getRegions().add(r1);
 
         army.setBoundTo(rpchar);
+
+        r2.getClaimBuilds().add(claimbuild);
+
+        claimbuild.getSpecialBuildings().add(SpecialBuilding.HARBOUR);
 
         // Set up region neighbours
         r1.addNeighbour(r2);
@@ -87,26 +91,39 @@ public class PathfinderTest {
         rs2.addNeighbour(r6);
         rs2.addNeighbour(rs1);
 
+        repository.saveAll(List.of(r1, r2, r3, r4, r5, r6, rs1, rs2));
         pathfinder = Pathfinder.getInstance(repository);
     }
 
     @Test
-    void ensureNormalMoveSucceeds(){
-        pathfinder.findShortestWay("1", "2", player, false);
+    void ensureNormalMoveSucceeds() {
+        Path path = pathfinder.findShortestWay("1", "2", player, false);
+        System.out.println(path.getPath());
+        System.out.println(path.getCost());
+        assertTrue(path.getPath().size() == 2 && path.getCost() == RegionType.MOUNTAIN.getCost());
+
+        path = pathfinder.findShortestWay("1", "5", player, false);
+        assertTrue(path.getPath().size() == 3 && path.getCost() == RegionType.LAND.getCost() + RegionType.HILL.getCost());
+        assertFalse(path.getPath().contains("3"));
     }
 
     @Test
-    void ensureEmbarkingSucceeds(){
-        
+    void ensureEmbarkingSucceeds() {
+        Path path = pathfinder.findShortestWay("2", "1.S", player, false);
+        assertTrue(path.getPath().size() == 2 && path.getCost() == 1);
     }
 
     @Test
-    void ensureThatMoveInEnemyFails(){
-        
+    void ensureThatMoveInEnemyFails() {
+        Path path = pathfinder.findShortestWay("1", "3", player, false);
+        assertEquals(-1, path.getCost());
     }
 
     @Test
-    void ensureMoveThroughSeaWorks(){
-        
+    void ensureMoveThroughSeaWorks() {
+        Path path = pathfinder.findShortestWay("2", "6", player, false);
+        assertTrue(path.getPath().size() == 4 && path.getCost() == RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
+        assertFalse(path.getPath().contains("3"));
+
     }
 }

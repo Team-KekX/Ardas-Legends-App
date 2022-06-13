@@ -1,35 +1,9 @@
 package com.ardaslegends.data.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.Region;
-import com.ardaslegends.data.domain.RegionType;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
 
-class Path{
-  private final int _cost;
-  private final ArrayList<String> _path;
-
-  public Path(int cost, ArrayList<String> path){
-    this._cost=cost;
-    this._path=path;
-  }
-
-  public int getCost(){
-    return this._cost;
-  }
-
-  public ArrayList<String> getPath(){
-    return this._path;
-  }
-}
+import java.util.*;
 
 public class Pathfinder {
   private final RegionRepository _regionRepository;
@@ -101,26 +75,33 @@ public class Pathfinder {
         int thisDist=0;
 
         // Check if we can move to that region as an army
-        if(player.getRpChar().getBoundTo()!=null || isLeaderMove){
-          /*
-          if(!player.getFaction().getAllies().stream().anyMatch(faction -> neighbourRegion.getClaimedBy().contains(faction))){
-            thisDist+=1000;
+        if (player.getRpChar().getBoundTo() != null || isLeaderMove) {
+          if (player.getFaction().getAllies().stream().noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction))) {
+            thisDist += 1000;
           }
-          */
         }
 
         // Check if we are embarking or disembarking
-        if((currentNode.getRegionType()!=RegionType.SEA && neighbourRegion.getRegionType()==RegionType.SEA) ||
-           (currentNode.getRegionType()==RegionType.SEA && neighbourRegion.getRegionType()!=RegionType.SEA)) {
-          thisDist++;
-        }
-        else{
-          thisDist=dist + neighbourRegion.getCost();
-          // Check if there is no army bound to character
-          if(player.getRpChar().getBoundTo()==null && !isLeaderMove){
-            thisDist/=2;
+        else if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) {
+          for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
+            if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
+              thisDist++;
+            }
           }
-       }
+        } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) {
+          for (ClaimBuild claimbuild : neighbourRegion.getClaimBuilds()) {
+            if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
+              thisDist = dist + neighbourRegion.getCost();
+              thisDist++;
+            }
+          }
+        } else {
+          thisDist = dist + neighbourRegion.getCost();
+          // Check if there is no army bound to character
+          if (player.getRpChar().getBoundTo() == null && !isLeaderMove) {
+            thisDist /= 2;
+          }
+        }
 
 
         //if we already have a distance to neighbourRegion, compare with this distance
@@ -167,10 +148,13 @@ public class Pathfinder {
 
     //reverse the path so it starts with startRegion
     ArrayList<String> reversed_path = new ArrayList<>();
-    for(String region : path){
+    for (String region : path) {
       reversed_path.add(region);
     }
     int cost = smallestWeights.get(endRegion);
+    if (cost >= 1000) {
+      cost = -1;
+    }
     return new Path(cost, reversed_path);
   }
 }
