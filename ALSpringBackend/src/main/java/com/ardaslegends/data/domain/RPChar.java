@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class RPChar {
 
+    @Column(unique = true)
     private String name;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
