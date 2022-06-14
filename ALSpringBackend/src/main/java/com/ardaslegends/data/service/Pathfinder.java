@@ -2,23 +2,16 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@RequiredArgsConstructor
+
+@Service
 public class Pathfinder {
   private final RegionRepository _regionRepository;
-  private static Pathfinder _pathfinder = null;
-
-  private Pathfinder(RegionRepository map) {
-    this._regionRepository = map;
-  }
-
-  public static Pathfinder getInstance(RegionRepository map){
-      if(_pathfinder==null){
-          _pathfinder=new Pathfinder(map);
-      }
-      return _pathfinder;
-  }
 
   /**
    * Find the shortest path
@@ -72,11 +65,11 @@ public class Pathfinder {
         }
 
         // CALCULATE COST
-        int thisDist=0;
+        int thisDist = neighbourRegion.getCost();
 
         // Check if we can move to that region as an army
         if (player.getRpChar().getBoundTo() != null || isLeaderMove) {
-          if (player.getFaction().getAllies().stream().noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction))) {
+          if (player.getFaction().getAllies().stream().noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction)) && !neighbourRegion.getClaimedBy().isEmpty()) {
             thisDist += 1000;
           }
         }
