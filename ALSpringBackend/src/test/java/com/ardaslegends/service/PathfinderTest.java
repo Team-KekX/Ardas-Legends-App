@@ -60,6 +60,7 @@ public class PathfinderTest {
         faction_good.getArmies().add(army);
         faction_good.getPlayers().add(player);
         faction_good.getRegions().add(r1);
+        faction_good.getRegions().add(r2);
 
         faction_bad.getRegions().add(r3);
 

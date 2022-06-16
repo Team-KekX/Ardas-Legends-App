@@ -79,17 +79,19 @@ public class Pathfinder {
           for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
             if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
               thisDist++;
+              break;
             }
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) {
           for (ClaimBuild claimbuild : neighbourRegion.getClaimBuilds()) {
             if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
-              thisDist = dist + neighbourRegion.getCost();
+              thisDist += dist + neighbourRegion.getCost();
               thisDist++;
+              break;
             }
           }
         } else {
-          thisDist = dist + neighbourRegion.getCost();
+          thisDist += dist + neighbourRegion.getCost();
           // Check if there is no army bound to character
           if (player.getRpChar().getBoundTo() == null && !isLeaderMove) {
             thisDist /= 2;
