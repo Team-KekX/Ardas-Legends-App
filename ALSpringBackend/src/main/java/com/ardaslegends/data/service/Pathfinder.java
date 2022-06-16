@@ -69,8 +69,11 @@ public class Pathfinder {
 
         // Check if we can move to that region as an army
         if (player.getRpChar().getBoundTo() != null || isLeaderMove) {
-          if (player.getFaction().getAllies().stream().noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction)) && !neighbourRegion.getClaimedBy().isEmpty()) {
-            thisDist += 1000;
+          if (player.getFaction().getAllies().stream().noneMatch(faction ->
+                  neighbourRegion.getClaimedBy().contains(faction))
+                  && !neighbourRegion.getClaimedBy().contains(player.getFaction())
+                  && !neighbourRegion.getClaimedBy().isEmpty()) {
+            thisDist = 1000;
           }
         }
 
@@ -83,13 +86,8 @@ public class Pathfinder {
             }
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) {
-          for (ClaimBuild claimbuild : neighbourRegion.getClaimBuilds()) {
-            if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
-              thisDist += dist + neighbourRegion.getCost();
-              thisDist++;
-              break;
-            }
-          }
+          thisDist += dist + neighbourRegion.getCost() + 1;
+          break;
         } else {
           thisDist += dist + neighbourRegion.getCost();
           // Check if there is no army bound to character
@@ -135,7 +133,7 @@ public class Pathfinder {
     ArrayList<String> path = new ArrayList<>();
 
     currentNode = endRegion;
-    while (currentNode.getId() != startRegion.getId()) {
+    while (!Objects.equals(currentNode.getId(), startRegion.getId())) {
       path.add(currentNode.getId());
       currentNode = prevNodes.get(currentNode);
     }
