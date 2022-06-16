@@ -65,7 +65,7 @@ public class Pathfinder {
         }
 
         // CALCULATE COST
-        int thisDist = neighbourRegion.getCost();
+        int thisDist = 0;
 
         // Check if we can move to that region as an army
         if (player.getRpChar().getBoundTo() != null || isLeaderMove) {
@@ -75,7 +75,7 @@ public class Pathfinder {
         }
 
         // Check if we are embarking or disembarking
-        else if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) {
+        if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) {
           for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
             if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
               thisDist++;
