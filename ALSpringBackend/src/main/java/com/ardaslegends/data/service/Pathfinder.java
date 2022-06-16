@@ -79,11 +79,18 @@ public class Pathfinder {
 
         // Check if we are embarking or disembarking
         if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) {
+          boolean canEmbark = false;
           for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
             if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
               thisDist++;
+              canEmbark = true;
               break;
             }
+          }
+          // It's a code smell I know. Had to find a quick fix.
+          // Should be part of the next code review.
+          if (!canEmbark) {
+            thisDist = 1000;
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) {
           thisDist += dist + neighbourRegion.getCost() + 1;
@@ -139,14 +146,11 @@ public class Pathfinder {
     path.add(startRegion.getId());
 
     //reverse the path so it starts with startRegion
-    ArrayList<String> reversed_path = new ArrayList<>();
-    for (String region : path) {
-      reversed_path.add(region);
-    }
+    Collections.reverse(path);
     int cost = smallestWeights.get(endRegion);
     if (cost >= 1000) {
       cost = -1;
     }
-    return new Path(cost, reversed_path);
+    return new Path(cost, path);
   }
 }
