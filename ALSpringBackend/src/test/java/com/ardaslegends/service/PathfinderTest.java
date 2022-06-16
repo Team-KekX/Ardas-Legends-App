@@ -73,13 +73,10 @@ public class PathfinderTest {
         r1.addNeighbour(r4);
         r2.addNeighbour(r1);
         r2.addNeighbour(r3);
-        r2.addNeighbour(rs1);
         r3.addNeighbour(r1);
         r3.addNeighbour(r2);
         r3.addNeighbour(r5);
         r3.addNeighbour(r6);
-        r3.addNeighbour(rs1);
-        r3.addNeighbour(rs2);
         r4.addNeighbour(r1);
         r4.addNeighbour(r3);
         r4.addNeighbour(r5);
@@ -88,13 +85,10 @@ public class PathfinderTest {
         r5.addNeighbour(r6);
         r6.addNeighbour(r3);
         r6.addNeighbour(r5);
-        r6.addNeighbour(rs2);
         rs1.addNeighbour(r2);
         rs1.addNeighbour(r3);
-        rs1.addNeighbour(rs2);
         rs2.addNeighbour(r3);
         rs2.addNeighbour(r6);
-        rs2.addNeighbour(rs1);
 
         List<Region> regionList = List.of(r1, r2, r3, r4, r5, r6, rs1, rs2);
 
@@ -120,11 +114,32 @@ public class PathfinderTest {
         System.out.println(path.getCost());
         assertThat(path.getPath().size()).isEqualTo(3);
         assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() + RegionType.HILL.getCost());
-        //assertFalse(path.getPath().contains("3"));
+
+        path = pathfinder.findShortestWay("1", "6", player, false);
+        System.out.println(path.getPath());
+        System.out.println(path.getCost());
+        assertThat(path.getPath().size()).isEqualTo(4);
+        assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() * 2 + RegionType.HILL.getCost());
     }
 
     @Test
     void ensureEmbarkingSucceeds() {
+        player.getRpChar().setCurrentRegion(mockRepository.findById("2").get());
+        player.getRpChar().getBoundTo().setCurrentRegion(mockRepository.findById("2").get());
+        Region rs1 = mockRepository.findById("1.S").get();
+        Region rs2 = mockRepository.findById("2.S").get();
+        Region r2 = mockRepository.findById("2").get();
+        Region r3 = mockRepository.findById("3").get();
+        Region r6 = mockRepository.findById("6").get();
+        rs1.addNeighbour(rs2);
+        rs2.addNeighbour(rs1);
+        r2.addNeighbour(rs1);
+        r3.addNeighbour(rs1);
+        r3.addNeighbour(rs2);
+        r6.addNeighbour(rs2);
+        List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
+        mockRepository.saveAll(regionList);
+
         Path path = pathfinder.findShortestWay("2", "1.S", player, false);
         System.out.println(path.getPath());
         System.out.println(path.getCost());
@@ -140,6 +155,24 @@ public class PathfinderTest {
 
     @Test
     void ensureMoveThroughSeaWorks() {
+        player.getRpChar().setCurrentRegion(mockRepository.findById("2").get());
+        player.getRpChar().getBoundTo().setCurrentRegion(mockRepository.findById("2").get());
+        player.getRpChar().setCurrentRegion(mockRepository.findById("2").get());
+        player.getRpChar().getBoundTo().setCurrentRegion(mockRepository.findById("2").get());
+        Region rs1 = mockRepository.findById("1.S").get();
+        Region rs2 = mockRepository.findById("2.S").get();
+        Region r2 = mockRepository.findById("2").get();
+        Region r3 = mockRepository.findById("3").get();
+        Region r6 = mockRepository.findById("6").get();
+        rs1.addNeighbour(rs2);
+        rs2.addNeighbour(rs1);
+        r2.addNeighbour(rs1);
+        r3.addNeighbour(rs1);
+        r3.addNeighbour(rs2);
+        r6.addNeighbour(rs2);
+        List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
+        mockRepository.saveAll(regionList);
+
         Path path = pathfinder.findShortestWay("2", "6", player, false);
         System.out.println(path.getPath());
         System.out.println(path.getCost());
