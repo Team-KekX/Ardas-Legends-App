@@ -4,22 +4,19 @@ import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.Path;
 import com.ardaslegends.data.service.Pathfinder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PathfinderTest {
 
@@ -85,6 +82,7 @@ public class PathfinderTest {
         r3.addNeighbour(rs2);
         r4.addNeighbour(r1);
         r4.addNeighbour(r3);
+        r4.addNeighbour(r5);
         r5.addNeighbour(r3);
         r5.addNeighbour(r4);
         r5.addNeighbour(r6);
@@ -130,7 +128,8 @@ public class PathfinderTest {
         Path path = pathfinder.findShortestWay("2", "1.S", player, false);
         System.out.println(path.getPath());
         System.out.println(path.getCost());
-        assertTrue(path.getPath().size() == 2 && path.getCost() == 1);
+        assertThat(path.getPath().size()).isEqualTo(2);
+        assertThat(path.getCost()).isEqualTo(1);
     }
 
     @Test
@@ -144,7 +143,8 @@ public class PathfinderTest {
         Path path = pathfinder.findShortestWay("2", "6", player, false);
         System.out.println(path.getPath());
         System.out.println(path.getCost());
-        assertTrue(path.getPath().size() == 4 && path.getCost() == RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
+        assertThat(path.getPath().size()).isEqualTo(4);
+        assertThat(path.getCost()).isEqualTo(RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
         assertFalse(path.getPath().contains("3"));
 
     }

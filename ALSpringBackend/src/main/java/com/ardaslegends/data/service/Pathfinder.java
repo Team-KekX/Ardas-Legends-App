@@ -87,7 +87,6 @@ public class Pathfinder {
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) {
           thisDist += dist + neighbourRegion.getCost() + 1;
-          break;
         } else {
           thisDist += dist + neighbourRegion.getCost();
           // Check if there is no army bound to character
