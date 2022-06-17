@@ -26,6 +26,7 @@ public class PathfinderTest {
     @BeforeEach
     void testData() {
         // Initialize Data
+        // Initialize regions, player, factions, army, rpchar and finally claimbuild
         Region r1 = new Region("1", "one", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
         Region r2 = new Region("2", "two", RegionType.MOUNTAIN, new HashSet<>(), new ArrayList<>(), new HashSet<>());
         Region r3 = new Region("3", "three", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
