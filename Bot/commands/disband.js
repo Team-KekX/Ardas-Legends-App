@@ -38,7 +38,7 @@ module.exports = {
         const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('disband_')));
         const commands = {};
         for (const file of files) {
-            const name = file.split('declare_')[1].slice(0, -3);
+            const name = file.split('disband_')[1].slice(0, -3);
             commands[name] = require('./subcommands/disband/' + file);
         }
         const toExecute = commands[interaction.options.getSubcommand()];

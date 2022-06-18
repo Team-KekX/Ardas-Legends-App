@@ -30,6 +30,32 @@ module.exports = {
                     option.setName('claimbuild-name')
                         .setDescription('The name of the claimbuild to settle in')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('army')
+                .setDescription('Settle an army in a claimbuild.')
+                .addStringOption(option =>
+                    option.setName('army-name')
+                        .setDescription('The name of the army')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('claimbuild-name')
+                        .setDescription('The name of the claimbuild to settle in')
+                        .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('character')
+                .setDescription('Settle a character in a claimbuild.')
+                .addStringOption(option =>
+                    option.setName('character-name')
+                        .setDescription('The name of the roleplay character')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('claimbuild-name')
+                        .setDescription('The name of the claimbuild to settle in')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
@@ -37,7 +63,7 @@ module.exports = {
         const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('settle_')));
         const commands = {};
         for (const file of files) {
-            const name = file.split('declare_')[1].slice(0, -3);
+            const name = file.split('settle_')[1].slice(0, -3);
             commands[name] = require('./subcommands/settle/' + file);
         }
         const toExecute = commands[interaction.options.getSubcommand()];
