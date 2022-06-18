@@ -20,7 +20,7 @@ module.exports = {
         if (msg.channel.id === rpAppsChannelID) {
             //console.log(`${msg.author.tag} in #${msg.channel.name} sent a message in roleplay apps.`);
             //if (msg.client.user.id === msg.author.id) return;
-            notifyStaff(msg.guild, `${msg.author} sent an application in roleplay apps.`);
+            //notifyStaff(msg.guild, `${msg.author} sent an application in roleplay apps.`);
         }
     },
 };

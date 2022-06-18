@@ -47,7 +47,7 @@ module.exports = {
                 return;
             }
         }
-        countRPAppReactions(reaction, user);
+        //countRPAppReactions(reaction, user);
 
     },
 };
