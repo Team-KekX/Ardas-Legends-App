@@ -19,10 +19,10 @@ public class Pathfinder {
    */
 
   public Path findShortestWay(
-    String startRegionID,
-    String endRegionID,
-    Player player,
-    boolean isLeaderMove
+          String startRegionID,
+          String endRegionID,
+          Player player,
+          boolean isCharacterMove
   ){
     Optional<Region> startRegionOpt = this._regionRepository.findById(startRegionID);
     Optional<Region> endRegionOpt = this._regionRepository.findById(endRegionID);
@@ -68,7 +68,7 @@ public class Pathfinder {
         int thisDist = 0;
 
         // Check if we can move to that region as an army
-        if (player.getRpChar().getBoundTo() != null || isLeaderMove) {
+        if (!isCharacterMove) {
           if (player.getFaction().getAllies().stream().noneMatch(faction ->
                   neighbourRegion.getClaimedBy().contains(faction))
                   && !neighbourRegion.getClaimedBy().contains(player.getFaction())
@@ -97,9 +97,6 @@ public class Pathfinder {
         } else {
           thisDist += dist + neighbourRegion.getCost();
           // Check if there is no army bound to character
-          if (player.getRpChar().getBoundTo() == null && !isLeaderMove) {
-            thisDist /= 2;
-          }
         }
 
 
@@ -148,6 +145,9 @@ public class Pathfinder {
     //reverse the path so it starts with startRegion
     Collections.reverse(path);
     int cost = smallestWeights.get(endRegion);
+    if (isCharacterMove) {
+      cost = (int) Math.ceil(cost / 2.0);
+    }
     if (cost >= 1000) {
       cost = -1;
     }
