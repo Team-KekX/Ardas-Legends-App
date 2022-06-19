@@ -41,7 +41,7 @@ public class PathfinderTest {
         Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
 
         Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15, null);
-        RPChar rpchar = new RPChar("Aldwin", player, r1, army);
+        RPChar rpchar = new RPChar("Aldwin", r1, army);
 
         ClaimBuild claimbuild = new ClaimBuild("claimbuild", r2, ClaimBuildType.CAPITAL, faction_good,
                 new Coordinate(1, 1, 1), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
@@ -61,7 +61,7 @@ public class PathfinderTest {
 
         faction_bad.getRegions().add(r3);
 
-        army.setBoundTo(rpchar);
+        army.setBoundTo(player);
 
         r2.getClaimBuilds().add(claimbuild);
 
