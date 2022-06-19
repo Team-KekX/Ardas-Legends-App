@@ -82,8 +82,8 @@ public class Pathfinder {
           boolean canEmbark = false;
           for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
             if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
-              thisDist++;
-              canEmbark = true;
+              thisDist += dist + 1;
+                canEmbark = true;
               break;
             }
           }
