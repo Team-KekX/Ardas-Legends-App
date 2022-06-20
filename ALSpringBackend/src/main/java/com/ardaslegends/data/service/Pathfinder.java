@@ -60,7 +60,7 @@ public class Pathfinder {
     Region currentNode = startRegion;
     //loop through nodes
     log.debug("Starting the loop...");
-    while (true) {
+    while (currentNode != endRegion) {
       //get the shortest path so far from start to currentNode
       final int dist = smallestWeights.get(currentNode);
 
@@ -163,12 +163,6 @@ public class Pathfinder {
       log.trace("Setting current node as visited");
       visitedNodes.add(currentNode.getId());
 
-      //exit if done
-      if (nodesToVisitQueue.size() == 0) {
-        log.debug("Went through all nodes - leaving loop!");
-        break;
-      }
-
       //pull the next node to visit, if any
       log.trace("Getting the next node to visit and removing current one from queue");
       currentNode = nodesToVisitQueue.remove(0);
@@ -244,7 +238,7 @@ public class Pathfinder {
     Region currentNode = startRegion;
     //loop through nodes
     log.debug("Starting the loop...");
-    while (true) {
+    while (currentNode != endRegion)  {
       //get the shortest path so far from start to currentNode
       final int dist = smallestWeights.get(currentNode);
 
@@ -352,8 +346,6 @@ public class Pathfinder {
       log.trace("Getting the next node to visit and removing current one from queue");
       nodesToVisitQueue.remove(currentNode);
       currentNode = nodesToVisitQueue.stream().min(Comparator.comparingInt(smallestWeights::get)).get();
-      if (currentNode == endRegion)
-        break;
 
       if (currentNode == null) {
         log.warn("No Region to visit!");
