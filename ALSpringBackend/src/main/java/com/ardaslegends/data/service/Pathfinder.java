@@ -25,21 +25,14 @@ public class Pathfinder {
    */
 
   public Path findShortestWay(
-          String startRegionID,
-          String endRegionID,
+          Region startRegion,
+          Region endRegion,
           Player player,
           boolean isCharacterMove
   ){
-    log.info("Finding Path for player '{}': from '{}' to '{}' isRpChar: {}",player.getIgn(), startRegionID, endRegionID, isCharacterMove);
+    log.info("Finding Path for player '{}': from '{}' to '{}' isRpChar: {}",player.getIgn(), startRegion.getId(), endRegion.getId(), isCharacterMove);
     log.debug("Movement is army move: {}", (!isCharacterMove));
 
-    Optional<Region> startRegionOpt = this._regionRepository.findById(startRegionID);
-    Optional<Region> endRegionOpt = this._regionRepository.findById(endRegionID);
-    if(startRegionOpt.isEmpty() || endRegionOpt.isEmpty()){
-      return null;
-    }
-    Region startRegion = startRegionOpt.get();
-    Region endRegion = endRegionOpt.get();
     log.debug("Initializing data for Pathfinding...");
     //smallest weights between startRegion and all the other nodes
     Map<Region, Integer> smallestWeights = new HashMap<>();
