@@ -408,6 +408,30 @@ public class PlayerServiceTest {
     }
 
     @Test
+    void ensureUpdateRpCharNameThrowsIAEWhenNoRpChar() {
+        log.debug("Testing if update character name throws IllegalArgumentException when player has no RpChar!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1");
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(any(String.class))).thenReturn(Optional.empty());
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act / Assert
+        log.trace("Executing updateCharacterName");
+        log.debug("Asserting that updateCharacterName throws IllegalArgumentException");
+        var exception = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterName(dto));
+
+        log.info("Test passed: updateCharacterName throws IllegalArgumentException when player has no RpChar!");
+    }
+
+    @Test
     void ensureUpdateCharacterNameThrowsIllegalArgumentWhenRpCharNameIsAlreadyTaken() {
         log.debug("Testing if update character name correctly throws IAE when new name is already taken");
 
@@ -438,9 +462,59 @@ public class PlayerServiceTest {
 
     @Test
     void ensureUpdateRpCharTitleWorks() {
-      //TODO
+        log.debug("Testing if update character title works with valid values!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        String charName = "Belegorn";
+        String oldTitle = "Gondorian";
+        String newTitle = "King of Gondor";
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName,newTitle, "91", "Army1");
+
+        log.trace("Initializng RpChar Object");
+        RPChar rpChar = RPChar.builder().title(oldTitle).name(charName).build();
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(charName)).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act
+        log.trace("Executing updateCharacterTitle");
+        playerService.updateCharacterTitle(dto);
+
+        log.debug("Asserting that the title was updated");
+        assertThat(rpChar.getTitle()).isEqualTo(newTitle);
+
+        log.info("Test passed: updateCharacterTitle works with valid values!");
     }
 
+    @Test
+    void ensureUpdateRpCharTitleThrowsIAEWhenNoRpChar() {
+        log.debug("Testing if update character title throws IllegalArgumentException when player has no RpChar!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1");
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(any(String.class))).thenReturn(Optional.empty());
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act / Assert
+        log.trace("Executing updateCharacterTitle");
+        log.debug("Asserting that updateCharacterTitle throws IllegalArgumentException");
+        var exception = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterTitle(dto));
+
+        log.info("Test passed: updateCharacterTitle throws IllegalArgumentException when player has no RpChar!");
+    }
     // ------------------------------------------------------------ Delete Methods
 
     // Delete Player

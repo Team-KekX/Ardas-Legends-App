@@ -39,4 +39,8 @@ public final class Player extends AbstractDomainEntity {
     @Embedded
     private RPChar rpChar; //the player's rp character
 
+    @Override
+    public String toString() {
+        return "";
+    }
 }
