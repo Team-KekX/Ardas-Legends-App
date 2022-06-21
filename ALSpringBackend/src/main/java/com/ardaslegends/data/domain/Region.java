@@ -3,8 +3,8 @@ package com.ardaslegends.data.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 @Getter
 @Setter
@@ -33,11 +33,55 @@ public class Region {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
 
+    @Setter(value = AccessLevel.PRIVATE)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "region_neighbours",
             joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
             inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_neighbour")) })
-    private Set<Region> neighboringRegions; //list of neighboring regions
+    private Set<Region> neighboringRegions = new HashSet<>(); //list of neighboring regions
+
+    /**
+     *
+     * @param possibleNeighbour, the region that you want to add, Not-Null-Constraint
+     * @throws NullPointerException, when parameter is null
+     * @return false when region is already in Set, true when it succeeds
+     */
+    public boolean addNeighbour(@NonNull Region possibleNeighbour) {
+
+        if(neighboringRegions.contains(possibleNeighbour))
+            return false;
+
+        neighboringRegions.add(possibleNeighbour);
+        return true;
+
+    }
+
+    public Set<Region> getNeighboringRegions() {
+        return Collections.unmodifiableSet(neighboringRegions);
+    }
+
+    public int getCost() {
+        return regionType.getCost();
+    }
 
 
+    @Override
+    public String toString() {
+        return "Region{" +
+                "id='" + id + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Region region = (Region) o;
+        return id.equals(region.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
