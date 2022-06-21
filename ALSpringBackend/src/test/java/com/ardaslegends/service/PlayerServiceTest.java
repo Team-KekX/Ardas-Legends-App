@@ -385,7 +385,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -413,7 +413,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1");
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null);
 
         log.trace("Initializing Player object");
         Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
@@ -437,7 +437,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -469,7 +469,7 @@ public class PlayerServiceTest {
         String charName = "Belegorn";
         String oldTitle = "Gondorian";
         String newTitle = "King of Gondor";
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName,newTitle, "91", "Army1");
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName,newTitle, "91", "Army1", null);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().title(oldTitle).name(charName).build();
@@ -498,7 +498,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1");
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null);
 
         log.trace("Initializing Player object");
         Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
@@ -514,6 +514,68 @@ public class PlayerServiceTest {
         var exception = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterTitle(dto));
 
         log.info("Test passed: updateCharacterTitle throws IllegalArgumentException when player has no RpChar!");
+    }
+
+    //Update RpChar Gear
+
+    @Test
+    void ensureUpdateRpCharGearWorks() {
+        log.debug("Testing if update character gear works with valid values!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        String charName = "Belegorn";
+        String gear = "Gondorian Armour, Gondorian Sword + DA Spear";
+        String oldGear = "Ithilien Armour, Gondorian Sword";
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear);
+
+        log.trace("Initializng RpChar Object");
+        RPChar rpChar = RPChar.builder().name(charName).gear(oldGear).build();
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(charName)).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act
+        assertThat(player.getRpChar().getGear()).isEqualTo(oldGear);
+
+        log.trace("Executing updateCharacterGear");
+        playerService.updateCharacterGear(dto);
+
+        log.debug("Asserting that the gear was updated");
+        assertThat(rpChar.getGear()).isEqualTo(gear);
+
+        log.info("Test passed: updateCharacterGear works with valid values!");
+    }
+
+    @Test
+    void ensureUpdateRpCharGearThrowsIAEWhenNoRpChar() {
+        log.debug("Testing if update character gear throws IllegalArgumentException when player has no RpChar!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        String charName = "Belegorn";
+        String gear = "Gondorian Armour, Gondorian Sword + DA Spear";
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear);
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(any(String.class))).thenReturn(Optional.empty());
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act / Assert
+        log.trace("Executing updateCharacterGear");
+        log.debug("Asserting that updateCharacterGear throws IllegalArgumentException");
+        var exception = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterGear(dto));
+
+        log.info("Test passed: updateCharacterGear throws IllegalArgumentException when player has no RpChar!");
     }
     // ------------------------------------------------------------ Delete Methods
 

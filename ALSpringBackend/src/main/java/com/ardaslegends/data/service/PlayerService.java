@@ -368,7 +368,6 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
             throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its title!");
         }
-        // Check if a player has already taken the name
 
         log.debug("Update RpChar Title");
         playerToUpdate.getRpChar().setTitle(dto.title());
@@ -379,6 +378,37 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.info("Successfully updated Rp Character title of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getTitle());
         return playerToUpdate.getRpChar();
     }
+
+    @Transactional(readOnly = false)
+    public RPChar updateCharacterGear(UpdateRpCharDto dto) {
+        log.debug("Updating character gear to '{}' for player's ({}) rpchar '{}'", dto.gear(), dto.discordId(), dto.charName());
+
+        // Checking if data is valid
+        log.debug("Validating DTO data");
+        ServiceUtils.checkNulls(dto, List.of("discordId", "gear"));
+        ServiceUtils.checkBlanks(dto, List.of("discordId", "gear"));
+
+        // Get the player entity which is to be updated
+        log.debug("Fetching player");
+        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+
+        // Check if player actually has an rpchar
+        if (playerToUpdate.getRpChar() == null) {
+            log.warn("No Rpchar found at player [{}]", playerToUpdate);
+            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its gear!");
+        }
+
+        //Update the gear
+        log.debug("Update RpChar Title");
+        playerToUpdate.getRpChar().setGear(dto.gear());
+
+        log.debug("Trying to persist player [{}]", playerToUpdate);
+        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+
+        log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getGear());
+        return playerToUpdate.getRpChar();
+    }
+
     @Transactional(readOnly = false)
     public Player deletePlayer(DeletePlayerOrRpCharDto dto) {
         log.debug("Deleting player with data [{}]", dto);
