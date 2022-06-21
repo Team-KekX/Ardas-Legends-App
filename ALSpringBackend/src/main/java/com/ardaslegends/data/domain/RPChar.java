@@ -16,7 +16,7 @@ import java.util.Objects;
 @Builder
 
 @Embeddable
-public class RPChar {
+public final class RPChar extends AbstractDomainEntity {
 
     @Column(unique = true)
     private String name;
