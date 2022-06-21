@@ -15,8 +15,7 @@ public abstract class AbstractRestController {
         T returnValue = null;
         try {
             log.trace("Trying to update the player's discordId");
-            returnValue = func.apply(dto);
-            log.debug("Successfully updated discordId without encountering any errors");
+            return returnValue = func.apply(dto);
         } catch (NullPointerException | IllegalArgumentException e) {
             log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
             throw new BadArgumentException(e.getMessage(), e);
