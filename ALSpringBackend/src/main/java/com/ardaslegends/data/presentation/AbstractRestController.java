@@ -11,7 +11,7 @@ import java.util.function.Function;
 @Slf4j
 public abstract class AbstractRestController {
 
-    public <T extends AbstractDomainEntity, G> T serviceFunctionCall(G dto, Function<G, T> func) {
+    public <T extends AbstractDomainEntity, G> T wrappedServiceExecution(G dto, Function<G, T> func) {
         T returnValue = null;
         try {
             log.trace("Trying to update the player's discordId");
