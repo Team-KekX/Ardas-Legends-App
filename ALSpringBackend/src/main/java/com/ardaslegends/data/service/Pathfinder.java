@@ -2,6 +2,7 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -164,7 +165,7 @@ public class Pathfinder {
 
       if (currentNode == null) {
         log.warn("No Region to visit!");
-        throw new Error("nodes to visit is empty");
+        throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
       }
     }
 
