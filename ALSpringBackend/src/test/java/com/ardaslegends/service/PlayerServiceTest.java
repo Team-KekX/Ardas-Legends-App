@@ -385,7 +385,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null, false);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -413,7 +413,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null, false);
 
         log.trace("Initializing Player object");
         Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
@@ -437,7 +437,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null, null, false);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -469,7 +469,7 @@ public class PlayerServiceTest {
         String charName = "Belegorn";
         String oldTitle = "Gondorian";
         String newTitle = "King of Gondor";
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName,newTitle, "91", "Army1", null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName,newTitle, "91", "Army1", null, false);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().title(oldTitle).name(charName).build();
@@ -498,7 +498,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null);
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null, false);
 
         log.trace("Initializing Player object");
         Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
@@ -527,7 +527,7 @@ public class PlayerServiceTest {
         String charName = "Belegorn";
         String gear = "Gondorian Armour, Gondorian Sword + DA Spear";
         String oldGear = "Ithilien Armour, Gondorian Sword";
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear);
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear, false);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name(charName).gear(oldGear).build();
@@ -560,7 +560,7 @@ public class PlayerServiceTest {
         log.trace("Initializing Dto");
         String charName = "Belegorn";
         String gear = "Gondorian Armour, Gondorian Sword + DA Spear";
-        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear);
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear, false);
 
         log.trace("Initializing Player object");
         Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
@@ -577,6 +577,69 @@ public class PlayerServiceTest {
 
         log.info("Test passed: updateCharacterGear throws IllegalArgumentException when player has no RpChar!");
     }
+
+
+    //Update RpChar Pvp Status
+
+    @Test
+    void ensureUpdateRpCharPvpStatusWorks() {
+        log.debug("Testing if update character pvp status works with valid values!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        String charName = "Belegorn";
+        boolean oldPvp = false;
+        boolean newPvp = true;
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, null, newPvp);
+
+        log.trace("Initializng RpChar Object");
+        RPChar rpChar = RPChar.builder().name(charName).pvp(oldPvp).build();
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(charName)).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act
+        assertThat(player.getRpChar().getPvp()).isEqualTo(oldPvp);
+
+        log.trace("Executing updateCharacterGear");
+        playerService.updateCharacterPvp(dto);
+
+        log.debug("Asserting that the PvP Status was updated");
+        assertThat(rpChar.getPvp()).isEqualTo(newPvp);
+
+        log.info("Test passed: updateCharacterPvp works with valid values!");
+    }
+
+    @Test
+    void ensureUpdateRpCharPvpStatusThrowsIAEWhenNoRpChar() {
+        log.debug("Testing if update character PvP Status throws IllegalArgumentException when player has no RpChar!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        String charName = "Belegorn";
+        UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, null, false);
+
+        log.trace("Initializing Player object");
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(any(String.class))).thenReturn(Optional.empty());
+        when(mockPlayerRepository.save(player)).thenReturn(player);
+
+        // Act / Assert
+        log.trace("Executing updateCharacterPvp");
+        log.debug("Asserting that updateCharacterPvp throws IllegalArgumentException");
+        var exception = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterPvp(dto));
+
+        log.info("Test passed: updateCharacterPvp throws IllegalArgumentException when player has no RpChar!");
+    }
+
     // ------------------------------------------------------------ Delete Methods
 
     // Delete Player

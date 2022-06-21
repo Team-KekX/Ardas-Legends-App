@@ -399,13 +399,44 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         }
 
         //Update the gear
-        log.debug("Update RpChar Title");
+        log.debug("Update RpChar Gear");
         playerToUpdate.getRpChar().setGear(dto.gear());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
 
         log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getGear());
+        return playerToUpdate.getRpChar();
+    }
+
+
+    @Transactional(readOnly = false)
+    public RPChar updateCharacterPvp(UpdateRpCharDto dto) {
+        log.debug("Updating character's pvp status to '{}' for player's ({}) rpchar '{}'", dto.isPvp(), dto.discordId(), dto.charName());
+
+        // Checking if data is valid
+        log.debug("Validating DTO data");
+        ServiceUtils.checkNulls(dto, List.of("discordId", "isPvp"));
+        ServiceUtils.checkBlanks(dto, List.of("discordId", "isPvp"));
+
+        // Get the player entity which is to be updated
+        log.debug("Fetching player");
+        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+
+        // Check if player actually has an rpchar
+        if (playerToUpdate.getRpChar() == null) {
+            log.warn("No Rpchar found at player [{}]", playerToUpdate);
+            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its pvp status!");
+        }
+
+        //Update the pvp status
+        log.debug("Update RpChar PvP Status");
+        playerToUpdate.getRpChar().setPvp(dto.isPvp());
+
+        log.debug("Trying to persist player [{}]", playerToUpdate);
+        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+
+        log.info("Successfully updated Rp Character PvP Status of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getPvp());
         return playerToUpdate.getRpChar();
     }
 
