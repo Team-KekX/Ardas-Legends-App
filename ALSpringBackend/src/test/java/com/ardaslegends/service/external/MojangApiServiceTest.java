@@ -22,7 +22,7 @@ public class MojangApiServiceTest {
      * This is a really SUS test, normally you'd mock the request so that it doesnt depend on that endpoint working
      * Feel free to delete this test if it throws any errors or is annoying XD
      */
-    @Test
+   /** @Test
     void ensureGetUUIDWorksACTUALLY() {
 
         UUIDConverterDto dto = new UUIDConverterDto("mirak441", "4cd6b222b3894fd59d85ac90aa2c2c46");
@@ -39,5 +39,5 @@ public class MojangApiServiceTest {
         var result = assertThrows(ServiceException.class, () -> mojangApiService.getUUIDByIgn(ign));
 
         assertThat(result.getMessage()).contains("is invalid");
-    }
+    }**/
 }

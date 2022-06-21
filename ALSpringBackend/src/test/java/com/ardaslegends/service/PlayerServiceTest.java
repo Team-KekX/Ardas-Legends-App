@@ -9,6 +9,7 @@ import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
+import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharNameDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
@@ -384,7 +385,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharNameDto dto = new UpdateRpCharNameDto("RandomId", "RandomName");
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -394,7 +395,7 @@ public class PlayerServiceTest {
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
-        when(mockPlayerRepository.findPlayerByRpChar(dto.newName())).thenReturn(Optional.empty());
+        when(mockPlayerRepository.findPlayerByRpChar(dto.charName())).thenReturn(Optional.empty());
         when(mockPlayerRepository.save(player)).thenReturn(player);
 
         // Act
@@ -403,7 +404,7 @@ public class PlayerServiceTest {
 
         // Assert
         log.trace("Asserting that the rpchar object has the new name");
-        assertThat(result.getName()).isEqualTo(dto.newName());
+        assertThat(result.getName()).isEqualTo(dto.charName());
     }
 
     @Test
@@ -412,7 +413,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        UpdateRpCharNameDto dto = new UpdateRpCharNameDto("RandomId", "RandomName");
+        UpdateRpCharDto dto = new UpdateRpCharDto("RandomId", "RandomName", null, null, null);
 
         log.trace("Initializng RpChar Object");
         RPChar rpChar = RPChar.builder().name("OtherName").build();
@@ -422,7 +423,7 @@ public class PlayerServiceTest {
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
-        when(mockPlayerRepository.findPlayerByRpChar(dto.newName())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByRpChar(dto.charName())).thenReturn(Optional.of(player));
 
         // Act
         log.trace("Executing updateCharacterName");

@@ -313,18 +313,14 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     }
 
     @Transactional(readOnly = false)
-    public RPChar updateCharacterName(UpdateRpCharNameDto dto) {
+    public RPChar updateCharacterName(UpdateRpCharDto dto) {
         log.debug("Updating character name, data [{}]", dto);
 
         // Checking if data is valid
 
-        ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
-                .collect(Collectors.toList()));
+        ServiceUtils.checkNulls(dto, List.of("discordId", "charName"));
 
-        ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
-                .collect(Collectors.toList()));
+        ServiceUtils.checkBlanks(dto, List.of("discordId", "charName"));
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
@@ -337,15 +333,15 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         }
         // Check if a player has already taken the name
         log.debug("Fetching player with new RpChar name to see if that name is already taken");
-        Optional<Player> fetchedPlayer = secureFind(dto.newName(), playerRepository::findPlayerByRpChar);
+        Optional<Player> fetchedPlayer = secureFind(dto.charName(), playerRepository::findPlayerByRpChar);
 
         if(fetchedPlayer.isPresent()) {
-            log.warn("Player found that has an Rpchar with the same name [{}] [{}]", dto.newName(), fetchedPlayer.get());
+            log.warn("Player found that has an Rpchar with the same name [{}] [{}]", dto.charName(), fetchedPlayer.get());
             throw new IllegalArgumentException("RpChar Name is already taken!".formatted(fetchedPlayer.get()));
         }
 
         log.debug("Update RpChar Name");
-        playerToUpdate.getRpChar().setName(dto.newName());
+        playerToUpdate.getRpChar().setName(dto.charName());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
