@@ -34,6 +34,11 @@ public class PlayerRestController {
     public static final String PATH_UPDATE_FACTION = "/update/faction";
     public static final String PATH_UPDATE_IGN = "/update/ign";
     public static final String PATH_UPDATE_DISCORDID = "/update/discordid";
+    public static final String PATH_UPDATE_RPCHAR_NAME = "/update/rpchar/name";
+    public static final String PATH_UPDATE_RPCHAR_TITLE = "/update/rpchar/title";
+    public static final String PATH_UPDATE_RPCHAR_GEAR = "/update/rpchar/gear";
+    public static final String PATH_UPDATE_RPCHAR_PVP = "/update/rpchar/pvp";
+
 
     public static final String PATH_DELETE_PLAYER = "/delete";
     public static final String PATH_DELETE_RPCHAR = "/delete/rpchar";
