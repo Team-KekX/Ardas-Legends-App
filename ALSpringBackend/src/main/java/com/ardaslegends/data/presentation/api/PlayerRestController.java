@@ -2,12 +2,14 @@ package com.ardaslegends.data.presentation.api;
 
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.RPChar;
+import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
+import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping(PlayerRestController.BASE_URL)
-public class PlayerRestController {
+public class PlayerRestController extends AbstractRestController {
 
     public final static String BASE_URL = "/api/player";
 
@@ -224,6 +226,20 @@ public class PlayerRestController {
         return ResponseEntity.ok(player);
     }
 
+    @PatchMapping(PATH_UPDATE_RPCHAR_NAME)
+    public HttpEntity<RPChar> updateCharacterName(@RequestBody UpdateRpCharDto dto) {
+
+        log.debug("Incoming updateCharacterName Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.updateCharacterName");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterName);
+        log.debug("Successfully updated character name without encountering any errors");
+
+        log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
+
+    
     @DeleteMapping(PATH_DELETE_PLAYER)
     public HttpEntity<Player> deletePlayer(@RequestBody DeletePlayerOrRpCharDto dto) {
 
