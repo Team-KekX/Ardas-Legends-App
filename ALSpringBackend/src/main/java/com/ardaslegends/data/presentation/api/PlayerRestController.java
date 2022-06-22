@@ -239,7 +239,18 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
-    
+    @PatchMapping(PATH_UPDATE_RPCHAR_TITLE)
+    public HttpEntity<RPChar> updateCharacterTitle(@RequestBody UpdateRpCharDto dto) {
+
+        log.debug("Incoming updateCharacterTitle Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.updateCharacterTitle");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterTitle);
+        log.debug("Successfully updated character title without encountering any errors");
+
+        log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
     @DeleteMapping(PATH_DELETE_PLAYER)
     public HttpEntity<Player> deletePlayer(@RequestBody DeletePlayerOrRpCharDto dto) {
 
