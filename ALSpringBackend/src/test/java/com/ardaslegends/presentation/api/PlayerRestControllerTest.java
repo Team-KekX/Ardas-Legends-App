@@ -10,7 +10,9 @@ import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
+import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -712,6 +714,137 @@ public class PlayerRestControllerTest {
         log.debug("Patch Request returned status InternalServerError");
 
         log.info("Test passed: updateDiscordId returns InternalServerError when ServiceException is thrown!");
+    }
+
+    // Update Character Name
+
+    @Test
+    void ensureUpdateCharacterNameWorksProperly() throws Exception {
+        log.debug("Testing if updateCharacterName works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("rando", "wee", null, null, null, null, null);
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().name(dto.charName()).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.updateCharacterName(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from UpdateRpCharDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/update/rpchar/name";
+        log.debug("Performing Patch request to {}", url);
+        mockMvc.perform(MockMvcRequestBuilders
+                .patch(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk());
+    }
+
+    // Update title
+
+    @Test
+    void ensureUpdateCharacterTitleWorksProperly() throws Exception {
+        log.debug("Testing if updateCharacterTitle works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("rando", null,"SauronKing", null, null, null, null);
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().name(dto.charName()).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.updateCharacterTitle(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from UpdateRpCharDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/update/rpchar/title";
+        log.debug("Performing Patch request to {}", url);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+    }
+
+    // Update Gear
+    @Test
+    void ensureUpdateCharacterGearWorksProperly() throws Exception {
+        log.debug("Testing if updateCharacterGear works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("rando", null,"SauronKing", null, null, null, null);
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().name(dto.charName()).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.updateCharacterGear(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from UpdateRpCharDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/update/rpchar/gear";
+        log.debug("Performing Patch request to {}", url);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+    }
+
+    // Update PvP
+
+    @Test
+    void ensureUpdateCharacterPvPWorksProperly() throws Exception {
+        log.debug("Testing if updateCharacterPvp works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("rando", null,"SauronKing", null, null, null, null);
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().name(dto.charName()).build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.updateCharacterGear(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from UpdateRpCharDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/update/rpchar/pvp";
+        log.debug("Performing Patch request to {}", url);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
     }
     // ------------------------------------------- Delete Methods
 
