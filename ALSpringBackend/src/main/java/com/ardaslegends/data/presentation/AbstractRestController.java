@@ -12,10 +12,11 @@ import java.util.function.Function;
 public abstract class AbstractRestController {
 
     public <T extends AbstractDomainEntity, G> T wrappedServiceExecution(G dto, Function<G, T> func) {
-        T returnValue = null;
+        if(func == null)
+            throw new InternalServerException("Passed Null Function in wrappedServiceExecution", null);
+
         try {
-            log.trace("Trying to update the player's discordId");
-            return returnValue = func.apply(dto);
+            return func.apply(dto);
         } catch (NullPointerException | IllegalArgumentException e) {
             log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
             throw new BadArgumentException(e.getMessage(), e);
