@@ -34,13 +34,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const path = './Bot/commands/subcommands/disband/';
-        const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('disband_')));
-        const commands = {};
-        for (const file of files) {
-            const name = file.split('disband_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/disband/' + file);
-        }
+        addSubcommands('disband', false);
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
     },

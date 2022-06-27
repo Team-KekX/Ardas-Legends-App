@@ -35,13 +35,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const path = './Bot/commands/subcommands/heal/';
-        const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('heal_')));
-        const commands = {};
-        for (const file of files) {
-            const name = file.split('heal_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/heal/' + file);
-        }
+        addSubcommands('heal', false);
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
     },

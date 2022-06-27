@@ -39,6 +39,24 @@ function separateLongTextLocal(text, look_for_format){
     }
 }
 
+function addSubcommands(parentCommand, hasAdminSubcommands){
+    let path = `./Bot/commands/subcommands/${parentCommand}/`;
+    let files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains(`${parentCommand}_`)));
+    const commands = {};
+    for (const file of files) {
+        const name = file.split(`${parentCommand}_`)[1].slice(0, -3);
+        commands[name] = require(`./subcommands/${parentCommand}/` + file);
+    }
+    if(hasAdminSubcommands){
+        path = `./Bot/commands/subcommands/admin/${parentCommand}/`;
+        files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains(`${parentCommand}_`)));
+        for (const file of files) {
+            const name = file.split(`${parentCommand}_`)[1].slice(0, -3);
+            commands[name] = require(`./subcommands/admin/${parentCommand}/` + file);
+        }
+    }
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format=false){
@@ -50,6 +68,7 @@ module.exports = {
             arr_text[i] = arr_text[i].charAt(0).toUpperCase() + arr_text[i].slice(1);
         }
         return arr_text.join(" ");
-    }
+    },
+    addSubcommands: addSubcommands
 
 };
