@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('settle')
+        .setDMPermission(false)
         .setDescription('Settle a trader or armed company to take different actions.')
         .addSubcommand(subcommand =>
             subcommand

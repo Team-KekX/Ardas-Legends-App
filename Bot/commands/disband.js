@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('disband')
+        .setDMPermission(false)
         .setDescription('Disbands an entity (trader, army etc.)')
         .addSubcommand(subcommand =>
             subcommand

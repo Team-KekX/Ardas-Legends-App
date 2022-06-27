@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('unbind')
+        .setDMPermission(false)
         .setDescription('Unbinds a roleplay character to an entity (army, trader etc.)')
         .addSubcommand(subcommand =>
             subcommand

@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bind')
+        .setDMPermission(false)
         .setDescription('Binds a roleplay character to an entity (army, trader etc.)')
         .addSubcommand(subcommand =>
             subcommand

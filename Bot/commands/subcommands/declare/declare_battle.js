@@ -1,6 +1,8 @@
 // Needs further implementation to ping all concerned users
 // By fetching the assigned users for each participating army
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
+const { MessageEmbed } = require('discord.js');
+
 module.exports = {
     async execute(interaction) {
         const target=capitalizeFirstLetters(interaction.options.getString('target').toLowerCase());

@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('create')
+        .setDMPermission(false)
         .setDescription('Creates an entity (army, trader etc.)')
         .addSubcommand(subcommand =>
             subcommand

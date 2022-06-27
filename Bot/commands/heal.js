@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('heal')
+        .setDMPermission(false)
         .setDescription('Starts or stops healing an army')
         .addSubcommand(subcommand =>
             subcommand

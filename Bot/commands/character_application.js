@@ -7,6 +7,7 @@ const {capitalizeFirstLetters} = require("../utils/utilities");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('character-application')
+        .setDMPermission(false)
         .setDescription('Create a roleplay character')
         .addStringOption(option =>
          option.setName('character-name')

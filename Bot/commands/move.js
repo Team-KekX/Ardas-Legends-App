@@ -4,6 +4,7 @@ const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('move')
+        .setDMPermission(false)
         .setDescription('Move an entity')
         .addSubcommand(subcommand =>
             subcommand

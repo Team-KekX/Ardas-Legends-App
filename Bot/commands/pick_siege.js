@@ -4,6 +4,7 @@ const {capitalizeFirstLetters} = require("../utils/utilities");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('pick-siege')
+        .setDMPermission(false)
         .setDescription('Pick a siege equipment with an army or armed company')
         .addStringOption(option =>
             option.setName('army-name')

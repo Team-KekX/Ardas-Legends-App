@@ -1,4 +1,5 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
+const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     // TO BE EXPANDED

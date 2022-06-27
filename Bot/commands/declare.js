@@ -4,6 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('declare')
+        .setDMPermission(false)
         .setDescription('Declare a battle or war')
         .addSubcommand(subcommand =>
             subcommand

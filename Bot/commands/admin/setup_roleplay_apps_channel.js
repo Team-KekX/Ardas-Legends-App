@@ -4,10 +4,12 @@ const {SlashCommandBuilder} = require("@discordjs/builders");
 const fs = require('fs');
 const filename = '../../configs/config.json';
 const config = require(filename);
+const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('setup-roleplay-apps-channel')
+        .setDMPermission(false)
         .setDescription('Used by admins to specify which channel will accept RP apps.')
         .addStringOption(option =>
             option.setName('channel-id')
@@ -20,6 +22,12 @@ module.exports = {
             if (err) return console.log(err);
             console.log(JSON.stringify(config));
         });
-        await interaction.reply(`Successfully set the default roleplay applications channel.`);
+        const replyEmbed = new MessageEmbed()
+                                .setTitle(`Roleplay channel setup`)
+                                .setColor('NAVY')
+                                .setDescription(`Successfully set the default roleplay applications channel.`)
+                                .setThumbnail('img_url')
+                                .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     },
 };
