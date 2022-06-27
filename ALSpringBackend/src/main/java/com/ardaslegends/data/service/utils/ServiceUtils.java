@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ServiceUtils {
@@ -33,6 +35,14 @@ public class ServiceUtils {
         }
     }
 
+
+    public static <T> void checkAllBlanks(T obj) {
+        List<String> stringFields = Arrays.stream(obj.getClass().getDeclaredFields())
+                .filter(field -> field.getType().equals(String.class))
+                .map(Field::getName)
+                .collect(Collectors.toList());
+        checkBlanks(obj, stringFields);
+    }
     public static <T> void checkNulls(T obj, List<String> fieldNames) {
         List<Field> fields = null;
         fields = getFieldsFromNames(obj, fieldNames);
@@ -50,6 +60,12 @@ public class ServiceUtils {
             }
 
         }
+    }
+
+    public static <T> void checkAllNulls(T obj) {
+        checkNulls(obj, Arrays.stream(obj.getClass().getDeclaredFields())
+                .map(field -> field.getName())
+                .collect(Collectors.toList()));
     }
 
     private static <T> List<Field> getFieldsFromNames(T obj, List<String> fieldNames) {
