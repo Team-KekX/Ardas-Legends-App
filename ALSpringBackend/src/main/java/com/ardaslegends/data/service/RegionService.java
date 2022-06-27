@@ -16,10 +16,11 @@ import java.util.Optional;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-public class RegionService {
+public class RegionService extends AbstractService<Region, RegionRepository> {
 
     private final RegionRepository regionRepository;
 
+    //TODO: Add test
     public Region getRegionById(String id) {
         log.debug("Getting the region with id {}", id);
 
@@ -27,7 +28,7 @@ public class RegionService {
         Objects.requireNonNull(id, "Region id must not be null!");
 
         log.debug("Fetching the region with id {} from the DB", id);
-        Optional<Region> foundRegion = regionRepository.findById(id);
+        Optional<Region> foundRegion = secureFind(id, regionRepository::findById);
 
         if(foundRegion.isEmpty()) {
             log.warn("Region with ID {} could not be found in the database!", id);
