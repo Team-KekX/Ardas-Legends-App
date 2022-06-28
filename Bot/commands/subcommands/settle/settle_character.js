@@ -1,17 +1,17 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
-const { MessageEmbed } = require('discord.js');
-const {SETTLE} = require('../../configs/embed_thumbnails.json');
+const {MessageEmbed} = require('discord.js');
+const {SETTLE} = require('../../../configs/embed_thumbnails.json');
 
 module.exports = {
     async execute(interaction) {
         const name = capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
         const claimbuild = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
         const replyEmbed = new MessageEmbed()
-                                .setTitle(`Settle character`)
-                                .setColor('YELLOW')
-                                .setDescription(`${name} has now settled in ${claimbuild}.`)
-                                .setThumbnail(SETTLE)
-                                .setTimestamp()
+            .setTitle(`Settle character`)
+            .setColor('YELLOW')
+            .setDescription(`${name} has now settled in ${claimbuild}.`)
+            .setThumbnail(SETTLE)
+            .setTimestamp()
         await interaction.reply({embeds: [replyEmbed]});
     },
 };

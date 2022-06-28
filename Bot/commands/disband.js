@@ -1,10 +1,9 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const fs = require("fs");
+const {addSubcommands} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('disband')
-        .setDMPermission(false)
         .setDescription('Disbands an entity (trader, army etc.)')
         .addSubcommand(subcommand =>
             subcommand
@@ -35,7 +34,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        addSubcommands('disband', false);
+        const commands = addSubcommands('disband', false);
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
     },

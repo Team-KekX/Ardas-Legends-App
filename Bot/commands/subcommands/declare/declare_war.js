@@ -1,5 +1,5 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
-const {WAR} = require('../../configs/embed_thumbnails.json');
+const {WAR} = require('../../../configs/embed_thumbnails.json');
 
 module.exports = {
     async execute(interaction) {

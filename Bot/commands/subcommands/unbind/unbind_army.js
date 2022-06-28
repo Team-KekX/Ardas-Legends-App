@@ -1,17 +1,17 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
-const { MessageEmbed } = require('discord.js');
-const {UNBIND} = require('../../configs/embed_thumbnails.json');
+const {MessageEmbed} = require('discord.js');
+const {UNBIND} = require('../../../configs/embed_thumbnails.json');
 
 module.exports = {
     async execute(interaction) {
-        const name=capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
-        const character=capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
+        const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
+        const character = capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
         const replyEmbed = new MessageEmbed()
-                                .setTitle(`Unbind army`)
-                                .setColor('RED')
-                                .setDescription(`${character} has been unbound from the army ${name}.`)
-                                .setThumbnail(UNBIND)
-                                .setTimestamp()
+            .setTitle(`Unbind army`)
+            .setColor('RED')
+            .setDescription(`${character} has been unbound from the army ${name}.`)
+            .setThumbnail(UNBIND)
+            .setTimestamp()
         await interaction.reply({embeds: [replyEmbed]});
     },
 };
