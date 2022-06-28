@@ -1,4 +1,5 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
+const {PEACE} = require('../../configs/embed_thumbnails.json');
 
 module.exports = {
     async execute(interaction) {
@@ -9,7 +10,8 @@ module.exports = {
         const defender_role = guild.roles.cache.find(role => role.name === `${defender}`);
         interaction.reply({
             allowedMentions: {roles: [attacker_role.id, defender_role.id]},
-            content: `\`\`<@&${attacker_role.id}> made peace with <@&${defender_role.id}>.`
+            content: `<@&${attacker_role.id}> made peace with <@&${defender_role.id}>.`,
+            attachments: [PEACE]
         })
     },
 };

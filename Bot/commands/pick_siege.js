@@ -1,5 +1,6 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
 const {capitalizeFirstLetters} = require("../utils/utilities");
+const {PICK_SIEGE} = require('../../configs/embed_thumbnails.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,6 +23,12 @@ module.exports = {
         const name=capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const claimbuild=capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
         const siege=capitalizeFirstLetters(interaction.options.getString('siege-name').toLowerCase());
-        await interaction.reply(`${name} has picked up siege equipment (${siege}) at ${claimbuild}.`);
+        const replyEmbed = new MessageEmbed()
+                                .setTitle(`Pick up siege equipment`)
+                                .setColor('RED')
+                                .setDescription(`${name} has picked up siege equipment (${siege}) at ${claimbuild}.`)
+                                .setThumbnail(PICK_SIEGE)
+                                .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     },
 };

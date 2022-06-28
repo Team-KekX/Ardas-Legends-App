@@ -5,6 +5,7 @@ const fs = require('fs');
 const filename = '../../configs/config.json';
 const config = require(filename);
 const { MessageEmbed } = require('discord.js');
+const {ADMIN} = require('../../configs/embed_thumbnails.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ module.exports = {
                                 .setTitle(`Roleplay channel setup`)
                                 .setColor('NAVY')
                                 .setDescription(`Successfully set the default roleplay applications channel.`)
-                                .setThumbnail('img_url')
+                                .setThumbnail(ADMIN)
                                 .setTimestamp()
         await interaction.reply({embeds: [replyEmbed]});
     },

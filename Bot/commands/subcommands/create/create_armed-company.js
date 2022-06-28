@@ -1,5 +1,6 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const { MessageEmbed } = require('discord.js');
+const {CREATE} = require('../../configs/embed_thumbnails.json');
 
 module.exports = {
     async execute(interaction) {
@@ -7,7 +8,13 @@ module.exports = {
         const army=capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const trader=capitalizeFirstLetters(interaction.options.getString('trader-name').toLowerCase());
         const character=capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
-        await interaction.reply(`The armed company ${name} comprised of the army ${army} and trading company ${trader},
-         has been created and bound to ${character}.`);
+        const replyEmbed = new MessageEmbed()
+                                .setTitle(`Create armed company`)
+                                .setColor('RED')
+                                .setDescription(`The armed company ${name} comprised of the army ${army} and trading company ${trader},
+                                has been created and bound to ${character}.`)
+                                .setThumbnail(CREATE)
+                                .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     },
 };
