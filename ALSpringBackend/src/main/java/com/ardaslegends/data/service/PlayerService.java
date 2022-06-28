@@ -1,13 +1,12 @@
 package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.PlayerRepository;
+import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
-import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharNameDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
 import com.ardaslegends.data.service.utils.ServiceUtils;
@@ -16,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceException;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +36,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     private final PlayerRepository playerRepository;
 
     private final FactionService factionService;
-    private final RegionService regionService;
+    private final RegionRepository regionRepository;
     private final MovementService movementService;
     private final MojangApiService mojangApiService;
     private final Pathfinder pathfinder;
@@ -502,6 +499,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     }
 
     //TODO: Write Test
+    //TODO: Check if RPChar is bound to an army
     @Transactional(readOnly = false)
     public RPChar moveRpChar(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
@@ -527,7 +525,14 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         //Setting up Region Data
 
         log.trace("Find the region the player is moving to");
-        Region toRegion = regionService.getRegionById(dto.toRegion());
+        Optional<Region> fetchedToRegion = secureFind(dto.toRegion(), regionRepository::findById);
+
+        if(fetchedToRegion.isEmpty()) {
+            log.warn("User inputed to Region does not exist [{}]", dto.toRegion());
+            throw new IllegalArgumentException("The region %s does not exist!".formatted(dto.toRegion()));
+        }
+
+        Region toRegion = fetchedToRegion.get();
 
         log.trace("Getting the RPChar's current region");
         Region fromRegion = rpChar.getCurrentRegion();
