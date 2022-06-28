@@ -15,10 +15,10 @@ import java.util.List;
 @Embeddable
 public class Path {
 
-    private final Integer cost;
+    private Integer cost;
 
     @ElementCollection
-    private final List<String> path;
+    private List<String> path;
 
     public Path() {
        this.cost = 0;
