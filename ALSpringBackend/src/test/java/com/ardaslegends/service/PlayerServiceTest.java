@@ -5,7 +5,10 @@ import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.RPChar;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.repository.PlayerRepository;
+import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.FactionService;
+import com.ardaslegends.data.service.MovementService;
+import com.ardaslegends.data.service.Pathfinder;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
@@ -29,6 +32,10 @@ public class PlayerServiceTest {
     private PlayerRepository mockPlayerRepository;
     private FactionService mockFactionService;
 
+    private MovementService mockMovementService;
+    private Pathfinder mockPathfinder;
+
+    private RegionRepository mockRegionRepository;
     private MojangApiService mockMojangApiService;
     private PlayerService playerService;
 
@@ -37,7 +44,10 @@ public class PlayerServiceTest {
         mockPlayerRepository = mock(PlayerRepository.class);
         mockFactionService = mock(FactionService.class);
         mockMojangApiService = mock(MojangApiService.class);
-        playerService = new PlayerService(mockPlayerRepository, mockFactionService, mockMojangApiService);
+        mockMovementService = mock(MovementService.class);
+        mockRegionRepository = mock(RegionRepository.class);
+        mockPathfinder = mock(Pathfinder.class);
+        playerService = new PlayerService(mockPlayerRepository, mockFactionService, mockRegionRepository , mockMovementService ,mockMojangApiService, mockPathfinder );
     }
 
     // Create Method Tests
