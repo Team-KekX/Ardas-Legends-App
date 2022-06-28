@@ -14,7 +14,7 @@ public abstract class AbstractService<T extends AbstractDomainEntity, R extends 
 
 
 
-    public <G> Optional<T> secureFind(G identifier, Function<G, Optional<T>> func) {
+    public <G, F extends AbstractDomainEntity> Optional<F> secureFind(G identifier, Function<G, Optional<F>> func) {
         if (func == null) {
             log.warn("SecureFind Function parameter is null!");
             throw ServiceException.passedNullFunction();
