@@ -4,6 +4,8 @@ const {SlashCommandBuilder} = require("@discordjs/builders");
 const fs = require('fs');
 const filename = '../../configs/config.json';
 const config = require(filename);
+const {MessageEmbed} = require('discord.js');
+const {ADMIN} = require('../../configs/embed_thumbnails.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,6 +22,12 @@ module.exports = {
             if (err) return console.log(err);
             console.log(JSON.stringify(config));
         });
-        await interaction.reply(`Successfully set the default roleplay applications channel.`);
+        const replyEmbed = new MessageEmbed()
+            .setTitle(`Roleplay channel setup`)
+            .setColor('NAVY')
+            .setDescription(`Successfully set the default roleplay applications channel.`)
+            .setThumbnail(ADMIN)
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     },
 };
