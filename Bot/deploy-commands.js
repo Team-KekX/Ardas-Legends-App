@@ -1,7 +1,8 @@
 const fs = require('fs');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-const { clientId, guildId, token } = require('./configs/config.json');
+const {REST} = require('@discordjs/rest');
+const {Routes} = require('discord-api-types/v9');
+const {clientId, guildId} = require('./configs/config.json');
+const {token} = require('./configs/bot_token.json');
 
 
 const commands = [];
@@ -29,7 +30,7 @@ const rest = new REST({version: '9'}).setToken(token);
 
         await rest.put(
             Routes.applicationGuildCommands(clientId, guildId),
-            { body: commands },
+            {body: commands},
         );
 
         console.log('Successfully reloaded application (/) commands.');
