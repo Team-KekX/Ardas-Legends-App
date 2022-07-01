@@ -498,59 +498,5 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         return deletedRpChar;
     }
 
-    //TODO: Write Test
-    //TODO: Check if RPChar is bound to an army
-    @Transactional(readOnly = false)
-    public RPChar moveRpChar(MoveRpCharDto dto) {
-        log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
-
-        //Validating data
-
-        log.trace("Validating Data");
-        ServiceUtils.checkAllNulls(dto);
-        ServiceUtils.checkAllBlanks(dto);
-
-        log.trace("Getting the player");
-        Player player = getPlayerByDiscordId(dto.discordId());
-
-        log.trace("Setting the RPChar");
-        RPChar rpChar = player.getRpChar();
-
-        log.debug("Checking if the Player has a RP Char");
-        if(rpChar == null) {
-            log.warn("Player {} has no RP Char!", player);
-            throw new IllegalArgumentException("You have no RP Char!");
-        }
-
-        //Setting up Region Data
-
-        log.trace("Find the region the player is moving to");
-        Optional<Region> fetchedToRegion = secureFind(dto.toRegion(), regionRepository::findById);
-
-        if(fetchedToRegion.isEmpty()) {
-            log.warn("User inputed to Region does not exist [{}]", dto.toRegion());
-            throw new IllegalArgumentException("The region %s does not exist!".formatted(dto.toRegion()));
-        }
-
-        Region toRegion = fetchedToRegion.get();
-
-        log.trace("Getting the RPChar's current region");
-        Region fromRegion = rpChar.getCurrentRegion();
-
-        log.debug("Calling the pathfinder to find the fastest way from '{}' -> '{}'", fromRegion.getId(), toRegion.getId());
-        Path shortestPath = pathfinder.findShortestWay(fromRegion, toRegion, player, true);
-
-        log.trace("Getting the current time");
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        log.trace("Building the movement object");
-        Movement movement = Movement.builder().player(player).path(shortestPath).startTime(currentTime).endTime(currentTime.plusDays(shortestPath.getCost())).isCharMovement(true).isAccepted(false).build();
-
-        log.trace("Saving the new movement");
-        movementService.createMovement(movement);
-
-        log.info("Successfully created new Movement for the RPChar '{}' of Player '{}'", rpChar.getName(), player);
-        return rpChar;
-    }
 
 }
