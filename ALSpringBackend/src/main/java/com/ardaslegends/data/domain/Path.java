@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 
 @Embeddable
 public class Path {

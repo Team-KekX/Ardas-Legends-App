@@ -4,6 +4,7 @@ import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
+import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +37,9 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    //TODO: Write Test
     //TODO: Check if RPChar is bound to an army
     @Transactional(readOnly = false)
-    public RPChar moveRpChar(MoveRpCharDto dto) {
+    public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
 
         //Validating data
@@ -57,7 +57,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if the Player has a RP Char");
         if(rpChar == null) {
             log.warn("Player {} has no RP Char!", player);
-            throw new IllegalArgumentException("You have no RP Char!");
+            throw ServiceException.noRpChar();
+        }
+
+        log.debug("Checking if rpChar is bound to army");
+        if(rpChar.getBoundTo() != null) {
+            log.warn("RpChar is currently bound to army!");
+            throw ServiceException.cannotMoveRpCharBoundToArmy(rpChar, rpChar.getBoundTo());
         }
 
         //Setting up Region Data
@@ -88,6 +94,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         createMovement(movement);
 
         log.info("Successfully created new Movement for the RPChar '{}' of Player '{}'", rpChar.getName(), player);
-        return rpChar;
+        return movement;
     }
 }

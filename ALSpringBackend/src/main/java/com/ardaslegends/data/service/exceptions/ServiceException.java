@@ -1,7 +1,10 @@
 package com.ardaslegends.data.service.exceptions;
+import com.ardaslegends.data.domain.Army;
+import com.ardaslegends.data.domain.RPChar;
 import com.ardaslegends.data.domain.Region;
 import org.springframework.web.client.RestClientException;
 import javax.persistence.PersistenceException;
+import javax.validation.constraints.NotNull;
 
 public class ServiceException extends RuntimeException {
 
@@ -38,6 +41,13 @@ public class ServiceException extends RuntimeException {
     private static final String SECURE_FIND_FAILED_BECAUSE_OF_DATABASE_PROBLEM = "Cannot find entity due to database problem! Identifier [%s]";
     private static final String SECURE_FIND_FAILED_BECAUSE_OF_DATABASE_PROBLEM_NULL_IDENTIFIER = "Cannot find entity due to database problem! Identifier was null!";
 
+    //Movements
+
+    private static final String CANNOT_MOVE_RPCHAR_DUE_BOUND_TO_ARMY = "Cannot move the Rp Char '%s' because it is bound to the army '%s'!";
+
+    //Player
+
+    private static final String NO_RP_CHAR = "You have no RpChar!";
     public static ServiceException cannotReadEntityDueToExternalMojangError(RestClientException ex) {
         String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(ex.getMessage());
         return new ServiceException(msg, ex);
@@ -107,6 +117,14 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(msg);
     }
 
+    public static ServiceException noRpChar() {
+        return new ServiceException(NO_RP_CHAR);
+    }
+
+    public static ServiceException cannotMoveRpCharBoundToArmy(@NotNull RPChar rpchar, @NotNull Army army) {
+        String msg = CANNOT_MOVE_RPCHAR_DUE_BOUND_TO_ARMY.formatted(rpchar.getName(), army.getName());
+        return new ServiceException(msg);
+    }
     private ServiceException(String message, Throwable rootCause) { super(message, rootCause);}
     private ServiceException(String message) { super(message);}
 
