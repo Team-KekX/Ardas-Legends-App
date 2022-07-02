@@ -27,16 +27,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final PlayerService playerService;
     private final Pathfinder pathfinder;
 
-    @Transactional(readOnly = false)
-    public Movement createMovement(Movement movement) {
-        log.debug("Saving movement {}", movement);
-
-        secureSave(movement, movementRepository);
-
-        log.info("Successfully created movement: {}", movement);
-        return movement;
-    }
-
     //TODO: Check if RPChar is bound to an army
     @Transactional(readOnly = false)
     public Movement createRpCharMovement(MoveRpCharDto dto) {
@@ -91,7 +81,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         Movement movement = Movement.builder().player(player).path(shortestPath).startTime(currentTime).endTime(currentTime.plusDays(shortestPath.getCost())).isCharMovement(true).isAccepted(false).build();
 
         log.trace("Saving the new movement");
-        createMovement(movement);
+        movement = secureSave(movement, movementRepository);
 
         log.info("Successfully created new Movement for the RPChar '{}' of Player '{}'", rpChar.getName(), player);
         return movement;
