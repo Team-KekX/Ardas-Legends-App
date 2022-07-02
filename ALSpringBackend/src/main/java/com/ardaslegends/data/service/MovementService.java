@@ -27,7 +27,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final PlayerService playerService;
     private final Pathfinder pathfinder;
 
-    //TODO: Check if RPChar is bound to an army
     @Transactional(readOnly = false)
     public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
