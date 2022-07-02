@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,6 +62,7 @@ public class MovementServiceTest {
         when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.of(toRegion));
         when(mockPathfinder.findShortestWay(fromRegion, toRegion, player, true)).thenReturn(endPath);
+        when(mockMovementRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         //Act
         Movement createdMovement = movementService.createRpCharMovement(dto);
