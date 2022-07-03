@@ -1,4 +1,7 @@
 const {capitalizeFirstLetters, isMemberStaff} = require("../../../../utils/utilities");
+const {MessageEmbed} = require("discord.js");
+const {ADMIN} = require("../../../../configs/embed_thumbnails.json");
+
 
 module.exports = {
     async execute(interaction) {
@@ -8,6 +11,12 @@ module.exports = {
         }
         const discordId = capitalizeFirstLetters(interaction.options.getString('discord-id').toLowerCase());
         // send to server
-        await interaction.reply({content: `Deleted player with discord ID: ${discordId}`});
+        const replyEmbed = new MessageEmbed()
+            .setTitle(`Delete player`)
+            .setColor('NAVY')
+            .setDescription(`Deleted player with discord ID: ${discordId}.`)
+            .setThumbnail(ADMIN)
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     }
 };

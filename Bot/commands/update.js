@@ -1,5 +1,5 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const fs = require("fs");
+const {addSubcommands} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,19 +38,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        let path = './Bot/commands/subcommands/update/';
-        let files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('update_')));
-        const commands = {};
-        for (const file of files) {
-            const name = file.split('update_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/update/' + file);
-        }
-        path = './Bot/commands/subcommands/admin/update/';
-        files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('update_')));
-        for (const file of files) {
-            const name = file.split('update_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/admin/update/' + file);
-        }
+        const commands = addSubcommands('update', true);
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
     },

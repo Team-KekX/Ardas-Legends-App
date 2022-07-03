@@ -14,5 +14,8 @@
     "CREATE": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
     "DISBAND": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
     "HEAL": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-    "PICK_SIEGE": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+    "PICK_SIEGE": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
+    "REGISTER": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
+    "UPDATE_FACTION": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
+    "UPDATE_IGN": "https://www.bing.com/th?id=OIP.njGd7IiD40D8vkaiWQVARAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
 }

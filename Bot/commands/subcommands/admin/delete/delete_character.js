@@ -1,4 +1,6 @@
 const {capitalizeFirstLetters, isMemberStaff} = require("../../../../utils/utilities");
+const {MessageEmbed} = require("discord.js");
+const {ADMIN} = require("../../../../configs/embed_thumbnails.json");
 
 
 module.exports = {
@@ -9,7 +11,13 @@ module.exports = {
         }
         const characterName = capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
         // send to server
-        await interaction.reply({content: `Deleted character ${characterName}`});
+        const replyEmbed = new MessageEmbed()
+            .setTitle(`Delete character`)
+            .setColor('NAVY')
+            .setDescription(`Deleted character ${characterName}.`)
+            .setThumbnail(ADMIN)
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]});
     },
 };
 

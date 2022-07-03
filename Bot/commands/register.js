@@ -1,6 +1,8 @@
 const {SlashCommandBuilder} = require('@discordjs/builders');
 const {capitalizeFirstLetters} = require("../utils/utilities");
 const {availableFactions} = require("../configs/config.json");
+const {MessageEmbed} = require("discord.js");
+const {REGISTER} = require("../configs/embed_thumbnails.json");
 
 // Needs to be further implemented.
 // Reaction counting is currently not implemented.
@@ -27,10 +29,13 @@ module.exports = {
                 ephemeral: true
             });
         } else {
-            await interaction.reply({
-                content: `You were successfully registered as ${ign} in the faction ${faction}.`,
-                ephemeral: true
-            });
+            const replyEmbed = new MessageEmbed()
+                .setTitle(`Register`)
+                .setColor('GREEN')
+                .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
+                .setThumbnail(REGISTER)
+                .setTimestamp()
+            await interaction.reply({embeds: [replyEmbed], ephemeral: true});
             // send to server
 
         }
