@@ -9,9 +9,9 @@ const client = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 });
 client.commands = new Collection();
-const commandFiles = fs.readdirSync('./Bot/commands').filter(file => file.endsWith('.js'));
-const adminCommandFiles = fs.readdirSync('./Bot/commands/admin').filter(file => file.endsWith('.js'));
-const eventFiles = fs.readdirSync('./Bot/events').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const adminCommandFiles = fs.readdirSync('./commands/admin').filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);

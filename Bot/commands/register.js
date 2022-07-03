@@ -1,8 +1,9 @@
 const {SlashCommandBuilder} = require('@discordjs/builders');
 const {capitalizeFirstLetters} = require("../utils/utilities");
-const {availableFactions} = require("../configs/config.json");
+const {availableFactions, serverIP, serverPort} = require("../configs/config.json");
 const {MessageEmbed} = require("discord.js");
 const {REGISTER} = require("../configs/embed_thumbnails.json");
+const axios = require("axios");
 
 // Needs to be further implemented.
 // Reaction counting is currently not implemented.
@@ -29,14 +30,34 @@ module.exports = {
                 ephemeral: true
             });
         } else {
-            const replyEmbed = new MessageEmbed()
-                .setTitle(`Register`)
-                .setColor('GREEN')
-                .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
-                .setThumbnail(REGISTER)
-                .setTimestamp()
-            await interaction.reply({embeds: [replyEmbed], ephemeral: true});
             // send to server
+            const data = {
+                ign: ign,
+                discordID: interaction.member.id,
+                faction: faction
+            }
+
+            axios.post('http://'+serverIP+':'+serverPort+'/api/player/create', data)
+                .then(function (response) {
+                    // The request and data is successful.
+                    const replyEmbed = new MessageEmbed()
+                        .setTitle(`Register`)
+                        .setColor('GREEN')
+                        .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
+                        .setThumbnail(REGISTER)
+                        .setTimestamp()
+                    //await interaction.reply({embeds: [replyEmbed], ephemeral: true});
+                    const test = response.data;
+                    console.log('SUCCESS');
+                    console.log(test);
+                })
+                .catch(function (error) {
+                    // An error occurred during the request.
+                    //await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                    const test = error.response.data.message;
+                    console.log('FAIL');
+                    console.log(test);
+                })
 
         }
     },
