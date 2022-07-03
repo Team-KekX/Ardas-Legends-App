@@ -7,7 +7,6 @@ import com.ardaslegends.data.service.MovementService;
 import com.ardaslegends.data.service.Pathfinder;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
-import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +64,7 @@ public class MovementServiceTest {
         when(mockMovementRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         //Act
-        Movement createdMovement = movementService.createRpCharMovement(dto);
+        Movement createdMovement = movementService.moveRoleplayCharacter(dto);
 
         //Assert
         log.debug("Starting asserts");
@@ -96,7 +95,7 @@ public class MovementServiceTest {
         when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
+        var exception = assertThrows(ServiceException.class, () -> movementService.moveRoleplayCharacter(dto));
 
         //Assert
         assertThat(exception.getMessage()).isEqualTo(ServiceException.noRpChar().getMessage());
@@ -124,7 +123,7 @@ public class MovementServiceTest {
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
-        var exception = assertThrows(IllegalArgumentException.class, () -> movementService.createRpCharMovement(dto));
+        var exception = assertThrows(IllegalArgumentException.class, () -> movementService.moveRoleplayCharacter(dto));
 
         //Assert
         assertThat(exception.getMessage()).isEqualTo("The region %s does not exist!".formatted(dto.toRegion()));
@@ -153,7 +152,7 @@ public class MovementServiceTest {
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
+        var exception = assertThrows(ServiceException.class, () -> movementService.moveRoleplayCharacter(dto));
 
         //Assert
         log.debug("Asserting that createRpCharMovement throws ServiceException");
