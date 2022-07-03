@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -27,6 +28,7 @@ public final class Faction extends AbstractDomainEntity {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
     private List<Army> armies; //all current armies of this faction
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
+    @JsonIgnore
     private List<Player> players; //all current players of this faction
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "claimedBy")
     private Set<Region> regions; //all regions this faction claims
