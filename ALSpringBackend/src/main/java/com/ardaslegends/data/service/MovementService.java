@@ -2,6 +2,7 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -24,7 +25,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final MovementRepository movementRepository;
     private final RegionRepository regionRepository;
 
-    private final PlayerService playerService;
+    private final PlayerRepository playerRepository;
     private final Pathfinder pathfinder;
 
     @Transactional(readOnly = false)
@@ -38,8 +39,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         ServiceUtils.checkAllBlanks(dto);
 
         log.trace("Getting the player");
-        Player player = playerService.getPlayerByDiscordId(dto.discordId());
+        Optional<Player> fetchedPlayer = secureFind(dto.discordId(), playerRepository::findByDiscordID);
 
+        if(fetchedPlayer.isEmpty()) {
+            log.warn("No player found with discordId [{}]", dto.discordId());
+            throw new IllegalArgumentException("No player found with discordId [%s]".formatted(dto.discordId()));
+        }
+        Player player = fetchedPlayer.get();
         log.trace("Setting the RPChar");
         RPChar rpChar = player.getRpChar();
 

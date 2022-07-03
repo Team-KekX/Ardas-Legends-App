@@ -2,10 +2,10 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.MovementService;
 import com.ardaslegends.data.service.Pathfinder;
-import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class MovementServiceTest {
     private MovementRepository mockMovementRepository;
     private RegionRepository mockRegionRepository;
 
-    private PlayerService mockPlayerService;
+    private PlayerRepository mockPlayerRepository;
     private Pathfinder mockPathfinder;
 
     private MovementService movementService;
@@ -37,9 +37,9 @@ public class MovementServiceTest {
     void setup() {
         mockMovementRepository = mock(MovementRepository.class);
         mockRegionRepository = mock(RegionRepository.class);
-        mockPlayerService = mock(PlayerService.class);
+        mockPlayerRepository = mock(PlayerRepository.class);
         mockPathfinder = mock(Pathfinder.class);
-        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockPlayerService, mockPathfinder);
+        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockPlayerRepository, mockPathfinder);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class MovementServiceTest {
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
 
         log.trace("Mocking methods");
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.of(toRegion));
         when(mockPathfinder.findShortestWay(fromRegion, toRegion, player, true)).thenReturn(endPath);
         when(mockMovementRepository.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -92,7 +92,7 @@ public class MovementServiceTest {
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
 
         log.trace("Mocking methods");
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
 
         //Act
         var exception = assertThrows(ServiceException.class, () -> movementService.moveRoleplayCharacter(dto));
@@ -119,7 +119,7 @@ public class MovementServiceTest {
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
 
         log.trace("Mocking methods");
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
@@ -148,7 +148,7 @@ public class MovementServiceTest {
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
 
         log.trace("Mocking methods");
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
