@@ -64,7 +64,7 @@ public class MovementServiceTest {
         when(mockMovementRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         //Act
-        Movement createdMovement = movementService.moveRoleplayCharacter(dto);
+        Movement createdMovement = movementService.createRpCharMovement(dto);
 
         //Assert
         log.debug("Starting asserts");
@@ -95,7 +95,7 @@ public class MovementServiceTest {
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.moveRoleplayCharacter(dto));
+        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
 
         //Assert
         assertThat(exception.getMessage()).isEqualTo(ServiceException.noRpChar().getMessage());
@@ -123,7 +123,7 @@ public class MovementServiceTest {
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
-        var exception = assertThrows(IllegalArgumentException.class, () -> movementService.moveRoleplayCharacter(dto));
+        var exception = assertThrows(IllegalArgumentException.class, () -> movementService.createRpCharMovement(dto));
 
         //Assert
         assertThat(exception.getMessage()).isEqualTo("The region %s does not exist!".formatted(dto.toRegion()));
@@ -152,7 +152,7 @@ public class MovementServiceTest {
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.empty());
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.moveRoleplayCharacter(dto));
+        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
 
         //Assert
         log.debug("Asserting that createRpCharMovement throws ServiceException");

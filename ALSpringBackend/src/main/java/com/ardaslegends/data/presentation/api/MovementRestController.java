@@ -31,7 +31,7 @@ public class MovementRestController extends AbstractRestController {
 
         log.debug("Incoming Patch Request to move rp char, data [{}]", dto);
         log.trace("WrappedServiceExecution of moveRoleplayCharacter function");
-        Movement movement = wrappedServiceExecution(dto, movementService::moveRoleplayCharacter);
+        Movement movement = wrappedServiceExecution(dto, movementService::createRpCharMovement);
 
         log.debug("Successfully created movement for rpchar");
         return ResponseEntity.ok(movement);

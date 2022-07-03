@@ -29,7 +29,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final Pathfinder pathfinder;
 
     @Transactional(readOnly = false)
-    public Movement moveRoleplayCharacter(MoveRpCharDto dto) {
+    public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
 
         //Validating data

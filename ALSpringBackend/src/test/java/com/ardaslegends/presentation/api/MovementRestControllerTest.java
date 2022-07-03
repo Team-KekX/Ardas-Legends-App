@@ -47,7 +47,7 @@ public class MovementRestControllerTest {
         Movement movement = Movement.builder().build();
 
         log.trace("Initializing mock methods");
-        when(mockMovementService.moveRoleplayCharacter(dto)).thenReturn(movement);
+        when(mockMovementService.createRpCharMovement(dto)).thenReturn(movement);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
