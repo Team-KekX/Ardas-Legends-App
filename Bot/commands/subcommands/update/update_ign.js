@@ -3,7 +3,7 @@ const {UPDATE_IGN} = require("../../../configs/embed_thumbnails.json");
 
 module.exports = {
     async execute(interaction) {
-        const ign = interaction.options.getString('ign').toLowerCase();
+        const ign = interaction.options.getString('ign');
         await interaction.deferReply();
         // send to server and edit reply
         const replyEmbed = new MessageEmbed()

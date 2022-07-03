@@ -20,7 +20,7 @@ module.exports = {
                 .setDescription('The faction you want to join')
                 .setRequired(true)),
     async execute(interaction) {
-        const ign = interaction.options.getString('ign').toLowerCase();
+        const ign = interaction.options.getString('ign');
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
 
         if (!availableFactions.includes(faction)) {
