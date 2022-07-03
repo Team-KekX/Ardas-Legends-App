@@ -38,7 +38,7 @@ module.exports = {
             }
 
             axios.post('http://'+serverIP+':'+serverPort+'/api/player/create', data)
-                .then(function (response) {
+                .then(async function (response) {
                     // The request and data is successful.
                     const replyEmbed = new MessageEmbed()
                         .setTitle(`Register`)
@@ -46,17 +46,11 @@ module.exports = {
                         .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
                         .setThumbnail(REGISTER)
                         .setTimestamp()
-                    //await interaction.reply({embeds: [replyEmbed], ephemeral: true});
-                    const test = response.data;
-                    console.log('SUCCESS');
-                    console.log(test);
+                    await interaction.reply({embeds: [replyEmbed], ephemeral: true});
                 })
-                .catch(function (error) {
+                .catch(async function (error) {
                     // An error occurred during the request.
-                    //await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
-                    const test = error.response.data.message;
-                    console.log('FAIL');
-                    console.log(test);
+                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
                 })
 
         }
