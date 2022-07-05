@@ -17,10 +17,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('character')
-                .setDescription('Deletes a character')
+                .setDescription('Deletes the character of a user')
                 .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character to delete')
+                    option.setName('discord-id')
+                        .setDescription('The Discord ID of the user')
                         .setRequired(true))
         ),
     async execute(interaction) {

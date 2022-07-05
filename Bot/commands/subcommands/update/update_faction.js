@@ -2,6 +2,7 @@ const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {availableFactions} = require("../../../configs/config.json");
 const {MessageEmbed} = require("discord.js");
 const {UPDATE_FACTION} = require("../../../configs/embed_thumbnails.json");
+const {serverIP, serverPort} = require("../../configs/config.json");
 
 module.exports = {
     async execute(interaction) {
@@ -14,14 +15,27 @@ module.exports = {
                 ephemeral: true
             });
         } else {
-            const replyEmbed = new MessageEmbed()
-                .setTitle(`Update faction`)
-                .setColor('GREEN')
-                .setDescription(`You were successfully registered as ${faction}.`)
-                .setThumbnail(UPDATE_FACTION)
-                .setTimestamp()
-            await interaction.reply({embeds: [replyEmbed], ephemeral: true});
             // send to server
+            const data = {
+                discordId: interaction.member.id,
+                factionName: faction
+            }
+    
+            axios.post('http://'+serverIP+':'+serverPort+'/api/player/update/faction', data)
+                .then(async function (response) {
+                    // The request and data is successful.
+                    const replyEmbed = new MessageEmbed()
+                        .setTitle(`Update faction`)
+                        .setColor('GREEN')
+                        .setDescription(`You were successfully registered as ${faction}.`)
+                        .setThumbnail(UPDATE_FACTION)
+                        .setTimestamp()
+                    await interaction.reply({embeds: [replyEmbed], ephemeral: true});
+                })
+                .catch(async function (error) {
+                    // An error occurred during the request.
+                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                })
         }
     },
 };
