@@ -35,6 +35,15 @@ module.exports = {
                     option.setName('new-discord-id')
                         .setDescription('The player\'s new discord ID')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('rpchar-name')
+                .setDescription('Update the name of your Roleplay Character')
+                .addStringOption(option =>
+                    option.setName('new-name')
+                        .setDescription('The new name of your rp char')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
