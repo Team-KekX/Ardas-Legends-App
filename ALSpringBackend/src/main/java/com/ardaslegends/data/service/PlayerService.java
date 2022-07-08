@@ -108,7 +108,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         if(dto.title().length() > 25) {
             log.warn("CreateRPChar title is too long");
-            throw new IllegalArgumentException("CreateRPChar title exceeds maximum length of 25 Characters [%s, Length %s]".formatted(dto.title(), dto.title().length()));
+            throw new IllegalArgumentException("Title exceeds maximum length of 25 Characters [%s, Length %s]".formatted(dto.title(), dto.title().length()));
         }
 
         // Executing queries for required data
@@ -359,6 +359,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Validating DTO data");
         ServiceUtils.checkNulls(dto, List.of("discordId", "title"));
         ServiceUtils.checkBlanks(dto, List.of("discordId", "title"));
+
+        if(dto.title().length() > 25) {
+            log.warn("updateCharacterTitle - title is too long");
+            throw new IllegalArgumentException("Title exceeds maximum length of 25 Characters [%s, Length %s]".formatted(dto.title(), dto.title().length()));
+        }
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
