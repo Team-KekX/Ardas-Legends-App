@@ -41,6 +41,6 @@ public final class Player extends AbstractDomainEntity {
 
     @Override
     public String toString() {
-        return "";
+        return ign;
     }
 }
