@@ -1,6 +1,6 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
-const {MOVE, UPDATE} = require('../../../configs/embed_thumbnails.json');
+const {MOVE_CHARACTER} = require('../../../configs/embed_thumbnails.json');
 const {serverIP, serverPort} = require("../../../configs/config.json");
 const axios = require('axios');
 
@@ -30,7 +30,7 @@ module.exports = {
                     .setTitle(`Move character`)
                     .setColor('YELLOW')
                     .setDescription(description)
-                    .setThumbnail(MOVE)
+                    .setThumbnail(MOVE_CHARACTER)
                     .setTimestamp()
 
                 await interaction.deferReply();
