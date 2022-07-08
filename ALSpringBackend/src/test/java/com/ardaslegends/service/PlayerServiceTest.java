@@ -126,7 +126,7 @@ public class PlayerServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo(dto.rpCharName());
         assertThat(result.getPvp()).isEqualTo(dto.pvp());
-
+        assertThat(result.getCurrentRegion()).isEqualTo(faction.getHomeRegion());
 
     }
 
