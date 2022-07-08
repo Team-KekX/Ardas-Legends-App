@@ -36,5 +36,6 @@ public final class Movement extends AbstractDomainEntity{
     private LocalDateTime endTime;
 
     private Boolean isAccepted;
+    private Boolean isCurrentlyActive;
 
 }

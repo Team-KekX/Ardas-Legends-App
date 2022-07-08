@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.PersistenceException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -15,6 +16,19 @@ public abstract class AbstractService<T extends AbstractDomainEntity, R extends 
 
 
     public <G, F extends AbstractDomainEntity> Optional<F> secureFind(G identifier, Function<G, Optional<F>> func) {
+        if (func == null) {
+            log.warn("SecureFind Function parameter is null!");
+            throw ServiceException.passedNullFunction();
+        }
+        try {
+            return func.apply(identifier);
+        } catch (PersistenceException pEx) {
+            log.warn("Encountered Database Error while searching for entity, parameter [{}]", identifier);
+            throw ServiceException.secureFindFailed(identifier, pEx);
+        }
+    }
+
+    public <G, F extends AbstractDomainEntity> List<F> secureFindList(G identifier, Function<G, List<F>> func) {
         if (func == null) {
             log.warn("SecureFind Function parameter is null!");
             throw ServiceException.passedNullFunction();

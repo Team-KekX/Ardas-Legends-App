@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.api;
 import com.ardaslegends.data.domain.Movement;
 import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.MovementService;
+import com.ardaslegends.data.service.dto.player.DiscordIdDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class MovementRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/movement";
 
     public static final String PATH_MOVE_CHAR = "/move-char";
+    public static final String PATH_CANCEL_MOVEMENT = "/cancel-move";
 
     @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<Movement> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
@@ -29,6 +31,18 @@ public class MovementRestController extends AbstractRestController {
         log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of moveRoleplayCharacter function");
         Movement movement = wrappedServiceExecution(dto, movementService::createRpCharMovement);
+
+        log.info("Successfully handled request for creating rpchar movement!");
+        return ResponseEntity.ok(movement);
+    }
+
+    //TODO TEEEST THIIIS
+    @PatchMapping(PATH_CANCEL_MOVEMENT)
+    public HttpEntity<Movement> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
+
+        log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
+        log.trace("WrappedServiceExecution of moveRoleplayCharacter function");
+        Movement movement = wrappedServiceExecution(dto, movementService::cancelRpCharMovement);
 
         log.info("Successfully handled request for creating rpchar movement!");
         return ResponseEntity.ok(movement);
