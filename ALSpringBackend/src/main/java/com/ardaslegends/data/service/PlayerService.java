@@ -121,7 +121,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Checking if the player already has an RPChar
         if (actualPlayer.getRpChar() != null) {
             log.warn("Player [{}] already has an RPChar", actualPlayer);
-            throw new IllegalArgumentException("Player {%s} already has an RPChar [%s], delete the old one if you want a new Character!".formatted(actualPlayer, actualPlayer.getRpChar()));
+            throw new IllegalArgumentException("Player [%s] already has an RPChar [%s], delete the old one if you want a new Character!".formatted(actualPlayer, actualPlayer.getRpChar()));
         }
 
         Optional<Player> fetchedPlayer = secureFind(dto.rpCharName(), playerRepository::findPlayerByRpChar);
