@@ -53,6 +53,15 @@ module.exports = {
                     option.setName('new-title')
                         .setDescription('The new title of your rp char')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('rpchar-gear')
+                .setDescription('Update the gear of your Roleplay Character')
+                .addStringOption(option =>
+                    option.setName('new-gear')
+                        .setDescription('The new gear of your rp char')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
