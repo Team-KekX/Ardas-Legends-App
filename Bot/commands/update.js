@@ -44,6 +44,15 @@ module.exports = {
                     option.setName('new-name')
                         .setDescription('The new name of your rp char')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('rpchar-title')
+                .setDescription('Update the title of your Roleplay Character')
+                .addStringOption(option =>
+                    option.setName('new-title')
+                        .setDescription('The new title of your rp char')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
