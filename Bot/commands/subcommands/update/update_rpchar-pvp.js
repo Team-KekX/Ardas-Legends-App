@@ -33,7 +33,6 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                console.log(error);
                 await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
             })
 

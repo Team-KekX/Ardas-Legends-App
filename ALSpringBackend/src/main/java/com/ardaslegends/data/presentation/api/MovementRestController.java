@@ -23,7 +23,7 @@ public class MovementRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/movement";
 
     public static final String PATH_MOVE_CHAR = "/move-char";
-    public static final String PATH_CANCEL_MOVEMENT = "/cancel-move";
+    public static final String PATH_CANCEL_CHAR_MOVEMENT = "/cancel-char-move";
 
     @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<Movement> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
@@ -37,7 +37,7 @@ public class MovementRestController extends AbstractRestController {
     }
 
     //TODO TEEEST THIIIS
-    @PatchMapping(PATH_CANCEL_MOVEMENT)
+    @PatchMapping(PATH_CANCEL_CHAR_MOVEMENT)
     public HttpEntity<Movement> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
