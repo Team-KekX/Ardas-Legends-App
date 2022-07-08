@@ -43,7 +43,11 @@ public class ServiceException extends RuntimeException {
 
     //Movements
 
+    private static final String CANNOT_MOVE_RPCHAR_DUE_TO_ALREADY_IN_REGION = "The Character '%s' is already in region %s!";
+
     private static final String CANNOT_MOVE_RPCHAR_DUE_BOUND_TO_ARMY = "Cannot move the Rp Char '%s' because it is bound to the army '%s'!";
+    private static final String CANNOT_MOVE_RPCHAR_DUE_TO_ALREADY_MOVING = "Cannot move the Rp Char '%s' because it is already in another movement! Cancel the other movement first if you want to move this character.";
+
 
     //Player
 
@@ -126,9 +130,17 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(CREATE_RP_CHAR_NO_FACTION.formatted(playerName));
     }
 
-
+    public static ServiceException cannotMoveRpCharAlreadyInRegion(@NotNull RPChar rpchar, Region region) {
+        String msg = CANNOT_MOVE_RPCHAR_DUE_TO_ALREADY_IN_REGION.formatted(rpchar.getName(), region.getId());
+        return new ServiceException(msg);
+    }
     public static ServiceException cannotMoveRpCharBoundToArmy(@NotNull RPChar rpchar, @NotNull Army army) {
         String msg = CANNOT_MOVE_RPCHAR_DUE_BOUND_TO_ARMY.formatted(rpchar.getName(), army.getName());
+        return new ServiceException(msg);
+    }
+
+    public static ServiceException cannotMoveRpCharAlreadyMoving(@NotNull RPChar rpchar) {
+        String msg = CANNOT_MOVE_RPCHAR_DUE_TO_ALREADY_MOVING.formatted(rpchar.getName());
         return new ServiceException(msg);
     }
     private ServiceException(String message, Throwable rootCause) { super(message, rootCause);}

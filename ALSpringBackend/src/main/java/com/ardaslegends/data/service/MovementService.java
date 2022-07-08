@@ -55,10 +55,25 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw ServiceException.noRpChar();
         }
 
+        //TODO test this
+        log.debug("Checking if destination is the current region");
+        if(dto.toRegion().equals(rpChar.getCurrentRegion().getId())) {
+            log.warn("Character is already in region {}!", dto.toRegion());
+            throw ServiceException.cannotMoveRpCharAlreadyInRegion(rpChar, rpChar.getCurrentRegion());
+        }
+
         log.debug("Checking if rpChar is bound to army");
         if(rpChar.getBoundTo() != null) {
             log.warn("RpChar is currently bound to army!");
             throw ServiceException.cannotMoveRpCharBoundToArmy(rpChar, rpChar.getBoundTo());
+        }
+
+        //TODO Test this block
+        log.debug("Checking if rpChar is already in a movement");
+        Optional<Movement> ongoingMovement = secureFind(player, movementRepository::findMovementByPlayer);
+        if(ongoingMovement.isPresent()) {
+            log.warn("Player {} is already involved in a movement!", player);
+            throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChar());
         }
 
         //Setting up Region Data
