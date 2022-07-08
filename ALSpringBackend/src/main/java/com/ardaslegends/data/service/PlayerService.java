@@ -5,7 +5,6 @@ import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
-import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -418,12 +416,12 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
     @Transactional(readOnly = false)
     public RPChar updateCharacterPvp(UpdateRpCharDto dto) {
-        log.debug("Updating character's pvp status to '{}' for player's ({}) rpchar '{}'", dto.isPvp(), dto.discordId(), dto.charName());
+        log.debug("Updating character's pvp status to '{}' for player's ({}) rpchar '{}'", dto.pvp(), dto.discordId(), dto.charName());
 
         // Checking if data is valid
         log.debug("Validating DTO data");
-        ServiceUtils.checkNulls(dto, List.of("discordId", "isPvp"));
-        ServiceUtils.checkBlanks(dto, List.of("discordId", "isPvp"));
+        ServiceUtils.checkNulls(dto, List.of("discordId", "pvp"));
+        ServiceUtils.checkBlanks(dto, List.of("discordId", "pvp"));
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
@@ -437,7 +435,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         //Update the pvp status
         log.debug("Update RpChar PvP Status");
-        playerToUpdate.getRpChar().setPvp(dto.isPvp());
+        playerToUpdate.getRpChar().setPvp(dto.pvp());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
