@@ -79,7 +79,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const commands = addSubcommands('create', false);
+        const commands = addSubcommands('create', true);
         const toExecute = commands[interaction.options.getSubcommand()];
         toExecute.execute(interaction);
     },
