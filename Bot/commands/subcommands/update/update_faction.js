@@ -2,7 +2,7 @@ const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {availableFactions} = require("../../../configs/config.json");
 const {MessageEmbed} = require("discord.js");
 const {UPDATE_FACTION} = require("../../../configs/embed_thumbnails.json");
-const {serverIP, serverPort} = require("../../configs/config.json");
+const {serverIP, serverPort} = require("../../../configs/config.json");
 
 module.exports = {
     async execute(interaction) {

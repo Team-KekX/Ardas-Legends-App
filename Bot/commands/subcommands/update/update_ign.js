@@ -1,6 +1,6 @@
 const {MessageEmbed} = require("discord.js");
 const {UPDATE_IGN} = require("../../../configs/embed_thumbnails.json");
-const {serverIP, serverPort} = require("../../configs/config.json");
+const {serverIP, serverPort} = require("../../../configs/config.json");
 
 module.exports = {
     async execute(interaction) {

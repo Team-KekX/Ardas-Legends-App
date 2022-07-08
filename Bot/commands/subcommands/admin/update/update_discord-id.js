@@ -1,7 +1,7 @@
 const {isMemberStaff} = require("../../../../utils/utilities");
 const {MessageEmbed} = require("discord.js");
 const {ADMIN} = require("../../../../configs/embed_thumbnails.json");
-const {serverIP, serverPort} = require("../../../configs/config.json");
+const {serverIP, serverPort} = require("../../../../configs/config.json");
 
 module.exports = {
     async execute(interaction) {
