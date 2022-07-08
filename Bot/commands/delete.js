@@ -27,7 +27,7 @@ module.exports = {
         // Dynamically get all subcommands for called command. Does not call addSubcommands() function because it has
         // only admin subcommands. Ideally a third parameter would be added to check or not for non-admin subcommands.
         const commands = {};
-        const path = './Bot/commands/subcommands/admin/delete/';
+        const path = './commands/subcommands/admin/delete/';
         const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('delete_')));
         for (const file of files) {
             const name = file.split('delete_')[1].slice(0, -3);
