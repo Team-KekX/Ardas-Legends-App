@@ -452,7 +452,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Player deletePlayer(DeletePlayerOrRpCharDto dto) {
+    public Player deletePlayer(DiscordIdDto dto) {
         log.debug("Deleting player with data [{}]", dto);
 
         // Validating Data
@@ -477,7 +477,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     }
 
     @Transactional(readOnly = false)
-    public RPChar deleteRpChar(DeletePlayerOrRpCharDto dto) {
+    public RPChar deleteRpChar(DiscordIdDto dto) {
         log.debug("Deleting Rpchar with data [{}]", dto);
 
         // Validating Data

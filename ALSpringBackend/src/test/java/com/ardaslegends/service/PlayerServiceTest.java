@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.PersistenceException;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -675,7 +674,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initializing Dto");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomID");
+        DiscordIdDto dto = new DiscordIdDto("RandomID");
 
         log.trace("Initialize player object that will simulate the deletion");
         Player player = Player.builder().discordID(dto.discordId()).build();
@@ -700,7 +699,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initialize Dto");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initialize rpchar object that will simulate the deletion");
         RPChar rpChar = RPChar.builder().name("RandomChar").build();
@@ -726,7 +725,7 @@ public class PlayerServiceTest {
 
         // Assign
         log.trace("Initialize Dto");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initialize player object with above rpchar");
         Player player = Player.builder().discordID(dto.discordId()).build();

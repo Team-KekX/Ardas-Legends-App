@@ -278,7 +278,7 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
     @DeleteMapping(PATH_DELETE_PLAYER)
-    public HttpEntity<Player> deletePlayer(@RequestBody DeletePlayerOrRpCharDto dto) {
+    public HttpEntity<Player> deletePlayer(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deletePlayer Request: Data [{}]", dto);
 
@@ -301,7 +301,7 @@ public class PlayerRestController extends AbstractRestController {
     }
 
     @DeleteMapping(PATH_DELETE_RPCHAR)
-    public HttpEntity<RPChar> deleteRpChar(@RequestBody DeletePlayerOrRpCharDto dto) {
+    public HttpEntity<RPChar> deleteRpChar(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deleteRpChar Request: Data [{}]", dto);
 

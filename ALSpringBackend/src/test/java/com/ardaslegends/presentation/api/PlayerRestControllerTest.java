@@ -12,7 +12,6 @@ import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -857,7 +856,7 @@ public class PlayerRestControllerTest {
         // Assign
 
         log.trace("Initializing Dto");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing player object");
         Player player = Player.builder().discordID(dto.discordId()).build();
@@ -865,7 +864,7 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.deletePlayer(dto)).thenReturn(player);
 
-        log.trace("Building JSON from DeletePlayerOrRpCharDto");
+        log.trace("Building JSON from DiscordIdDto");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -894,13 +893,13 @@ public class PlayerRestControllerTest {
         Player returnedPlayer = Player.builder().ign("Player").build();
 
         log.trace("Initializing DeletePlayerOrRpChar Data Transfer Object");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing mocked method");
         NullPointerException nullPointerException = new NullPointerException("Some Null Value");
         when(mockPlayerService.deletePlayer(dto)).thenThrow(nullPointerException);
 
-        log.trace("Building JSON from DeletePlayerOrRpCharDto");
+        log.trace("Building JSON from DiscordIdDto");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -933,13 +932,13 @@ public class PlayerRestControllerTest {
         Player returnedPlayer = Player.builder().ign("Player").build();
 
         log.trace("Initializing DeletePlayerOrRpChar Data Transfer Object");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing mocked method");
         ServiceException serviceException = ServiceException.cannotDeleteEntity(null, new PersistenceException("db down"));
         when(mockPlayerService.deletePlayer(dto)).thenThrow(serviceException);
 
-        log.trace("Building JSON from DeletePlayerOrRpCharDto");
+        log.trace("Building JSON from DiscordIdDto");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -971,7 +970,7 @@ public class PlayerRestControllerTest {
         // Assign
 
         log.trace("Initializing Dto");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing rpchar object");
         RPChar rpChar = RPChar.builder().name("RandomChar").build();
@@ -1005,13 +1004,13 @@ public class PlayerRestControllerTest {
         // Assign
 
         log.trace("Initializing DeletePlayerOrRpChar Data Transfer Object");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing mocked method");
         NullPointerException nullPointerException = new NullPointerException("Some Null Value");
         when(mockPlayerService.deleteRpChar(dto)).thenThrow(nullPointerException);
 
-        log.trace("Building JSON from DeletePlayerOrRpCharDto");
+        log.trace("Building JSON from DiscordIdDto");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -1041,13 +1040,13 @@ public class PlayerRestControllerTest {
         // Assign
 
         log.trace("Initializing DeletePlayerOrRpChar Data Transfer Object");
-        DeletePlayerOrRpCharDto dto = new DeletePlayerOrRpCharDto("RandomId");
+        DiscordIdDto dto = new DiscordIdDto("RandomId");
 
         log.trace("Initializing mocked method");
         ServiceException serviceException = ServiceException.cannotDeleteEntity(null, new PersistenceException("db down"));
         when(mockPlayerService.deleteRpChar(dto)).thenThrow(serviceException);
 
-        log.trace("Building JSON from DeletePlayerOrRpCharDto");
+        log.trace("Building JSON from DiscordIdDto");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
