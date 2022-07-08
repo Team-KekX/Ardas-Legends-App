@@ -62,6 +62,15 @@ module.exports = {
                     option.setName('new-gear')
                         .setDescription('The new gear of your rp char')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('rpchar-pvp')
+                .setDescription('Update the PvP status of your Roleplay Character')
+                .addBooleanOption(option =>
+                    option.setName('new-pvp')
+                        .setDescription('The new PvP status of your rp char')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
