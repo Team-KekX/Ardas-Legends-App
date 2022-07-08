@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 
@@ -26,14 +23,14 @@ public class MovementRestController extends AbstractRestController {
 
     public static final String PATH_MOVE_CHAR = "/move-char";
 
-    @PatchMapping(PATH_MOVE_CHAR)
+    @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<Movement> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
 
-        log.debug("Incoming Patch Request to move rp char, data [{}]", dto);
+        log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of moveRoleplayCharacter function");
         Movement movement = wrappedServiceExecution(dto, movementService::createRpCharMovement);
 
-        log.debug("Successfully created movement for rpchar");
+        log.info("Successfully handled request for creating rpchar movement!");
         return ResponseEntity.ok(movement);
     }
 }

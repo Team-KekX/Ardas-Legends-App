@@ -56,7 +56,7 @@ public class MovementRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .patch("http://localhost:8080/api/movement/move-char")
+                        .post("http://localhost:8080/api/movement/move-char")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
