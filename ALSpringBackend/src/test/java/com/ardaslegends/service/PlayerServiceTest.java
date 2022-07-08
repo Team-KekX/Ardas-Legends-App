@@ -143,12 +143,27 @@ public class PlayerServiceTest {
     }
 
     @Test
+    void ensureCreateRPCharThrowsSEWhenPlayerHasNoFaction() {
+        // Assign
+        CreateRPCharDto dto = new CreateRPCharDto("MiraksDiscordId", "ActualPrinceOfDolAmroth",
+                "Prince of Dol Amroth", "Something Gondolin and Galvorn", true);
+        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).faction(null).build();
+
+        when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
+
+        // Assert
+        var result = assertThrows(ServiceException.class, () -> playerService.createRoleplayCharacter(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ServiceException.createRpCharNoFaction(player.getIgn()).getMessage());
+    }
+    @Test
     void ensureCreateRPCharThrowsIAEWhenPlayerAlreadyHasAnRPChar() {
         // Assign
         CreateRPCharDto dto = new CreateRPCharDto("MiraksDiscordId", "ActualPrinceOfDolAmroth",
                 "Prince of Dol Amroth", "Something Gondolin and Galvorn", true);
         RPChar alreadySavedRPChar = RPChar.builder().name("Gondorian Knight").build();
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(alreadySavedRPChar).build();
+        Faction faction = Faction.builder().name("Gondor").homeRegion(Region.builder().id("1").build()).build();
+        Player player = Player.builder().discordID(dto.discordId()).faction(faction).rpChar(alreadySavedRPChar).build();
 
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
 
@@ -164,7 +179,8 @@ public class PlayerServiceTest {
         CreateRPCharDto dto = new CreateRPCharDto("MiraksDiscordId", "ActualPrinceOfDolAmroth",
                 "Prince of Dol Amroth", "Something Gondolin and Galvorn", true);
 
-        Player player = Player.builder().discordID(dto.discordId()).build();
+        Faction faction = Faction.builder().name("Gondor").homeRegion(Region.builder().id("1").build()).build();
+        Player player = Player.builder().discordID(dto.discordId()).faction(faction).build();
 
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
         // Simulate finding a player with an rpchar that has the same name

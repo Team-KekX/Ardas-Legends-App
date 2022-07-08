@@ -116,6 +116,12 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player actualPlayer = getPlayerByDiscordId(dto.discordId());             // Throws IllegalArgument, NullPointer or ServiceException if it does not succeed
         log.debug("Fetched Player by DiscordId [{}]", actualPlayer);
 
+        log.debug("Checking if the player has a faction");
+        if(actualPlayer.getFaction() == null) {
+            log.warn("Player [{}] is not in a faction - cannot create new RpChar!", actualPlayer);
+            throw ServiceException.createRpCharNoFaction(actualPlayer.getIgn());
+        }
+
         // Checking if the player already has an RPChar
         if (actualPlayer.getRpChar() != null) {
             log.warn("Player [{}] already has an RPChar", actualPlayer);
@@ -128,10 +134,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
             log.warn("Player found with same RPChar Name [{}], [{}]", actualPlayer, dto.rpCharName());
             throw new IllegalArgumentException("Roleplay Character with name [%s] already exists!".formatted(dto.rpCharName()));
         }
-        log.debug("No RPChar with name [{}] found", dto.rpCharName());
+        log.debug("No RPChar with name [{}] found - continuing with creation", dto.rpCharName());
 
         // Saving RPChar to the Database
 
+        log.debug("Creating RpChar instance");
         RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
