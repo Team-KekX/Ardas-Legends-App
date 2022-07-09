@@ -107,7 +107,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    //TODO TEEEEST
     @Transactional(readOnly = false)
     public Movement cancelRpCharMovement(DiscordIdDto dto) {
         log.debug("Cancelling the rp char movement of player {}", dto.discordId());
