@@ -40,7 +40,7 @@ function separateLongTextLocal(text, look_for_format) {
 }
 
 function addSubcommands(parentCommand, hasAdminSubcommands) {
-    let path = `./Bot/commands/subcommands/${parentCommand}/`;
+    let path = `./commands/subcommands/${parentCommand}/`;
     let files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains(`${parentCommand}_`)));
     const commands = {};
     for (const file of files) {
@@ -48,7 +48,7 @@ function addSubcommands(parentCommand, hasAdminSubcommands) {
         commands[name] = require(`../commands/subcommands/${parentCommand}/` + file);
     }
     if (hasAdminSubcommands) {
-        path = `./Bot/commands/subcommands/admin/${parentCommand}/`;
+        path = `./commands/subcommands/admin/${parentCommand}/`;
         files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains(`${parentCommand}_`)));
         for (const file of files) {
             const name = file.split(`${parentCommand}_`)[1].slice(0, -3);
