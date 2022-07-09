@@ -13,10 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -78,6 +80,28 @@ public class MovementServiceTest {
         log.info("Test passed: createRpCharMovement works with valid values!");
     }
 
+    @Test
+    void ensureMoveRpCharThrowsIAEWhenNoPlayerFound() {
+        log.debug("Testing if createRpCharMovement throws IllegalArgumentException when no player is found!");
+
+        // Assign
+        log.trace("Initializing player, rpchar and regions");
+        Region toRegion = Region.builder().id("92").build();
+
+        log.trace("Initializing Dto");
+        MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
+
+        log.trace("Mocking methods");
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.empty());
+
+        //Act
+        var exception = assertThrows(IllegalArgumentException.class, () -> movementService.createRpCharMovement(dto));
+
+        //Assert
+        assertThat(exception.getMessage()).contains("No player found");
+
+        log.info("Test passed: createRpCharMovement throws IllegalArgumentException when no player is found!");
+    }
     @Test
     void ensureMoveRpCharThrowsSEWhenNoRpChar() {
         log.debug("Testing if createRpCharMovement throws IllegalArgumentException when player has no Rp Char!");
@@ -160,4 +184,64 @@ public class MovementServiceTest {
 
         log.info("Test passed: createRpCharMovement throws ServiceException when Char is bound to Army!");
     }
+
+    @Test
+    void ensureMoveRpCharThrowsSEWhenAlreadyInRegion() {
+        log.debug("Testing if createRpCharMovement throws ServiceException when Char is already in destination region!");
+
+        // Assign
+        log.trace("Initializing player, rpchar and regions");
+        Region fromRegion = Region.builder().id("90").build();
+        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
+        Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
+
+        log.trace("Initializing Dto");
+        MoveRpCharDto dto = new MoveRpCharDto("1234", fromRegion.getId());
+
+        log.trace("Mocking methods");
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
+        when(mockRegionRepository.findById(fromRegion.getId())).thenReturn(Optional.of(fromRegion));
+
+        //Act
+        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
+
+        //Assert
+        log.debug("Asserting that createRpCharMovement throws ServiceException");
+        assertThat(exception.getMessage()).isEqualTo(ServiceException.cannotMoveRpCharAlreadyInRegion(rpChar, fromRegion).getMessage());
+
+        log.info("Test passed: createRpCharMovement throws ServiceException when Char is already in destination region!");
+    }
+
+    @Test
+    void ensureMoveRpCharThrowsSEWhenCharAlreadyMoving() {
+        log.debug("Testing if createRpCharMovement throws ServiceException when Char is already in a movement!");
+
+        // Assign
+        log.trace("Initializing player, rpchar and regions");
+        Region fromRegion = Region.builder().id("90").build();
+        Region toRegion = Region.builder().id("92").build();
+        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
+        Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
+        Movement movement = Movement.builder().isCharMovement(true).isAccepted(false)
+                .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).player(player).build();
+
+        log.trace("Initializing Dto");
+        MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
+
+        log.trace("Mocking methods");
+        when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
+        when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.of(toRegion));
+        when(mockMovementRepository.findMovementsByPlayer(player)).thenReturn(List.of(movement));
+
+        //Act
+        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
+
+        //Assert
+        log.debug("Asserting that createRpCharMovement throws ServiceException");
+        assertThat(exception.getMessage()).isEqualTo(ServiceException.cannotMoveRpCharAlreadyMoving(rpChar).getMessage());
+
+        log.info("Test passed: createRpCharMovement throws ServiceException when Char is already in a movement!");
+    }
+
+
 }

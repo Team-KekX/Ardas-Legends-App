@@ -57,7 +57,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw ServiceException.noRpChar();
         }
 
-        //TODO test this
         log.debug("Checking if destination is the current region");
         if(dto.toRegion().equals(rpChar.getCurrentRegion().getId())) {
             log.warn("Character is already in region {}!", dto.toRegion());
@@ -70,7 +69,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw ServiceException.cannotMoveRpCharBoundToArmy(rpChar, rpChar.getBoundTo());
         }
 
-        //TODO Test this block
         log.debug("Checking if rpChar is already in a movement");
         List<Movement> playerMovements = secureFindList(player, movementRepository::findMovementsByPlayer);
         if(playerMovements.stream().anyMatch(Movement::getIsCurrentlyActive)) { //Checking if there are any active movements
