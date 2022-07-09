@@ -35,7 +35,7 @@ public class MojangApiService {
             result = restTemplate.getForObject(url, UUIDConverterDto.class);
         } catch (RestClientException restClientException){
             log.warn("Error fetching UUID [{}]", restClientException.getMessage());
-            throw ServiceException.cannotReadEntityDueToExternalMojangError(restClientException);
+            throw ServiceException.cannotReadEntityDueToExternalMojangError("Could not find a Player with ign [%s] in Mojang Database!".formatted(ign), restClientException);
         }
         log.debug("Fetched UUID: result [{}]", result);
 

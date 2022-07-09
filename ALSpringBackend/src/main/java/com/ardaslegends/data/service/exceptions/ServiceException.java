@@ -54,8 +54,8 @@ public class ServiceException extends RuntimeException {
 
     private static final String NO_RP_CHAR = "You have no Roleplay Character!";
     private static final String CREATE_RP_CHAR_NO_FACTION = "Player %s is in no faction - cannot create Roleplay Character!";
-    public static ServiceException cannotReadEntityDueToExternalMojangError(RestClientException ex) {
-        String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(ex.getMessage());
+    public static ServiceException cannotReadEntityDueToExternalMojangError(String message, RestClientException ex) {
+        String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(message);
         return new ServiceException(msg, ex);
     }
 
