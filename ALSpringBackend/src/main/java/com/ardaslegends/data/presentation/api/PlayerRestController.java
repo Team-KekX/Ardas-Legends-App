@@ -55,19 +55,8 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Player> getByIgn(@PathVariable String ign) {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
 
-        Player playerFound = null;
-        try {
-            log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
-            playerFound = playerService.getPlayerByIgn(ign);
-        } catch (NullPointerException e) {
-            log.warn("Exception, {}, thrown because of bad arguments", e.getClass().getSimpleName());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Exception, {}, thrown while fetching player by ign. Ign {}", e.getClass().getSimpleName(), ign);
-            if (e.getMessage().contains("No record of type"))
-                throw new BadArgumentException(e.getMessage(), e);
-            throw new InternalServerException(e.getMessage(), e);
-        }
+        log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
+        Player playerFound = wrappedServiceExecution(ign, playerService::getPlayerByIgn);
 
         log.info("Successfully fetched player ({}) by ign ({})", playerFound, playerFound.getIgn());
         return ResponseEntity.ok(playerFound);
@@ -77,19 +66,8 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Player> getByDiscordId(@PathVariable String discId) {
         log.debug("Incoming getByDiscordId Request. DiscordId: {}", discId);
 
-        Player playerFound = null;
-        try {
-            log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
-            playerFound = playerService.getPlayerByDiscordId(discId);
-        } catch (NullPointerException e) {
-            log.warn("Exception, {}, thrown because of bad arguments", e.getClass().getSimpleName());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Exception, {}, thrown while fetching player by DiscordId. DiscordId {}", e.getClass().getSimpleName(), discId);
-            if (e.getMessage().contains("No record of type"))
-                throw new BadArgumentException(e.getMessage(), e);
-            throw new InternalServerException(e.getMessage(), e);
-        }
+        log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
+        Player playerFound = wrappedServiceExecution(discId, playerService::getPlayerByDiscordId);
 
         log.info("Successfully fetched player ({}) by DiscordId ({})", playerFound, playerFound.getDiscordID());
         return ResponseEntity.ok(playerFound);
@@ -99,18 +77,8 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Player> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
         log.debug("Incoming createPlayer Request. Data [{}]", createPlayerDto);
 
-        Player createdPlayer = null;
-        try {
-            log.debug("Calling PlayerService.createPlayer. Data {}" ,createPlayerDto);
-            createdPlayer = playerService.createPlayer(createPlayerDto);
-        } catch (NullPointerException | IllegalArgumentException ex) {
-            log.warn("Exception, {}, thrown while creating Player because of Bad Arguments. Data {}", ex.getClass().getSimpleName(), createPlayerDto);
-            throw new BadArgumentException(ex.getMessage(), ex);
-        } catch (ServiceException se) {
-            log.warn("Exception, {}, thrown while creating Player because of Database Problems. Data {}", se.getClass().getSimpleName(), createPlayerDto);
-            throw new InternalServerException(se.getMessage(), se);
-        }
-
+        log.debug("Calling PlayerService.createPlayer. Data {}" ,createPlayerDto);
+        Player createdPlayer = wrappedServiceExecution(createPlayerDto, playerService::createPlayer);
 
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
                 .uriVariables(Map.of("ign", createdPlayer.getIgn()))
@@ -125,17 +93,8 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<RPChar> createRpChar(@RequestBody CreateRPCharDto createRPCharDto) {
         log.debug("Incoming createRpChar Request. Data [{}]", createRPCharDto);
 
-        RPChar createdRpChar = null;
-        try {
-            log.debug("Calling PlayerService.createRoleplayCharacter. Data [{}]", createRPCharDto);
-            createdRpChar = playerService.createRoleplayCharacter(createRPCharDto);
-        } catch (NullPointerException | IllegalArgumentException ex) {
-            log.warn("Exception, {}, thrown while creating Player because of Bad Arguments. Data {}", ex.getClass().getSimpleName(), createRPCharDto);
-            throw new BadArgumentException(ex.getMessage(), ex);
-        } catch (ServiceException se) {
-            log.warn("Exception, {}, thrown while creating Player because of Database Problems. Data {}", se.getClass().getSimpleName(), createRPCharDto);
-            throw new InternalServerException(se.getMessage(), se);
-        }
+        log.debug("Calling PlayerService.createRoleplayCharacter. Data [{}]", createRPCharDto);
+        RPChar createdRpChar = wrappedServiceExecution(createRPCharDto, playerService::createRoleplayCharacter);
 
         log.info("Sending HttpResponse with successfully created Player {}", createdRpChar);
         return ResponseEntity.ok(createdRpChar);
@@ -146,26 +105,10 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Player> updatePlayerFaction(@RequestBody UpdatePlayerFactionDto updatePlayerFactionDto) {
         log.debug("Incoming updatePlayerFaction Request. Data {}", updatePlayerFactionDto);
 
-        Player player = null;
+        log.trace("Trying to update the player's faction");
+        Player player = wrappedServiceExecution(updatePlayerFactionDto, playerService::updatePlayerFaction);
+        log.debug("Successfully updated faction without encountering any errors");
 
-        /*
-        Updating the player's faction
-         */
-        
-        try {
-            log.trace("Trying to update the player's faction");
-            player = playerService.updatePlayerFaction(updatePlayerFactionDto);
-            log.debug("Successfully updated faction without encountering any errors");
-        }
-        catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new BadArgumentException(e.getMessage(), e);
-        }
-        catch (ServiceException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new InternalServerException(e.getMessage(), e);
-        }
-        
         log.trace("Building URI for player...");
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
                 .uriVariables(Map.of("ign", player.getIgn()))
@@ -182,23 +125,10 @@ public class PlayerRestController extends AbstractRestController {
 
         log.debug("Incoming updatePlayerIgn Request: Data [{}]", dto);
 
-        Player player = null;
+        log.trace("Trying to update the player's ingame name");
+        Player player = wrappedServiceExecution(dto, playerService::updateIgn);
+        log.debug("Successfully updated faction without encountering any errors");
 
-        try {
-
-            log.trace("Trying to update the player's ingame name");
-            player = playerService.updateIgn(dto);
-            log.debug("Successfully updated faction without encountering any errors");
-
-        } catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new InternalServerException(e.getMessage(), e);
-        }
-
-        log.debug("Updating players ign done!");
         log.info("Sending HttpResponse with successfully updated Player {}", player);
         return ResponseEntity.ok(player);
     }
@@ -207,21 +137,10 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Player> updatePlayerDiscordId(@RequestBody UpdateDiscordIdDto dto) {
         log.debug("Incoming updateDiscordId Request: Data [{}]", dto);
 
-        Player player = null;
+        log.trace("Trying to update the player's discordId");
+        Player player = wrappedServiceExecution(dto, playerService::updateDiscordId);
+        log.debug("Successfully updated discordId without encountering any errors");
 
-        try {
-            log.trace("Trying to update the player's discordId");
-            player = playerService.updateDiscordId(dto);
-            log.debug("Successfully updated discordId without encountering any errors");
-        } catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new InternalServerException(e.getMessage(), e);
-        }
-
-        log.debug("Updating players discordId done!");
         log.info("Sending HttpResponse with successfully updated Player {}", player);
         return ResponseEntity.ok(player);
     }
@@ -282,19 +201,9 @@ public class PlayerRestController extends AbstractRestController {
 
         log.debug("Incoming deletePlayer Request: Data [{}]", dto);
 
-        Player player = null;
-
-        try {
-            log.trace("Executing playerService.deletePlayer");
-            player = playerService.deletePlayer(dto);
-            log.debug("Successfully deleted player, [{}]", player);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Encountered exception while deleting player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Encountered exception while deleting player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new InternalServerException(e.getMessage(), e);
-        }
+        log.trace("Executing playerService.deletePlayer");
+        Player player = wrappedServiceExecution(dto, playerService::deletePlayer);
+        log.debug("Successfully deleted player, [{}]", player);
 
         log.info("Sending HttpResponse with successfully deleted Player [{}]", player);
         return ResponseEntity.ok(player);
@@ -305,19 +214,9 @@ public class PlayerRestController extends AbstractRestController {
 
         log.debug("Incoming deleteRpChar Request: Data [{}]", dto);
 
-        RPChar rpChar= null;
-
-        try {
-            log.trace("Executing playerService.deleteRpChar");
-            rpChar = playerService.deleteRpChar(dto);
-            log.debug("Successfully deleted rpchar, [{}]", rpChar);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Encountered exception while deleting RpChar: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new BadArgumentException(e.getMessage(), e);
-        } catch (ServiceException e) {
-            log.warn("Encountered exception while deleting RpChar: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new InternalServerException(e.getMessage(), e);
-        }
+        log.trace("Executing playerService.deleteRpChar");
+        RPChar rpChar = wrappedServiceExecution(dto,playerService::deleteRpChar);
+        log.debug("Successfully deleted rpchar, [{}]", rpChar);
 
         log.info("Sending HttpResponse with successfully deleted RpChar [{}]", rpChar);
         return ResponseEntity.ok(rpChar);
