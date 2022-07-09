@@ -35,8 +35,14 @@ public class MojangApiService {
             result = restTemplate.getForObject(url, UUIDConverterDto.class);
         } catch (RestClientException restClientException){
             log.warn("Error fetching UUID [{}]", restClientException.getMessage());
-            throw ServiceException.cannotReadEntityDueToExternalMojangError("Could not find a Player with ign [%s] in Mojang Database!".formatted(ign), restClientException);
+            throw ServiceException.cannotReadEntityDueToExternalMojangError(restClientException);
         }
+
+        if(result == null) {
+            log.warn("No User found with IGN [{}] in Mojang Database!", ign);
+            throw new IllegalArgumentException("No user with ign [%s] was found in Mojang's Database!".formatted(ign));
+        }
+
         log.debug("Fetched UUID: result [{}]", result);
 
         return result;
