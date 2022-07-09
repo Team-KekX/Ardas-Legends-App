@@ -1,6 +1,7 @@
 const {MessageEmbed} = require("discord.js");
 const {UPDATE_IGN} = require("../../../configs/embed_thumbnails.json");
 const {serverIP, serverPort} = require("../../../configs/config.json");
+const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
@@ -11,7 +12,7 @@ module.exports = {
             ign: ign
         }
 
-        axios.post('http://'+serverIP+':'+serverPort+'/api/player/update/ign', data)
+        axios.patch('http://'+serverIP+':'+serverPort+'/api/player/update/ign', data)
             .then(async function (response) {
                 // The request and data is successful.
                 const replyEmbed = new MessageEmbed()

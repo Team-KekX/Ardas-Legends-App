@@ -3,6 +3,7 @@ const {availableFactions} = require("../../../configs/config.json");
 const {MessageEmbed} = require("discord.js");
 const {UPDATE_FACTION} = require("../../../configs/embed_thumbnails.json");
 const {serverIP, serverPort} = require("../../../configs/config.json");
+const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
@@ -21,7 +22,7 @@ module.exports = {
                 factionName: faction
             }
     
-            axios.post('http://'+serverIP+':'+serverPort+'/api/player/update/faction', data)
+            axios.patch('http://'+serverIP+':'+serverPort+'/api/player/update/faction', data)
                 .then(async function (response) {
                     // The request and data is successful.
                     const replyEmbed = new MessageEmbed()

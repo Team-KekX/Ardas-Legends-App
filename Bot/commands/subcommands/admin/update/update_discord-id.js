@@ -2,6 +2,7 @@ const {isMemberStaff} = require("../../../../utils/utilities");
 const {MessageEmbed} = require("discord.js");
 const {ADMIN} = require("../../../../configs/embed_thumbnails.json");
 const {serverIP, serverPort} = require("../../../../configs/config.json");
+const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
@@ -17,7 +18,7 @@ module.exports = {
             newDiscordId: newId
         }
 
-        axios.post('http://'+serverIP+':'+serverPort+'/api/player/update/discordid', data)
+        axios.patch('http://'+serverIP+':'+serverPort+'/api/player/update/discordid', data)
             .then(async function (response) {
                 // The request and data is successful.
                 const replyEmbed = new MessageEmbed()
