@@ -4,6 +4,7 @@ import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class FactionServiceTest {
 
     private FactionRepository mockFactionRepository;
@@ -67,6 +69,18 @@ public class FactionServiceTest {
         var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
 
         assertThat(result.getCause()).isEqualTo(pEx);
+    }
+
+    @Test
+    void ensureGetByFactionNameThrowsIAEWhenFetchedFactionIsEmpty() {
+        log.debug("Testing if getByFaction in FactionService throws IAE when Fetched Faction is Empty");
+
+        String name = "Mordor";
+
+        when(mockFactionRepository.findById(name)).thenReturn(Optional.empty());
+
+        // Assert
+        var result = assertThrows(IllegalArgumentException.class, () -> factionService.getFactionByName(name));
     }
 
 }
