@@ -36,7 +36,6 @@ public class MovementRestController extends AbstractRestController {
         return ResponseEntity.ok(movement);
     }
 
-    //TODO TEEEST THIIIS
     @PatchMapping(PATH_CANCEL_CHAR_MOVEMENT)
     public HttpEntity<Movement> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
 

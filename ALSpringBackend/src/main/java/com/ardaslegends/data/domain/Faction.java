@@ -63,8 +63,6 @@ public final class Faction extends AbstractDomainEntity {
 
     @Override
     public String toString() {
-        return "Faction{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 }
