@@ -19,7 +19,7 @@ public final class Movement extends AbstractDomainEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "player_id")
     private Player player;
 
