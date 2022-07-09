@@ -517,6 +517,22 @@ public class PlayerServiceTest {
     }
 
     @Test
+    void ensureUpdateRpCharTitleThrowsIAEWhenTitleIsTooLong() {
+        log.debug("Testing if update character ttile throws IllegalArgumentException when title is longer than 25 characters");
+
+        // Assign
+        log.trace("Initializing Dto");
+        UpdateRpCharDto dto = new UpdateRpCharDto("okeoke",null,"Toomanycharactersssssssssssssss",null,null,null,null);
+
+        // Act
+        log.trace("Executing updateCharacterTitle");
+        log.debug("Asserting that updateCharacterTitle throws IllegalArgumentException");
+        var result = assertThrows(IllegalArgumentException.class, () -> playerService.updateCharacterTitle(dto));
+
+        assertThat(result.getMessage()).contains("Title exceeds maximum length of 25");
+    }
+
+    @Test
     void ensureUpdateRpCharTitleThrowsIAEWhenNoRpChar() {
         log.debug("Testing if update character title throws IllegalArgumentException when player has no RpChar!");
 
