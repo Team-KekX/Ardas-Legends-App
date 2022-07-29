@@ -38,4 +38,7 @@ public final class Movement extends AbstractDomainEntity{
     private Boolean isAccepted;
     private Boolean isCurrentlyActive;
 
+    public String getStartRegionId() { return path.getStart(); }
+    public String getDestinationRegionId() { return path.getDestination(); }
+
 }

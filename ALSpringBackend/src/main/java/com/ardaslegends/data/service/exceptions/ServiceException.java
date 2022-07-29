@@ -48,7 +48,6 @@ public class ServiceException extends RuntimeException {
 
     private static final String CANNOT_MOVE_RPCHAR_DUE_BOUND_TO_ARMY = "Cannot move the Rp Char '%s' because it is bound to the army '%s'!";
     private static final String CANNOT_MOVE_RPCHAR_DUE_TO_ALREADY_MOVING = "Cannot move the Rp Char '%s' because it is already in another movement! Cancel the other movement first if you want to move this character.";
-    private static final String NO_ACTIVE_MOVEMENT = "There are no active movements for the character '%s'!";
     private static final String MORE_THAN_ONE_ACTIVE_MOVEMENT = "Found more than one active movement for character '%s' - please contact the devs!";
 
     //Player
@@ -149,8 +148,6 @@ public class ServiceException extends RuntimeException {
     }
 
     public static ServiceException regionDoesNotExist(@NotNull String toRegion) {return new ServiceException(DESIRED_REGION_DOES_NOT_EXIST.formatted(toRegion)); }
-
-    public static ServiceException noActiveMovement(@NotNull RPChar rpchar) { return new ServiceException(NO_ACTIVE_MOVEMENT.formatted(rpchar.getName())); }
 
     public static ServiceException moreThanOneActiveMovement(@NotNull RPChar rpchar) { return new ServiceException(MORE_THAN_ONE_ACTIVE_MOVEMENT.formatted(rpchar.getName())); }
     protected ServiceException(String message, Throwable rootCause) { super(message, rootCause);}

@@ -127,7 +127,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army bind(BindArmyDto dto) {
+    public Army bind(BindArmyDto dto) { //TODO Change to Army.bind()
         log.debug("Binding army [{}] to player with discord id [{}]", dto.armyName(), dto.targetDiscordId());
 
         log.trace("Validating data");
@@ -225,7 +225,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army unbind(BindArmyDto dto) {
+    public Army unbind(BindArmyDto dto) { //TODO Change to Army.unbind()
         log.debug("Unbinding army [{}] from player [{}] - executed by player [{}]", dto.armyName(), dto.targetDiscordId(), dto.executorDiscordId());
 
         log.trace("Validating data...");

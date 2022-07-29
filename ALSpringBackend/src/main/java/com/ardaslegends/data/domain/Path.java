@@ -29,4 +29,5 @@ public class Path {
     public String getDestination() {
         return path.get(path.size()-1);
     }
+    public String getStart() {return path.get(0);}
 }

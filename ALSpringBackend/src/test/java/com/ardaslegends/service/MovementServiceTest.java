@@ -5,11 +5,15 @@ import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.MovementService;
 import com.ardaslegends.data.service.Pathfinder;
+import com.ardaslegends.data.service.dto.army.MoveArmyDto;
 import com.ardaslegends.data.service.dto.player.DiscordIdDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
+import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,7 @@ public class MovementServiceTest {
     private MovementRepository mockMovementRepository;
     private RegionRepository mockRegionRepository;
     private ArmyRepository mockArmyRepository;
+    private ArmyService mockArmyService;
     private PlayerRepository mockPlayerRepository;
     private Pathfinder mockPathfinder;
 
@@ -43,8 +48,9 @@ public class MovementServiceTest {
         mockRegionRepository = mock(RegionRepository.class);
         mockPlayerRepository = mock(PlayerRepository.class);
         mockArmyRepository = mock(ArmyRepository.class);
+        mockArmyService = mock(ArmyService.class);
         mockPathfinder = mock(Pathfinder.class);
-        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockPlayerRepository, mockPathfinder);
+        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPathfinder);
     }
 
     @Test
@@ -342,8 +348,81 @@ public class MovementServiceTest {
 
         //Assert
         log.debug("Starting asserts");
-        assertThat(exception.getMessage()).isEqualTo(ServiceException.noActiveMovement(rpChar).getMessage());
+        assertThat(exception.getMessage()).isEqualTo(MovementServiceException.noActiveMovementChar(rpChar.getName()).getMessage());
 
         log.info("Test passed: cancelRpCharMovement throws ServiceException when no active movement is found!");
+    }
+
+    @Test
+    void ensureCancelArmyMovementWorks() {
+        log.debug("Testing if cancelArmyMovement works with proper data!");
+
+        //Assign
+        log.trace("Initializing data");
+        String armyName = "Knights of Gondor";
+        Army army = Army.builder().name(armyName).build();
+        Path path = Path.builder().path(List.of("90", "92")).build();
+        Movement movement = Movement.builder().isCharMovement(false).army(army).path(path).isCurrentlyActive(true).build();
+        MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
+
+        when(mockArmyService.getArmyByName(armyName)).thenReturn(army);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
+
+        //Act
+        log.trace("Calling cancelArmyMovement");
+        movementService.cancelArmyMovement(dto);
+
+        //Assert
+        log.trace("Asserting");
+        assertThat(movement.getIsCurrentlyActive()).isFalse();
+
+        log.info("Test passed: cancelArmyMovement works with proper data!");
+    }
+
+    @Test
+    void ensureCancelArmyMovementThrowsSEWhenArmyNotFound() {
+        log.debug("Testing if cancelArmyMovement throws Service Exception when Army not found!");
+
+        //Assign
+        log.trace("Initializing data");
+        String armyName = "Knights of Gondor";
+        Army army = Army.builder().name(armyName).build();
+        MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
+
+        when(mockArmyService.getArmyByName(armyName)).thenThrow(ArmyServiceException.noArmyWithName(armyName));
+
+        //Act / Assert
+        log.trace("Calling cancelArmyMovement and asserting it throws ArmyServiceException");
+        var exception = assertThrows(ArmyServiceException.class, () -> movementService.cancelArmyMovement(dto));
+
+        //Assert
+        log.trace("Asserting");
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName(armyName).getMessage());
+
+        log.info("Test passed: cancelArmyMovement throws Service Exception when Army not found!");
+    }
+
+    @Test
+    void ensureCancelArmyMovementThrowsSEWhenNoMovement() {
+        log.debug("Testing if cancelArmyMovement throws Service Exception when no Movement is found!");
+
+        //Assign
+        log.trace("Initializing data");
+        String armyName = "Knights of Gondor";
+        Army army = Army.builder().name(armyName).build();
+        MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
+
+        when(mockArmyService.getArmyByName(armyName)).thenReturn(army);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.empty());
+
+        //Act / Assert
+        log.trace("Calling cancelArmyMovement and asserting it throws ArmyServiceException");
+        var exception = assertThrows(MovementServiceException.class, () -> movementService.cancelArmyMovement(dto));
+
+        //Assert
+        log.trace("Asserting");
+        assertThat(exception.getMessage()).isEqualTo(MovementServiceException.noActiveMovementArmy(armyName).getMessage());
+
+        log.info("Test passed: cancelArmyMovement throws Service Exception when no Movement is found!");
     }
 }
