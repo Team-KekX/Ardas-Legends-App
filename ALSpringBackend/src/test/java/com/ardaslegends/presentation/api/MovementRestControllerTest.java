@@ -118,4 +118,30 @@ public class MovementRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void ensureCancelArmyMovementWorksCorrectly() throws Exception {
+        log.debug("Testing if cancelArmyMovement works");
+
+        log.trace("Initializing Dto");
+        MoveArmyDto dto = new MoveArmyDto("1234","Knights of Gondor", null);
+
+        log.trace("Initialize return movement");
+        Movement movement = Movement.builder().path(Path.builder().path(List.of("91", "92")).build()).build();
+
+        log.trace("Initializing mock methods");
+        when(mockMovementService.cancelArmyMovement(dto)).thenReturn(movement);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/movement/cancel-army-move")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+    }
 }

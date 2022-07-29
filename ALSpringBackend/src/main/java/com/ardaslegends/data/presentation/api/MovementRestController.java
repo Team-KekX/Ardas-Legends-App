@@ -26,6 +26,8 @@ public class MovementRestController extends AbstractRestController {
     public static final String PATH_MOVE_CHAR = "/move-char";
     public static final String PATH_MOVE_ARMY = "/move-army";
     public static final String PATH_CANCEL_CHAR_MOVEMENT = "/cancel-char-move";
+    public static final String PATH_CANCEL_ARMY_MOVEMENT = "/cancel-army-move";
+
 
     @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<Movement> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
@@ -41,11 +43,11 @@ public class MovementRestController extends AbstractRestController {
     @PatchMapping(PATH_CANCEL_CHAR_MOVEMENT)
     public HttpEntity<Movement> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
 
-        log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
+        log.debug("Incoming Post Request to cancel rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of cancelRpCharMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::cancelRpCharMovement);
 
-        log.info("Successfully handled request for creating rpchar movement!");
+        log.info("Successfully handled request for cancelling rpchar movement!");
         return ResponseEntity.ok(movement);
     }
 
@@ -57,6 +59,17 @@ public class MovementRestController extends AbstractRestController {
         Movement movement = wrappedServiceExecution(dto, movementService::createArmyMovement);
 
         log.info("Successfully handled request for creating army movement!");
+        return ResponseEntity.ok(movement);
+    }
+
+    @PatchMapping(PATH_CANCEL_ARMY_MOVEMENT)
+    public HttpEntity<Movement> cancelArmyMove(@RequestBody MoveArmyDto dto) {
+
+        log.debug("Incoming Post Request to cancel army movement, data [{}]", dto);
+        log.trace("WrappedServiceExecution of cancelArmyMovement function");
+        Movement movement = wrappedServiceExecution(dto, movementService::cancelArmyMovement);
+
+        log.info("Successfully handled request for cancelling army movement!");
         return ResponseEntity.ok(movement);
     }
 }
