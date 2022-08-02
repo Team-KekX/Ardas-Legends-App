@@ -17,6 +17,7 @@ public class MovementServiceException extends ServiceException {
     public static MovementServiceException noActiveMovementArmy(String armyName) { return new MovementServiceException(NO_ACTIVE_MOVEMENT_FOUND_ARMY.formatted(armyName)); }
     public static MovementServiceException noActiveMovementChar(String charName) { return new MovementServiceException(NO_ACTIVE_MOVEMENT_CHAR.formatted(charName)); }
 
+    //Cancel army move
     public static MovementServiceException notAllowedToCancelMove() { return new MovementServiceException(NOT_ALLOWED_TO_CANCEL_MOVE); }
     public static MovementServiceException notAllowedToCancelMoveNotSameFaction(String armyName, String factionName) { return new MovementServiceException(NOT_ALLOWED_TO_CANCEL_MOVE_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
 

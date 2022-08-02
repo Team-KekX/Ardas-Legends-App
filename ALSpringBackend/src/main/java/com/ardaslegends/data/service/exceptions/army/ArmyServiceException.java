@@ -2,6 +2,7 @@ package com.ardaslegends.data.service.exceptions.army;
 
 import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 
 public class ArmyServiceException extends ServiceException{
 
@@ -20,6 +21,10 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_MOVE_ARMY_ALREADY_IN_REGION = "Army '%s' is already in the desired region of '%s'";
     private static final String CANNOT_BIND_ARMY_IS_MOVING = "The army '%s' is currently moving to '%s' - cancel the movement before binding to it!";
     private static final String CANNOT_BIND_CHAR_IS_MOVING = "The character '%s' is currently moving to '%s' - cancel the movement before binding to an army!";
+
+    //Disband army
+    private static final String NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION = "The army '%s' is part of the faction '%s' - only the faction leader can disband it!";
+    private static final String NOT_ALLOWED_TO_DISBAND = "Only faction leaders and lords with permission are allowed to disband armies!";
     public static ArmyServiceException noArmyWithName(String armyName) { return new ArmyServiceException(NO_ARMY_WITH_NAME.formatted(armyName)); }
 
     public static ArmyServiceException notFactionLeader(String factionName) { return new ArmyServiceException(PLAYER_NOT_FACTION_LEADER.formatted(factionName)); }
@@ -37,6 +42,11 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException cannotMoveArmyAlreadyInRegion(String armyName, String region) {return new ArmyServiceException(CANNOT_MOVE_ARMY_ALREADY_IN_REGION.formatted(armyName,region));}
     public static ArmyServiceException cannotBindArmyIsMoving(String armyName, String region) {return new ArmyServiceException((CANNOT_BIND_ARMY_IS_MOVING).formatted(armyName, region));}
     public static ArmyServiceException cannotBindCharIsMoving(String charName, String region) {return new ArmyServiceException((CANNOT_BIND_CHAR_IS_MOVING).formatted(charName, region));}
+
+    //Disband army
+    public static ArmyServiceException notAllowedToDisbandNotSameFaction(String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
+    public static ArmyServiceException notAllowedToDisband() { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND); }
+
     protected ArmyServiceException(String message, Throwable rootCause) {
         super(message, rootCause);
     }

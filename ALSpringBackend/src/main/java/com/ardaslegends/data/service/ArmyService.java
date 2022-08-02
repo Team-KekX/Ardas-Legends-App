@@ -5,10 +5,12 @@ import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
+import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -287,6 +289,49 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         return army;
     }
 
+    @Transactional(readOnly = false)
+    public Army disbandArmy(DeleteArmyDto dto) {
+        log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
+
+        log.trace("Validating data");
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.trace("Getting the army instance");
+        Army army = getArmyByName(dto.armyName());
+
+        log.trace("Getting the player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        log.debug("Checking if the faction of player and army are same");
+        if(!player.getFaction().equals(army.getFaction())) {
+            log.warn("disbandArmy: Player [{}] and army [{}] do not share the same faction ([{}] and [{}])", player, army, player.getFaction(), army.getFaction());
+            throw ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName());
+        }
+
+        Faction faction = player.getFaction();
+
+        boolean isAllowed = false;
+
+        log.debug("Checking if executor is faction leader");
+        if(player.equals(faction.getLeader())) {
+            log.debug("Player is faction leader - allowed to disband army");
+            isAllowed = true;
+        }
+
+        //TODO: Check for lord as well
+
+        if(!isAllowed) {
+            log.warn("disbandArmy: Player [{}] is neither faction leader or lord of [{}] and therefore cannot disband army [{}]!", player, faction, army);
+            throw ArmyServiceException.notAllowedToDisband();
+        }
+
+        log.debug("Deleting army [{}]", army);
+        armyRepository.delete(army);
+
+        log.info("Disbanded army [{}] - executed by player [{}]", army, player);
+        return army;
+    }
     public Army getArmyByName(String armyName) {
         log.debug("Getting army by name [{}]", armyName);
         log.trace("Checking for null");
