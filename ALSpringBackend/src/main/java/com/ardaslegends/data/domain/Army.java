@@ -37,7 +37,7 @@ public final class Army extends AbstractDomainEntity {
     @NotNull(message = "Army: Region must not be null")
     private Region currentRegion; //region the army is currently in
 
-    @OneToOne(mappedBy = "rpChar.boundTo", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Player boundTo; //rp character the army is currently bound to
 
@@ -55,6 +55,7 @@ public final class Army extends AbstractDomainEntity {
     @NotNull(message = "Army: freeTokens must not be null")
     private Integer freeTokens; //how many free unit tokens this army has left
 
+    private boolean isHealing = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_origin_claimbuild"))
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
