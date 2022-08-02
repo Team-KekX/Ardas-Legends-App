@@ -111,6 +111,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 null,
                 inputClaimBuild,
                 30-tokenCount,
+                false,
                 inputClaimBuild);
 
         log.trace("Adding the army to each unit");
