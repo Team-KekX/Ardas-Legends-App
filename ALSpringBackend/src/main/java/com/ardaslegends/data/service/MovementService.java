@@ -36,6 +36,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final ArmyRepository armyRepository;
     private final ArmyService armyService;
     private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
     private final Pathfinder pathfinder;
 
     // TODO: Check if time is frozen -> if yes, cancel request
@@ -151,6 +152,36 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
         log.trace("Getting the army instance");
         Army army = armyService.getArmyByName(dto.armyName());
+
+        log.trace("Getting the player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        boolean isAllowed = false;
+
+        log.trace("Checking if the player is bound to the army");
+        if(army.getBoundTo() != null && army.getBoundTo().equals(player)) {
+            log.debug("Player is bound to the army - has permission to do everything");
+            isAllowed = true;
+        }
+
+        log.trace("Checking if the player is in the same faction as the army");
+        if(!player.getFaction().equals(army.getFaction()) && !isAllowed) {
+            log.warn("Player does not have permission to cancel army movement - must be in the same faction or bound to the army!");
+            throw MovementServiceException.notAllowedToCancelMoveNotSameFaction(army.getName(), army.getFaction().getName());
+        }
+
+        log.trace("Checking if the player is faction leader");
+        if(player.equals(army.getFaction().getLeader())) {
+            log.debug("Player [{}] is faction leader of [{}] and can therefore cancel the move", player.getIgn(), player.getFaction().getName());
+            isAllowed = true;
+        }
+
+        //TODO: Check lord as well
+
+        if(!isAllowed) {
+            log.warn("Player [{}] is not allowed to cancel movements of army [{}]", player, army);
+            throw MovementServiceException.notAllowedToCancelMove();
+        }
 
         log.trace("Getting active movement for army [{}]", army);
         Movement movement = getActiveMovementByArmy(army);
