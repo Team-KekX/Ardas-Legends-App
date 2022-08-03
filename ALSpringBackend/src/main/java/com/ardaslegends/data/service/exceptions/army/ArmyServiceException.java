@@ -26,6 +26,10 @@ public class ArmyServiceException extends ServiceException{
     //Disband army
     private static final String NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION = "The army '%s' is part of the faction '%s' - only the faction leader can disband it!";
     private static final String NOT_ALLOWED_TO_DISBAND = "Only faction leaders and lords with permission are allowed to disband armies!";
+
+    //Set Token
+    private static final String TOKEN_NEGATIVE = "Armies cannot have less than 0 free tokens (you inputted: %d)!";
+    private static final String TOKEN_ABOVE_30 = "Armies can only have a maximum of 30 free tokens (you inputted: %d)!";
     public static ArmyServiceException noArmyWithName(String armyName) { return new ArmyServiceException(NO_ARMY_WITH_NAME.formatted(armyName)); }
 
     public static ArmyServiceException notFactionLeader(String factionName) { return new ArmyServiceException(PLAYER_NOT_FACTION_LEADER.formatted(factionName)); }
@@ -49,6 +53,9 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException notAllowedToDisbandNotSameFaction(String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
     public static ArmyServiceException notAllowedToDisband() { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND); }
 
+    //Set free tokens
+    public static ArmyServiceException tokenNegative(int tokenAmount) { return new ArmyServiceException(TOKEN_NEGATIVE.formatted(tokenAmount)); }
+    public static ArmyServiceException tokenAbove30(int tokenAmount) { return new ArmyServiceException(TOKEN_ABOVE_30.formatted(tokenAmount)); }
     protected ArmyServiceException(String message, Throwable rootCause) {
         super(message, rootCause);
     }

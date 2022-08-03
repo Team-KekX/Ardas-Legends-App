@@ -6,6 +6,7 @@ import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
+import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
@@ -333,6 +334,38 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         armyRepository.delete(army);
 
         log.info("Disbanded army [{}] - executed by player [{}]", army, player);
+        return army;
+    }
+
+    @Transactional(readOnly = false)
+    public Army setArmyTokens(UpdateArmyDto dto) {
+        log.debug("Trying to update the free tokens of army [{}] to value [{}]", dto.armyName(), dto.freeTokens());
+
+        log.trace("Validating data");
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.trace("Getting the army by name [{}]", dto.armyName());
+        Army army = getArmyByName(dto.armyName());
+        int oldTokens = army.getFreeTokens();
+
+        if(dto.freeTokens() < 0) {
+            log.warn("Tried to set tokens of army [{}] to [{}] - value has to be positive", army, dto.freeTokens());
+            throw ArmyServiceException.tokenNegative(dto.freeTokens());
+        }
+
+        if(dto.freeTokens() > 30) {
+            log.warn("Tried to set tokens of army [{}] to [{}] - value has to be max. 30", army, dto.freeTokens());
+            throw ArmyServiceException.tokenAbove30(dto.freeTokens());
+        }
+
+        log.debug("Setting the tokens of the army to [{}]", dto.freeTokens());
+        army.setFreeTokens(dto.freeTokens());
+
+        log.debug("Persisting army");
+        army = armyRepository.save(army);
+
+        log.info("Set tokens of army [{}] from [{}] to [{}]", army, oldTokens, army.getFreeTokens());
         return army;
     }
     public Army getArmyByName(String armyName) {

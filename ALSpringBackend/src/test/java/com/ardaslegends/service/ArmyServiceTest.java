@@ -11,6 +11,7 @@ import com.ardaslegends.data.service.UnitTypeService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
 import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
+import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -62,11 +63,12 @@ public class ArmyServiceTest {
         faction = Faction.builder().name("Gondor").build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).currentRegion(region2).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockArmyRepository.save(army)).thenReturn(army);
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
     }
 
@@ -569,6 +571,48 @@ public class ArmyServiceTest {
         log.debug("Asserting that returned/deleted army is same as inputted army");
         assertThat(returnedArmy).isEqualTo(army);
         log.info("Test passed: disbandArmy works when forced!");
+    }
 
+    @Test
+    void ensureSetArmyTokensWorks() {
+        log.debug("Testing if setArmyTokens works with proper data!");
+
+        log.trace("Initializing data");
+        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), 10);
+
+        log.debug("Calling setArmyTokens");
+        Army returnedArmy = armyService.setArmyTokens(dto);
+
+        assertThat(army.getFreeTokens()).isEqualTo(dto.freeTokens());
+        assertThat(returnedArmy).isEqualTo(army);
+        log.info("Test passed: setArmyTokens works with proper data!");
+    }
+
+    @Test
+    void ensureSetArmyTokensThrowsSEWhenTokenAbove30() {
+        log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
+
+        log.trace("Initializing data");
+        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), 40);
+
+        log.debug("Calling setArmyTokens");
+        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.tokenAbove30(dto.freeTokens()).getMessage());
+        log.info("Test passed: setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
+    }
+
+    @Test
+    void ensureSetArmyTokensThrowsSEWhenTokenNegative() {
+        log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
+
+        log.trace("Initializing data");
+        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), -1);
+
+        log.debug("Calling setArmyTokens");
+        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.tokenNegative(dto.freeTokens()).getMessage());
+        log.info("Test passed: setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
     }
 }
