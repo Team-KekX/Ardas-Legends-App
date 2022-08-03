@@ -6,6 +6,7 @@ import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
 import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
+import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -24,6 +25,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_UNBIND_ARMY = "/unbind-army";
     private static final String PATH_DISBAND_ARMY = "/disband-army";
     private static final String PATH_DELETE_ARMY = "/delete-army";
+    private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
 
     private final ArmyService armyService;
 
@@ -75,10 +77,21 @@ public class ArmyRestController extends AbstractRestController {
     public HttpEntity<Army> deleteArmy(@RequestBody DeleteArmyDto dto) {
         log.debug("Incoming deleteArmy Request: Data [{}]", dto);
 
-        log.debug("Calling ArmyService.unbind()");
+        log.debug("Calling ArmyService.disband()");
         Army deletedArmy = wrappedServiceExecution(dto, true, armyService::disband);
 
         log.info("Sending successful deleteArmy request for [{}]", deletedArmy.getName());
+        return ResponseEntity.ok(deletedArmy);
+    }
+
+    @PatchMapping(PATH_SET_FREE_TOKENS)
+    public HttpEntity<Army> setFreeArmyTokens(@RequestBody UpdateArmyDto dto) {
+        log.debug("Incoming setFreeArmyTokens Request: Data [{}]", dto);
+
+        log.debug("Calling ArmyService.setFreeArmyTokens()");
+        Army deletedArmy = wrappedServiceExecution(dto, armyService::setFreeArmyTokens);
+
+        log.info("Sending successful setFreeArmyTokens request for [{}]", deletedArmy.getName());
         return ResponseEntity.ok(deletedArmy);
     }
 }

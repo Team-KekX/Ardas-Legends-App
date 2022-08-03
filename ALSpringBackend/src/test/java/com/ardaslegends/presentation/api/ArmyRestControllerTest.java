@@ -6,6 +6,7 @@ import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
 import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
+import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -149,5 +150,28 @@ public class ArmyRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk());
         log.info("Test passed: deleteArmy requests get handled properly");
+    }
+
+    @Test
+    void ensureSetFreeArmyTokensRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController setFreeArmyTokens works properly with correct values");
+
+        // Assign
+        UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20);
+
+        when(mockArmyService.setFreeArmyTokens(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/set-free-tokens")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: setFreeArmyTokens requests get handled properly");
     }
 }

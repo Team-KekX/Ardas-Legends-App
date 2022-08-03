@@ -581,7 +581,7 @@ public class ArmyServiceTest {
         UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10);
 
         log.debug("Calling setArmyTokens");
-        Army returnedArmy = armyService.setArmyTokens(dto);
+        Army returnedArmy = armyService.setFreeArmyTokens(dto);
 
         assertThat(army.getFreeTokens()).isEqualTo(dto.freeTokens());
         assertThat(returnedArmy).isEqualTo(army);
@@ -596,7 +596,7 @@ public class ArmyServiceTest {
         UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40);
 
         log.debug("Calling setArmyTokens");
-        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
+        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));
 
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.tokenAbove30(dto.freeTokens()).getMessage());
         log.info("Test passed: setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
@@ -610,7 +610,7 @@ public class ArmyServiceTest {
         UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1);
 
         log.debug("Calling setArmyTokens");
-        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
+        var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));
 
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.tokenNegative(dto.freeTokens()).getMessage());
         log.info("Test passed: setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");

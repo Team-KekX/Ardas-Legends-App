@@ -338,7 +338,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army setArmyTokens(UpdateArmyDto dto) {
+    public Army setFreeArmyTokens(UpdateArmyDto dto) {
         log.debug("Trying to update the free tokens of army [{}] to value [{}]", dto.armyName(), dto.freeTokens());
 
         log.trace("Validating data");
