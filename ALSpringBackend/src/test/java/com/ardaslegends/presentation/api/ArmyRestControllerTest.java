@@ -5,6 +5,7 @@ import com.ardaslegends.data.presentation.api.ArmyRestController;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -102,5 +103,28 @@ public class ArmyRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk());
         log.info("Test passed: unbindArmy requests get handled properly");
+    }
+
+    @Test
+    void ensureDisbandArmyRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController disbandArmy works properly with correct values");
+
+        // Assign
+        DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
+
+        when(mockArmyService.disbandArmy(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("http://localhost:8080/api/army/disband-army")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: disbandArmy requests get handled properly");
     }
 }

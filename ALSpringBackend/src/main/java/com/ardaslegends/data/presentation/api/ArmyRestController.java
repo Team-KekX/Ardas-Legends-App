@@ -5,6 +5,7 @@ import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_CREATE_ARMY = "/create";
     private static final String PATH_BIND_ARMY = "/bind-army";
     private static final String PATH_UNBIND_ARMY = "/unbind-army";
+    private static final String PATH_DISBAND_ARMY = "/disband-army";
 
     private final ArmyService armyService;
 
@@ -55,5 +57,16 @@ public class ArmyRestController extends AbstractRestController {
 
         log.info("Sending successful unbindArmy request for [{}]", unboundArmy.getName());
         return ResponseEntity.ok(unboundArmy);
+    }
+
+    @DeleteMapping(PATH_DISBAND_ARMY)
+    public HttpEntity<Army> disbandArmy(@RequestBody DeleteArmyDto dto) {
+        log.debug("Incoming disbandArmy Request: Data [{}]", dto);
+
+        log.debug("Calling ArmyService.unbind()");
+        Army disbandedArmy = wrappedServiceExecution(dto, armyService::disbandArmy);
+
+        log.info("Sending successful disbandArmy request for [{}]", disbandedArmy.getName());
+        return ResponseEntity.ok(disbandedArmy);
     }
 }
