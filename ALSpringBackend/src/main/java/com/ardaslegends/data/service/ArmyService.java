@@ -342,8 +342,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Trying to update the free tokens of army [{}] to value [{}]", dto.armyName(), dto.freeTokens());
 
         log.trace("Validating data");
-        ServiceUtils.checkAllNulls(dto);
-        ServiceUtils.checkAllBlanks(dto);
+        ServiceUtils.checkNulls(dto, List.of("freeTokens", "armyName"));
+        ServiceUtils.checkBlanks(dto, List.of("armyName"));
 
         log.trace("Getting the army by name [{}]", dto.armyName());
         Army army = getArmyByName(dto.armyName());

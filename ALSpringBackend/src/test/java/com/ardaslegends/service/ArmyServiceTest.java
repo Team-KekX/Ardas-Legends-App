@@ -578,7 +578,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens works with proper data!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), 10);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10);
 
         log.debug("Calling setArmyTokens");
         Army returnedArmy = armyService.setArmyTokens(dto);
@@ -593,7 +593,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), 40);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
@@ -607,7 +607,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(army.getName(), -1);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setArmyTokens(dto));
