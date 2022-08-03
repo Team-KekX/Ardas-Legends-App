@@ -21,6 +21,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_MOVE_ARMY_ALREADY_IN_REGION = "Army '%s' is already in the desired region of '%s'";
     private static final String CANNOT_BIND_ARMY_IS_MOVING = "The army '%s' is currently moving to '%s' - cancel the movement before binding to it!";
     private static final String CANNOT_BIND_CHAR_IS_MOVING = "The character '%s' is currently moving to '%s' - cancel the movement before binding to an army!";
+    private static final String CANNOT_CREATE_ARMY_WHEN_IN_DIFFERENT_FACTIONS = "You are in faction '%s' and the claimbuild is in faction '%s' - you can only create armies from claimbuilds of your own faction!";
 
     //Disband army
     private static final String NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION = "The army '%s' is part of the faction '%s' - only the faction leader can disband it!";
@@ -42,6 +43,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException cannotMoveArmyAlreadyInRegion(String armyName, String region) {return new ArmyServiceException(CANNOT_MOVE_ARMY_ALREADY_IN_REGION.formatted(armyName,region));}
     public static ArmyServiceException cannotBindArmyIsMoving(String armyName, String region) {return new ArmyServiceException((CANNOT_BIND_ARMY_IS_MOVING).formatted(armyName, region));}
     public static ArmyServiceException cannotBindCharIsMoving(String charName, String region) {return new ArmyServiceException((CANNOT_BIND_CHAR_IS_MOVING).formatted(charName, region));}
+    public static ArmyServiceException cannotCreateArmyFromClaimbuildInDifferentFaction(String playerFaction, String claimbuildFaction) {return new ArmyServiceException((CANNOT_CREATE_ARMY_WHEN_IN_DIFFERENT_FACTIONS).formatted(playerFaction, claimbuildFaction));}
 
     //Disband army
     public static ArmyServiceException notAllowedToDisbandNotSameFaction(String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
