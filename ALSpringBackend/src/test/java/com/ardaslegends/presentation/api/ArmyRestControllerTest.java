@@ -112,7 +112,7 @@ public class ArmyRestControllerTest {
         // Assign
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
-        when(mockArmyService.disbandArmy(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+        when(mockArmyService.disband(dto, false)).thenReturn(Army.builder().name("Knights of Gondor").build());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -126,5 +126,28 @@ public class ArmyRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk());
         log.info("Test passed: disbandArmy requests get handled properly");
+    }
+
+    @Test
+    void ensureDeleteArmyRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController deleteArmy works properly with correct values");
+
+        // Assign
+        DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
+
+        when(mockArmyService.disband(dto, true)).thenReturn(Army.builder().name("Knights of Gondor").build());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("http://localhost:8080/api/army/delete-army")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: deleteArmy requests get handled properly");
     }
 }

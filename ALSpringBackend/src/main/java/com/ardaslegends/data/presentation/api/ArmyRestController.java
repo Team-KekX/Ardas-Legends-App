@@ -23,6 +23,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_BIND_ARMY = "/bind-army";
     private static final String PATH_UNBIND_ARMY = "/unbind-army";
     private static final String PATH_DISBAND_ARMY = "/disband-army";
+    private static final String PATH_DELETE_ARMY = "/delete-army";
 
     private final ArmyService armyService;
 
@@ -64,9 +65,20 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming disbandArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
-        Army disbandedArmy = wrappedServiceExecution(dto, armyService::disbandArmy);
+        Army disbandedArmy = wrappedServiceExecution(dto, false, armyService::disband);
 
         log.info("Sending successful disbandArmy request for [{}]", disbandedArmy.getName());
         return ResponseEntity.ok(disbandedArmy);
+    }
+
+    @DeleteMapping(PATH_DELETE_ARMY)
+    public HttpEntity<Army> deleteArmy(@RequestBody DeleteArmyDto dto) {
+        log.debug("Incoming deleteArmy Request: Data [{}]", dto);
+
+        log.debug("Calling ArmyService.unbind()");
+        Army deletedArmy = wrappedServiceExecution(dto, true, armyService::disband);
+
+        log.info("Sending successful deleteArmy request for [{}]", deletedArmy.getName());
+        return ResponseEntity.ok(deletedArmy);
     }
 }

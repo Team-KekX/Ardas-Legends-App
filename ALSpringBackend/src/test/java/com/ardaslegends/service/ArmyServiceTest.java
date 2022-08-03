@@ -512,7 +512,7 @@ public class ArmyServiceTest {
         DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
 
         log.debug("Calling disbandArmy");
-        Army returnedArmy = armyService.disbandArmy(dto);
+        Army returnedArmy = armyService.disband(dto, false);
 
         log.debug("Asserting that returned/deleted army is same as inputted army");
         assertThat(returnedArmy).isEqualTo(army);
@@ -531,7 +531,7 @@ public class ArmyServiceTest {
         DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
 
         log.debug("Calling disbandArmy");
-        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disbandArmy(dto));
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disband(dto, false));
 
         log.debug("Asserting that error has correct message");
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName()).getMessage());
@@ -546,10 +546,29 @@ public class ArmyServiceTest {
         DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
 
         log.debug("Calling disbandArmy");
-        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disbandArmy(dto));
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disband(dto, false));
 
         log.debug("Asserting that error has correct message");
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisband().getMessage());
         log.info("Test passed: disbandArmy throws ArmyServiceException when player is not faction leader");
+    }
+
+    @Test
+    void ensureForcedDisbandArmyWorks() {
+        log.debug("Testing if disbandArmy works when forced!");
+
+        log.trace("Initializing data");
+        Faction otherFaction = Faction.builder().name("Dol Amroth").build();
+        player.setFaction(otherFaction);
+
+        DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
+
+        log.debug("Calling disbandArmy");
+        Army returnedArmy = armyService.disband(dto, true);
+
+        log.debug("Asserting that returned/deleted army is same as inputted army");
+        assertThat(returnedArmy).isEqualTo(army);
+        log.info("Test passed: disbandArmy works when forced!");
+
     }
 }

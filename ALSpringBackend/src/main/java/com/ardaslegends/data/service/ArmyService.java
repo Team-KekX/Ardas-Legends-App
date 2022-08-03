@@ -10,7 +10,6 @@ import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
-import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -294,7 +293,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army disbandArmy(DeleteArmyDto dto) {
+    public Army disband(DeleteArmyDto dto, boolean forced) {
         log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
 
         log.trace("Validating data");
@@ -308,14 +307,14 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.debug("Checking if the faction of player and army are same");
-        if(!player.getFaction().equals(army.getFaction())) {
+        if(!forced && !player.getFaction().equals(army.getFaction())) {
             log.warn("disbandArmy: Player [{}] and army [{}] do not share the same faction ([{}] and [{}])", player, army, player.getFaction(), army.getFaction());
             throw ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName());
         }
 
         Faction faction = player.getFaction();
 
-        boolean isAllowed = false;
+        boolean isAllowed = forced; //if it's a forced delete, instantly get permission
 
         log.debug("Checking if executor is faction leader");
         if(player.equals(faction.getLeader())) {
