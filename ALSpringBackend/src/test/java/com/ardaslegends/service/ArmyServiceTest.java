@@ -81,9 +81,12 @@ public class ArmyServiceTest {
         ClaimBuildType type = ClaimBuildType.TOWN;
         claimBuild.setType(type);
 
+        Faction faction = Faction.builder().name("Gondr").build();
+        claimBuild.setOwnedBy(faction);
+        Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
-        when(mockFactionRepository.findById(dto.faction())).thenReturn(Optional.of(new Faction()));
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
         when(mockArmyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -111,23 +114,7 @@ public class ArmyServiceTest {
         assertThat(result.getMessage()).contains("already exists");
         log.info("Test passed: IAE when Army Name is taken!");
     }
-    @Test
-    void ensureCreateArmyThrowsIAEWhenNoValidFactionFound() {
-        log.debug("Testing if createArmy correctly throws IAE when no valid faction could be found");
 
-        log.trace("Initializing data");
-        CreateArmyDto dto = new CreateArmyDto("Kek", "Kek", ArmyType.ARMY, "Kek", new UnitTypeDto[]{new UnitTypeDto("Kek", 10)});
-
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
-        when(mockFactionRepository.findById(dto.faction())).thenReturn(Optional.empty());
-
-        log.debug("Expecting IAE on call");
-        log.debug("Calling createArmy()");
-        var result = assertThrows(IllegalArgumentException.class, () -> armyService.createArmy(dto));
-
-        assertThat(result.getMessage()).contains("No faction found");
-        log.info("Test passed: IAE when no Faction could be found");
-    }
     @Test
     void ensureCreateArmyThrowsIAEWhenNoClaimBuildWithInputNameHasBeenFound() {
         log.debug("Testing if createArmy correctly throws IAE when no claimBuild could be found");
@@ -135,8 +122,11 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         CreateArmyDto dto = new CreateArmyDto("Kek", "Kek", ArmyType.ARMY, "Kek", new UnitTypeDto[]{new UnitTypeDto("Kek", 10)});
 
+        Faction faction = Faction.builder().name("Gondr").build();
+        Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
+
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
-        when(mockFactionRepository.findById(dto.faction())).thenReturn(Optional.of(new Faction()));
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.empty());
 
@@ -158,8 +148,12 @@ public class ArmyServiceTest {
         ClaimBuildType type = ClaimBuildType.HAMLET;
         claimBuild.setType(type);
 
+        Faction faction = Faction.builder().name("Gondr").build();
+        claimBuild.setOwnedBy(faction);
+        Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
+
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
-        when(mockFactionRepository.findById(dto.faction())).thenReturn(Optional.of(new Faction()));
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
@@ -179,9 +173,12 @@ public class ArmyServiceTest {
         ClaimBuildType type = ClaimBuildType.TOWN;
         claimBuild.setType(type);
 
+        Faction faction = Faction.builder().name("Gondr").build();
+        claimBuild.setOwnedBy(faction);
+        Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
-        when(mockFactionRepository.findById(dto.faction())).thenReturn(Optional.of(new Faction()));
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0));
         when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 

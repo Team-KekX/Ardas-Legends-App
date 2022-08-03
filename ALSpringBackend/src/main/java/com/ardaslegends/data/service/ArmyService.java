@@ -50,13 +50,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             throw new IllegalArgumentException("Army with name %s already exists, please choose a different name".formatted(dto.name()));
         }
 
-        log.trace("Fetching Faction with name [{}]", dto.faction());
-        Optional<Faction> fetchedFaction = secureFind(dto.faction(), factionRepository::findById);
 
-        if(fetchedFaction.isEmpty()) {
-            log.warn("No faction found with name [{}]", dto.faction());
-            throw new IllegalArgumentException("No faction found that has the name \"%s\"".formatted(dto.faction()));
-        }
+        log.trace("Fetching Executor by discordId [{}]", dto.executorDiscordId());
+        Player fetchedPlayer = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.debug("Assembling Units Map, fetching units");
         var unitTypes = Arrays.stream(dto.units())
@@ -78,6 +74,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         ClaimBuild inputClaimBuild = fetchedClaimbuild.get();
 
         log.trace("Finished fetching required data");
+
+        log.debug("Checking if the Player has the same faction as the Claimbuild");
+        if(!inputClaimBuild.getOwnedBy().equals(fetchedPlayer.getFaction())) {
+            log.warn("Player [{}] and Claimbuild [{}] not in the same faction!");
+            throw ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(fetchedPlayer.getFaction().getName(), inputClaimBuild.getOwnedBy().getName());
+        }
 
         log.debug("Checking if ClaimBuild can create another army");
 
@@ -103,10 +105,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             throw ArmyServiceException.tooHighTokenCount(tokenCount);
         }
 
+        // TODO: Relay info if army is free or costs something
+
         log.trace("Assembling Army Object");
         Army army = new Army(dto.name(),
                 dto.armyType(),
-                fetchedFaction.get(),
+                fetchedPlayer.getFaction(),
                 inputClaimBuild.getRegion(),
                 null,
                 null,
