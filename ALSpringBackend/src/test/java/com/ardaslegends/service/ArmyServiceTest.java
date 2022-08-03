@@ -6,15 +6,14 @@ import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.UnitTypeService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
 import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.service.internal.ServiceDependencyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +38,15 @@ public class ArmyServiceTest {
     private UnitTypeService mockUnitTypeService;
     private ClaimBuildRepository claimBuildRepository;
 
+    private BindArmyDto dto;
+    private Faction faction;
+    private Region region1;
+    private Region region2;
+    private RPChar rpchar;
+    private Player player;
+    private Army army;
+    private Movement movement;
+
     @BeforeEach
     void setup() {
         mockArmyRepository = mock(ArmyRepository.class);
@@ -48,6 +56,18 @@ public class ArmyServiceTest {
         mockUnitTypeService = mock(UnitTypeService.class);
         claimBuildRepository = mock(ClaimBuildRepository.class);
         armyService = new ArmyService(mockArmyRepository, mockMovementRepository,mockPlayerService, mockFactionRepository, mockUnitTypeService, claimBuildRepository);
+
+        region1 = Region.builder().id("90").build();
+        region2 = Region.builder().id("91").build();
+        faction = Faction.builder().name("Gondor").build();
+        rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
+        player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).currentRegion(region2).build();
+        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+
+        when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
+        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
     }
 
     // Create Army
@@ -469,7 +489,7 @@ public class ArmyServiceTest {
     }
 
     @Test
-    void ensureGetArmyByNaameThrowsServiceExceptionWhenArmyNotFound() {
+    void ensureGetArmyByNameThrowsServiceExceptionWhenArmyNotFound() {
         log.debug("Testing if ASE is thrown when target army does not exist");
 
         log.trace("Initializing data");
@@ -483,5 +503,56 @@ public class ArmyServiceTest {
 
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName(armyName).getMessage());
         log.info("Test passed: getArmyByName() correctly throws ASE when no Army has been found");
+    }
+
+    @Test
+    void ensureDisbandArmyWorks() {
+        log.debug("Testing if disbandArmy works with proper data!");
+
+        faction.setLeader(player);
+
+        log.trace("Initializing data");
+        DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
+
+        log.debug("Calling disbandArmy");
+        Army returnedArmy = armyService.disbandArmy(dto);
+
+        log.debug("Asserting that returned/deleted army is same as inputted army");
+        assertThat(returnedArmy).isEqualTo(army);
+        log.info("Test passed: disbandArmy works with proper data!");
+
+    }
+
+    @Test
+    void ensureDisbandArmyThrowsSEWhenPlayerIsOtherFaction() {
+        log.debug("Testing if disbandArmy throws ArmyServiceException when player is in other faction than army");
+
+        log.trace("Initializing data");
+        Faction otherFaction = Faction.builder().name("Dol Amroth").build();
+        player.setFaction(otherFaction);
+
+        DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
+
+        log.debug("Calling disbandArmy");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disbandArmy(dto));
+
+        log.debug("Asserting that error has correct message");
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName()).getMessage());
+        log.info("Test passed: disbandArmy throws ArmyServiceException when player is in other faction than army");
+    }
+
+    @Test
+    void ensureDisbandArmyThrowsSEWhenPlayerIsNotLeader() {
+        log.debug("Testing if disbandArmy throws ArmyServiceException when player is not faction leader");
+
+        log.trace("Initializing data");
+        DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
+
+        log.debug("Calling disbandArmy");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.disbandArmy(dto));
+
+        log.debug("Asserting that error has correct message");
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisband().getMessage());
+        log.info("Test passed: disbandArmy throws ArmyServiceException when player is not faction leader");
     }
 }

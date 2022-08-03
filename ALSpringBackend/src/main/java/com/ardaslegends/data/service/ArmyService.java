@@ -228,7 +228,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army unbind(BindArmyDto dto) { 
+    public Army unbind(BindArmyDto dto) {
         log.debug("Unbinding army [{}] from player [{}] - executed by player [{}]", dto.armyName(), dto.targetDiscordId(), dto.executorDiscordId());
 
         log.trace("Validating data...");
