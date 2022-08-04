@@ -8,16 +8,15 @@ import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.UnitTypeService;
-import com.ardaslegends.data.service.dto.army.BindArmyDto;
-import com.ardaslegends.data.service.dto.army.CreateArmyDto;
-import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
-import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
+import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
+import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +36,7 @@ public class ArmyServiceTest {
     private FactionRepository mockFactionRepository;
     private PlayerService mockPlayerService;
     private UnitTypeService mockUnitTypeService;
-    private ClaimBuildRepository claimBuildRepository;
+    private ClaimBuildRepository mockClaimBuildRepository;
 
     private BindArmyDto dto;
     private Faction faction;
@@ -56,22 +55,23 @@ public class ArmyServiceTest {
         mockFactionRepository = mock(FactionRepository.class);
         mockPlayerService = mock(PlayerService.class);
         mockUnitTypeService = mock(UnitTypeService.class);
-        claimBuildRepository = mock(ClaimBuildRepository.class);
-        armyService = new ArmyService(mockArmyRepository, mockMovementRepository,mockPlayerService, mockFactionRepository, mockUnitTypeService, claimBuildRepository);
+        mockClaimBuildRepository = mock(ClaimBuildRepository.class);
+        armyService = new ArmyService(mockArmyRepository, mockMovementRepository,mockPlayerService, mockFactionRepository, mockUnitTypeService, mockClaimBuildRepository);
 
-        claimBuild = ClaimBuild.builder().name("Nimheria").specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
-        faction = Faction.builder().name("Gondor").build();
+        faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
+        claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
+        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.of(claimBuild));
     }
 
     // Create Army
@@ -92,7 +92,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
         when(mockArmyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         log.debug("Calling createArmy()");
@@ -132,14 +132,13 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.empty());
+        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.empty());
 
         log.debug("Expecting IAE on call");
         log.debug("Calling createArmy()");
-        var result = assertThrows(IllegalArgumentException.class, () -> armyService.createArmy(dto));
+        var result = assertThrows(ClaimBuildServiceException.class, () -> armyService.createArmy(dto));
 
-        assertThat(result.getMessage()).contains("No ClaimBuild found");
-
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noCbWithName(dto.claimBuildName()).getMessage());
         log.info("Test passed: IAE when no ClaimBuild could be found");
     }
     @Test
@@ -159,7 +158,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
         log.debug("Calling createArmy()");
@@ -184,7 +183,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0));
-        when(claimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
         log.debug("Calling createArmy()");
@@ -722,5 +721,146 @@ public class ArmyServiceTest {
 
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.tokenNegative(dto.freeTokens()).getMessage());
         log.info("Test passed: setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
+    }
+
+
+    @Test
+    void ensurePickSiegeWorks() {
+        log.debug("Testing if pickSiege works with proper data!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        army.setBoundTo(player);
+        army.setCurrentRegion(claimBuild.getRegion());
+
+        log.debug("Calling pickSiege");
+        Army returnedArmy = armyService.pickSiege(dto);
+
+        assertThat(returnedArmy).isEqualTo(army);
+        assertThat(army.getSieges()).contains(siege);
+        log.info("Test passed: pickSiege works with proper data!");
+    }
+
+    @Test
+    void ensurePickSiegeWorksWhenPlayerIsLeader() {
+        log.debug("Testing if pickSiege works when player is leader!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        faction.setLeader(player);
+        army.setCurrentRegion(claimBuild.getRegion());
+
+        log.debug("Calling pickSiege");
+        Army returnedArmy = armyService.pickSiege(dto);
+
+        assertThat(returnedArmy).isEqualTo(army);
+        assertThat(army.getSieges()).contains(siege);
+        log.info("Test passed: pickSiege works when player is leader!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenArmyIsCompany() {
+        log.debug("Testing if pickSiege throws ArmyServiceException when army is Trading Company!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        army.setArmyType(ArmyType.TRADING_COMPANY);
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeOnlyArmyCanPick(army.getName()).getMessage());
+        log.info("Test passed: pickSiege throws ArmyServiceException when army is Trading Company!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenPlayerIsNotBoundOrLeader() {
+        log.debug("Testing if pickSiege throws ArmyServiceException when player is not bound or leader!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        army.setCurrentRegion(claimBuild.getRegion());
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeNotFactionLeaderOrLord(faction.getName(), army.getName()).getMessage());
+        log.info("Test passed: pickSiege throws ArmyServiceException when player is not bound or leader!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenCbNotFound() {
+        log.debug("Testing if pickSiege throws ClaimBuildServiceException when no CB with name is found!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        faction.setLeader(player);
+        army.setCurrentRegion(claimBuild.getRegion());
+
+        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.empty());
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ClaimBuildServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ClaimBuildServiceException.noCbWithName(claimBuild.getName()).getMessage());
+        log.info("Test passed: pickSiege throws ClaimBuildServiceException when no CB with name is found!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenArmyNotInSameRegionAsCb() {
+        log.debug("Testing if pickSiege throws ArmyServiceException when army is in different region than cb!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        faction.setLeader(player);
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeArmyNotInSameRegionAsCB(army.getName(), army.getCurrentRegion().getId(),
+                claimBuild.getName(), claimBuild.getRegion().getId()).getMessage());
+        log.info("Test passed: pickSiege throws ArmyServiceException when army is in different region than cb!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenCbNotSameFactionOrAllied() {
+        log.debug("Testing if pickSiege throws ClaimBuildServiceException when CB isn't from same faction or allied faction!");
+
+        log.trace("Initializing data");
+        String siege = "trebuchet";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        Faction faction2 = Faction.builder().name("Dol Amroth").build();
+        faction.setLeader(player);
+        army.setCurrentRegion(claimBuild.getRegion());
+        claimBuild.setOwnedBy(faction2);
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ClaimBuildServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ClaimBuildServiceException.differentFactionNotAllied(claimBuild.getName(), claimBuild.getOwnedBy().getName()).getMessage());
+        log.info("Test passed: pickSiege throws ClaimBuildServiceException when CB isn't from same faction or allied faction!");
+    }
+
+    @Test
+    void ensurePickSiegeThrowsSEWhenSiegeNotAvailableInCb() {
+        log.debug("Testing if pickSiege throws ArmyServiceException when siege is not available in cb!");
+
+        log.trace("Initializing data");
+        String siege = "hueueheuheu";
+        PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
+        faction.setLeader(player);
+        army.setCurrentRegion(claimBuild.getRegion());
+
+        log.debug("Calling pickSiege");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.pickSiege(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeNotAvailable(siege, claimBuild.getName(), claimBuild.getSiege()).getMessage());
+        log.info("Test passed: pickSiege throws ArmyServiceException when siege is not available in cb!");
     }
 }

@@ -3,10 +3,7 @@ package com.ardaslegends.data.presentation.api;
 import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.dto.army.BindArmyDto;
-import com.ardaslegends.data.service.dto.army.CreateArmyDto;
-import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
-import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
+import com.ardaslegends.data.service.dto.army.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -28,6 +25,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_START_HEALING = "/heal-start";
     private static final String PATH_STOP_HEALING = "/heal-stop";
     private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
+    private static final String PATH_PICK_SIEGE = "/pick-siege";
 
     private final ArmyService armyService;
 
@@ -117,5 +115,16 @@ public class ArmyRestController extends AbstractRestController {
 
         log.info("Sending successful setFreeArmyTokens request for [{}]", deletedArmy.getName());
         return ResponseEntity.ok(deletedArmy);
+    }
+
+    @PatchMapping(PATH_PICK_SIEGE)
+    public HttpEntity<Army> pickSiege(@RequestBody PickSiegeDto dto) {
+        log.debug("Incoming pickSiege Request: Data [{}]", dto);
+
+        log.debug("Calling ArmyService.pickSiege()");
+        Army army = wrappedServiceExecution(dto, armyService::pickSiege);
+
+        log.info("Sending successful pickSiege request for [{}]", army.getName());
+        return ResponseEntity.ok(army);
     }
 }

@@ -60,6 +60,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
 
     private String traders; //traders in this CB. e.g. Dwarven Smith. Only relevant for staff so they know which traders need to be added
 
+    private String siege; //the siege equipment the cb provides
     private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

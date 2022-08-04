@@ -3,10 +3,7 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.presentation.api.ArmyRestController;
 import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.dto.army.BindArmyDto;
-import com.ardaslegends.data.service.dto.army.CreateArmyDto;
-import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
-import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
+import com.ardaslegends.data.service.dto.army.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -219,5 +216,28 @@ public class ArmyRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk());
         log.info("Test passed: setFreeArmyTokens requests get handled properly");
+    }
+
+    @Test
+    void ensurePickSiegeRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController pickSiege works properly with correct values");
+
+        // Assign
+        PickSiegeDto dto = new PickSiegeDto("1234", "Knights of Gondor", "Gondor CB", "Trebuchet");
+
+        when(mockArmyService.pickSiege(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/pick-siege")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: pickSiege requests get handled properly");
     }
 }

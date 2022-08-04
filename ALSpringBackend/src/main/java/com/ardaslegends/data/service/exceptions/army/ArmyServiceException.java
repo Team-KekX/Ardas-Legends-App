@@ -32,6 +32,12 @@ public class ArmyServiceException extends ServiceException{
     //Set Token
     private static final String TOKEN_NEGATIVE = "Armies cannot have less than 0 free tokens (you inputted: %d)!";
     private static final String TOKEN_ABOVE_30 = "Armies can only have a maximum of 30 free tokens (you inputted: %d)!";
+
+    //pick siege
+    private static final String SIEGE_ONLY_ARMY_CAN_PICK = "Only armies can pick sieges - '%s' is a trading/armed company!";
+    private static final String SIEGE_NOT_FACTION_LEADER_OR_LORD = "Only faction leaders/lords of '%s' can pick siege for the army '%s' without being bound to it!";
+    private static final String SIEGE_ARMY_NOT_IN_SAME_REGION_AS_CB = "The army '%s' is currently in region %s while the claimbuild '%s' is located in region %s. Move the army into the claimbuild's region in order to pick up siege from it!";
+    private static final String SIEGE_NOT_AVAILABLE = "The siege equipment '%s' is not available in claimbuild '%s'. Available sieges are: '%s'";
     public static ArmyServiceException noArmyWithName(String armyName) { return new ArmyServiceException(NO_ARMY_WITH_NAME.formatted(armyName)); }
 
     public static ArmyServiceException notFactionLeader(String factionName) { return new ArmyServiceException(PLAYER_NOT_FACTION_LEADER.formatted(factionName)); }
@@ -60,6 +66,12 @@ public class ArmyServiceException extends ServiceException{
     //Set free tokens
     public static ArmyServiceException tokenNegative(int tokenAmount) { return new ArmyServiceException(TOKEN_NEGATIVE.formatted(tokenAmount)); }
     public static ArmyServiceException tokenAbove30(int tokenAmount) { return new ArmyServiceException(TOKEN_ABOVE_30.formatted(tokenAmount)); }
+
+    //pick siege
+    public static ArmyServiceException siegeOnlyArmyCanPick(String armyName) { return new ArmyServiceException(SIEGE_ONLY_ARMY_CAN_PICK.formatted(armyName)); }
+    public static ArmyServiceException siegeNotFactionLeaderOrLord(String factionName, String armyName) { return new ArmyServiceException(SIEGE_NOT_FACTION_LEADER_OR_LORD.formatted(factionName, armyName)); }
+    public static ArmyServiceException siegeArmyNotInSameRegionAsCB(String armyName, String armyRegion, String cbName, String cbRegion) { return new ArmyServiceException(SIEGE_ARMY_NOT_IN_SAME_REGION_AS_CB.formatted(armyName, armyRegion, cbName, cbRegion)); }
+    public static ArmyServiceException siegeNotAvailable(String inputtedSiege, String cbName, String availableSiege) { return new ArmyServiceException(SIEGE_NOT_AVAILABLE.formatted(inputtedSiege, cbName, availableSiege)); }
     protected ArmyServiceException(String message, Throwable rootCause) {
         super(message, rootCause);
     }

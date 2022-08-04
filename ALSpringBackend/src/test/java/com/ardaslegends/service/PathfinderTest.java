@@ -46,9 +46,8 @@ public class PathfinderTest {
         Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15,false,  null);
         RPChar rpchar = RPChar.builder().name("Aldwin").currentRegion(r1).boundTo(army).build();
 
-        ClaimBuild claimbuild = new ClaimBuild("claimbuild", r2, ClaimBuildType.CAPITAL, faction_good,
-                new Coordinate(1, 1, 1), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>(), "none", "4", new HashSet<>(),0,0);
+        ClaimBuild claimbuild = ClaimBuild.builder().name("claimbuild").region(r2).type(ClaimBuildType.CAPITAL).ownedBy(faction_good).coordinates(new Coordinate(1, 1, 1))
+                .specialBuildings(new ArrayList<>()).build();
 
         // Set up relations
         r1.getClaimedBy().add(faction_good);

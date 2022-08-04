@@ -4,19 +4,18 @@ import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.MovementRepository;
-import com.ardaslegends.data.service.dto.army.BindArmyDto;
-import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
-import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
+import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
-import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,8 +66,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(fetchedClaimbuild.isEmpty()) {
             log.warn("No ClaimBuild found with name [{}]", dto.claimBuildName());
             // TODO: Change to ServiceException, dont know if if it should be in ArmyServiceException, CBServiceException or base SE
-            //It should be CBSE
-            throw new IllegalArgumentException("No ClaimBuild found with the name %s".formatted(dto.claimBuildName()));
+            throw ClaimBuildServiceException.noCbWithName(dto.claimBuildName());
         }
 
         ClaimBuild inputClaimBuild = fetchedClaimbuild.get();
@@ -356,7 +354,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Setting bound player to null");
         army.setBoundTo(null);
         log.trace("Persisting army");
-        army = armyRepository.save(army);
+        army = secureSave(army, armyRepository);
 
         log.info("Unbound player [{}] from army [{}] (faction [{}])", boundPlayer, army, army.getFaction());
         return army;
@@ -400,7 +398,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Deleting army [{}]", army);
-        armyRepository.delete(army);
+        secureDelete(army, armyRepository);
 
         log.info("Disbanded army [{}] - executed by player [{}]", army, player);
         return army;
@@ -435,6 +433,86 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         army = armyRepository.save(army);
 
         log.info("Set tokens of army [{}] from [{}] to [{}]", army, oldTokens, army.getFreeTokens());
+        return army;
+    }
+
+    @Transactional(readOnly = false)
+    public Army pickSiege(PickSiegeDto dto) {
+        log.debug("Trying to pick siege [{}] for army [{}] from cb [{}] - executed by player [{}]", dto.siege(), dto.armyName(), dto.claimbuildName(), dto.executorDiscordId());
+
+        log.trace("Validating data");
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.trace("Getting army by name");
+        Army army = getArmyByName(dto.armyName());
+
+        log.debug("Checking if army is an army and not a company");
+        if(!army.getArmyType().equals(ArmyType.ARMY)) {
+            log.warn("Tried to pick siege for [{}], which is a [{}]!", army.getName(), army.getArmyType().name());
+            throw ArmyServiceException.siegeOnlyArmyCanPick(army.getName());
+        }
+
+        log.trace("Getting player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        boolean isAllowed = false;
+        log.debug("Checking if player is bound to army");
+        if(army.getBoundTo() != null && army.getBoundTo().equals(player)) {
+            log.debug("Player is bound to army - has permission to pick siege");
+            isAllowed = true;
+        }
+
+        log.debug("Checking if player is faction leader");
+        if(!isAllowed && player.equals(army.getFaction().getLeader())) {
+            log.debug("Player is faction leader of [{}] and therefore has permission to pick siege without being bound", army.getFaction());
+            isAllowed = true;
+        }
+
+        //TODO: Check for lords as well
+
+        if(!isAllowed) {
+            log.warn("Player is not bound to army and is not faction leader/lord of [{}]!", army.getFaction());
+            throw ArmyServiceException.siegeNotFactionLeaderOrLord(army.getFaction().getName(), army.getName());
+        }
+
+        log.debug("Fetching claimbuild [{}]", dto.claimbuildName());
+        Optional<ClaimBuild> foundCb = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+        if(foundCb.isEmpty()) {
+            log.warn("Found no claimbuild with name [{}]", dto.claimbuildName());
+            throw ClaimBuildServiceException.noCbWithName(dto.claimbuildName());
+        }
+
+        ClaimBuild cb = foundCb.get();
+
+        log.debug("Checking if army is in the same region as cb");
+        if(!army.getCurrentRegion().equals(cb.getRegion())) {
+            log.warn("Army [{}] is not in the same region as cb [{}] (Army's region: [{}], CB's region: [{}])", army.getName(), cb.getName(), army.getCurrentRegion().getId(), cb.getRegion().getId());
+            throw ArmyServiceException.siegeArmyNotInSameRegionAsCB(army.getName(), army.getCurrentRegion().getId(), cb.getName(), cb.getRegion().getId());
+        }
+
+        log.debug("Checking if cb is owned by player's faction or an allied faction");
+        if(!player.getFaction().equals(cb.getOwnedBy()) && !player.getFaction().getAllies().contains(cb.getOwnedBy())) {
+            log.warn("CB [{}] is owned by Faction [{}] which is not allied to player [{}'s] Faction [{}]", cb.getName(), cb.getOwnedBy(), player.getIgn(), player.getFaction());
+            throw ClaimBuildServiceException.differentFactionNotAllied(cb.getName(), cb.getOwnedBy().getName());
+        }
+
+        log.debug("Checking if inputted siege is available in CB");
+        String inputtedSiege = dto.siege().toLowerCase();
+        String availableSiege = cb.getSiege().toLowerCase();
+
+        if(!availableSiege.contains(inputtedSiege)) {
+            log.warn("Inputted siege [{}] is not available in cb's sieges [{}]", inputtedSiege, availableSiege);
+            throw ArmyServiceException.siegeNotAvailable(dto.siege(), cb.getName(), cb.getSiege());
+        }
+
+        log.debug("Adding inputted siege to army siege");
+        army.getSieges().add(dto.siege());
+
+        log.trace("Persisting army");
+        army = secureSave(army, armyRepository);
+
+        log.info("Picked up siege [{}] for army [{}]!", dto.siege(), army);
         return army;
     }
     public Army getArmyByName(String armyName) {
