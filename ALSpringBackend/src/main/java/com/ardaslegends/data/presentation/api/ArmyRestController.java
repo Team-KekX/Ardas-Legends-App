@@ -25,6 +25,8 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_UNBIND_ARMY = "/unbind-army";
     private static final String PATH_DISBAND_ARMY = "/disband-army";
     private static final String PATH_DELETE_ARMY = "/delete-army";
+    private static final String PATH_START_HEALING = "/heal-start";
+    private static final String PATH_STOP_HEALING = "/heal-stop";
     private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
 
     private final ArmyService armyService;
@@ -82,6 +84,28 @@ public class ArmyRestController extends AbstractRestController {
 
         log.info("Sending successful deleteArmy request for [{}]", deletedArmy.getName());
         return ResponseEntity.ok(deletedArmy);
+    }
+
+    @PatchMapping(PATH_START_HEALING)
+    public HttpEntity<Army> startHealing(@RequestBody UpdateArmyDto dto) {
+        log.debug("Incoming start healing Request: Data [{}]", dto);
+
+        log.debug("Calling healStart()");
+        Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStart);
+
+        log.info("Sending successful start healing Request for [{}]", modifiedArmy.toString());
+        return ResponseEntity.ok(modifiedArmy);
+    }
+
+    @PatchMapping(PATH_STOP_HEALING)
+    public HttpEntity<Army> stopHealing(@RequestBody UpdateArmyDto dto) {
+        log.debug("Incoming stop healing Request: Data [{}]", dto);
+
+        log.debug("Calling healStop()");
+        Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStop);
+
+        log.info("Sending successful stop healing Request for [{}]", modifiedArmy.toString());
+        return ResponseEntity.ok(modifiedArmy);
     }
 
     @PatchMapping(PATH_SET_FREE_TOKENS)

@@ -22,10 +22,12 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_BIND_ARMY_IS_MOVING = "The army '%s' is currently moving to '%s' - cancel the movement before binding to it!";
     private static final String CANNOT_BIND_CHAR_IS_MOVING = "The character '%s' is currently moving to '%s' - cancel the movement before binding to an army!";
     private static final String CANNOT_CREATE_ARMY_WHEN_IN_DIFFERENT_FACTIONS = "You are in faction '%s' and the claimbuild is in faction '%s' - you can only create armies from claimbuilds of your own faction!";
-
+    private static final String ARMY_AND_PLAYER_IN_DIFFERENT_FACTION = "The army '%s' and the player '%s' are not in the same faction - Cant execute command!";
+    private static final String ARMY_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING = "The army '%s' is not stationed at a CB with a House of Healing, cannot start healing - Please station the Army at CB";
     //Disband army
     private static final String NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION = "The army '%s' is part of the faction '%s' - only the faction leader can disband it!";
     private static final String NOT_ALLOWED_TO_DISBAND = "Only faction leaders and lords with permission are allowed to disband armies!";
+    private static final String CANNOT_STOP_HEALING_IF_ARMY_IS_NOT_HEALING = "Army '%s' is not healing - Can't stop it";
 
     //Set Token
     private static final String TOKEN_NEGATIVE = "Armies cannot have less than 0 free tokens (you inputted: %d)!";
@@ -48,7 +50,9 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException cannotBindArmyIsMoving(String armyName, String region) {return new ArmyServiceException((CANNOT_BIND_ARMY_IS_MOVING).formatted(armyName, region));}
     public static ArmyServiceException cannotBindCharIsMoving(String charName, String region) {return new ArmyServiceException((CANNOT_BIND_CHAR_IS_MOVING).formatted(charName, region));}
     public static ArmyServiceException cannotCreateArmyFromClaimbuildInDifferentFaction(String playerFaction, String claimbuildFaction) {return new ArmyServiceException((CANNOT_CREATE_ARMY_WHEN_IN_DIFFERENT_FACTIONS).formatted(playerFaction, claimbuildFaction));}
-
+    public static ArmyServiceException armyAndPlayerInDifferentFaction(String playerFaction, String armyFaction) {return new ArmyServiceException(ARMY_AND_PLAYER_IN_DIFFERENT_FACTION.formatted(playerFaction, armyFaction));}
+    public static ArmyServiceException needToStationArmyAtCbWithHouseOfHealing(String armyName) {return new ArmyServiceException(ARMY_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING.formatted(armyName));}
+    public static ArmyServiceException armyIsNotHealing(String armyName) {return new ArmyServiceException((CANNOT_STOP_HEALING_IF_ARMY_IS_NOT_HEALING.formatted(armyName)));}
     //Disband army
     public static ArmyServiceException notAllowedToDisbandNotSameFaction(String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
     public static ArmyServiceException notAllowedToDisband() { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND); }

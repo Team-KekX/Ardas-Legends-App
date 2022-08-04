@@ -134,6 +134,75 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
+    public Army healStart(UpdateArmyDto dto) {
+        log.debug("Trying to start healing for army [{}]", dto.armyName());
+
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+
+        log.debug("Fetching required data");
+
+        log.trace("Fetching Player");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        log.trace("Fetching Army");
+        Army army = getArmyByName(dto.armyName());
+
+        log.debug("Checking if army and player are in the same faction");
+        if(!player.getFaction().equals(army.getFaction())) {
+            log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());
+            throw ArmyServiceException.armyAndPlayerInDifferentFaction(player.getFaction().toString(), army.getFaction().toString());
+        }
+
+        log.debug("Checking if army is stationed at a CB");
+        // Army is null or Claimbuild does not have a House of healing
+        if(army.getStationedAt() == null || !army.getStationedAt().getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING)) {
+            log.warn("Army [{}] is not stationed at a claimbuild");
+            throw ArmyServiceException.needToStationArmyAtCbWithHouseOfHealing(army.toString());
+        }
+
+        log.debug("All checks validated, persisting now");
+
+        army.setHealing(true);
+        army = secureSave(army, armyRepository);
+
+        log.info("Army [{}] is now healing", army.toString());
+        return army;
+    }
+
+    @Transactional(readOnly = false)
+    public Army healStop(UpdateArmyDto dto) {
+        log.debug("Trying to start healing for army [{}]", dto.armyName());
+
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+
+        log.trace("Fetching Player");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        log.trace("Fetching Army");
+        Army army = getArmyByName(dto.armyName());
+
+        log.debug("Checking if army is healing");
+        if(!army.isHealing()) {
+            log.warn("Army [{}] is not healing, cant stop it!");
+            throw ArmyServiceException.armyIsNotHealing(army.toString());
+        }
+
+        log.debug("Checking if army and player are in the same faction");
+        if(!player.getFaction().equals(army.getFaction())) {
+            log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());
+            throw ArmyServiceException.armyAndPlayerInDifferentFaction(player.getFaction().toString(), army.getFaction().toString());
+        }
+
+        army.setHealing(false);
+        army = secureSave(army, armyRepository);
+
+        log.info("Army [{}] now stopped healing", army.toString());
+        return army;
+    }
+
+    @Transactional(readOnly = false)
     public Army bind(BindArmyDto dto) { //TODO Change to Army.bind()
         log.debug("Binding army [{}] to player with discord id [{}]", dto.armyName(), dto.targetDiscordId());
 
