@@ -47,6 +47,7 @@ public class ArmyServiceTest {
     private Player player;
     private Army army;
     private Movement movement;
+    private ClaimBuild claimBuild;
 
     @BeforeEach
     void setup() {
@@ -58,12 +59,13 @@ public class ArmyServiceTest {
         claimBuildRepository = mock(ClaimBuildRepository.class);
         armyService = new ArmyService(mockArmyRepository, mockMovementRepository,mockPlayerService, mockFactionRepository, mockUnitTypeService, claimBuildRepository);
 
+        claimBuild = ClaimBuild.builder().name("Nimheria").specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
         faction = Faction.builder().name("Gondor").build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
@@ -190,6 +192,111 @@ public class ArmyServiceTest {
 
         log.info("Test passed: SE on exceeding token count");
     }
+
+    // Healing start Tests
+
+    @Test
+    void ensureHealStartWorksProperly() {
+        log.debug("Testing if heal start works properly with correct values");
+
+        log.trace("Initializing data");
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("Expecting no errors");
+        log.debug("Calling healStart");
+        var result = armyService.healStart(dto);
+
+        assertThat(army.isHealing()).isTrue();
+        log.info("Test passed: heal start works properly with correct values");
+    }
+    @Test
+    void ensureHealStartThrwosSeWhenArmyAndPlayerAreNotInTheSameFaction() {
+        log.debug("Testing if healStart correctly throws SE when Player and Army are not in the same faction");
+
+        log.trace("Initializing data");
+        army.setFaction(Faction.builder().name("Kekw").build());
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling healStart");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStart(dto));
+
+        assertThat(result.getMessage()).contains("are not in the same faction");
+        log.info("Test passed: SE if not in the same faction");
+    }
+
+    @Test
+    void ensureHealStartThrowsSeWhenArmyIsNotStationedAtACbWithHouseOfHealing() {
+        log.debug("Testing if healStart correctly throws SE when army is not stationed at House of Healing Cb");
+
+        log.trace("Initializing data");
+        claimBuild.setSpecialBuildings(List.of());
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null);
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling healStart");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStart(dto));
+
+        assertThat(result.getMessage()).contains("not stationed at a CB with a House of Healing");
+        log.info("Test passed: SE if army is not stationed at House of Healing");
+    }
+
+    // Heal stop tests
+
+    @Test
+    void ensureHealStopWorksProperly() {
+        log.debug("Testing if heal stop works properly with correct values");
+
+        log.trace("Initializing data");
+        army.setHealing(true);
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("Expecting no errors");
+        log.debug("Calling healStart");
+        var result = armyService.healStop(dto);
+
+        assertThat(army.isHealing()).isFalse();
+        log.info("Test passed: heal stop works properly with correct values");
+    }
+    @Test
+    void ensureHealStopThrowsSeIfArmyIsNotHealing() {
+        log.debug("Testing if heal stop correctly throws SE when army is not healing");
+
+        log.trace("Initializing data");
+        army.setHealing(false);
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling healStop");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStop(dto));
+
+        assertThat(result.getMessage()).contains("is not healing - Can't stop it");
+        log.info("Test passed: SE when army is not healing");
+    }
+
+    @Test
+    void ensureHealStopThrowsSeIfArmyAndPlayerAreNotInTheSameFaction() {
+        log.debug("Testing if heal stop correctly throws SE when army is not in same faction as player");
+
+        log.trace("Initializing data");
+        army.setHealing(true);
+        army.setFaction(Faction.builder().name("Kekw").build());
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling healStop");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStop(dto));
+
+        assertThat(result.getMessage()).contains("are not in the same faction");
+        log.info("Test passed: SE when army is not in same faction as player");
+    }
+
     @Test
     void ensureBindWorksWhenBindingSelf() {
         log.debug("Testing if army binding works properly!");
@@ -214,6 +321,7 @@ public class ArmyServiceTest {
         assertThat(army.getBoundTo()).isEqualTo(player);
         log.info("Test passed: army binding works properly!");
     }
+
     @Test
     void ensureBindWorksWhenBindingOtherPlayer() {
         log.debug("Testing if army binding works properly on others!");

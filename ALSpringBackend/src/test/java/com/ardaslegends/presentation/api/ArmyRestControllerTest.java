@@ -153,6 +153,52 @@ public class ArmyRestControllerTest {
     }
 
     @Test
+    void ensureHealStartRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController healStart works properly with correct values");
+
+        // Assign
+        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null);
+
+        when(mockArmyService.healStart(dto)).thenReturn(new Army());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/heal-start")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: heal start requests get handled properly");
+    }
+
+    @Test
+    void ensureHealStopRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController healStop works properly with correct values");
+
+        // Assign
+        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null);
+
+        when(mockArmyService.healStop(dto)).thenReturn(new Army());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/heal-stop")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: heal stop requests get handled properly");
+    }
+
+    @Test
     void ensureSetFreeArmyTokensRequestWorksProperly() throws Exception{
         log.debug("Testing if ArmyRestController setFreeArmyTokens works properly with correct values");
 
