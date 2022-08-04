@@ -141,6 +141,23 @@ public class ArmyServiceTest {
         assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noCbWithName(dto.claimBuildName()).getMessage());
         log.info("Test passed: IAE when no ClaimBuild could be found");
     }
+
+    @Test
+    void ensureCreateArmyThrowsSEWhenCbIsFromDifferentFaction() {
+        log.debug("Testing if createArmy correctly throws ArmyServiceException when claimBuild is from another faction");
+
+        log.trace("Initializing data");
+        CreateArmyDto dto = new CreateArmyDto(player.getDiscordID(), army.getName(), ArmyType.ARMY, claimBuild.getName(), new UnitTypeDto[]{new UnitTypeDto("Kek", 10)});
+        Faction otherFaction = Faction.builder().name("Dol Amroth").build();
+        claimBuild.setOwnedBy(otherFaction);
+
+        log.debug("Expecting IAE on call");
+        log.debug("Calling createArmy()");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.createArmy(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(player.getFaction().getName(), claimBuild.getOwnedBy().getName()).getMessage());
+        log.info("Test passed: createArmy throws ArmyServiceException when claimBuild is from another faction");
+    }
     @Test
     void ensureCreateArmyThrowsServiceExceptionWhenClaimBuildHasReachedMaxArmies() {
         log.debug("Testing if createArmy correctly throws SE when max armies is already reached");

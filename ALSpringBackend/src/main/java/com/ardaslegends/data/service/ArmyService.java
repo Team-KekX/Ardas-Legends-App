@@ -65,7 +65,6 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(fetchedClaimbuild.isEmpty()) {
             log.warn("No ClaimBuild found with name [{}]", dto.claimBuildName());
-            // TODO: Change to ServiceException, dont know if if it should be in ArmyServiceException, CBServiceException or base SE
             throw ClaimBuildServiceException.noCbWithName(dto.claimBuildName());
         }
 
