@@ -313,6 +313,25 @@ public class ArmyServiceTest {
         log.info("Test passed: SE when army is not in same faction as player");
     }
 
+    // Station Tests
+
+    @Test
+    void ensureStationThrowsCbSeWhenClaimbuildWithGivenNameDoesNotExist() {
+        log.debug("Testing if station throws CB Se when no claimbuild exists with given name");
+
+        log.trace("Initializing data");
+        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.empty());
+
+        StationDto dto = new StationDto(player.getDiscordID(),army.getName(),claimBuild.getName());
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling station()");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> armyService.station(dto));
+
+        assertThat(result.getMessage()).contains("Found no claimbuild with name");
+        log.info("Test passed: station throws SE when no cb founjd");
+    }
+
     @Test
     void ensureBindWorksWhenBindingSelf() {
         log.debug("Testing if army binding works properly!");
