@@ -7,6 +7,9 @@ import com.ardaslegends.data.service.exceptions.movement.MovementServiceExceptio
 public class ArmyServiceException extends ServiceException{
 
     private static final String NO_ARMY_WITH_NAME = "No army with the name '%s' found!";
+    private static final String NO_PERMISSION_TO_PERFORM_ACTION = "No permission to perform this action. You need to be either bound, have a lordship rank of that faction or be faction leader";
+    private static final String CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION = "Claimbuild '%s' is not in the same or allied faction of army";
+    private static final String ARMY_IS_ALREADY_STATIONED = "Army '%s' is already stationed at Claimbuild '%s'!";
     private static final String PLAYER_NOT_FACTION_LEADER = "You are not the faction leader or a lord of '%s' and therefore cannot (un)bind other players!";
     private static final String ONLY_FACTION_LEADER_CAN_BIND_WANDERER = "Only the faction leader or a lord can bind wanderers to armies!";
     private static final String NOT_IN_SAME_REGION = "Army/Company '%s' is not in the same region as character '%s'!";
@@ -39,7 +42,9 @@ public class ArmyServiceException extends ServiceException{
     private static final String SIEGE_ARMY_NOT_IN_SAME_REGION_AS_CB = "The army '%s' is currently in region %s while the claimbuild '%s' is located in region %s. Move the army into the claimbuild's region in order to pick up siege from it!";
     private static final String SIEGE_NOT_AVAILABLE = "The siege equipment '%s' is not available in claimbuild '%s'. Available sieges are: '%s'";
     public static ArmyServiceException noArmyWithName(String armyName) { return new ArmyServiceException(NO_ARMY_WITH_NAME.formatted(armyName)); }
-
+    public static ArmyServiceException noPermissionToPerformThisAction() { return new ArmyServiceException(NO_PERMISSION_TO_PERFORM_ACTION);}
+    public static ArmyServiceException claimbuildNotInTheSameOrAlliedFaction(String claimbuildName) { return new ArmyServiceException(CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION.formatted(claimbuildName)); }
+    public static ArmyServiceException armyAlreadyStationed(String armyName, String claimbuildName) { return new ArmyServiceException(ARMY_IS_ALREADY_STATIONED.formatted(armyName, claimbuildName)); }
     public static ArmyServiceException notFactionLeader(String factionName) { return new ArmyServiceException(PLAYER_NOT_FACTION_LEADER.formatted(factionName)); }
 
     public static ArmyServiceException notInSameRegion(String armyName, String charName) { return new ArmyServiceException(NOT_IN_SAME_REGION.formatted(armyName, charName)); }

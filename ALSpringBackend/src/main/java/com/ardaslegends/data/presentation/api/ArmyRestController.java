@@ -24,6 +24,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_DELETE_ARMY = "/delete-army";
     private static final String PATH_START_HEALING = "/heal-start";
     private static final String PATH_STOP_HEALING = "/heal-stop";
+    private static final String PATH_STATION = "/station";
     private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
     private static final String PATH_PICK_SIEGE = "/pick-siege";
 
@@ -103,6 +104,17 @@ public class ArmyRestController extends AbstractRestController {
         Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStop);
 
         log.info("Sending successful stop healing Request for [{}]", modifiedArmy.toString());
+        return ResponseEntity.ok(modifiedArmy);
+    }
+
+    @PatchMapping(PATH_STATION)
+    public HttpEntity<Army> station(@RequestBody StationDto dto) {
+        log.debug("Incoming station request: Data [{}]", dto);
+
+        log.debug("Calling station()");
+        Army modifiedArmy = wrappedServiceExecution(dto, armyService::station);
+
+        log.info("Sending successful station request for [{}]", modifiedArmy.toString());
         return ResponseEntity.ok(modifiedArmy);
     }
 

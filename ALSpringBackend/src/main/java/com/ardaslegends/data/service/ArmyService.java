@@ -360,6 +360,74 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
+    public Army station(StationDto dto) {
+        log.debug("Trying to station army [{}] at [{}]", dto.armyName(), dto.claimbuildName());
+
+        log.trace("Validating data");
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.trace("Fetching army instance");
+        Army army = getArmyByName(dto.armyName());
+
+        log.trace("Fetching player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        log.trace("Fetching claimbuild)");
+        Optional<ClaimBuild> optionalClaimBuild = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+
+        if(optionalClaimBuild.isEmpty()) {
+            log.warn("Claimbuild with name [{}] does not exist in database", dto.claimbuildName());
+            throw ClaimBuildServiceException.noCbWithName(dto.claimbuildName());
+        }
+
+        ClaimBuild claimBuild = optionalClaimBuild.get();
+
+        log.debug("Check if army is already stationed");
+        if(army.getStationedAt() != null) {
+            log.warn("Army [{}] is already stationed at Claimbuild [{}]", army.getName(), claimBuild.getName());
+            throw ArmyServiceException.armyAlreadyStationed(army.getName(), army.getStationedAt().getName());
+        }
+
+        // TODO: Check ally system
+        log.debug("Checking if Claimbuild is in the same or an allied faction of the army");
+        if(!claimBuild.getOwnedBy().equals(army.getFaction()) && !army.getFaction().getAllies().contains(claimBuild.getOwnedBy())) {
+            log.warn("Claimbuild is not in the same or allied faction of the army");
+            throw ArmyServiceException.claimbuildNotInTheSameOrAlliedFaction(claimBuild.getName());
+        }
+
+        log.debug("Checking if executor is allowed to perform the movement");
+        boolean isAllowed = false;
+
+        log.trace("Checking if executor is faction leader of the armies faction");
+        if (army.getFaction().getLeader() != null && player.equals(army.getFaction().getLeader())) {
+            log.debug("Player [{}] is the faction leader, allowed to station army", player.getIgn());
+            isAllowed = true;
+        }
+
+        // TODO: Check lordships
+
+        log.trace("Checking if executor is bound to army");
+        if(!isAllowed && player.equals(army.getBoundTo())) {
+            log.debug("Player [{}] is bound to army, allowed to station army");
+            isAllowed = true;
+        }
+
+        log.debug("Is player [{}] allowed to perform station: {}", player.getIgn(), isAllowed);
+        if(!isAllowed) {
+            log.warn("Player [{}] is not allowed to perform station", player.getIgn());
+            throw ArmyServiceException.noPermissionToPerformThisAction();
+        }
+
+        army.setStationedAt(claimBuild);
+
+        log.debug("Set stationed, performing persist");
+        secureSave(army, armyRepository);
+
+        log.info("Station Army Service Method for Army [{}] completed successfully");
+        return army;
+    }
+    @Transactional(readOnly = false)
     public Army disband(DeleteArmyDto dto, boolean forced) {
         log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
 
