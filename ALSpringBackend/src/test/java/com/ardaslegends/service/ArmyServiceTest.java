@@ -329,7 +329,37 @@ public class ArmyServiceTest {
         var result = assertThrows(ClaimBuildServiceException.class, () -> armyService.station(dto));
 
         assertThat(result.getMessage()).contains("Found no claimbuild with name");
-        log.info("Test passed: station throws SE when no cb founjd");
+        log.info("Test passed: station throws SE when no cb found");
+    }
+
+    @Test
+    void ensureStationThrowsSeWhenArmyIsAlreadyStationed() {
+        log.debug("Testing if station throws Se when army is already stationed");
+
+        StationDto dto = new StationDto(player.getDiscordID(),army.getName(),claimBuild.getName());
+
+        log.debug("Calling station(), expecting ArmySe");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.station(dto));
+
+        assertThat(result.getMessage()).contains("is already stationed at Claimbuild");
+        log.info("Test passed: station throws Se when already stationed");
+    }
+
+    @Test
+    void ensureStationThrowsSeWhenClaimbuildIsNotInTheSameOrAlliedFaction() {
+        log.debug("Testing if station throws Se when claimbuild is not in the same or allied faction");
+
+        claimBuild.setOwnedBy(Faction.builder().name("Kek123").build());
+        army.setStationedAt(null);
+        StationDto dto = new StationDto(player.getDiscordID(),army.getName(),claimBuild.getName());
+
+        log.debug("Calling station(), expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.station(dto));
+
+        assertThat(result.getMessage()).contains("is not in the same or allied faction");
+        log.info("Test passed: station throws Se when claimbuild is not in the same or allied faction");
+
+
     }
 
     @Test
