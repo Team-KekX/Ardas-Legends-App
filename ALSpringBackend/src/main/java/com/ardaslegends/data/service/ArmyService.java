@@ -604,6 +604,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.info("Picked up siege [{}] for army [{}]!", dto.siege(), army);
         return army;
     }
+    public UpkeepDto[] upkeep() {
+
+        log.debug("Fetching all Armies");
+        List<Army> armies = secureFind(ArmyType.ARMY, armyRepository::findAllByArmyType);
+
+    }
     public Army getArmyByName(String armyName) {
         log.debug("Getting army by name [{}]", armyName);
         log.trace("Checking for null");
