@@ -1,6 +1,7 @@
 package com.ardaslegends.data.service.exceptions.army;
 
 import com.ardaslegends.data.domain.Army;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 
@@ -10,6 +11,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String NO_PERMISSION_TO_PERFORM_ACTION = "No permission to perform this action. You need to be either bound, have a lordship rank of that faction or be faction leader";
     private static final String CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION = "Claimbuild '%s' is not in the same or allied faction of army";
     private static final String ARMY_IS_ALREADY_STATIONED = "Army '%s' is already stationed at Claimbuild '%s'!";
+    private static final String ARMY_IS_NOT_STATIONED = "Army '%s' is not stationed at a Claimbuild!";
     private static final String PLAYER_NOT_FACTION_LEADER = "You are not the faction leader or a lord of '%s' and therefore cannot (un)bind other players!";
     private static final String ONLY_FACTION_LEADER_CAN_BIND_WANDERER = "Only the faction leader or a lord can bind wanderers to armies!";
     private static final String NOT_IN_SAME_REGION = "Army/Company '%s' is not in the same region as character '%s'!";
@@ -67,6 +69,7 @@ public class ArmyServiceException extends ServiceException{
     //Disband army
     public static ArmyServiceException notAllowedToDisbandNotSameFaction(String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyName, factionName)); }
     public static ArmyServiceException notAllowedToDisband() { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND); }
+    public static ArmyServiceException armyNotStationed(String armyName) { return new ArmyServiceException((ARMY_IS_NOT_STATIONED.formatted(armyName))); }
 
     //Set free tokens
     public static ArmyServiceException tokenNegative(int tokenAmount) { return new ArmyServiceException(TOKEN_NEGATIVE.formatted(tokenAmount)); }
