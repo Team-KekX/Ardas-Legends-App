@@ -196,6 +196,28 @@ public class ArmyRestControllerTest {
     }
 
     @Test
+    void ensureStationRequestWorksProperly() throws Exception{
+        log.debug("Testing if ArmyRestController station works properly with correct values");
+
+        // Assign
+        StationDto dto = new StationDto("Kek", "kek", "kek");
+
+        when(mockArmyService.station(dto)).thenReturn(new Army());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/station")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: station requests get handled properly");
+    }
+    @Test
     void ensureSetFreeArmyTokensRequestWorksProperly() throws Exception{
         log.debug("Testing if ArmyRestController setFreeArmyTokens works properly with correct values");
 
