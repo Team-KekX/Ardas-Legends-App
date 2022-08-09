@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,15 @@ public class MovementServiceTest {
 
     private MovementService movementService;
 
+    private Faction faction;
+    private Region region1;
+    private Region region2;
+    private RPChar rpchar;
+    private Player player;
+    private Army army;
+    private Movement movement;
+    private ClaimBuild claimBuild;
+
     @BeforeEach
     void setup() {
         mockMovementRepository = mock(MovementRepository.class);
@@ -54,6 +64,20 @@ public class MovementServiceTest {
         mockArmyService = mock(ArmyService.class);
         mockPathfinder = mock(Pathfinder.class);
         movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder);
+
+        region1 = Region.builder().id("90").build();
+        region2 = Region.builder().id("91").build();
+        faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
+        claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
+        rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
+        player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
+        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+
+        when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
+        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockArmyRepository.save(army)).thenReturn(army);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
     }
 
     @Test
