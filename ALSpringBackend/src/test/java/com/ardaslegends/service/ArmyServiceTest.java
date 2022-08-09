@@ -409,6 +409,51 @@ public class ArmyServiceTest {
         log.info("Test passed: station throws Se when player has no permission to perform station");
     }
 
+    // Unstation tests
+
+    @Test
+    void ensureUnstationWorksProperly() {
+        log.debug("Testing if unstation works properly with correct values");
+
+        army.setBoundTo(player);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("Calling unstation, expecting no errors");
+        var result = armyService.unstation(dto);
+
+        assertThat(result.getStationedAt()).isNull();
+        log.info("Test passed: Unstation works correctly with correct values");
+    }
+    @Test
+    void ensureUnstationThrowsSeWhenArmyIsNotStationed() {
+        log.debug("Testing if unstation() throws Se when army is not stationed at a Cb");
+
+        army.setStationedAt(null);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("calling unstation(), expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.unstation(dto));
+
+        assertThat(result.getMessage()).contains("is not stationed at a Claimbuild");
+        log.info("Test passed: unstation throws Se when army is not stationed at a Claimbuild");
+    }
+
+    @Test
+    void ensureUnstationThrowsSeWhenPlayerNotAllowedToPerformAction() {
+        log.debug("Testing if unstation() throws Se when Player does not have the permission to perform the action");
+
+        army.setBoundTo(null);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("Calling unstation(), expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.unstation(dto));
+
+        assertThat(result.getMessage()).contains("No permission to perform this action.");
+    }
+
     @Test
     void ensureBindWorksWhenBindingSelf() {
         log.debug("Testing if army binding works properly!");

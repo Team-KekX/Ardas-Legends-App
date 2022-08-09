@@ -427,6 +427,42 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.info("Station Army Service Method for Army [{}] completed successfully");
         return army;
     }
+
+    @Transactional(readOnly = false)
+    public Army unstation(StationDto dto) {
+        log.debug("Trying to unstation army with data: [{}]", dto);
+
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+
+        log.trace("Fetching army instance");
+        Army army = getArmyByName(dto.armyName());
+
+        log.trace("Fetching player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        if(army.getStationedAt() == null) {
+            log.warn("Army [{}] is not stationed at a cb, so cannot be unstationed!", army.toString());
+            throw ArmyServiceException.armyNotStationed(army.toString());
+        }
+
+        boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
+
+        if(!isAllowed) {
+            log.warn("Player not does not have permission to perform unstation");
+            throw ArmyServiceException.noPermissionToPerformThisAction();
+        }
+
+        log.debug("Player [{}] is allowed to perform unstation");
+
+        army.setStationedAt(null);
+
+        log.debug("Unstationed army [{}], persisting");
+        secureSave(army, armyRepository);
+
+        log.info("Unstation Army Service Method for Army [{}] completed successfully");
+        return army;
+    }
     @Transactional(readOnly = false)
     public Army disband(DeleteArmyDto dto, boolean forced) {
         log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
