@@ -400,7 +400,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         boolean isAllowed = false;
 
         log.trace("Checking if executor is bound to army");
-        if(!isAllowed && player.equals(army.getBoundTo())) {
+        if(player.equals(army.getBoundTo())) {
             log.debug("Player [{}] is bound to army, allowed to station army");
             isAllowed = true;
         }
@@ -408,15 +408,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         // TODO: Check lordships
 
         log.trace("Checking if executor is faction leader of the armies faction");
-        if (army.getFaction().getLeader() != null && player.equals(army.getFaction().getLeader())) {
+        if (player.equals(army.getFaction().getLeader())) {
             log.debug("Player [{}] is the faction leader, allowed to station army", player.getIgn());
             isAllowed = true;
         }
 
-
-
-
-        log.debug("Is player [{}] allowed to perform station: {}", player.getIgn(), isAllowed);
+        log.debug("Is player [{}] allowed to perform station?: {}", player.getIgn(), isAllowed);
         if(!isAllowed) {
             log.warn("Player [{}] is not allowed to perform station", player.getIgn());
             throw ArmyServiceException.noPermissionToPerformThisAction();

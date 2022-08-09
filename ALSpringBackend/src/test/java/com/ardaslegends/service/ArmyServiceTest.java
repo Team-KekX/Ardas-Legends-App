@@ -61,7 +61,7 @@ public class ArmyServiceTest {
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
-        claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
+        claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
@@ -316,6 +316,37 @@ public class ArmyServiceTest {
     // Station Tests
 
     @Test
+    void ensureStationWorksProperlyWhenPlayerIsBoundToArmy() {
+        log.debug("Testing if station works properly when player is bound to army");
+
+        army.setStationedAt(null);
+        army.setBoundTo(player);
+        player.getRpChar().setBoundTo(army);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), claimBuild.getName());
+
+        log.debug("Calling station(), expecting no errors");
+        Army result = armyService.station(dto);
+
+        assertThat(army.getStationedAt()).isEqualTo(claimBuild);
+    }
+
+    @Test
+    void ensureStationWorksProperlyWhenPlayerIsFactionLeader() {
+        log.debug("Testing if station works properly when player is faction leader of army");
+
+        army.setStationedAt(null);
+        army.getFaction().setLeader(player);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), claimBuild.getName());
+
+        log.debug("Calling station(), expecting no errors");
+        Army result = armyService.station(dto);
+
+        assertThat(army.getStationedAt()).isEqualTo(claimBuild);
+    }
+
+    @Test
     void ensureStationThrowsCbSeWhenClaimbuildWithGivenNameDoesNotExist() {
         log.debug("Testing if station throws CB Se when no claimbuild exists with given name");
 
@@ -360,6 +391,22 @@ public class ArmyServiceTest {
         log.info("Test passed: station throws Se when claimbuild is not in the same or allied faction");
 
 
+    }
+
+    @Test
+    void ensureStationThrowsSeWhenPlayerHasNoPermissionToPerformAction() {
+        log.debug("Testing if station throws Se when player is not allowed to perform action");
+
+        army.setStationedAt(null);
+        army.setBoundTo(null);
+
+        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), claimBuild.getName());
+
+        log.debug("Calling station(), expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.station(dto));
+
+        assertThat(result.getMessage()).contains("No permission to perform this action.");
+        log.info("Test passed: station throws Se when player has no permission to perform station");
     }
 
     @Test
