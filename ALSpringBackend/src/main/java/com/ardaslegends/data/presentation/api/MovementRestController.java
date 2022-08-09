@@ -53,8 +53,8 @@ public class MovementRestController extends AbstractRestController {
 
     @PostMapping(PATH_MOVE_ARMY)
     public HttpEntity<Movement> moveArmy(@RequestBody MoveArmyDto dto) {
-
         log.debug("Incoming Post Request to create army movement, data [{}]", dto);
+
         log.trace("WrappedServiceExecution of createArmyMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::createArmyMovement);
 

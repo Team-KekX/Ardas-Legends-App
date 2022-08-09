@@ -12,6 +12,7 @@ import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.army.MoveArmyDto;
 import com.ardaslegends.data.service.dto.player.DiscordIdDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,13 +73,18 @@ public class MovementServiceTest {
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
-        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
+        Path path = Path.builder().path(List.of("90","91")).cost(10).build();
+        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(path).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockArmyService.getArmyByName(army.getName())).thenReturn(army);
         when(mockArmyRepository.save(army)).thenReturn(army);
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
+        when(mockRegionRepository.findById(region1.getId())).thenReturn(Optional.of(region1));
+        when(mockRegionRepository.findById(region2.getId())).thenReturn(Optional.of(region2));
+        when(mockPathfinder.findShortestWay(any(),any(),any(),anyBoolean())).thenReturn(movement.getPath());
     }
 
     @Test
@@ -380,6 +387,83 @@ public class MovementServiceTest {
         log.info("Test passed: cancelRpCharMovement throws ServiceException when no active movement is found!");
     }
 
+    @Test
+    void ensureCreateArmyMovementWorksProperly() {
+        log.debug("Testing if createArmyMovement works properly given the correct values");
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region2.getId());
+        army.setBoundTo(player);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.empty());
+
+        log.debug("Calling createArmyMovement, expecting no errors");
+        var result = movementService.createArmyMovement(dto);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getArmy()).isEqualTo(army);
+        assertThat(result.getPlayer()).isEqualTo(player);
+        assertThat(result.getIsAccepted()).isFalse();
+        assertThat(result.getIsCurrentlyActive()).isTrue();
+        assertThat(result.getIsCharMovement()).isFalse();
+        assertThat(result.getPath()).isEqualTo(movement.getPath());
+
+        log.info("Test passed: createArmyMovement works properly with correct values");
+    }
+    @Test
+    void ensureCreateArmyMovementThrowsSeWhenPlayerIsNotRegistered() {
+        log.debug("Testing if createArmyMovement throws Se when region does not exist");
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), "S2");
+
+        when(mockRegionRepository.findById(dto.toRegion())).thenReturn(Optional.empty());
+
+        log.debug("Calling createArmyMovement, expecting Se");
+        var result = assertThrows(ServiceException.class, () -> movementService.createArmyMovement(dto));
+
+        assertThat(result.getMessage()).contains("Desired destination region 'S2'");
+        log.info("Test passed: createArmyMovement throws Se when region does not exist");
+    }
+
+    @Test
+    void ensureCreateArmyMovementThrowsSeWhenArmyAndDestinationRegionsAreTheSame() {
+        log.debug("Testing if createArmyMovement throws Se when destination region and current army region are the same");
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region1.getId());
+
+        log.debug("Calling createArmyMovement, expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> movementService.createArmyMovement(dto));
+
+        assertThat(result.getMessage()).contains("is already in the desired region");
+        log.info("Test passed: createArmyMovement throws Se when current army region and desired region are the same");
+    }
+
+    @Test
+    void ensureCreateArmyMovementThrowsSeWhenArmyIsAlreadyMoving() {
+        log.debug("Testing if createArmyMovement throws Se when specified army is already moving");
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region2.getId());
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(new Movement()));
+
+        log.debug("Calling createArmyMovement, expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> movementService.createArmyMovement(dto));
+
+        assertThat(result.getMessage()).contains("because it is already in a movement!");
+        log.info("Test passed: createArmyMovement throws Se when Army is already in a movement");
+    }
+
+    @Test
+    void ensureCreateArmyMovementThrowsSeWhenPlayerIsNotALlowedToPerformMovement() {
+        log.debug("Testing if createArmyMovement throws Se when player does not have permission to move");
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region2.getId());
+        army.setBoundTo(null);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.empty());
+
+        log.debug("Calling createArmyMovement, expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> movementService.createArmyMovement(dto));
+
+        assertThat(result.getMessage()).contains("No permission to perform this action");
+        log.info("Test passed: createArmyMovement throws Se when player is not allowed to move");
+    }
     @Test
     void ensureCancelArmyMovementWorks() {
         log.debug("Testing if cancelArmyMovement works with proper data!");

@@ -52,22 +52,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Fetching required data");
 
         log.trace("Fetching player");
-        Optional<Player> fetchedPlayer = secureFind(dto.executorDiscordId(), playerRepository::findByDiscordID);
-
-        if(fetchedPlayer.isEmpty()) {
-            log.warn("Player with discId [{}] was not found", dto.executorDiscordId());
-            throw PlayerServiceException.notRegistered();
-        }
-        Player player = fetchedPlayer.get();
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.trace("Fetching army entity");
-        Optional<Army> fetchedArmy = secureFind(dto.armyName(), armyRepository::findArmyByName);
-
-        if(fetchedArmy.isEmpty()) {
-            log.warn("Army with name [{}] was not found", dto.armyName());
-            throw ArmyServiceException.noArmyWithName(dto.armyName());
-        }
-        Army army = fetchedArmy.get();
+        Army army = armyService.getArmyByName(dto.armyName());
 
         log.trace("Fetching region entity");
         Optional<Region> fetchedRegion = secureFind(dto.toRegion(), regionRepository::findById);
@@ -91,32 +79,11 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if executor is allowed to perform the movement");
-        boolean isAllowed = false;
-
-        log.trace("Checking if the executor is bound to the army");
-        if(Objects.equals(player, army.getBoundTo())) {
-            log.trace("Executor is bound to the army, allowed to move it!");
-            isAllowed = true;
-        }
-
-        log.trace("Checking if the army is in the same faction");
-        if(!isAllowed && !player.getFaction().equals(army.getFaction())) {
-            log.warn("CreateArmyMovement: Movement denied, army and player are not in the same faction");
-            throw ArmyServiceException.cannotMoveArmyDueToPlayerAndArmyBeingInDifferentFactions(army.getName());
-        }
-
-        log.trace("Checking if the player is the faction leader");
-        if(!isAllowed && player.equals(army.getFaction().getLeader())) {
-            log.trace("Executor is the leader of the armies faction, allowed to move it!");
-            isAllowed = true;
-        }
-
-        // TODO: Check Lordship -> once system is implemented, lords may also be allowed to move armies
-        // log.trace("Checking if the player is a Lord and has permission to move armies");
+        boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
 
         if(!isAllowed) {
             log.warn("Player [{}] in Faction [{}] does not have permission to move armies", player.getIgn(), player.getFaction());
-            throw ArmyServiceException.notAllowedToMoveArmiesThatAreNotBoundToYou();
+            throw ArmyServiceException.noPermissionToPerformThisAction();
         }
 
         log.debug("Player [{}] is allowed to move army [{}], executing pathfinder", player, army);
@@ -136,7 +103,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
                 .build();
 
         log.debug("Saving Movement to database");
-        movement = secureSave(movement, movementRepository);
+        secureSave(movement, movementRepository);
 
         log.info("Successfully saved movement [{}]", movement);
         return movement;
