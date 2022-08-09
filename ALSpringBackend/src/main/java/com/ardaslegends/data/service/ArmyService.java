@@ -609,6 +609,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Fetching all Armies");
         List<Army> armies = secureFind(ArmyType.ARMY, armyRepository::findAllByArmyType);
 
+        return null;
     }
     public Army getArmyByName(String armyName) {
         log.debug("Getting army by name [{}]", armyName);
