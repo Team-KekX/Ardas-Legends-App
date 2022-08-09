@@ -1,5 +1,6 @@
 package com.ardaslegends.data.service.utils;
 
+import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,25 @@ public class ServiceUtils {
         checkNulls(obj, Arrays.stream(obj.getClass().getDeclaredFields())
                 .map(field -> field.getName())
                 .collect(Collectors.toList()));
+    }
+
+    public static boolean boundLordLeaderPermission(Player player, Army army) {
+        log.debug("Checking if bound - lord - leader permission is fulfilled for Army [{}, Faction: {}], Player [{}, Faction:{}]", army.getName(), army.getFaction(), player.getIgn(), player.getFaction());
+
+        if(player.equals(army.getBoundTo())) {
+            log.debug("Player [{}] is bound to army, allowed action", player.getIgn());
+            return true;
+        }
+
+        // TODO: Implement Lordship Permissions
+
+        if(player.equals(army.getFaction().getLeader())) {
+            log.debug("Player [{}] is faction leader of army, allowed action", player.getIgn());
+            return true;
+        }
+
+        log.debug("Player [{}] is not allowed to perform action as per bound - lord - leader permission set!", player.getIgn());
+        return false;
     }
 
     private static <T> List<Field> getFieldsFromNames(T obj, List<String> fieldNames) {
