@@ -316,22 +316,6 @@ public class ArmyServiceTest {
     // Station Tests
 
     @Test
-    void ensureStationWorksProperlyWhenPlayerIsBoundToArmy() {
-        log.debug("Testing if station works properly when player is bound to army");
-
-        army.setStationedAt(null);
-        army.setBoundTo(player);
-        player.getRpChar().setBoundTo(army);
-
-        StationDto dto = new StationDto(player.getDiscordID(), army.getName(), claimBuild.getName());
-
-        log.debug("Calling station(), expecting no errors");
-        Army result = armyService.station(dto);
-
-        assertThat(army.getStationedAt()).isEqualTo(claimBuild);
-    }
-
-    @Test
     void ensureStationWorksProperlyWhenPlayerIsFactionLeader() {
         log.debug("Testing if station works properly when player is faction leader of army");
 
