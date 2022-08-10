@@ -604,12 +604,24 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.info("Picked up siege [{}] for army [{}]!", dto.siege(), army);
         return army;
     }
-    public UpkeepDto[] upkeep() {
+    public List<UpkeepDto> upkeep() {
 
-        log.debug("Fetching all Armies");
-        List<Army> armies = secureFind(ArmyType.ARMY, armyRepository::findAllByArmyType);
+        log.debug("Fetching all Factions");
+        List<Faction> factions = secureFind(factionRepository::findAll);
 
-        return null;
+        log.trace("Instantiating upkeepDto List");
+        List<UpkeepDto> upkeepDtoList = new ArrayList<>();
+
+        log.debug("Iterating through factions:");
+        factions.forEach(faction -> {
+            String factionName = faction.getName();
+            int armyCount = faction.getArmies().size();
+            int upkeep = armyCount * 1000;
+            log.debug("Adding: Faction [{}], Army Count: [{}], Upkeep [{}]", factionName, armyCount, upkeep);
+            upkeepDtoList.add(new UpkeepDto(factionName, armyCount, upkeep));
+        });
+        
+        return upkeepDtoList;
     }
     public Army getArmyByName(String armyName) {
         log.debug("Getting army by name [{}]", armyName);
