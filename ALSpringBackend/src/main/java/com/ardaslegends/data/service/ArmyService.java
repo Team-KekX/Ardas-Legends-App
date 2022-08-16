@@ -613,14 +613,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         List<UpkeepDto> upkeepDtoList = new ArrayList<>();
 
         log.debug("Iterating through factions:");
-        factions.forEach(faction -> {
-            String factionName = faction.getName();
-            int armyCount = faction.getArmies().size();
-            int upkeep = armyCount * 1000;
-            log.debug("Adding: Faction [{}], Army Count: [{}], Upkeep [{}]", factionName, armyCount, upkeep);
-            upkeepDtoList.add(new UpkeepDto(factionName, armyCount, upkeep));
-        });
-        
+        factions.parallelStream().
+                forEach(faction -> {
+                    long armyCount = faction.getArmies().stream()
+                            .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))
+                            .count();
+                    long upkeep = armyCount * 1000;
+                    log.debug("Adding: Faction [{}], Army Count: [{}], Upkeep [{}]", faction.getName(), armyCount, upkeep);
+                    upkeepDtoList.add(new UpkeepDto(faction.getName(), armyCount, upkeep));
+                });
+
         return upkeepDtoList;
     }
     public Army getArmyByName(String armyName) {
