@@ -10,6 +10,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 
 @Slf4j
@@ -28,6 +30,8 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_UNSTATION = "/unstation";
     private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
     private static final String PATH_PICK_SIEGE = "/pick-siege";
+    private static final String PATH_UPKEEP = "/upkeep";
+
 
     private final ArmyService armyService;
 
@@ -151,4 +155,16 @@ public class ArmyRestController extends AbstractRestController {
         log.info("Sending successful pickSiege request for [{}]", army.getName());
         return ResponseEntity.ok(army);
     }
+
+    @GetMapping(PATH_UPKEEP)
+    public HttpEntity<List<UpkeepDto>> upkeep() {
+        log.debug("Incoming upkeep request");
+
+        log.debug("Calling ArmyService.upkeep()");
+        var upkeepList = wrappedServiceExecution(armyService::upkeep);
+
+        log.info("Sending successful upkeep request");
+        return ResponseEntity.ok(upkeepList);
+    }
+
 }

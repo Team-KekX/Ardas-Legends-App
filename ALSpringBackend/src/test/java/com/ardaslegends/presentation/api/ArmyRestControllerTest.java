@@ -15,10 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -263,7 +266,7 @@ public class ArmyRestControllerTest {
     }
 
     @Test
-    void ensurePickSiegeRequestWorksProperly() throws Exception{
+    void ensurePickSiegeRequestWorksProperly() throws Exception {
         log.debug("Testing if ArmyRestController pickSiege works properly with correct values");
 
         // Assign
@@ -281,6 +284,17 @@ public class ArmyRestControllerTest {
                         .patch("http://localhost:8080/api/army/pick-siege")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: pickSiege requests get handled properly");
+    }
+
+    @Test
+    void ensureUpkeepWorksProperly() throws Exception {
+        log.debug("Testing if ArmyRestController upkeep works properly");
+
+        when(mockArmyService.upkeep()).thenReturn(List.of());mockMvc.perform(MockMvcRequestBuilders
+                        .get("http://localhost:8080/api/army/upkeep"))
+                .andDo(print())
                 .andExpect(status().isOk());
         log.info("Test passed: pickSiege requests get handled properly");
     }
