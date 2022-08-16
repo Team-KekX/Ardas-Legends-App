@@ -1005,4 +1005,39 @@ public class ArmyServiceTest {
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeNotAvailable(siege, claimBuild.getName(), claimBuild.getSiege()).getMessage());
         log.info("Test passed: pickSiege throws ArmyServiceException when siege is not available in cb!");
     }
+
+    @Test
+    void ensureUpkeepWorksCorrectly() {
+        log.debug("Testing if upkeep works correctly");
+
+        Army army1 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army2 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army3 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army4= Army.builder().armyType(ArmyType.ARMY).build();
+
+
+        Army army5= Army.builder().armyType(ArmyType.TRADING_COMPANY).build();
+        Army army6 = Army.builder().armyType(ArmyType.TRADING_COMPANY).build();
+
+        Faction faction1 = Faction.builder().name("Gondor")
+                .armies(List.of(army1, army2, army3, army4, army5, army6)).build();
+
+        Faction faction2 = Faction.builder().name("Mordor")
+                .armies(List.of(army3, army1, army6, army5)).build();
+
+        when(mockFactionRepository.findAll()).thenReturn(List.of(faction1, faction2));
+
+        List<UpkeepDto> dto = armyService.upkeep();
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.size()).isEqualTo(2);
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Gondor")).findFirst().isPresent()).isTrue();
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Gondor")).findFirst().get().upkeep()).isEqualTo(4000);
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Gondor")).findFirst().get().numberOfArmies()).isEqualTo(4);
+
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Mordor")).findFirst().isPresent()).isTrue();
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Mordor")).findFirst().get().upkeep()).isEqualTo(2000);
+        assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Mordor")).findFirst().get().numberOfArmies()).isEqualTo(2);
+
+    }
 }
