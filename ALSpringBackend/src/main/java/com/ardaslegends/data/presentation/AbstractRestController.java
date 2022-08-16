@@ -8,10 +8,26 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractRestController {
 
+    public <T> T wrappedServiceExecution(Supplier<T> supplier) {
+        if(supplier == null) {
+            log.warn("Null Supplier passed in wrappedServiceExecution");
+            throw new InternalServerException("Passed Null SupplierFunction in wrappedServiceExecution", null);
+        }
+        try {
+            return supplier.get();
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
+            throw new BadArgumentException(e.getMessage(), e);
+        } catch (ServiceException e) {
+            log.warn("Encountered exception while updating player: Type: {} - Msg: {}", e.getClass().getSimpleName(), e.getMessage());
+            throw new InternalServerException(e.getMessage(), e);
+        }
+    }
     public <T extends AbstractDomainEntity, G> T wrappedServiceExecution(G dto, Function<G, T> func) {
         if(func == null)
             throw new InternalServerException("Passed Null Function in wrappedServiceExecution", null);
