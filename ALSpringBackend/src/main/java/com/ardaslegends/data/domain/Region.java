@@ -1,6 +1,7 @@
 package com.ardaslegends.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public final class Region extends AbstractDomainEntity {
     @JoinTable(name = "faction_claimed_regions",
             joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
             inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
+    @JsonManagedReference
     private Set<Faction> claimedBy; //the list of factions which the region is claimed by
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")

@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -35,6 +36,7 @@ public final class RPChar extends AbstractDomainEntity {
 
     @OneToOne(mappedBy = "boundTo")
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
+    @JsonManagedReference
     private Army boundTo; //the army that is bound to this character
 
     @Override

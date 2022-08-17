@@ -1,5 +1,7 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +32,7 @@ public final class Army extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))
     @NotNull(message = "Army: Faction must not be null")
+    @JsonManagedReference
     private Faction faction; //the faction this army belongs to
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -39,6 +42,7 @@ public final class Army extends AbstractDomainEntity {
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
+    @JsonBackReference
     private Player boundTo; //rp character the army is currently bound to
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")

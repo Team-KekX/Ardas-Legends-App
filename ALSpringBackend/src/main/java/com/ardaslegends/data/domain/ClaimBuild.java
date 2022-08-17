@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,6 +34,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "owned_by", foreignKey = @ForeignKey(name = "fk_owned_by"))
     @NotNull(message = "Claimbuild: ownedBy must not be null")
+    @JsonManagedReference
     private Faction ownedBy; //faction which owns this CB
 
     @Embedded
