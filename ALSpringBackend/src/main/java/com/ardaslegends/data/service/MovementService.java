@@ -69,13 +69,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if army is already in the desired region");
         if(dto.toRegion().equals(army.getCurrentRegion().getId())) {
             log.warn("Army is already in desired region [{}], no movement required", dto.toRegion());
-            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.toString(),dto.toRegion());
+            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(),dto.toRegion());
         }
 
         log.debug("Checking if army is currently performing a movement");
         if(secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue).isPresent()) {
             log.warn("Army [{}] is currently performing a movement", dto.armyName());
-            throw ArmyServiceException.cannotMoveArmyDueToArmyBeingInMovement(army.getName());
+            throw ArmyServiceException.cannotMoveArmyDueToArmyBeingInMovement(army.getArmyType(),army.getName());
         }
 
         log.debug("Checking if executor is allowed to perform the movement");

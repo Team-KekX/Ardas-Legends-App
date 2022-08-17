@@ -505,7 +505,7 @@ public class MovementServiceTest {
         Army army = Army.builder().name(armyName).build();
         MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
 
-        when(mockArmyService.getArmyByName(armyName)).thenThrow(ArmyServiceException.noArmyWithName(armyName));
+        when(mockArmyService.getArmyByName(armyName)).thenThrow(ArmyServiceException.noArmyWithName("Army or Company", armyName));
 
         //Act / Assert
         log.trace("Calling cancelArmyMovement and asserting it throws ArmyServiceException");
@@ -513,7 +513,7 @@ public class MovementServiceTest {
 
         //Assert
         log.trace("Asserting");
-        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName(armyName).getMessage());
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName("Army or Company", armyName).getMessage());
 
         log.info("Test passed: cancelArmyMovement throws Service Exception when Army not found!");
     }

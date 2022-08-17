@@ -155,7 +155,7 @@ public class ArmyServiceTest {
         log.debug("Calling createArmy()");
         var result = assertThrows(ArmyServiceException.class, () -> armyService.createArmy(dto));
 
-        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(player.getFaction().getName(), claimBuild.getOwnedBy().getName()).getMessage());
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(player.getFaction().getName(), claimBuild.getOwnedBy().getName(), dto.armyType()).getMessage());
         log.info("Test passed: createArmy throws ArmyServiceException when claimBuild is from another faction");
     }
     @Test
@@ -732,7 +732,7 @@ public class ArmyServiceTest {
         log.debug("Calling unbind()");
         var exception = assertThrows(ArmyServiceException.class, () -> armyService.unbind(dto));
 
-        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noPlayerBoundToArmy(army.getName()).getMessage());
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noPlayerBoundToArmy(army.getArmyType(), army.getName()).getMessage());
         log.info("Test passed: unbind() throws ArmyServiceException when no player is bound to the army!");
     }
 
@@ -749,7 +749,7 @@ public class ArmyServiceTest {
         log.trace("Expecting ArmyServiceException");
         var exception = assertThrows(ArmyServiceException.class, () -> armyService.getArmyByName(armyName));
 
-        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName(armyName).getMessage());
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noArmyWithName("Army or Company", armyName).getMessage());
         log.info("Test passed: getArmyByName() correctly throws ASE when no Army has been found");
     }
 
@@ -785,7 +785,7 @@ public class ArmyServiceTest {
         var exception = assertThrows(ArmyServiceException.class, () -> armyService.disband(dto, false));
 
         log.debug("Asserting that error has correct message");
-        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName()).getMessage());
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getArmyType(), army.getName(), army.getFaction().getName()).getMessage());
         log.info("Test passed: disbandArmy throws ArmyServiceException when player is in other faction than army");
     }
 
@@ -800,7 +800,7 @@ public class ArmyServiceTest {
         var exception = assertThrows(ArmyServiceException.class, () -> armyService.disband(dto, false));
 
         log.debug("Asserting that error has correct message");
-        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisband().getMessage());
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.notAllowedToDisband(army.getArmyType()).getMessage());
         log.info("Test passed: disbandArmy throws ArmyServiceException when player is not faction leader");
     }
 

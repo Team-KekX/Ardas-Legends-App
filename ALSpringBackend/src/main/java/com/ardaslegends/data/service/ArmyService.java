@@ -75,14 +75,15 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if the Player has the same faction as the Claimbuild");
         if(!inputClaimBuild.getOwnedBy().equals(fetchedPlayer.getFaction())) {
             log.warn("Player [{}] and Claimbuild [{}] not in the same faction!");
-            throw ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(fetchedPlayer.getFaction().getName(), inputClaimBuild.getOwnedBy().getName());
+            throw ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(fetchedPlayer.getFaction().getName(), inputClaimBuild.getOwnedBy().getName(), ArmyType.ARMY);
         }
 
         log.debug("Checking if ClaimBuild can create another army");
 
+        // TODO: Possible error -> Ofc it counts every type of army object, including trading companies, replace this with stream that filters for armies
         if(inputClaimBuild.getCreatedArmies().size() >= inputClaimBuild.getType().getMaxArmies()) {
             log.warn("ClaimBuild [{}] already has max amount of armies created! Armies {}",inputClaimBuild ,inputClaimBuild.getCreatedArmies() );
-            throw ArmyServiceException.maxArmyOrCompany(inputClaimBuild.toString(), inputClaimBuild.getCreatedArmies().toString());
+            throw ArmyServiceException.maxArmyOrCompany(ArmyType.ARMY,inputClaimBuild.toString(), inputClaimBuild.getCreatedArmies().toString());
         }
 
         log.debug("Checking if token count does not exceed 30");
@@ -99,7 +100,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Calculated Token count is [{}]", tokenCount);
         if(tokenCount > 30) {
             log.warn("Token count exceeds 30 [{}]", tokenCount);
-            throw ArmyServiceException.tooHighTokenCount(tokenCount);
+            throw ArmyServiceException.tooHighTokenCount(dto.armyType(),tokenCount);
         }
 
         // TODO: Relay info if army is free or costs something
@@ -148,14 +149,14 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if army and player are in the same faction");
         if(!player.getFaction().equals(army.getFaction())) {
             log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());
-            throw ArmyServiceException.armyAndPlayerInDifferentFaction(player.getFaction().toString(), army.getFaction().toString());
+            throw ArmyServiceException.armyAndPlayerInDifferentFaction(army.getArmyType(), player.getFaction().toString(), army.getFaction().toString());
         }
 
         log.debug("Checking if army is stationed at a CB");
         // Army is null or Claimbuild does not have a House of healing
         if(army.getStationedAt() == null || !army.getStationedAt().getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING)) {
             log.warn("Army [{}] is not stationed at a claimbuild");
-            throw ArmyServiceException.needToStationArmyAtCbWithHouseOfHealing(army.toString());
+            throw ArmyServiceException.needToStationArmyAtCbWithHouseOfHealing(army.getArmyType(), army.toString());
         }
 
         log.debug("All checks validated, persisting now");
@@ -183,13 +184,13 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if army is healing");
         if(!army.isHealing()) {
             log.warn("Army [{}] is not healing, cant stop it!");
-            throw ArmyServiceException.armyIsNotHealing(army.toString());
+            throw ArmyServiceException.armyIsNotHealing(army.getArmyType(), army.toString());
         }
 
         log.debug("Checking if army and player are in the same faction");
         if(!player.getFaction().equals(army.getFaction())) {
             log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());
-            throw ArmyServiceException.armyAndPlayerInDifferentFaction(player.getFaction().toString(), army.getFaction().toString());
+            throw ArmyServiceException.armyAndPlayerInDifferentFaction(army.getArmyType(), player.getFaction().toString(), army.getFaction().toString());
         }
 
         army.setHealing(false);
@@ -250,25 +251,25 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 //TODO Check for Lords as well
                 if(!executor.equals(executor.getFaction().getLeader())) {
                     log.warn("Player [{}] is not faction leader of [{}] and therefore cannot bind wanderers!", executor, executor.getFaction());
-                    throw ArmyServiceException.onlyLeaderCanBindWanderer();
+                    throw ArmyServiceException.onlyLeaderCanBindWanderer(army.getArmyType());
                 }
             }
             else {
                 log.warn("Army [{}] and player [{}] are not in the same faction (army: [{}], player: [{}])", army.getName(), targetPlayer, army.getFaction(), targetPlayer.getFaction());
-                throw ArmyServiceException.notSameFaction(army.getName(), targetPlayer.getFaction().getName(), army.getFaction().getName());
+                throw ArmyServiceException.notSameFaction(army.getArmyType(), army.getName(), targetPlayer.getFaction().getName(), army.getFaction().getName());
             }
         }
 
         log.debug("Checking if army and player are in the same region");
         if (!army.getCurrentRegion().equals(targetPlayer.getRpChar().getCurrentRegion())) {
             log.warn("Army and player are not in the same region!");
-            throw ArmyServiceException.notInSameRegion(army.getName(), targetPlayer.getRpChar().getName());
+            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetPlayer.getRpChar().getName());
         }
 
         log.debug("Checking if army is already bound to player");
         if (army.getBoundTo() != null) {
             log.warn("Army [{}] is already bound to another player [{}]!", army.getName(), army.getBoundTo());
-            throw ArmyServiceException.alreadyBound(army.getName(), army.getBoundTo().getIgn());
+            throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getIgn());
         }
 
         log.debug("Checking if army is in an active movement");
@@ -276,7 +277,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(armyActiveMove.isPresent()) {
             String destinationRegion =  armyActiveMove.get().getPath().getDestination();
             log.warn("Army [{}] is currently moving to region [{}] and therefore cannot be bound to player [{}]!", army.getName(), destinationRegion, targetPlayer);
-            throw ArmyServiceException.cannotBindArmyIsMoving(army.getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindArmyIsMoving(army.getArmyType(), army.getName(), destinationRegion);
         }
 
         log.debug("Checking if rp char is in an active movement");
@@ -284,7 +285,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getPath().getDestination();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
-            throw ArmyServiceException.cannotBindCharIsMoving(army.getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),army.getName(), destinationRegion);
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
@@ -322,7 +323,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Checking if the army has a player bound to it");
         if(boundPlayer == null) {
             log.warn("There is no player bound to the army [{}]", army);
-            throw ArmyServiceException.noPlayerBoundToArmy(army.getName());
+            throw ArmyServiceException.noPlayerBoundToArmy(army.getArmyType(), army.getName());
         }
 
         /*
@@ -386,14 +387,14 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Check if army is already stationed");
         if(army.getStationedAt() != null) {
             log.warn("Army [{}] is already stationed at Claimbuild [{}]", army.getName(), claimBuild.getName());
-            throw ArmyServiceException.armyAlreadyStationed(army.getName(), army.getStationedAt().getName());
+            throw ArmyServiceException.armyAlreadyStationed(army.getArmyType(), army.getName(), army.getStationedAt().getName());
         }
 
         // TODO: Check ally system
         log.debug("Checking if Claimbuild is in the same or an allied faction of the army");
         if(!claimBuild.getOwnedBy().equals(army.getFaction()) && !army.getFaction().getAllies().contains(claimBuild.getOwnedBy())) {
             log.warn("Claimbuild is not in the same or allied faction of the army");
-            throw ArmyServiceException.claimbuildNotInTheSameOrAlliedFaction(claimBuild.getName());
+            throw ArmyServiceException.claimbuildNotInTheSameOrAlliedFaction(army.getArmyType(), claimBuild.getName());
         }
 
         log.debug("Checking if executor is allowed to perform the movement");
@@ -429,7 +430,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(army.getStationedAt() == null) {
             log.warn("Army [{}] is not stationed at a cb, so cannot be unstationed!", army.toString());
-            throw ArmyServiceException.armyNotStationed(army.toString());
+            throw ArmyServiceException.armyNotStationed(army.getArmyType(), army.toString());
         }
 
         boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
@@ -466,7 +467,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if the faction of player and army are same");
         if(!forced && !player.getFaction().equals(army.getFaction())) {
             log.warn("disbandArmy: Player [{}] and army [{}] do not share the same faction ([{}] and [{}])", player, army, player.getFaction(), army.getFaction());
-            throw ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getName(), army.getFaction().getName());
+            throw ArmyServiceException.notAllowedToDisbandNotSameFaction(army.getArmyType(), army.getName(), army.getFaction().getName());
         }
 
         Faction faction = player.getFaction();
@@ -483,7 +484,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(!isAllowed) {
             log.warn("disbandArmy: Player [{}] is neither faction leader or lord of [{}] and therefore cannot disband army [{}]!", player, faction, army);
-            throw ArmyServiceException.notAllowedToDisband();
+            throw ArmyServiceException.notAllowedToDisband(army.getArmyType());
         }
 
         log.debug("Deleting army [{}]", army);
@@ -636,7 +637,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Checking if the army exists");
         if(fetchedArmy.isEmpty()) {
             log.warn("No army with the name [{}] found!",armyName);
-            throw ArmyServiceException.noArmyWithName(armyName);
+            throw ArmyServiceException.noArmyWithName("Army or Company", armyName);
         }
         Army army = fetchedArmy.get();
         log.debug("Found army [{}] - type: [{}]", army.getName(), army.getArmyType().name());
