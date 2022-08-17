@@ -7,12 +7,12 @@ const http = require("http");
 module.exports = {
     async execute(interaction) {
         const data = {
-            executorDiscordId: interaction.options.member.id,
+            executorDiscordId: interaction.member.id,
             targetDiscordId: interaction.options.getUser('target').id,
             armyName: interaction.options.getString('army-name')
         }
 
-        axios.patch( 'http://' + serverIP + serverPort + 'api/army/bind', data)
+        axios.patch( 'http://' + serverIP + ':' + serverPort + '/api/army/bind-army', data)
             .then(async function(response) {
 
                 const player = response.data.boundTo.ign;
@@ -27,7 +27,12 @@ module.exports = {
                 await interaction.reply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Error when trying to bind")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]});
             })
     },
 };
