@@ -1,17 +1,39 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {UNBIND} = require('../../../configs/embed_thumbnails.json');
+const {serverIP, serverPort} = require("../../../configs/config.json");
+const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
-        const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
-        const character = capitalizeFirstLetters(interaction.options.getString('character-name').toLowerCase());
-        const replyEmbed = new MessageEmbed()
-            .setTitle(`Unbind army`)
-            .setColor('RED')
-            .setDescription(`${character} has been unbound from the army ${name}.`)
-            .setThumbnail(UNBIND)
-            .setTimestamp()
-        await interaction.reply({embeds: [replyEmbed]});
+
+        const data = {
+            executorDiscordId: interaction.member.id,
+            targetDiscordId: interaction.options.getUser("target").id,
+            armyName: interaction.options.getString("army-name")
+        }
+
+        axios.patch("http://" + serverIP + ":" + serverPort + "/api/army/unbind-army", data)
+            .then(async function(response) {
+
+                const character = response.data.boundTo.rpchar.name;
+                const armyName = response.data.name;
+
+                const replyEmbed = new MessageEmbed()
+                    .setTitle(`Unbind army`)
+                    .setColor('RED')
+                    .setDescription(`${character} has been unbound from the army ${armyName}.`)
+                    .setThumbnail(UNBIND)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]});
+            })
+            .catch(async function(error) {
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Error while trying to unbind!")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]})
+            })
     },
 };

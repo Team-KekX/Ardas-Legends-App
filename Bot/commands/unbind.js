@@ -8,14 +8,14 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('army')
-                .setDescription('Unbinds a character to an army')
+                .setDescription('Unbinds a character from an army')
                 .addStringOption(option =>
                     option.setName('army-name')
                         .setDescription('The name of the army')
                         .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character')
+                .addUserOption(option =>
+                    option.setName("target")
+                        .setDescription("The player you want to unbind, PING that discord account!")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
