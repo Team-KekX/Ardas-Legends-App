@@ -14,10 +14,12 @@ module.exports = {
                         .setDescription('The name of the army')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character')
+                    option.setName("target")
+                        .setDescription("Player that gets bound to the army, discord-ping target")
                         .setRequired(true))
         )
+
+
         .addSubcommand(subcommand =>
             subcommand
                 .setName('trader')
