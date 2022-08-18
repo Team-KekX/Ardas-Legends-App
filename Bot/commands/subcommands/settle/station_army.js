@@ -7,9 +7,9 @@ module.exports = {
         const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const claimbuild = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
         const replyEmbed = new MessageEmbed()
-            .setTitle(`Settle army`)
+            .setTitle(`Station army`)
             .setColor('RED')
-            .setDescription(`${name} has now settled in ${claimbuild}.`)
+            .setDescription(`${name} is now stationed at ${claimbuild}.`)
             .setThumbnail(SETTLE)
             .setTimestamp()
         await interaction.reply({embeds: [replyEmbed]});
