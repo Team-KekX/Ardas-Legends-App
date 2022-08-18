@@ -13,16 +13,6 @@ module.exports = {
                     option.setName('army-name')
                         .setDescription('The name of the army')
                         .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('claimbuild-name')
-                        .setDescription('The name of the character')
-                        .setRequired(true))
-                .addIntegerOption(option =>
-                    option.setName('tokens')
-                        .setDescription('How many tokens to heal the army')
-                        .setRequired(true)
-                        .setMaxValue(30)
-                        .setMinValue(0))
         )
         .addSubcommand(subcommand =>
             subcommand
