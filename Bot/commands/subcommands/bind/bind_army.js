@@ -6,22 +6,24 @@ const http = require("http");
 
 module.exports = {
     async execute(interaction) {
+
+        target = interaction.options.getUser("target");
+
         const data = {
             executorDiscordId: interaction.member.id,
-            targetDiscordId: interaction.options.getUser('target').id,
+            targetDiscordId: target.id,
             armyName: interaction.options.getString('army-name')
         }
 
         axios.patch( 'http://' + serverIP + ':' + serverPort + '/api/army/bind-army', data)
             .then(async function(response) {
 
-                const player = response.data.boundTo.ign;
                 const armyName = response.data.name;
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Bind Character to Army`)
                     .setColor('GREEN')
-                    .setDescription(`Bound player "${player}" to army "${armyName}"`)
+                    .setDescription(`Bound player "${target}" to army "${armyName}"`)
                     .setThumbnail(BIND)
                     .setTimestamp()
                 await interaction.reply({embeds: [replyEmbed]});
