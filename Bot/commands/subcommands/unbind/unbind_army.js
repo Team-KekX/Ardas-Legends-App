@@ -1,4 +1,3 @@
-const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {UNBIND} = require('../../../configs/embed_thumbnails.json');
 const {serverIP, serverPort} = require("../../../configs/config.json");
