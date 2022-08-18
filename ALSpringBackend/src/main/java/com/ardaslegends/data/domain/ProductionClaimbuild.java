@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public final class ProductionClaimbuild extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("productionSiteId")
     @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_production_site_id"))
+    @JsonBackReference
     private ProductionSite productionSite;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

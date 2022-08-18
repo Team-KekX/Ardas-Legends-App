@@ -54,6 +54,7 @@ public final class Army extends AbstractDomainEntity {
     private List<String> sieges = new ArrayList<>(); //list of siege equipment this
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "stationed_at", foreignKey = @ForeignKey(name = "fk_stationed_at"))
+    @JsonManagedReference
     private ClaimBuild stationedAt; //claimbuild where this army is stationed
 
     @NotNull(message = "Army: freeTokens must not be null")
@@ -62,6 +63,7 @@ public final class Army extends AbstractDomainEntity {
     private boolean isHealing = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_origin_claimbuild"))
+    @JsonManagedReference
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
 
     @Override

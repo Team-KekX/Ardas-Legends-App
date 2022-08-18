@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -34,6 +35,7 @@ public final class Region extends AbstractDomainEntity {
     private Set<Faction> claimedBy; //the list of factions which the region is claimed by
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")
+    @JsonBackReference
     private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
 
     @JsonIgnore
