@@ -7,7 +7,7 @@ const axios = require("axios");
 module.exports = {
     async execute(interaction) {
 
-        name = interaction.options.getString("army-name");
+        name = interaction.options.getString("name");
         claimbuild = interaction.options.getString("claimbuild-name");
 
         const data = {
@@ -19,7 +19,7 @@ module.exports = {
         axios.patch("http://" + serverIP + ":" + serverPort + "/api/army/station", data)
             .then(async function(response) {
                 const replyEmbed = new MessageEmbed()
-                    .setTitle(`Station army`)
+                    .setTitle(`Stationed! `)
                     .setColor('GREEN')
                     .setDescription(`${name} is now stationed at ${claimbuild}.`)
                     .setThumbnail(STATION_ARMY)

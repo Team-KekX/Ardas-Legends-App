@@ -10,8 +10,8 @@ module.exports = {
                 .setName("army-or-company")
                 .setDescription("Unstation army or company from a claimbuild")
                 .addStringOption(option =>
-                    option.setName("army-name")
-                        .setDescription("Name of the army you want to unstation")
+                    option.setName("name")
+                        .setDescription("Name of the army or company you want to unstation")
                         .setRequired(true)
                 )
         ),

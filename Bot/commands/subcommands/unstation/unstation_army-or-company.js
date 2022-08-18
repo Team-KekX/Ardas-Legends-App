@@ -7,7 +7,7 @@ module.exports = {
     async execute(interaction) {
 
         executor = interaction.member.id;
-        armyName = interaction.options.getString("army-name");
+        armyName = interaction.options.getString("name");
 
         const data = {
             executorDiscordId: executor,
@@ -17,7 +17,7 @@ module.exports = {
         axios.patch("http://" + serverIP + ":" + serverPort + "/api/army/unstation", data)
             .then(async function(response) {
                 const replyEmbed = new MessageEmbed()
-                    .setTitle("Unstationed army from Claimbuild")
+                    .setTitle("Unstationed from Claimbuild")
                     .setColor("GREEN")
                     .setDescription(`${armyName} has been unstationed`)
                     .setThumbnail(STATION_ARMY)

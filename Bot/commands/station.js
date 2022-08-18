@@ -33,11 +33,11 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('army')
-                .setDescription('Station an army in a claimbuild.')
+                .setName('army-or-company')
+                .setDescription('Station an army or company at a claimbuild.')
                 .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
+                    option.setName('name')
+                        .setDescription('The name of the army or company')
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('claimbuild-name')
