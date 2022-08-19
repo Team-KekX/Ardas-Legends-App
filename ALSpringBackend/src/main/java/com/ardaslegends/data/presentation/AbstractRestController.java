@@ -28,7 +28,7 @@ public abstract class AbstractRestController {
             throw new InternalServerException(e.getMessage(), e);
         }
     }
-    public <T extends AbstractDomainEntity, G> T wrappedServiceExecution(G dto, Function<G, T> func) {
+    public <T, G> T wrappedServiceExecution(G dto, Function<G, T> func) {
         if(func == null)
             throw new InternalServerException("Passed Null Function in wrappedServiceExecution", null);
 

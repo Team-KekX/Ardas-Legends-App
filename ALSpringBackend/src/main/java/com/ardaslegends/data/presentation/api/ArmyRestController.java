@@ -31,6 +31,7 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_SET_FREE_TOKENS = "/set-free-tokens";
     private static final String PATH_PICK_SIEGE = "/pick-siege";
     private static final String PATH_UPKEEP = "/upkeep";
+    private static final String PATH_UPKEEP_PER_FACTION = "/upkeep/{faction}";
 
 
     private final ArmyService armyService;
@@ -167,4 +168,14 @@ public class ArmyRestController extends AbstractRestController {
         return ResponseEntity.ok(upkeepList);
     }
 
+    @GetMapping(PATH_UPKEEP_PER_FACTION)
+    public HttpEntity<UpkeepDto> upkeepPerFaction(@PathVariable("faction") String factionName) {
+        log.debug("Incoming upkeep per faction request for faction: [{}]", factionName);
+
+        log.debug("Calling ArmyService.upkeepPerFaction()");
+        UpkeepDto result = wrappedServiceExecution(factionName, armyService::getUpkeepOfFaction);
+
+        log.info("Sending successful upkeepPerFaction Request for faction: [{}]", factionName);
+        return ResponseEntity.ok(result);
+    }
 }

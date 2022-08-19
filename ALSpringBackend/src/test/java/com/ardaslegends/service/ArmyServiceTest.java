@@ -10,6 +10,7 @@ import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.UnitTypeService;
 import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -1039,5 +1040,50 @@ public class ArmyServiceTest {
         assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Mordor")).findFirst().get().upkeep()).isEqualTo(2000);
         assertThat(dto.stream().filter(upkeepDto -> upkeepDto.faction().equals("Mordor")).findFirst().get().numberOfArmies()).isEqualTo(2);
 
+    }
+
+    @Test
+    void ensureUpkeepPerFactionWorksProperly() {
+        log.debug("Testing if upkeepPerFaction works properly with correct values");
+
+        String factionName = "Great Kingdom of Morrivendell";
+
+        Army army1 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army2 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army3 = Army.builder().armyType(ArmyType.ARMY).build();
+        Army army4= Army.builder().armyType(ArmyType.ARMY).build();
+
+
+        Army army5= Army.builder().armyType(ArmyType.TRADING_COMPANY).build();
+        Army army6 = Army.builder().armyType(ArmyType.TRADING_COMPANY).build();
+
+        Faction faction1 = Faction.builder().name(factionName)
+                .armies(List.of(army1, army2, army3, army4, army5, army6)).build();
+
+        when(mockFactionRepository.findById(factionName)).thenReturn(Optional.of(faction1));
+
+        log.debug("Calling armyService.upkeepPerFaction, expecting no errors");
+        var result = armyService.getUpkeepOfFaction(factionName);
+
+        assertThat(result).isNotNull();
+        assertThat(result.faction()).isEqualTo(factionName);
+        assertThat(result.numberOfArmies()).isEqualTo(4);
+        assertThat(result.upkeep()).isEqualTo(4000);
+
+    }
+
+    @Test
+    void ensureUpkeepPerFactionThrowsSeWhenProvidedFactionNameDoesNotHaveAFactionInDatabase() {
+        log.debug("Testing if upkeepPerFaction rightly throws a FactionSe when no faction with provided faction name was found in database");
+
+        String factionName = "I dont exist";
+
+        when(mockFactionRepository.findById(factionName)).thenReturn(Optional.empty());
+
+        log.debug("Calling armyService.upkeepPerFaction(), expecting Se");
+        var result = assertThrows(FactionServiceException.class, () -> armyService.getUpkeepOfFaction(factionName));
+
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.NO_FACTION_WITH_NAME_FOUND.formatted(factionName));
+        log.info("UpkeepPerFaction correctly throws Se, with correct message, when provided factionName does not exist in database");
     }
 }

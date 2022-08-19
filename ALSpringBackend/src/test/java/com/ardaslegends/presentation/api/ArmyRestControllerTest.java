@@ -292,10 +292,22 @@ public class ArmyRestControllerTest {
     void ensureUpkeepWorksProperly() throws Exception {
         log.debug("Testing if ArmyRestController upkeep works properly");
 
-        when(mockArmyService.upkeep()).thenReturn(List.of());mockMvc.perform(MockMvcRequestBuilders
+        when(mockArmyService.upkeep()).thenReturn(List.of());
+        mockMvc.perform(MockMvcRequestBuilders
                         .get("http://localhost:8080/api/army/upkeep"))
-                .andDo(print())
                 .andExpect(status().isOk());
-        log.info("Test passed: pickSiege requests get handled properly");
+        log.info("Test passed: upkeep requests get handled properly");
+    }
+
+    @Test
+    void ensureUpkeepPerFactionWorksProperly() throws Exception {
+        log.debug("Testing if ArmyRestController upkeepPerFaction works properly");
+
+        when(mockArmyService.getUpkeepOfFaction("Gondor")).thenReturn(new UpkeepDto(null, 0, 0));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("http://localhost:8080/api/army/upkeep/Gondor"))
+                .andExpect(status().isOk());
+        log.info("Test passed: upkeepPerFaction requests get handled properly");
     }
 }

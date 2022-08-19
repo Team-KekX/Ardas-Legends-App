@@ -6,6 +6,8 @@ import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
+import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
@@ -604,6 +606,30 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.info("Picked up siege [{}] for army [{}]!", dto.siege(), army);
         return army;
+    }
+
+    public UpkeepDto getUpkeepOfFaction(String factionName) {
+        log.debug("Getting upkeep of faction [{}]", factionName);
+
+        Objects.requireNonNull(factionName);
+
+        log.debug("Fetching faction [{}] from database", factionName);
+        Optional<Faction> fetchedFaction = secureFind(factionName, factionRepository::findById);
+
+        if(fetchedFaction.isEmpty()) {
+            log.warn("No faction found with name [{}] in database", factionName);
+            throw FactionServiceException.noFactionWithNameFound(factionName);
+        }
+
+        log.debug("Calculating upkeep of faction [{}]", factionName);
+        int armyCount = (int) fetchedFaction.get().getArmies().stream()
+                .filter(army -> ArmyType.ARMY.equals((army.getArmyType())))
+                .count();
+
+        int upkeep = 1000 * armyCount;
+
+        log.info("Upkeep Request - Faction: {}, army count: {}, upkeep: {}", factionName, armyCount, upkeep);
+        return new UpkeepDto(fetchedFaction.get().getName(), armyCount, upkeep);
     }
     public List<UpkeepDto> upkeep() {
 
