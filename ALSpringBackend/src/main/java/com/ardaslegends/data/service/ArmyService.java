@@ -614,7 +614,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Objects.requireNonNull(factionName);
 
         log.debug("Fetching faction [{}] from database", factionName);
-        Optional<Faction> fetchedFaction = secureFind(factionName, factionRepository::findById);
+        Optional<Faction> fetchedFaction = secureFind(factionName, factionRepository::findFactionByName);
 
         if(fetchedFaction.isEmpty()) {
             log.warn("No faction found with name [{}] in database", factionName);

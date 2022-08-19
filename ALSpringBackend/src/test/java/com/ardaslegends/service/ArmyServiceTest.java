@@ -1060,7 +1060,7 @@ public class ArmyServiceTest {
         Faction faction1 = Faction.builder().name(factionName)
                 .armies(List.of(army1, army2, army3, army4, army5, army6)).build();
 
-        when(mockFactionRepository.findById(factionName)).thenReturn(Optional.of(faction1));
+        when(mockFactionRepository.findFactionByName(factionName)).thenReturn(Optional.of(faction1));
 
         log.debug("Calling armyService.upkeepPerFaction, expecting no errors");
         var result = armyService.getUpkeepOfFaction(factionName);
@@ -1078,7 +1078,7 @@ public class ArmyServiceTest {
 
         String factionName = "I dont exist";
 
-        when(mockFactionRepository.findById(factionName)).thenReturn(Optional.empty());
+        when(mockFactionRepository.findFactionByName(factionName)).thenReturn(Optional.empty());
 
         log.debug("Calling armyService.upkeepPerFaction(), expecting Se");
         var result = assertThrows(FactionServiceException.class, () -> armyService.getUpkeepOfFaction(factionName));

@@ -6,28 +6,20 @@ const axios = require("axios");
 module.exports = {
     async execute(interaction) {
 
-        axios.get(`http://${serverIP}:${serverPort}/api/army/upkeep`)
+        const factionName = interaction.options.getString("faction-name")
+
+        axios.get(`http://${serverIP}:${serverPort}/api/army/upkeep/${factionName}`)
             .then(async function (response) {
-                console.log(response.data);
-                var upkeepArray = response.data;
-                var arrayLength = upkeepArray.length
+                var upkeepDto = response.data;
                 var replyEmbed = new MessageEmbed()
-                    .setTitle("Upkeep of all Factions")
+                    .setTitle(`Upkeep for faction: ${factionName}`)
                     .setColor("GREEN")
-
-                for (var i = 0; i < 25; i++) {
-                    object = upkeepArray[i];
-                    console.log(object)
-                    replyEmbed.addFields(
-                        {name: 'Faction', value: object.faction, inline: true},
-                        {name: "Armies", value: object.numberOfArmies.toString(), inline: true},
-                        {name: "Upkeep", value: object.upkeep.toString(), inline: true}
+                    .addFields(
+                        {name: "Faction", value:upkeepDto.faction, inline: true  },
+                        {name: "Number of Armies", value:upkeepDto.numberOfArmies.toString(), inline: true  },
+                        {name: "Upkeep", value:upkeepDto.upkeep.toString(), inline: true  },
                     )
-                }
-
-
-                replyEmbed.setTimestamp()
-
+                    .setTimestamp()
                 await interaction.reply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {

@@ -9,6 +9,12 @@ module.exports = {
             option
                 .setName("upkeep")
                 .setDescription("Shows each faction, their amount of armies and their upkeep for those armies")
+                .addStringOption(option =>
+                    option
+                        .setName("faction-name")
+                        .setDescription("The name of the faction")
+                        .setRequired(true)
+                )
         ),
 
     async execute(interaction) {
