@@ -24,19 +24,6 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('trader')
-                .setDescription('Creates a trading company')
-                .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('claimbuild-name')
-                        .setDescription('The name of the originating claimbuild')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName('rpchar')
                 .setDescription('Creates a Roleplay Character')
                 .addStringOption(option =>
@@ -54,27 +41,6 @@ module.exports = {
                 .addBooleanOption(option =>
                     option.setName('pvp')
                         .setDescription('Should the character participate in PvP?')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('armed-company')
-                .setDescription('Creates an armed company')
-                .addStringOption(option =>
-                    option.setName('armed-company-name')
-                        .setDescription('The name of the armed company')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character bound to army/trader')
                         .setRequired(true))
         ),
     async execute(interaction) {
