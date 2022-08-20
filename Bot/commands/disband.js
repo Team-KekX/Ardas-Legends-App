@@ -16,15 +16,6 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('trader')
-                .setDescription('Disbands a trader company')
-                .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader company')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName('armed-company')
                 .setDescription('Breaks the armed company into separate trader and army. Character gets unbound.')
                 .addStringOption(option =>
