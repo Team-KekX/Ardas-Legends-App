@@ -22,6 +22,17 @@ module.exports = {
                     option.setName('discord-id')
                         .setDescription('The Discord ID of the user')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("army-or-company")
+                .setDescription("Staff Command - Deletes army or company")
+                .addStringOption(option =>
+                    option
+                        .setName("name")
+                        .setDescription("Name of the army or company")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command. Does not call addSubcommands() function because it has
