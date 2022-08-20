@@ -71,6 +71,23 @@ module.exports = {
                     option.setName('new-pvp')
                         .setDescription('The new PvP status of your rp char')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("free-tokens")
+                .setDescription("Sets the amount of free tokens an army has")
+                .addStringOption(option =>
+                    option
+                        .setName("army-name")
+                        .setDescription("The name of the army of which the free tokens will be changed")
+                        .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option
+                        .setName("tokens")
+                        .setDescription("The new amount of free tokens which will be set")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
