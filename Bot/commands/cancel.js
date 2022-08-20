@@ -8,7 +8,16 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('character')
-                .setDescription('Cancels a roleplay character move')
+                .setDescription('Cancels a roleplay character movement')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('army')
+                .setDescription('Cancels an army movement')
+                .addStringOption(option =>
+                    option.setName('army-name')
+                        .setDescription('Name of the army')
+                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
