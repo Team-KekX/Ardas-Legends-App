@@ -7,11 +7,11 @@ module.exports = {
         .setDescription('Disbands an entity (trader, army etc.)')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('army')
-                .setDescription('Disbands an army')
+                .setName('army-or-company')
+                .setDescription('Disbands an army or company')
                 .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
+                    option.setName('name')
+                        .setDescription('The name of the army / company')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
