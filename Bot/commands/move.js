@@ -13,11 +13,7 @@ module.exports = {
                     option.setName('army-name')
                         .setDescription('The army\'s name')
                         .setRequired(true))
-                .addIntegerOption(option =>
-                    option.setName('start-region')
-                        .setDescription('The region from where the army starts moving')
-                        .setRequired(true))
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option.setName('destination-region')
                         .setDescription('The destination of the army')
                         .setRequired(true))
