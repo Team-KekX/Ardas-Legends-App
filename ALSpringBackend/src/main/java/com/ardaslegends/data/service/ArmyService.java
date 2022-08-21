@@ -35,6 +35,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final ClaimBuildRepository claimBuildRepository;
 
     // TODO: Need to test
+    @Transactional(readOnly = false)
     public Army createArmy(CreateArmyDto dto) {
         log.debug("Creating army with data [{}]", dto);
 
