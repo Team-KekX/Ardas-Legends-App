@@ -17,6 +17,7 @@ import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,7 +74,7 @@ public class MovementServiceTest {
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         Path path = Path.builder().path(List.of("90","91")).cost(10).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(path).build();
 
@@ -434,6 +435,25 @@ public class MovementServiceTest {
 
         assertThat(result.getMessage()).contains("is already in the desired region");
         log.info("Test passed: createArmyMovement throws Se when current army region and desired region are the same");
+    }
+
+    @Test
+    void ensureCreateArmyMovementThrowsSEWhenArmyCreatedLessThan24hAgo() {
+        log.debug("Testing if createArmyMovement throws ASE when army was created less than 24h ago!");
+
+        army.setCreatedAt(LocalDateTime.now().minusMinutes(59).minusHours(23));
+        log.debug("Now: [{}]", LocalDateTime.now());
+        log.debug("Created: [{}]", army.getCreatedAt());
+
+
+        MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region2.getId());
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.empty());
+
+        log.debug("Calling createArmyMovement, expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> movementService.createArmyMovement(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotMoveArmyWasCreatedRecently(army.getName(), 1).getMessage());
+        log.info("Test passed: createArmyMovement throws ASE when army was created less than 24h ago!");
     }
 
     @Test

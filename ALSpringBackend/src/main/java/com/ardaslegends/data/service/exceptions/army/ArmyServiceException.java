@@ -22,6 +22,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String MAX_ARMYTYPE_CREATED = "The claimbuild '%s' has already created the maximum amount of type %s: %s";
     private static final String CANNOT_MOVE_ARMYTYPE_DUE_TO_PLAYER_AND_ARMY_BEING_IN_DIFFERENT_FACTIONS = "%s '%s' could not be moved since it is in a different faction!";
     private static final String CANNOT_MOVE_ARMYTYPE_ALREADY_IN_REGION = "%s'%s' is already in the desired region of '%s'";
+    private static final String CANNOT_MOVE_ARMY_JUST_CREATED = "The army '%s' was created less than 24 hours ago and cannot move for '%d' hour(s)!";
     private static final String CANNOT_BIND_ARMYTYPE_IS_MOVING = "The %s '%s' is currently moving to '%s' - cancel the movement before binding to it!";
     private static final String CANNOT_BIND_CHAR_IS_MOVING = "The character '%s' is currently moving to '%s' - cancel the movement before binding to %s!";
     private static final String CANNOT_CREATE_ARMYTYPE_WHEN_IN_DIFFERENT_FACTIONS = "You are in faction '%s' and the claimbuild is in faction '%s' - you can only create a %s from claimbuilds of your own faction!";
@@ -59,6 +60,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException onlyLeaderCanBindWanderer(ArmyType armyType) {return new ArmyServiceException(ONLY_FACTION_LEADER_CAN_BIND_WANDERER.formatted(armyType.getName()));}
     public static ArmyServiceException cannotMoveArmyDueToArmyBeingInMovement(ArmyType armyType, String armyName) {return new ArmyServiceException(CANNOT_MOVE_ARMYTYPE_DUE_TO_ALREADY_MOVING.formatted(armyType.getName(), armyName));}
     public static ArmyServiceException cannotMoveArmyDueToPlayerAndArmyBeingInDifferentFactions(ArmyType armyType, String armyName) {return new ArmyServiceException(CANNOT_MOVE_ARMYTYPE_DUE_TO_PLAYER_AND_ARMY_BEING_IN_DIFFERENT_FACTIONS.formatted(armyType.getName(), armyName)); }
+    public static ArmyServiceException cannotMoveArmyWasCreatedRecently(String armyName, long hoursUntilMove) { return new ArmyServiceException(CANNOT_MOVE_ARMY_JUST_CREATED.formatted(armyName, hoursUntilMove)); }
     public static ArmyServiceException cannotMoveArmyAlreadyInRegion(ArmyType armyType, String armyName, String region) {return new ArmyServiceException(CANNOT_MOVE_ARMYTYPE_ALREADY_IN_REGION.formatted(armyType.getName(), armyName,region));}
     public static ArmyServiceException cannotBindArmyIsMoving(ArmyType armyType, String armyName, String region) {return new ArmyServiceException((CANNOT_BIND_ARMYTYPE_IS_MOVING).formatted(armyType.getName(), armyName, region));}
     public static ArmyServiceException cannotBindCharIsMoving(ArmyType armyType, String charName, String region) {return new ArmyServiceException((CANNOT_BIND_CHAR_IS_MOVING).formatted(charName, region, armyType.getName()));}

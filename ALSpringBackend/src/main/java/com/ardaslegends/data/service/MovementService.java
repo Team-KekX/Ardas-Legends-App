@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -76,6 +77,14 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         if(secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue).isPresent()) {
             log.warn("Army [{}] is currently performing a movement", dto.armyName());
             throw ArmyServiceException.cannotMoveArmyDueToArmyBeingInMovement(army.getArmyType(),army.getName());
+        }
+
+        log.debug("Checking if army is older than 24h");
+        if(LocalDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
+            log.warn("Army [{}] is younger than 24h and therefore cannot move!", army);
+            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), LocalDateTime.now()).toHours();
+            log.debug("Army can move again in [{}] hours", hoursUntilMove);
+            throw ArmyServiceException.cannotMoveArmyWasCreatedRecently(army.getName(), hoursUntilMove);
         }
 
         log.debug("Checking if executor is allowed to perform the movement");

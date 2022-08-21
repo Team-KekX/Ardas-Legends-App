@@ -244,8 +244,7 @@
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "date-fns": "$date-fns",
-    "lit": "$lit",
-    "line-awesome": "$line-awesome"
+    "lit": "$lit"
   },
   "vaadin": {
     "dependencies": {

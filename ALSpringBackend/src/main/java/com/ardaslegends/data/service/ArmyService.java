@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,6 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final UnitTypeService unitTypeService;
     private final ClaimBuildRepository claimBuildRepository;
 
-    // TODO: Need to test
     @Transactional(readOnly = false)
     public Army createArmy(CreateArmyDto dto) {
         log.debug("Creating army with data [{}]", dto);
@@ -121,7 +121,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 inputClaimBuild,
                 30-tokenCount,
                 false,
-                inputClaimBuild);
+                inputClaimBuild,
+                LocalDateTime.now());
 
         log.trace("Adding the army to each unit");
         Army finalArmy = army;
