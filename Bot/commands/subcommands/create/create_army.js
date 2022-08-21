@@ -1,7 +1,7 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {CREATE} = require('../../../configs/embed_thumbnails.json');
-const {serverIP, serverPort} = require("../../../../configs/config.json");
+const {serverIP, serverPort} = require("../../../configs/config.json");
 const axios = require("axios");
 
 module.exports = {
