@@ -1,7 +1,9 @@
 package com.ardaslegends.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +21,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "armies")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class Army extends AbstractDomainEntity {
 
     @Id
@@ -32,7 +37,6 @@ public final class Army extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))
     @NotNull(message = "Army: Faction must not be null")
-    @JsonManagedReference
     private Faction faction; //the faction this army belongs to
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -42,7 +46,6 @@ public final class Army extends AbstractDomainEntity {
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
-    @JsonBackReference
     private Player boundTo; //rp character the army is currently bound to
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")
@@ -54,7 +57,6 @@ public final class Army extends AbstractDomainEntity {
     private List<String> sieges = new ArrayList<>(); //list of siege equipment this
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "stationed_at", foreignKey = @ForeignKey(name = "fk_stationed_at"))
-    @JsonManagedReference
     private ClaimBuild stationedAt; //claimbuild where this army is stationed
 
     @NotNull(message = "Army: freeTokens must not be null")
@@ -63,7 +65,6 @@ public final class Army extends AbstractDomainEntity {
     private boolean isHealing = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_origin_claimbuild"))
-    @JsonManagedReference
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
 
     @Override

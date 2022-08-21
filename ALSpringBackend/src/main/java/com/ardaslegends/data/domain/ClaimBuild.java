@@ -1,7 +1,9 @@
 package com.ardaslegends.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +21,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "claimbuilds")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class ClaimBuild extends AbstractDomainEntity {
     @Id
     private String name; //unique, name of the claimbuild
@@ -26,7 +31,6 @@ public final class ClaimBuild extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))
     @NotNull(message = "Claimbuild: Region must not be null")
-    @JsonManagedReference
     private Region region; //the region the claimbuild is in
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +40,6 @@ public final class ClaimBuild extends AbstractDomainEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "owned_by", foreignKey = @ForeignKey(name = "fk_owned_by"))
     @NotNull(message = "Claimbuild: ownedBy must not be null")
-    @JsonManagedReference
     private Faction ownedBy; //faction which owns this CB
 
     @Embedded
@@ -44,19 +47,15 @@ public final class ClaimBuild extends AbstractDomainEntity {
     private Coordinate coordinates; //coordinate locations
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "stationedAt")
-    @JsonBackReference
     private List<Army> stationedArmies = new ArrayList<>(); //armies which are stationed in this CB
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
-    @JsonBackReference
     private List<Army> createdArmies = new ArrayList<>(); //armies which were created from this CB. Usually only 1 army, but capitals can create 2
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
-    @JsonBackReference
     private List<Army> createdTradingCompanies = new ArrayList<>(); //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "claimbuild")
-    @JsonManagedReference
     private List<ProductionClaimbuild> productionSites = new ArrayList<>(); //the production sites in this cb
 
     @ElementCollection(targetClass = SpecialBuilding.class)

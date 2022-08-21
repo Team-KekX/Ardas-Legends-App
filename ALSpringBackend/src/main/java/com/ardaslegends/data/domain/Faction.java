@@ -32,16 +32,12 @@ public final class Faction extends AbstractDomainEntity {
     private Player leader; //the player who leads this faction
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
-    @JsonBackReference
     private List<Army> armies; //all current armies of this faction
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
-    @JsonIgnore
     private List<Player> players; //all current players of this faction
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "claimedBy")
-    @JsonBackReference
     private Set<Region> regions; //all regions this faction claims
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")
-    @JsonBackReference
     private List<ClaimBuild> claimBuilds; //all claimbuilds of this faction
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
