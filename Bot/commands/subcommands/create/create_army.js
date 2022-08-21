@@ -1,13 +1,14 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {CREATE} = require('../../../configs/embed_thumbnails.json');
+const {serverIP, serverPort} = require("../../../../configs/config.json");
 const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
         const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const claimbuild = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
-        const units = interaction.options.getString('unit-list')
+        const units = interaction.options.getString('units');
 
 
         const data = {
