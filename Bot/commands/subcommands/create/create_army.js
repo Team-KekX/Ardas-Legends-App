@@ -1,18 +1,38 @@
 const {capitalizeFirstLetters} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {CREATE} = require('../../../configs/embed_thumbnails.json');
+const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
         const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const claimbuild = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
-        const units = capitalizeFirstLetters(interaction.options.getString('unit-list').toLowerCase());
-        const replyEmbed = new MessageEmbed()
-            .setTitle(`Create army`)
-            .setColor('RED')
-            .setDescription(`The army ${name} comprised of ${units}, has been created at ${claimbuild}.`)
-            .setThumbnail(CREATE)
-            .setTimestamp()
-        await interaction.reply({embeds: [replyEmbed]});
+        const units = interaction.options.getString('unit-list')
+
+
+        const data = {
+            executorDiscordId: interaction.member.id,
+            name: name,
+            armyType: 'ARMY',
+            claimBuildName: claimbuild,
+            unitString: units
+        }
+
+        axios.post(`http://${serverIP}:${serverPort}/api/army/create`, data)
+            .then(async function(response) {
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Army created!")
+                    .setTimestamp()
+
+                await interaction.reply({embeds: [replyEmbed]})
+            })
+            .catch(async function(error) {
+                const replyEmbed =new MessageEmbed()
+                    .setTitle("Error while creating army")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]})
+            })
     },
 };

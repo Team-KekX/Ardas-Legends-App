@@ -18,10 +18,11 @@ module.exports = {
                         .setDescription('The name of the originating claimbuild')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('unit-list')
-                        .setDescription('The list of units in the army')
+                    option.setName('units')
+                        .setDescription('The list of units in the army - example syntax = Gondorian Ranger:5-Gondorian Soldier:5')
                         .setRequired(true))
-        )
+
+
         .addSubcommand(subcommand =>
             subcommand
                 .setName('rpchar')
