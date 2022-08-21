@@ -1086,4 +1086,46 @@ public class ArmyServiceTest {
         assertThat(result.getMessage()).isEqualTo(FactionServiceException.NO_FACTION_WITH_NAME_FOUND.formatted(factionName));
         log.info("UpkeepPerFaction correctly throws Se, with correct message, when provided factionName does not exist in database");
     }
+
+    @Test
+    void ensureConvertUnitInputIntoUnitsWorksProperly() {
+        log.debug("Testing if convertUnitInputIntoUnits works properly with correct values");
+
+        String unitString = " Gondorian Ranger:5-Mordor Orc:3-Kek:50    ";
+
+        var result = armyService.convertUnitInputIntoUnits(unitString);
+
+        assertThat(result).isNotNull();
+        assertThat(result.length).isEqualTo(3);
+        assertThat(result[0].unitTypeName()).isEqualTo("Gondorian Ranger");
+        assertThat(result[0].amount()).isEqualTo(5);
+        assertThat(result[1].unitTypeName()).isEqualTo("Mordor Orc");
+        assertThat(result[1].amount()).isEqualTo(3);
+        assertThat(result[2].unitTypeName()).isEqualTo("Kek");
+        assertThat(result[2].amount()).isEqualTo(50);
+
+        log.info("Test passed: ConvertUnitInputIntoUnits works properly with correct values");
+    }
+
+    @Test
+    void ensureValidateUnitStringWorksCorrectly() {
+        log.debug("Testing if validateUnitString works properly with correct values");
+
+        String unitString = "UNit:2-Units:60";
+        armyService.validateUnitString(unitString);
+
+        log.info("Test passed: validateUnitString works properly with correct values");
+    }
+
+    @Test
+    void ensureValidateUnitStringThrowsSeWhenNamePartIsWrong() {
+
+        String unitString = "Un-It";
+        assertThrows(ArmyServiceException.class, () -> armyService.validateUnitString(unitString));
+        String unitString2 = "Unit:5s-";
+        assertThrows(ArmyServiceException.class, () -> armyService.validateUnitString(unitString2));
+        String unitString3 = "Unit:55-";
+        assertThrows(ArmyServiceException.class, () -> armyService.validateUnitString(unitString3));
+
+    }
 }

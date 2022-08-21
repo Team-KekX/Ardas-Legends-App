@@ -40,8 +40,10 @@ public class ArmyRestController extends AbstractRestController {
     public HttpEntity<Army> createArmy(@RequestBody CreateArmyDto dto) {
         log.debug("Incoming createArmy Request: Data [{}]", dto);
 
+        var units = armyService.convertUnitInputIntoUnits(dto.unitString());
+        CreateArmyDto dtoWithUnits = new CreateArmyDto(dto.executorDiscordId(), dto.name(), dto.armyType(), dto.claimBuildName(), units);
         log.debug("Calling ArmyService.createArmy");
-        Army createdArmy = wrappedServiceExecution(dto, armyService::createArmy);
+        Army createdArmy = wrappedServiceExecution(dtoWithUnits, armyService::createArmy);
 
         log.info("Sending successful createArmy Request for [{}]", createdArmy.getName());
         return ResponseEntity.ok(createdArmy);

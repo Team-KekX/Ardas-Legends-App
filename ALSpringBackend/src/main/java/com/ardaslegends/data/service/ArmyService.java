@@ -14,6 +14,7 @@ import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceExce
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.server.authorization.ServerWebExchangeDelegatingServerAccessDeniedHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +38,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     public Army createArmy(CreateArmyDto dto) {
         log.debug("Creating army with data [{}]", dto);
 
-        ServiceUtils.checkAllNulls(dto);
-        ServiceUtils.checkAllBlanks(dto);
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "name", "armyType", "claimBuildName", "units"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "name", "claimBuildName"));
         Arrays.stream(dto.units()).forEach(ServiceUtils::checkAllBlanks);
 
         log.debug("Fetching required Data");
@@ -58,8 +59,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Assembling Units Map, fetching units");
         var unitTypes = Arrays.stream(dto.units())
                 .collect(Collectors.toMap(
-                        unitTypeDto -> unitTypeService.getUnitTypeByName(unitTypeDto.unitTypeName()),
-                        UnitTypeDto::amount
+                        unitTypeDto -> unitTypeService.getUnitTypeByName(unitTypeDto.unitTypeName()), // Key
+                        UnitTypeDto::amount, // Value
+                        ((integer, integer2) -> integer + integer2) // Merge function, called on duplicate key
                 ));
 
         log.trace("Fetching Claimbuild with name [{}]", dto.claimBuildName());
@@ -668,5 +670,94 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Army army = fetchedArmy.get();
         log.debug("Found army [{}] - type: [{}]", army.getName(), army.getArmyType().name());
         return army;
+    }
+
+    public UnitTypeDto[] convertUnitInputIntoUnits(String unitString) {
+        log.debug("Converting unitString into units: [{}]", unitString);
+
+        unitString = unitString
+                .stripLeading()
+                .stripTrailing();
+
+        validateUnitString(unitString);
+
+        // Unit:5-Gondor Unit:2
+        List<UnitTypeDto> units = new ArrayList<>();
+        String[] unitNameAmountSplit = unitString.split("-");
+
+        for (String unitNameAmount : unitNameAmountSplit) {
+            log.trace("Splitting [{}]", unitNameAmount);
+            String[] unit = unitNameAmount.split(":");
+            log.trace("Length of split: [{}]", unit.length);
+
+            String unitName = unit[0];
+            int amount = Integer.parseInt(unit[1]);
+
+            units.add(new UnitTypeDto(unitName, amount));
+        }
+
+        return units.toArray(new UnitTypeDto[0]);
+    }
+
+    public void validateUnitString(String unitString) {
+        log.debug("Validating unitString [{}]", unitString);
+        // The two defining syntax chars in the unitString
+        char[] syntaxChars = {':', '-'};
+
+        // Expected Syntax char, first one is :, then alternating between - and :
+        char expectedChar = ':';
+
+        // Is also true at the start, from then every time a expectedChar is switched
+        boolean firstCharAfterExpected = true;
+        boolean possibleEnd = false;
+
+        log.trace("Starting validation, unitString length: [{}]", unitString.length());
+
+        for(int i = 0; i < unitString.length(); i++) {
+            log.trace("Index: [{}]", i);
+            log.trace("Expected next syntax char [{}]", expectedChar);
+            char currentChar = unitString.charAt(i);
+            log.trace("Current char: [{}]", currentChar);
+
+            if(expectedChar == ':') {
+                log.trace(": bracket");
+                if(currentChar == expectedChar && !firstCharAfterExpected) {
+                    log.trace("Current char is same as : [{}] and not first char after expected", currentChar);
+                    expectedChar = '-';
+                    firstCharAfterExpected = true;
+                }
+                else if (Character.isLetter(currentChar) || Character.isSpaceChar(currentChar)) {
+                    log.trace("Char [{}] is letter or space, going into next iteration", currentChar);
+                    firstCharAfterExpected = false;
+                }
+                else {
+                    log.warn("Char [{}] at [{}] has created an error in unitString [{}], next expected [{}]", currentChar, i, unitString, expectedChar);
+                    throw ArmyServiceException.invalidUnitString(unitString);
+                }
+            }
+            else {
+                log.trace("- bracket");
+                if (Character.isDigit(currentChar)) {
+                    log.trace("Char [{}] is a digit, possible end after this", currentChar);
+                    firstCharAfterExpected = false;
+                    possibleEnd = true;
+                }
+                else if (currentChar == expectedChar && !firstCharAfterExpected) {
+                    log.trace("Current char is same as - [{}] and not first char after expected", currentChar);
+                    expectedChar = ':';
+                    firstCharAfterExpected = true;
+                    possibleEnd = false;
+                }
+                else {
+                    log.warn("Char [{}] at [{}] has created an error in unitString [{}], next expected [{}]", currentChar, i, unitString, expectedChar);
+                    throw ArmyServiceException.invalidUnitString(unitString);
+                }
+            }
+
+            if((i + 1) == unitString.length() && !possibleEnd) {
+                log.warn("UnitSring is at end but not valid end");
+                throw ArmyServiceException.invalidUnitString(unitString);
+            }
+        }
     }
 }

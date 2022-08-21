@@ -27,6 +27,9 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_CREATE_ARMYTYPE_WHEN_IN_DIFFERENT_FACTIONS = "You are in faction '%s' and the claimbuild is in faction '%s' - you can only create a %s from claimbuilds of your own faction!";
     private static final String ARMYTYPE_AND_PLAYER_IN_DIFFERENT_FACTION = "The %s '%s' and the player '%s' are not in the same faction - Cant execute command!";
     private static final String ARMYTYPE_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING = "The %s '%s' is not stationed at a CB with a House of Healing, cannot start healing - Please station the %s at CB";
+    private static final String INVALID_UNIT_STRING = "The string '%s' is not grammatically correct \n " +
+            "A correct string would be: Gondorian Ranger:5-Mordor Orc:2 \n" +
+            "Actual Grammar=[Unit name]:[Integer amount]-[Next Unit name]:[next integer amount]";
     //Disband army
     private static final String NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION = "The %s '%s' is part of the faction '%s' - only the faction leader can disband it!";
     private static final String NOT_ALLOWED_TO_DISBAND = "Only faction leaders and lords with permission are allowed to disband %s!";
@@ -46,7 +49,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException claimbuildNotInTheSameOrAlliedFaction(ArmyType armyType, String claimbuildName) { return new ArmyServiceException(CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION.formatted(claimbuildName, armyType.getName())); }
     public static ArmyServiceException armyAlreadyStationed(ArmyType armyType, String armyName, String claimbuildName) { return new ArmyServiceException(ARMYTYPE_IS_ALREADY_STATIONED.formatted(armyType.getName(), armyName, claimbuildName)); }
     public static ArmyServiceException notFactionLeader(String factionName) { return new ArmyServiceException(PLAYER_NOT_FACTION_LEADER.formatted(factionName)); }
-
+    public static ArmyServiceException invalidUnitString(String unitString) { return new ArmyServiceException(INVALID_UNIT_STRING.formatted(unitString)); }
     public static ArmyServiceException notInSameRegion(ArmyType armyType, String armyName, String charName) { return new ArmyServiceException(NOT_IN_SAME_REGION.formatted(armyType.getName(), armyName, charName)); }
     public static ArmyServiceException notSameFaction(ArmyType armyType, String armyName, String playerFactionName, String armyFactionName) { return new ArmyServiceException(NOT_SAME_FACTION.formatted(armyType.getName(), armyName, playerFactionName, armyType.getName(), armyFactionName)); }
     public static ArmyServiceException alreadyBound(ArmyType armyType, String armyName, String playerName) { return new ArmyServiceException(ALREADY_BOUND.formatted(armyType.getName(), armyName, playerName)); }
