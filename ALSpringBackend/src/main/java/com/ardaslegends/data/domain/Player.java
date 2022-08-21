@@ -1,5 +1,7 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,6 +15,9 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "players")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "ign")
 public final class Player extends AbstractDomainEntity {
 
     @Id

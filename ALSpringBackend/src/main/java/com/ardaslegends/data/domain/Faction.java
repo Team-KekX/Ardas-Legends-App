@@ -1,7 +1,9 @@
 package com.ardaslegends.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -18,6 +20,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "factions")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class Faction extends AbstractDomainEntity {
 
     @Id
