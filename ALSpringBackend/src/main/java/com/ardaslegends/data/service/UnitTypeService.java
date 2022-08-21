@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
     public UnitType getUnitTypeByName(String name) {
         log.debug("Getting UnitType with name [{}]", name);
 
-        ServiceUtils.checkAllNulls(name);
-        ServiceUtils.checkAllBlanks(name);
+        Objects.requireNonNull(name);
+        ServiceUtils.checkBlankString(name, "name");
 
         log.debug("Fetching unit with name [{}]", name);
         Optional<UnitType> fetchedUnitType = secureFind(name, unitTypeRepository::findById);

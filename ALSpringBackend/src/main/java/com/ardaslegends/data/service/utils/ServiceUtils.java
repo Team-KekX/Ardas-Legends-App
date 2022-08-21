@@ -24,10 +24,7 @@ public class ServiceUtils {
             if(field.getType().equals(String.class)){
                 try {
                     String strField = (String) field.get(obj);
-                    if(strField.isBlank()) {
-                        log.warn("{} must not be blank!", field.getName());
-                        throw new IllegalArgumentException("%s must not be blank!".formatted(field.getName()));
-                    }
+                    checkBlankString(strField, field.getName());
                 }
                 catch (IllegalAccessException e) {
                     log.warn("Illegal access for object {} and field {}", obj, field);
@@ -86,6 +83,13 @@ public class ServiceUtils {
 
         log.debug("Player [{}] is not allowed to perform action as per bound - lord - leader permission set!", player.getIgn());
         return false;
+    }
+
+    public static void checkBlankString(String value, String fieldName) {
+        if(value.isBlank()) {
+            log.warn("{} must not be blank!", fieldName);
+            throw new IllegalArgumentException("%s must not be blank!".formatted(fieldName));
+        }
     }
 
     private static <T> List<Field> getFieldsFromNames(T obj, List<String> fieldNames) {
