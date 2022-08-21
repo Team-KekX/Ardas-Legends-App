@@ -19,7 +19,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('units')
-                        .setDescription('The list of units in the army - example syntax = Gondorian Ranger:5-Gondorian Soldier:5')
+                        .setDescription('The list of units in the army - example syntax = Gondor Archer:5-Mordor Orc:3')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
