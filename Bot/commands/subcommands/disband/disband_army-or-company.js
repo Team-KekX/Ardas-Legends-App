@@ -7,7 +7,7 @@ const axios = require("axios");
 module.exports = {
     async execute(interaction) {
 
-        const name = interaction.options.getString('name');
+        const name = capitalizeFirstLetters(interaction.options.getString('name'));
         const executor = interaction.member.id;
 
         const data = {
