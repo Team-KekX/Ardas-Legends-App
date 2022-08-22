@@ -39,7 +39,7 @@ public final class RPChar extends AbstractDomainEntity {
     @NotNull(message = "RpChar: currentRegion must not be null")
     private Region currentRegion; //the region the character is currently in
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Army boundTo; //the army that is bound to this character
 

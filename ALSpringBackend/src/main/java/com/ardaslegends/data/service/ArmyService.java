@@ -1,12 +1,15 @@
 package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.*;
+import com.ardaslegends.data.repository.ArmyRepository;
+import com.ardaslegends.data.repository.ClaimBuildRepository;
+import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
+import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
