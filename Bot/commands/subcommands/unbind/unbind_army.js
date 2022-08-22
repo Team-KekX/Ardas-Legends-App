@@ -21,7 +21,7 @@ module.exports = {
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Unbind army`)
-                    .setColor('RED')
+                    .setColor('GREEN')
                     .setDescription(`${target} has been unbound from the army ${armyName}.`)
                     .setThumbnail(UNBIND)
                     .setTimestamp()
