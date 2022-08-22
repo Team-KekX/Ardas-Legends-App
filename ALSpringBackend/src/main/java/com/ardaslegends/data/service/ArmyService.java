@@ -1,15 +1,12 @@
 package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.ArmyRepository;
-import com.ardaslegends.data.repository.ClaimBuildRepository;
-import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.data.repository.*;
 import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
-import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -296,6 +293,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
         army.setBoundTo(targetPlayer);
+        targetPlayer.getRpChar().setBoundTo(army);
 
         log.debug("Persisting newly changed army...");
         army = secureSave(army, armyRepository);
@@ -359,6 +357,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.trace("Setting bound player to null");
         army.setBoundTo(null);
+        boundPlayer.getRpChar().setBoundTo(null);
+
         log.trace("Persisting army");
         army = secureSave(army, armyRepository);
 

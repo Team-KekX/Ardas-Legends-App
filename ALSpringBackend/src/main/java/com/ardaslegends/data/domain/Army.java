@@ -45,7 +45,7 @@ public final class Army extends AbstractDomainEntity {
     @NotNull(message = "Army: Region must not be null")
     private Region currentRegion; //region the army is currently in
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "rpChar.boundTo")
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Player boundTo; //rp character the army is currently bound to
 
