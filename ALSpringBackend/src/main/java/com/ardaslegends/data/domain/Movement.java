@@ -1,6 +1,8 @@
 package com.ardaslegends.data.domain;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,10 +23,12 @@ public final class Movement extends AbstractDomainEntity{
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "player_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Player player;
 
     @ManyToOne
     @JoinColumn(name = "army_name")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Army army; //Is null when it's a Rp Char movement
 
     private Boolean isCharMovement; //Should be true when army = null
