@@ -14,7 +14,7 @@ module.exports = {
                         .setDescription('The name of the army')
                         .setRequired(true))
                 .addUserOption(option =>
-                    option.setName("target")
+                    option.setName("target-player")
                         .setDescription("The player you want to unbind, PING that discord account!")
                         .setRequired(true))
         )

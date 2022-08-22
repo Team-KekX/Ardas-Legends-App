@@ -3,16 +3,17 @@ const {BIND} = require('../../../configs/embed_thumbnails.json');
 const axios = require("axios");
 const {serverIP, serverPort} = require("../../../configs/config.json");
 const http = require("http");
+const {capitalizeFirstLetters} = require("../../../utils/utilities");
 
 module.exports = {
     async execute(interaction) {
 
-        target = interaction.options.getUser("target");
+        target = interaction.options.getUser("target-player");
 
         const data = {
             executorDiscordId: interaction.member.id,
             targetDiscordId: target.id,
-            armyName: interaction.options.getString('army-name')
+            armyName: capitalizeFirstLetters(interaction.options.getString('army-name'))
         }
 
         axios.patch( 'http://' + serverIP + ':' + serverPort + '/api/army/bind-army', data)

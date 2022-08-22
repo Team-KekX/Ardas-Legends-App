@@ -14,8 +14,8 @@ module.exports = {
                         .setDescription('The name of the army')
                         .setRequired(true))
                 .addUserOption(option =>
-                    option.setName("target")
-                        .setDescription("Player that gets bound to the army, discord-ping target")
+                    option.setName("target-player")
+                        .setDescription("Player that gets bound to the army, PING that discord account!")
                         .setRequired(true))
         )
 
