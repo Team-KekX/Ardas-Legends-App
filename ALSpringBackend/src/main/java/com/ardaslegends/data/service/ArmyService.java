@@ -503,7 +503,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Deleting army [{}]", army);
         secureDelete(army, armyRepository);
-
+        log.trace("Army sieges after delete [{}]", army.getSieges());
         log.info("Disbanded army [{}] - executed by player [{}]", army, player);
         return army;
     }
