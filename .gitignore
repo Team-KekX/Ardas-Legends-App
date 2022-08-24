@@ -3,6 +3,9 @@ Bot/configs/config.json
 Bot/package-lock.json
 Bot/configs/bot_token.json
 
+# Jpa buddy
+.jpb
+
 # Logs
 logs
 *.log
