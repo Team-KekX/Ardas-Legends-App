@@ -116,8 +116,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 fetchedPlayer.getFaction(),
                 inputClaimBuild.getRegion(),
                 null,
-                null,
-                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
                 inputClaimBuild,
                 30-tokenCount,
                 false,
@@ -494,6 +494,11 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(!isAllowed) {
             log.warn("disbandArmy: Player [{}] is neither faction leader or lord of [{}] and therefore cannot disband army [{}]!", player, faction, army);
             throw ArmyServiceException.notAllowedToDisband(army.getArmyType());
+        }
+
+        if(army.getBoundTo() != null) {
+            army.getBoundTo().getRpChar().setBoundTo(null);
+            army.setBoundTo(null);
         }
 
         log.debug("Deleting army [{}]", army);
