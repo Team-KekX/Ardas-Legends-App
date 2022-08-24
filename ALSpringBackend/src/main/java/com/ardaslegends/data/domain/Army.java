@@ -52,7 +52,7 @@ public final class Army extends AbstractDomainEntity {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")
     private List<Unit> units = new ArrayList<>(); //the units in this army contains
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "army_sieges",
                 joinColumns = @JoinColumn(name = "army_id", foreignKey = @ForeignKey(name = "fk_army_id")))
     private List<String> sieges = new ArrayList<>(); //list of siege equipment this
@@ -69,6 +69,24 @@ public final class Army extends AbstractDomainEntity {
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
+    private List<Movement> movements = new ArrayList<>();
+
+    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Integer freeTokens, boolean isHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt) {
+        this.name = name;
+        this.armyType = armyType;
+        this.faction = faction;
+        this.currentRegion = currentRegion;
+        this.boundTo = boundTo;
+        this.units = units;
+        this.sieges = sieges;
+        this.stationedAt = stationedAt;
+        this.freeTokens = freeTokens;
+        this.isHealing = isHealing;
+        this.originalClaimbuild = originalClaimbuild;
+        this.createdAt = createdAt;
+    }
 
     @Override
     public String toString() {

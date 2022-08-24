@@ -21,14 +21,12 @@ public final class Movement extends AbstractDomainEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "player_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Player player;
 
     @ManyToOne
     @JoinColumn(name = "army_name")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Army army; //Is null when it's a Rp Char movement
 
     private Boolean isCharMovement; //Should be true when army = null
