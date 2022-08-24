@@ -12,6 +12,11 @@ spring.datasource.username =
 spring.datasource.password =
 spring.jpa.hibernate.ddl-auto = update
 spring.datasource.hikari.auto-commit=false
+
+# Utility
+spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
+logging.level.com.ardaslegends = trace
+
 # To improve the performance during development.
 # For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
 vaadin.whitelisted-packages = com.vaadin,org.vaadin,dev.hilla,com.ardaslegends
