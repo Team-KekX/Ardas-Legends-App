@@ -13,7 +13,7 @@ module.exports = {
         const data = {
             executorDiscordId: interaction.member.id,
             targetDiscordId: target.id,
-            armyName: capitalizeFirstLetters(interaction.options.getString('army-name'))
+            armyName: capitalizeFirstLetters(interaction.options.getString('army-or-company-name'))
         }
 
         axios.patch( 'http://' + serverIP + ':' + serverPort + '/api/army/bind', data)
