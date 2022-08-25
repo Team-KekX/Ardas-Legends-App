@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 
 @Entity
 @Table(name = "claimbuilds")
@@ -52,9 +54,6 @@ public final class ClaimBuild extends AbstractDomainEntity {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
     private List<Army> createdArmies = new ArrayList<>(); //armies which were created from this CB. Usually only 1 army, but capitals can create 2
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
-    private List<Army> createdTradingCompanies = new ArrayList<>(); //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
-
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "claimbuild")
     private List<ProductionClaimbuild> productionSites = new ArrayList<>(); //the production sites in this cb
 
@@ -78,6 +77,45 @@ public final class ClaimBuild extends AbstractDomainEntity {
 
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
     private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
+
+    public int getCountOfArmies() {
+        int count = (int) createdArmies.stream()
+                .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))
+                .count();
+        log.debug("Claimbuild [{}] has created [{}] armies", this.name, count);
+        return count;
+    }
+
+    public int getCountOfTradingCompanies() {
+        int count = (int) createdArmies.stream()
+                .filter(army -> ArmyType.TRADING_COMPANY.equals(army.getArmyType()))
+                .count();
+        log.debug("Claimbuild [{}] has created [{}] trading companies", this.name, count);
+        return count;
+    }
+    public boolean atMaxArmies() {
+        int countOfArmies = getCountOfArmies();
+        int maxArmies = getType().getMaxArmies();
+
+        if(countOfArmies >= maxArmies) {
+            log.debug("Claimbuild [{}] is at max armies, max armies [{}] - armies created [{}]", this.name, maxArmies, countOfArmies);
+            return true;
+        }
+        log.debug("Claimbuild [{}] can create more armies. max armies [{}] - armies created [{}]", this.name, maxArmies, countOfArmies);
+        return false;
+    }
+
+    public boolean atMaxTradingCompanies() {
+        int countOfTradingCompanies = getCountOfTradingCompanies();
+        int maxTradingCompanies = getType().getMaxTradingCompanies();
+
+        if(countOfTradingCompanies >= maxTradingCompanies) {
+            log.debug("Claimbuild [{}] is at max trading companies, max companies[{}] - companies created [{}]", this.name, maxTradingCompanies, countOfTradingCompanies);
+            return true;
+        }
+        log.debug("Claimbuild [{}] can create more trading companies. max companies [{}] - companies created [{}]", this.name, maxTradingCompanies, countOfTradingCompanies);
+        return false;
+    }
 
     @Override
     public String toString() {
