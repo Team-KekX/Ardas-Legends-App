@@ -19,7 +19,7 @@ module.exports = {
             unitString: units
         }
 
-        axios.post(`http://${serverIP}:${serverPort}/api/army/create`, data)
+        axios.post(`http://${serverIP}:${serverPort}/api/army/create-army`, data)
             .then(async function(response) {
                 const army = response.data;
 

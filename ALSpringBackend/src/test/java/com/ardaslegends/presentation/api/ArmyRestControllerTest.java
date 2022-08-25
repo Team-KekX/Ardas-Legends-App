@@ -54,7 +54,7 @@ public class ArmyRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("http://localhost:8080/api/army/create")
+                        .post("http://localhost:8080/api/army/create-army")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());

@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping(ArmyRestController.BASE_URL)
 public class ArmyRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/army";
-    private static final String PATH_CREATE_ARMY = "/create";
+    private static final String PATH_CREATE_ARMY = "/create-army";
     private static final String PATH_BIND_ARMY = "/bind";
     private static final String PATH_UNBIND_ARMY = "/unbind";
     private static final String PATH_DISBAND_ARMY = "/disband";
