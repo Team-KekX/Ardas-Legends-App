@@ -3,6 +3,7 @@ package com.ardaslegends.data.service;
 import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.domain.UnitType;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
+import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         if(fetchedBuild.isEmpty()) {
             log.warn("No Claimbuild found with name [{}]", name);
-            throw new IllegalArgumentException("No Claimbuild found with name %s".formatted(name));
+            throw ClaimBuildServiceException.noCbWithName(name);
         }
 
         log.info("Successfully returning Claimbuild with name [{}]", name);
