@@ -28,8 +28,12 @@ module.exports = {
                     let unit = army.units[i];
                     let unitsAlive = `${unit.amountAlive}/${unit.count} `;
                     let unitName = `${unit.unitType.unitName}`
+                    if(unit.unitType.unitName === undefined)
+                        unitName = `${unit.unitType}`
                     unitString += unitsAlive + unitName + "\n";
                 }
+
+                console.log(army)
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Army '${name}' created!`)

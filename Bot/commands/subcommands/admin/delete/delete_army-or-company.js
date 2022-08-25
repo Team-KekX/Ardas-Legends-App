@@ -12,7 +12,7 @@ module.exports = {
             return;
         }
 
-        const name = interaction.options.getString('name');
+        const name = capitalizeFirstLetters(interaction.options.getString('name'));
         const executor = interaction.member.id;
 
         const data = {
@@ -31,6 +31,7 @@ module.exports = {
                 await interaction.reply({embeds: [replyEmbed]})
             })
             .catch(async function(error)  {
+                console.log(error)
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Error while trying to delete ${name}`)
                     .setColor("RED")

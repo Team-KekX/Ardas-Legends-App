@@ -517,7 +517,13 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Deleting army [{}]", army);
         secureDelete(army, armyRepository);
-        log.trace("Army sieges after delete [{}]", army.getSieges());
+        /*
+        The following line was added to load the army.sieges list. If we don't do this, Jackson for some fucking reason
+        cannot serialize the object. For some other fucking reason there is NOOOO post on the internet about this problem.
+        Like wtf man
+        TODO find better solution
+         */
+        var sieges = army.getSieges().size();
         log.info("Disbanded army [{}] - executed by player [{}]", army, player);
         return army;
     }
