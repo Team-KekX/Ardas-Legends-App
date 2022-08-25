@@ -7,23 +7,6 @@ module.exports = {
         .setDescription('Move an entity')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('army')
-                .setDescription('Move an army')
-                .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The army\'s name')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('destination-region')
-                        .setDescription('The destination of the army')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('food-type')
-                        .setDescription('The food used to pay the movement')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName('character')
                 .setDescription('Move a roleplay character')
                 .addStringOption(option =>
@@ -33,40 +16,15 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('trader')
-                .setDescription('Move an trading company')
+                .setName('army-or-company')
+                .setDescription('Move an army or trading/armed company')
                 .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The trader\'s name')
+                    option.setName('army-or-company-name')
+                        .setDescription('The army\'s/company\'s name')
                         .setRequired(true))
-                .addIntegerOption(option =>
-                    option.setName('start-region')
-                        .setDescription('The region from where the company starts moving')
-                        .setRequired(true))
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option.setName('destination-region')
-                        .setDescription('The destination of the company')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('food-type')
-                        .setDescription('The food used to pay the movement')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('armed-company')
-                .setDescription('Move an armed trading company')
-                .addStringOption(option =>
-                    option.setName('armed-company-name')
-                        .setDescription('The armed company\'s name')
-                        .setRequired(true))
-                .addIntegerOption(option =>
-                    option.setName('start-region')
-                        .setDescription('The region from where the armed company starts moving')
-                        .setRequired(true))
-                .addIntegerOption(option =>
-                    option.setName('destination-region')
-                        .setDescription('The destination of the armed company')
+                        .setDescription('The destination of the army/company')
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('food-type')

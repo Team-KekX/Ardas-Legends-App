@@ -24,7 +24,7 @@ public class MovementRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/movement";
 
     public static final String PATH_MOVE_CHAR = "/move-char";
-    public static final String PATH_MOVE_ARMY = "/move-army";
+    public static final String PATH_MOVE_ARMY = "/move-army-or-company";
     public static final String PATH_CANCEL_CHAR_MOVEMENT = "/cancel-char-move";
     public static final String PATH_CANCEL_ARMY_MOVEMENT = "/cancel-army-move";
 

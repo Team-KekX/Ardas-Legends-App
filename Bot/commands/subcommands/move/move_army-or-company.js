@@ -7,7 +7,7 @@ const {serverIP, serverPort} = require("../../../configs/config.json");
 module.exports = {
     // TO BE EXPANDED
     async execute(interaction) {
-        const armyName = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
+        const armyName = capitalizeFirstLetters(interaction.options.getString('army-or-company-name').toLowerCase());
         const food = capitalizeFirstLetters(interaction.options.getString('food-type').toLowerCase());
         const destination = interaction.options.getString('destination-region').toUpperCase();
 
@@ -17,7 +17,7 @@ module.exports = {
             toRegion: destination
         }
 
-        axios.post(`http://${serverIP}:${serverPort}/api/movement/move-army`, data)
+        axios.post(`http://${serverIP}:${serverPort}/api/movement/move-army-or-company`, data)
             .then(async function (response) {
                 var movement = response.data;
                 var path = movement.path.path.join(' -> ');
