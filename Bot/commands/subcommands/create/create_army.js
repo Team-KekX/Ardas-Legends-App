@@ -1,4 +1,4 @@
-const {capitalizeFirstLetters} = require("../../../utils/utilities");
+const {capitalizeFirstLetters, createArmyUnitListString} = require("../../../utils/utilities");
 const {MessageEmbed} = require('discord.js');
 const {CREATE} = require('../../../configs/embed_thumbnails.json');
 const {serverIP, serverPort} = require("../../../configs/config.json");
@@ -23,15 +23,7 @@ module.exports = {
             .then(async function(response) {
                 const army = response.data;
 
-                let unitString = "";
-                for (let i = 0; i < army.units.length; i++) {
-                    let unit = army.units[i];
-                    let unitsAlive = `${unit.amountAlive}/${unit.count} `;
-                    let unitName = `${unit.unitType.unitName}`
-                    if(unit.unitType.unitName === undefined)
-                        unitName = `${unit.unitType}`
-                    unitString += unitsAlive + unitName + "\n";
-                }
+                let unitString = createArmyUnitListString(army);
 
                 console.log(army)
 

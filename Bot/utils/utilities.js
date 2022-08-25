@@ -62,6 +62,20 @@ function isStaffMember(interaction) {
     return staffRoles.some(role => interaction.member.roles.cache.has(role));
 }
 
+function createArmyUnitListString(army) {
+    let unitString = "";
+    for (let i = 0; i < army.units.length; i++) {
+        let unit = army.units[i];
+        let unitsAlive = `${unit.amountAlive}/${unit.count} `;
+        let unitName = `${unit.unitType.unitName}`
+        if(unit.unitType.unitName === undefined)
+            unitName = `${unit.unitType}`
+        unitString += unitsAlive + unitName + "\n";
+    }
+
+    return unitString;
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -75,5 +89,6 @@ module.exports = {
         return arr_text.join(" ");
     },
     addSubcommands: addSubcommands,
-    isMemberStaff: isStaffMember
+    isMemberStaff: isStaffMember,
+    createArmyUnitListString: createArmyUnitListString
 };
