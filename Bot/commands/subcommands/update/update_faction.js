@@ -10,10 +10,10 @@ module.exports = {
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
 
         if (!availableFactions.includes(faction)) {
-            await interaction.reply({content: `${faction} is not a valid faction.`, ephemeral: true});
+            await interaction.reply({content: `${faction} is not a valid faction.`, ephemeral: false});
             await interaction.followUp({
                 content: `Available factions: ${availableFactions.join(', ')}`,
-                ephemeral: true
+                ephemeral: false
             });
         } else {
             // send to server
@@ -31,11 +31,11 @@ module.exports = {
                         .setDescription(`You were successfully registered as ${faction}.`)
                         .setThumbnail(UPDATE_FACTION)
                         .setTimestamp()
-                    await interaction.reply({embeds: [replyEmbed], ephemeral: true});
+                    await interaction.reply({embeds: [replyEmbed], ephemeral: false});
                 })
                 .catch(async function (error) {
                     // An error occurred during the request.
-                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
                 })
         }
     },

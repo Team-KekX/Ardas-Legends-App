@@ -25,7 +25,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
             })
     },
 };

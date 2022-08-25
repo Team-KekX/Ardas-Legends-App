@@ -7,7 +7,7 @@ const axios = require('axios');
 module.exports = {
     async execute(interaction) {
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: true});
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
         const discId = interaction.options.getString('discord-id');
@@ -32,7 +32,7 @@ module.exports = {
             })
             .catch(async function (error) {
                 // An error occurred during the request.
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
             })
         
     },

@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
 
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: true});
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 

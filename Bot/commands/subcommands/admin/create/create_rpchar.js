@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
 
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: true});
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
@@ -40,7 +40,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
             })
 
     },
