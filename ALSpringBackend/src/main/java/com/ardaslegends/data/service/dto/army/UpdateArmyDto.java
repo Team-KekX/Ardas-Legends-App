@@ -1,4 +1,4 @@
 package com.ardaslegends.data.service.dto.army;
 
-public record UpdateArmyDto(String executorDiscordId, String armyName, Integer freeTokens) {
+public record UpdateArmyDto(String executorDiscordId, String armyName, Double freeTokens) {
 }

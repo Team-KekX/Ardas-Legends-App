@@ -58,7 +58,7 @@ public final class Army extends AbstractDomainEntity {
     private ClaimBuild stationedAt; //claimbuild where this army is stationed
 
     @NotNull(message = "Army: freeTokens must not be null")
-    private Integer freeTokens; //how many free unit tokens this army has left
+    private Double freeTokens; //how many free unit tokens this army has left
 
     private boolean isHealing = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -72,7 +72,7 @@ public final class Army extends AbstractDomainEntity {
 
     private Boolean isPaid;
 
-    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Integer freeTokens, boolean isHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
+    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
         this.name = name;
         this.armyType = armyType;
         this.faction = faction;
@@ -104,5 +104,9 @@ public final class Army extends AbstractDomainEntity {
     @Override
     public int hashCode() {
         return name != null ? Objects.hash(name):0;
+    }
+
+    public boolean allUnitsAlive() {
+        return this.units.stream().allMatch(unit -> Objects.equals(unit.getAmountAlive(), unit.getCount()));
     }
 }

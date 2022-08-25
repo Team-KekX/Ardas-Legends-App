@@ -29,6 +29,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_CREATE_ARMYTYPE_WHEN_IN_DIFFERENT_FACTIONS = "You are in faction '%s' and the claimbuild is in faction '%s' - you can only create a %s from claimbuilds of your own faction!";
     private static final String ARMYTYPE_AND_PLAYER_IN_DIFFERENT_FACTION = "The %s '%s' and the player '%s' are not in the same faction - Cant execute command!";
     private static final String ARMYTYPE_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING = "The %s '%s' is not stationed at a CB with a House of Healing, cannot start healing - Please station the %s at CB";
+    private static final String ARMY_ALREADY_FULLY_HEALED = "The %s '%s' is already fully healed!";
     private static final String INVALID_UNIT_STRING = "The string '%s' is not grammatically correct \n " +
             "A correct string would be: Gondorian Ranger:5-Mordor Orc:2 \n" +
             "Actual Grammar=[Unit name]:[Integer amount]-[Next Unit name]:[next integer amount]";
@@ -38,8 +39,8 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_STOP_HEALING_IF_ARMYTYPE_IS_NOT_HEALING = "%s '%s' is not healing - Can't stop it";
 
     //Set Token
-    private static final String TOKEN_NEGATIVE = "Armies cannot have less than 0 free tokens (you inputted: %d)!";
-    private static final String TOKEN_ABOVE_30 = "Armies can only have a maximum of 30 free tokens (you inputted: %d)!";
+    private static final String TOKEN_NEGATIVE = "Armies cannot have less than 0 free tokens (you inputted: %f)!";
+    private static final String TOKEN_ABOVE_30 = "Armies can only have a maximum of 30 free tokens (you inputted: %f)!";
 
     //pick siege
     private static final String SIEGE_ONLY_ARMY_CAN_PICK = "Only armies can pick sieges - '%s' is a trading/armed company!";
@@ -58,7 +59,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException notSameFaction(ArmyType armyType, String armyName, String playerFactionName, String armyFactionName) { return new ArmyServiceException(NOT_SAME_FACTION.formatted(armyType.getName(), armyName, playerFactionName, armyType.getName(), armyFactionName)); }
     public static ArmyServiceException alreadyBound(ArmyType armyType, String armyName, String playerName) { return new ArmyServiceException(ALREADY_BOUND.formatted(armyType.getName(), armyName, playerName)); }
     public static ArmyServiceException noPlayerBoundToArmy(ArmyType armyType, String armyName) { return new ArmyServiceException(NO_PLAYER_BOUND_TO_ARMYTYPE.formatted(armyType.getName(), armyName)); }
-    public static ArmyServiceException tooHighTokenCount(ArmyType armyType, int tokenCount) {return new ArmyServiceException(TOO_HIGH_TOKEN_COUNT.formatted(armyType.getName(), tokenCount)); };
+    public static ArmyServiceException tooHighTokenCount(ArmyType armyType, double tokenCount) {return new ArmyServiceException(TOO_HIGH_TOKEN_COUNT.formatted(armyType.getName(), tokenCount)); };
     public static ArmyServiceException maxArmyOrCompany(ArmyType armyType, String claimbuild, String units) {return new ArmyServiceException(MAX_ARMYTYPE_CREATED.formatted(claimbuild,armyType.getName(), units)); }
     public static ArmyServiceException onlyLeaderCanBindWanderer(ArmyType armyType) {return new ArmyServiceException(ONLY_FACTION_LEADER_CAN_BIND_WANDERER.formatted(armyType.getName()));}
     public static ArmyServiceException cannotMoveArmyDueToArmyBeingInMovement(ArmyType armyType, String armyName) {return new ArmyServiceException(CANNOT_MOVE_ARMYTYPE_DUE_TO_ALREADY_MOVING.formatted(armyType.getName(), armyName));}
@@ -70,6 +71,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException cannotCreateArmyFromClaimbuildInDifferentFaction(String playerFaction, String claimbuildFaction, ArmyType armyType) {return new ArmyServiceException((CANNOT_CREATE_ARMYTYPE_WHEN_IN_DIFFERENT_FACTIONS).formatted(playerFaction, claimbuildFaction, armyType.getName()));}
     public static ArmyServiceException armyAndPlayerInDifferentFaction(ArmyType armyType, String playerFaction, String armyFaction) {return new ArmyServiceException(ARMYTYPE_AND_PLAYER_IN_DIFFERENT_FACTION.formatted(armyType.getName(), playerFaction, armyFaction));}
     public static ArmyServiceException needToStationArmyAtCbWithHouseOfHealing(ArmyType armyType, String armyName) {return new ArmyServiceException(ARMYTYPE_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING.formatted(armyType.getName(), armyName, armyType.getName()));}
+    public static ArmyServiceException alreadyFullyHealed(ArmyType armyType, String armyName) { return new ArmyServiceException(ARMY_ALREADY_FULLY_HEALED.formatted(armyType.getName(), armyName)); }
     public static ArmyServiceException armyIsNotHealing(ArmyType armyType, String armyName) {return new ArmyServiceException((CANNOT_STOP_HEALING_IF_ARMYTYPE_IS_NOT_HEALING.formatted(armyType.getName(), armyName)));}
     //Disband army
     public static ArmyServiceException notAllowedToDisbandNotSameFaction(ArmyType armyType, String armyName, String factionName) { return new ArmyServiceException(NOT_ALLOWED_TO_DISBAND_NOT_IN_SAME_FACTION.formatted(armyType.getName(), armyName, factionName)); }
@@ -77,8 +79,8 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException armyNotStationed(ArmyType armyType, String armyName) { return new ArmyServiceException((ARMYTYPE_IS_NOT_STATIONED.formatted(armyType.getName(), armyName))); }
 
     //Set free tokens
-    public static ArmyServiceException tokenNegative(int tokenAmount) { return new ArmyServiceException(TOKEN_NEGATIVE.formatted(tokenAmount)); }
-    public static ArmyServiceException tokenAbove30(int tokenAmount) { return new ArmyServiceException(TOKEN_ABOVE_30.formatted(tokenAmount)); }
+    public static ArmyServiceException tokenNegative(double tokenAmount) { return new ArmyServiceException(TOKEN_NEGATIVE.formatted(tokenAmount)); }
+    public static ArmyServiceException tokenAbove30(double tokenAmount) { return new ArmyServiceException(TOKEN_ABOVE_30.formatted(tokenAmount)); }
 
     //pick siege
     public static ArmyServiceException siegeOnlyArmyCanPick(String armyName) { return new ArmyServiceException(SIEGE_ONLY_ARMY_CAN_PICK.formatted(armyName)); }

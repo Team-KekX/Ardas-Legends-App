@@ -247,7 +247,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController setFreeArmyTokens works properly with correct values");
 
         // Assign
-        UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20);
+        UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20.0);
 
         when(mockArmyService.setFreeArmyTokens(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
 

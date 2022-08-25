@@ -53,6 +53,8 @@ public class MovementServiceTest {
     private Region region2;
     private RPChar rpchar;
     private Player player;
+    private UnitType unitType;
+    private Unit unit;
     private Army army;
     private Movement movement;
     private ClaimBuild claimBuild;
@@ -70,11 +72,13 @@ public class MovementServiceTest {
 
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
+        unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
+        unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         Path path = Path.builder().path(List.of("90","91")).cost(10).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(path).build();
 

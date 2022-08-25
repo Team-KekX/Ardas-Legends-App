@@ -44,6 +44,8 @@ public class ArmyServiceTest {
     private Faction faction;
     private Region region1;
     private Region region2;
+    private UnitType unitType;
+    private Unit unit;
     private RPChar rpchar;
     private Player player;
     private Army army;
@@ -62,11 +64,13 @@ public class ArmyServiceTest {
 
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
+        unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
+        unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(0).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
@@ -243,6 +247,23 @@ public class ArmyServiceTest {
 
         assertThat(result.getMessage()).contains("are not in the same faction");
         log.info("Test passed: SE if not in the same faction");
+    }
+
+    @Test
+    void ensureHealStartThrowsSeWhenArmyIsAlreadyFullyHealed() {
+        log.debug("Testing if healStart correctly throws SE when army is already fully healed");
+
+        log.trace("Initializing data");
+        unit.setAmountAlive(unit.getCount());
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null);
+
+        log.debug("Expecting SE on call");
+        log.debug("Calling healStart");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStart(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.alreadyFullyHealed(army.getArmyType(), army.getName()).getMessage());
+        log.info("Test passed: SE when army is already fully healed");
     }
 
     @Test
@@ -829,7 +850,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens works with proper data!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10.0);
 
         log.debug("Calling setArmyTokens");
         Army returnedArmy = armyService.setFreeArmyTokens(dto);
@@ -844,7 +865,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40.0);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));
@@ -858,7 +879,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1.0);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));

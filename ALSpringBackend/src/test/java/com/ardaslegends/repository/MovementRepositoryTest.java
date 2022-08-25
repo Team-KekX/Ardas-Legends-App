@@ -44,7 +44,7 @@ public class MovementRepositoryTest {
                 .faction(Faction.builder()
                         .name("KekFaction").build())
                 .currentRegion(region)
-                .freeTokens(20)
+                .freeTokens(20.0)
                 .build();
         kekArmy = armyRepository.save(kekArmy);
         Movement movement = Movement.builder()

@@ -90,7 +90,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if token count does not exceed 30");
         // Calculate the tokens that were used
         log.trace("Calculating amount of tokens used");
-        int tokenCount = 0;
+        double tokenCount = 0;
         List<Unit> units = new ArrayList<>();
         for (UnitType unit: unitTypes.keySet()) {
             // Get the UnitType cost and multiply it by the count of that unit, which is stored in the units Map
@@ -167,6 +167,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(!player.getFaction().equals(army.getFaction())) {
             log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());
             throw ArmyServiceException.armyAndPlayerInDifferentFaction(army.getArmyType(), player.getFaction().toString(), army.getFaction().toString());
+        }
+
+        log.debug("Checking if army has dead units");
+        if(army.allUnitsAlive()) {
+            log.warn("Army [{}] is already fully healed!");
+            throw ArmyServiceException.alreadyFullyHealed(army.getArmyType(), army.getName());
         }
 
         log.debug("Checking if army is stationed at a CB");
@@ -535,7 +541,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.trace("Getting the army by name [{}]", dto.armyName());
         Army army = getArmyByName(dto.armyName());
-        int oldTokens = army.getFreeTokens();
+        double oldTokens = army.getFreeTokens();
 
         if(dto.freeTokens() < 0) {
             log.warn("Tried to set tokens of army [{}] to [{}] - value has to be positive", army, dto.freeTokens());
