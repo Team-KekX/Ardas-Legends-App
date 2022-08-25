@@ -310,4 +310,35 @@ public class ArmyRestControllerTest {
                 .andExpect(status().isOk());
         log.info("Test passed: upkeepPerFaction requests get handled properly");
     }
+
+    @Test
+    void ensureSeTPaidWorksProperly() throws Exception {
+        String dto = "Kek";
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/army/setPaid")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+        log.info("Test passed: setPaid requests get handled properly");
+    }
+    @Test
+    void ensureGetUnpaidWorksProperly() throws Exception {
+        log.debug("Testing if ArmyRestController getUnpaid works properly");
+
+        List<Army> army = List.of(Army.builder().name("kek").build());
+
+        when(mockArmyService.getUnpaid()).thenReturn(army);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("http://localhost:8080/api/army/unpaid"))
+                .andExpect(status().isOk());
+        log.info("Test passed: getUnpaid requests get handled properly");
+    }
 }

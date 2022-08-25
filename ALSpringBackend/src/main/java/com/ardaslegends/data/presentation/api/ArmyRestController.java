@@ -32,6 +32,8 @@ public class ArmyRestController extends AbstractRestController {
     private static final String PATH_PICK_SIEGE = "/pick-siege";
     private static final String PATH_UPKEEP = "/upkeep";
     private static final String PATH_UPKEEP_PER_FACTION = "/upkeep/{faction}";
+    private static final String PATH_SET_IS_PAID = "/setPaid";
+    private static final String PATH_GET_UNPAID =  "/unpaid";
 
 
     private final ArmyService armyService;
@@ -178,6 +180,28 @@ public class ArmyRestController extends AbstractRestController {
         UpkeepDto result = wrappedServiceExecution(factionName, armyService::getUpkeepOfFaction);
 
         log.info("Sending successful upkeepPerFaction Request for faction: [{}]", factionName);
+        return ResponseEntity.ok(result);
+    }
+
+    @PatchMapping(PATH_SET_IS_PAID)
+    public HttpEntity<Boolean> setPaid(@RequestBody String name) {
+        log.debug("Incoming setPaidToTrue Request for army or company [{}]", name);
+
+        log.trace("Calling wrappedServiceExecution armyService.setPaidToTrue");
+        var result = wrappedServiceExecution(name, armyService::setIsPaidToTrue);
+
+        log.info("Sending setPaid Response, success [{}]", result);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(PATH_GET_UNPAID)
+    public HttpEntity<List<Army>> getUnpaid() {
+        log.debug("Incoming getUnpaid Request");
+
+        log.trace("Calling wrappedServiceExecution, armyService.getUnpaid");
+        var result = wrappedServiceExecution(armyService::getUnpaid);
+
+        log.info("Sending getUnpaid Response, data [{}]", result);
         return ResponseEntity.ok(result);
     }
 }

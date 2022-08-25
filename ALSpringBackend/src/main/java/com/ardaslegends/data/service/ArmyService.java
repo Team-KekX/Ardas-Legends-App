@@ -7,18 +7,15 @@ import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.service.dto.army.*;
 import com.ardaslegends.data.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
-import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.server.authorization.ServerWebExchangeDelegatingServerAccessDeniedHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -712,8 +709,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
      * Gets the 10 oldest created armies that are not paid for
      * @return List of 10 armies, sorted by creation date
      */
-    public List<Army> getUnpaidArmies() {
-        log.debug("Trying to get the 10 oldest unpaid armies");
+    public List<Army> getUnpaid() {
+        log.debug("Trying to get the 10 oldest unpaid armies or trading companies");
 
         log.trace("Fetching all armies and sorting list");
         List<Army> armies = secureFind(armyRepository::findAll).stream()

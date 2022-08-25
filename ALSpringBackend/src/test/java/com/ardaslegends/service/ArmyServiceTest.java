@@ -1145,7 +1145,7 @@ public class ArmyServiceTest {
         List<Army> armyList = List.of(army1,army2,army3,army4,army5,army6,army7,army8, army9,army10,army11,army12,army13,army14,army15,army16,army17,army18,army19,army20);
         when(mockArmyRepository.findAll()).thenReturn(armyList);
 
-        var result = armyService.getUnpaidArmies();
+        var result = armyService.getUnpaid();
 
         assertThat(result.size()).isEqualTo(10);
         assertThat(result).isEqualTo(List.of(army1,army2,army3,army4,army5,army6,army7,army8,army9,army10));
