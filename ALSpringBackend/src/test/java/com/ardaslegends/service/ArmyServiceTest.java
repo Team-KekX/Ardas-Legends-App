@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -1115,6 +1116,39 @@ public class ArmyServiceTest {
 
         assertThat(result.getMessage()).isEqualTo(ArmyServiceException.isAlreadyPaidFor(army.getArmyType(), army.getName()).getMessage());
         log.info("Test passed: setIsPaidToTrue correctly throws Se when army or company is already paid for");
+    }
+
+    @Test
+    void ensureGetUnpaidArmiesWorksProperly() {
+        log.debug("Testing if getUnpaidArmies works properly");
+
+        Army army1 = Army.builder().name("2000").createdAt(LocalDateTime.of(2000, 1, 1,10,10)).build();
+        Army army2 = Army.builder().name("2001").createdAt(LocalDateTime.of(2001, 1, 1,10,10)).build();
+        Army army3 = Army.builder().name("2002").createdAt(LocalDateTime.of(2002, 1, 1,10,10)).build();
+        Army army4 = Army.builder().name("2003").createdAt(LocalDateTime.of(2003, 1, 1,10,10)).build();
+        Army army5 = Army.builder().name("2004").createdAt(LocalDateTime.of(2004, 1, 1,10,10)).build();
+        Army army6 = Army.builder().name("2005").createdAt(LocalDateTime.of(2005, 1, 1,10,10)).build();
+        Army army7 = Army.builder().name("2006").createdAt(LocalDateTime.of(2006, 1, 1,10,10)).build();
+        Army army8 = Army.builder().name("2007").createdAt(LocalDateTime.of(2007, 1, 1,10,10)).build();
+        Army army9 = Army.builder().name("2008").createdAt(LocalDateTime.of(2008, 1, 1,10,10)).build();
+        Army army10 = Army.builder().name("2009").createdAt(LocalDateTime.of(2009, 1, 1,10,10)).build();
+        Army army11 = Army.builder().name("2010").createdAt(LocalDateTime.of(2010, 1, 1,10,10)).build();
+        Army army12 = Army.builder().name("2011").createdAt(LocalDateTime.of(2011, 1, 1,10,10)).build();
+        Army army13 = Army.builder().name("2012").createdAt(LocalDateTime.of(2012, 1, 1,10,10)).build();
+        Army army14 = Army.builder().name("2013").createdAt(LocalDateTime.of(2013, 1, 1,10,10)).build();
+        Army army15 = Army.builder().name("2014").createdAt(LocalDateTime.of(2014, 1, 1,10,10)).build();
+        Army army16 = Army.builder().name("2015").createdAt(LocalDateTime.of(2015, 1, 1,10,10)).build();
+        Army army17 = Army.builder().name("2016").createdAt(LocalDateTime.of(2016, 1, 1,10,10)).build();
+        Army army18 = Army.builder().name("2017").createdAt(LocalDateTime.of(2017, 1, 1,10,10)).build();
+        Army army19 = Army.builder().name("2018").createdAt(LocalDateTime.of(2018, 1, 1,10,10)).build();
+        Army army20 = Army.builder().name("2019").createdAt(LocalDateTime.of(2019, 1, 1,10,10)).build();
+        List<Army> armyList = List.of(army1,army2,army3,army4,army5,army6,army7,army8, army9,army10,army11,army12,army13,army14,army15,army16,army17,army18,army19,army20);
+        when(mockArmyRepository.findAll()).thenReturn(armyList);
+
+        var result = armyService.getUnpaidArmies();
+
+        assertThat(result.size()).isEqualTo(10);
+        assertThat(result).isEqualTo(List.of(army1,army2,army3,army4,army5,army6,army7,army8,army9,army10));
     }
 
     @Test

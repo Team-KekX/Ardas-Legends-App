@@ -707,6 +707,19 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.info("Successfully set isPaid to [{}]!", army.getIsPaid());
         return army.getIsPaid();
     }
+
+    public List<Army> getUnpaidArmies() {
+        log.debug("Trying to get the 10 oldest unpaid armies");
+
+        log.trace("Fetching all armies and sorting list");
+        List<Army> armies = secureFind(armyRepository::findAll).stream()
+                .sorted(Comparator.comparing(Army::getCreatedAt))
+                .limit(10)
+                .collect(Collectors.toList());
+
+        log.info("Successfully returning list of 10 oldest armies or companies [{}]", armies);
+        return armies;
+    }
     public Army getArmyByName(String armyName) {
         log.debug("Getting army by name [{}]", armyName);
         log.trace("Checking for null");
