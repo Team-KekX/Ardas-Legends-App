@@ -133,7 +133,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Trying to persist the army object");
         army = secureSave(army, armyRepository);
 
-        log.info("Finished CreateArmy!");
+        log.info("Successfully created army [{}]!", army.getName());
         return army;
     }
 
