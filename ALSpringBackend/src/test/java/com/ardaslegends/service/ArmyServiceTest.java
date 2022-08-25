@@ -1088,6 +1088,36 @@ public class ArmyServiceTest {
     }
 
     @Test
+    void ensureSetIsPaidToTrueCorrectlyWorks() {
+        log.debug("Testing if setIsPaid correctly works with good values");
+
+        Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(false).build();
+
+        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockArmyRepository.save(army)).thenReturn(army);
+
+        log.debug("Calling armyService.setIsPaidToTrue, expecting no errors");
+        var result = armyService.setIsPaidToTrue(army.getName());
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void ensureSetIsPaidToTrueCorrectlyThrowsSeWhenItsAlreadyPaidFor() {
+        log.debug("Testing if setIsPaid correctly throws Se when its already paid for");
+
+        Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(true).build();
+
+        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+
+        log.debug("Calling armyService.setIsPaidToTrue, expecting Se");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.setIsPaidToTrue(army.getName()));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.isAlreadyPaidFor(army.getArmyType(), army.getName()).getMessage());
+        log.info("Test passed: setIsPaidToTrue correctly throws Se when army or company is already paid for");
+    }
+
+    @Test
     void ensureConvertUnitInputIntoUnitsWorksProperly() {
         log.debug("Testing if convertUnitInputIntoUnits works properly with correct values");
 
