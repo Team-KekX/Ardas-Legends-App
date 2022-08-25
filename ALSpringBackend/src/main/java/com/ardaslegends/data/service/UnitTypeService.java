@@ -35,7 +35,7 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
             throw UnitServiceException.unitNotFound(name);
         }
 
-        log.info("Successfully returning Unit with name [{}]", name);
+        log.info("Successfully returning Unit with name [{}]", fetchedUnitType.get().getUnitName());
         return fetchedUnitType.get();
     }
 }
