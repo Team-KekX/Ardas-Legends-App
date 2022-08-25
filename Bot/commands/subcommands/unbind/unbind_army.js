@@ -15,7 +15,7 @@ module.exports = {
             armyName: capitalizeFirstLetters(interaction.options.getString("army-name"))
         }
 
-        axios.patch("http://" + serverIP + ":" + serverPort + "/api/army/unbind-army", data)
+        axios.patch("http://" + serverIP + ":" + serverPort + "/api/army/unbind", data)
             .then(async function(response) {
 
                 const armyName = response.data.name;

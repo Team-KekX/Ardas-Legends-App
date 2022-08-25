@@ -76,7 +76,7 @@ public class ArmyRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .patch("http://localhost:8080/api/army/bind-army")
+                        .patch("http://localhost:8080/api/army/bind")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
@@ -99,7 +99,7 @@ public class ArmyRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .patch("http://localhost:8080/api/army/unbind-army")
+                        .patch("http://localhost:8080/api/army/unbind")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
@@ -122,7 +122,7 @@ public class ArmyRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("http://localhost:8080/api/army/disband-army")
+                        .delete("http://localhost:8080/api/army/disband")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
@@ -145,7 +145,7 @@ public class ArmyRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("http://localhost:8080/api/army/delete-army")
+                        .delete("http://localhost:8080/api/army/delete")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());

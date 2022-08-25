@@ -20,10 +20,10 @@ import java.util.List;
 public class ArmyRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/army";
     private static final String PATH_CREATE_ARMY = "/create";
-    private static final String PATH_BIND_ARMY = "/bind-army";
-    private static final String PATH_UNBIND_ARMY = "/unbind-army";
-    private static final String PATH_DISBAND_ARMY = "/disband-army";
-    private static final String PATH_DELETE_ARMY = "/delete-army";
+    private static final String PATH_BIND_ARMY = "/bind";
+    private static final String PATH_UNBIND_ARMY = "/unbind";
+    private static final String PATH_DISBAND_ARMY = "/disband";
+    private static final String PATH_DELETE_ARMY = "/delete";
     private static final String PATH_START_HEALING = "/heal-start";
     private static final String PATH_STOP_HEALING = "/heal-stop";
     private static final String PATH_STATION = "/station";

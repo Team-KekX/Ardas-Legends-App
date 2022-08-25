@@ -15,7 +15,7 @@ module.exports = {
             armyName: name
         }
 
-        axios.delete(`http://${serverIP}:${serverPort}/api/army/disband-army`, {data: data})
+        axios.delete(`http://${serverIP}:${serverPort}/api/army/disband`, {data: data})
             .then(async function(response) {
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Disbanded")
