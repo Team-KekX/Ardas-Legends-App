@@ -708,11 +708,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         return army.getIsPaid();
     }
 
+    /***
+     * Gets the 10 oldest created armies that are not paid for
+     * @return List of 10 armies, sorted by creation date
+     */
     public List<Army> getUnpaidArmies() {
         log.debug("Trying to get the 10 oldest unpaid armies");
 
         log.trace("Fetching all armies and sorting list");
         List<Army> armies = secureFind(armyRepository::findAll).stream()
+                .filter(army -> !army.getIsPaid())
                 .sorted(Comparator.comparing(Army::getCreatedAt))
                 .limit(10)
                 .collect(Collectors.toList());
