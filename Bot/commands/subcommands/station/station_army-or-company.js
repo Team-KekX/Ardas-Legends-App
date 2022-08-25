@@ -7,8 +7,8 @@ const axios = require("axios");
 module.exports = {
     async execute(interaction) {
 
-        name = interaction.options.getString("name");
-        claimbuild = interaction.options.getString("claimbuild-name");
+        name = capitalizeFirstLetters(interaction.options.getString("name"));
+        claimbuild = capitalizeFirstLetters(interaction.options.getString("claimbuild-name"));
 
         const data = {
             executorDiscordId: interaction.member.id,

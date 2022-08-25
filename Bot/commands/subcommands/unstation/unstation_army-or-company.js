@@ -2,12 +2,13 @@ const {MessageEmbed} = require('discord.js');
 const {STATION_ARMY} = require('../../../configs/embed_thumbnails.json');
 const {serverIP, serverPort} = require("../../../configs/config.json");
 const axios = require("axios");
+const {capitalizeFirstLetters} = require("../../../utils/utilities");
 
 module.exports = {
     async execute(interaction) {
 
         executor = interaction.member.id;
-        armyName = interaction.options.getString("name");
+        armyName = capitalizeFirstLetters(interaction.options.getString("name"));
 
         const data = {
             executorDiscordId: executor,
