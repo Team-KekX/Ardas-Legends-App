@@ -85,8 +85,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Checking if ClaimBuild can create another army");
 
-        // TODO: Possible error -> Ofc it counts every type of army object, including trading companies, replace this with stream that filters for armies
-        if(inputClaimBuild.getCreatedArmies().size() >= inputClaimBuild.getType().getMaxArmies()) {
+        if(inputClaimBuild.atMaxArmies()) {
             log.warn("ClaimBuild [{}] already has max amount of armies created! Armies {}",inputClaimBuild ,inputClaimBuild.getCreatedArmies() );
             throw ArmyServiceException.maxArmyOrCompany(ArmyType.ARMY,inputClaimBuild.toString(), inputClaimBuild.getCreatedArmies().toString());
         }
@@ -108,6 +107,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             throw ArmyServiceException.tooHighTokenCount(dto.armyType(),tokenCount);
         }
 
+        boolean isPaid = false;
+
+        if(inputClaimBuild.getFreeArmiesRemaining() > 0) {
+            log.debug("Claimbuild [{}] has free armies remaining [{}]. Decrementing value and setting isPaid to true",
+                    inputClaimBuild.getName(), inputClaimBuild.getFreeArmiesRemaining());
+            inputClaimBuild.setFreeArmiesRemaining(inputClaimBuild.getFreeArmiesRemaining() - 1);
+            isPaid = true;
+        }
+
+
         // TODO: Relay info if army is free or costs something
 
         log.trace("Assembling Army Object");
@@ -122,7 +131,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 30-tokenCount,
                 false,
                 inputClaimBuild,
-                LocalDateTime.now());
+                LocalDateTime.now(),
+                isPaid);
 
         log.trace("Adding the army to each unit");
         Army finalArmy = army;
@@ -130,9 +140,13 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         army.setUnits(units);
 
+        log.info("BEFORE SAVE How many armies are in createdArmies [{}]", inputClaimBuild.getCreatedArmies().size());
+
+
         log.debug("Trying to persist the army object");
         army = secureSave(army, armyRepository);
 
+        log.info("AFTER SAVE How many armies are in createdArmies [{}] ", inputClaimBuild.getCreatedArmies().size());
         log.info("Successfully created army [{}]!", army.getName());
         return army;
     }
