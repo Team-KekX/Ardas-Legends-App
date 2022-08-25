@@ -2,6 +2,7 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.UnitType;
 import com.ardaslegends.data.repository.UnitTypeRepository;
+import com.ardaslegends.data.service.exceptions.units.UnitServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
 
         if(fetchedUnitType.isEmpty()) {
             log.warn("No unitType found with name [{}]", name);
-            throw new IllegalArgumentException("No Unit found with name %s".formatted(name));
+            throw UnitServiceException.unitNotFound(name);
         }
 
         log.info("Successfully returning Unit with name [{}]", name);
