@@ -276,7 +276,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.trace("Searching for active movements of this player");
-        Movement movement = getActiveMovementByChar(player, rpChar);
+        Movement movement = getActiveMovementByChar(player);
 
         log.debug("Setting movement to inactive");
         movement.setIsCurrentlyActive(false);
@@ -305,7 +305,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    public Movement getActiveMovementByChar(Player player, RPChar rpChar) {
+    public Movement getActiveMovementByChar(Player player) {
         log.debug("Trying to get an active Movement for the player [{}]", player);
 
         log.trace("Executing the secureFind");
@@ -314,7 +314,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if a movement was found");
         if(fetchedMove.isEmpty()) {
             log.warn("No active movement was found for the player [{}]!", player);
-            throw MovementServiceException.noActiveMovementChar(rpChar.getName());
+            throw MovementServiceException.noActiveMovementChar(player.getRpChar().getName());
         }
 
         Movement movement = fetchedMove.get();
