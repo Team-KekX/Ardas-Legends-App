@@ -20,6 +20,7 @@ module.exports = {
         axios.post(`http://${serverIP}:${serverPort}/api/movement/move-army-or-company`, data)
             .then(async function (response) {
                 var movement = response.data;
+                movement.path.path[0] += ' (current)'
                 var path = movement.path.path.join(' -> ');
                 var replyEmbed = new MessageEmbed()
                     .setTitle(`Army ${armyName} started moving!`)
