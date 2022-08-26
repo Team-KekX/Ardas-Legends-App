@@ -2,11 +2,12 @@ const {MessageEmbed} = require('discord.js');
 const {UNBIND} = require('../../../configs/embed_thumbnails.json');
 const {serverIP, serverPort} = require("../../../configs/config.json");
 const axios = require("axios");
+const {capitalizeFirstLetters} = require("../../../utils/utilities");
 
 module.exports = {
     async execute(interaction) {
 
-        const factionName = interaction.options.getString("faction-name")
+        const factionName = capitalizeFirstLetters(interaction.options.getString("faction-name"))
 
         axios.get(`http://${serverIP}:${serverPort}/api/army/upkeep/${factionName}`)
             .then(async function (response) {

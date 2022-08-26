@@ -13,8 +13,8 @@ module.exports = {
         }
 
         //name and title won't get capitalized here so people have more freedom when naming their chars
-        const name = interaction.options.getString('name');
-        const title = interaction.options.getString('title');
+        const name = capitalizeFirstLetters(interaction.options.getString('name'));
+        const title = capitalizeFirstLetters(interaction.options.getString('title'));
         const gear = capitalizeFirstLetters(interaction.options.getString('gear').toLowerCase());
         const pvp = interaction.options.getBoolean('pvp');
 

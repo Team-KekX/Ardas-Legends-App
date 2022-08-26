@@ -12,7 +12,7 @@ module.exports = {
             return;
         }
 
-        const armyName = interaction.options.getString("army-name");
+        const armyName = capitalizeFirstLetters(interaction.options.getString("army-name"));
         const freeTokens = interaction.options.getInteger("tokens");
 
         const data = {
