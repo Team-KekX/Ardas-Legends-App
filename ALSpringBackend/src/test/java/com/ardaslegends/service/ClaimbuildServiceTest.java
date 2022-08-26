@@ -3,6 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
+import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
@@ -24,6 +25,7 @@ public class ClaimbuildServiceTest {
 
     private ClaimBuildService claimBuildService;
     private ClaimBuildRepository mockClaimbuildRepository;
+    private RegionRepository mockRegionRepository;
     private FactionService mockFactionService;
 
     private Faction faction;
@@ -33,9 +35,10 @@ public class ClaimbuildServiceTest {
     @BeforeEach
     void setup() {
         mockClaimbuildRepository = mock(ClaimBuildRepository.class);
+        mockRegionRepository = mock(RegionRepository.class);
         mockFactionService = mock(FactionService.class);
 
-        claimBuildService = new ClaimBuildService(mockClaimbuildRepository, mockFactionService);
+        claimBuildService = new ClaimBuildService(mockClaimbuildRepository, mockRegionRepository, mockFactionService);
 
         faction = Faction.builder().name("Gondor").build();
         faction2 = Faction.builder().name("Mordor").build();

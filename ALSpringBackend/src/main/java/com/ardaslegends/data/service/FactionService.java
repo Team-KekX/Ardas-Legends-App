@@ -2,6 +2,7 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.FactionRepository;
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
-public class FactionService {
+public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     private final FactionRepository factionRepository;
 
@@ -29,20 +30,13 @@ public class FactionService {
             log.warn("Faction name is blank");
             throw new IllegalArgumentException("Faction name must not be blank!");
         }
-        Optional<Faction> fetchedFaction = Optional.empty();
-        try {
-            fetchedFaction = factionRepository.findById(name);
-        } catch (PersistenceException pEx) {
-            log.warn("Database error when fetching factionRepository.findById. Faction name: {}",name);
-            throw ServiceException.cannotReadEntityDueToDatabase(null, pEx);
-        }
-
+        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findById);
         
         if (fetchedFaction.isEmpty()) {
             log.warn("No faction found with name {}", name);
-            throw new IllegalArgumentException("FactionService, no faction with name %s can be found".formatted(name));
+            throw FactionServiceException.noFactionWithNameFound(name);
         }
-        log.info("Successfully completed fetch from database, result {}", fetchedFaction);
+        log.debug("Successfully fetched faction [{}]", fetchedFaction);
 
         return fetchedFaction.get();
 
