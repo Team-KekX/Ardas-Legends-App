@@ -91,6 +91,7 @@ public class ArmyServiceTest {
         ClaimBuild claimBuild = new ClaimBuild();
         ClaimBuildType type = ClaimBuildType.TOWN;
         claimBuild.setType(type);
+        claimBuild.setFreeArmiesRemaining(1);
 
         Faction faction = Faction.builder().name("Gondr").build();
         claimBuild.setOwnedBy(faction);
