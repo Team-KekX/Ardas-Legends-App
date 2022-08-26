@@ -6,6 +6,7 @@ import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.FactionService;
+import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -62,10 +63,23 @@ public class ClaimbuildServiceTest {
         var result = claimBuildService.setOwnerFaction(dto);
 
         assertThat(result).isNotNull();
-        assertThat(result.claimbuildName()).isEqualTo(dto.claimbuildName());
-        assertThat(result.newFaction()).isEqualTo(dto.newFaction());
+        assertThat(result.getName()).isEqualTo(dto.claimbuildName());
+        assertThat(result.getOwnedBy().getName()).isEqualTo(dto.newFaction());
 
         log.info("Test passed: setOwnerFaction works properly with correct values");
+    }
+
+    @Test
+    void ensureDeleteClaimbuildWorksProperly() {
+        log.debug("Testing if deleteClaimbuild works properly");
+
+        DeleteClaimbuildDto dto = new DeleteClaimbuildDto(claimbuild.getName(), null);
+
+        log.debug("Calling deleteClaimbuild, expecting no errors");
+        var result = claimBuildService.deleteClaimbuild(dto);
+
+        assertThat(result.getName()).isEqualTo(claimbuild.getName());
+        log.info("Test passed: deleteClaimbuild works properly");
     }
 
     @Test

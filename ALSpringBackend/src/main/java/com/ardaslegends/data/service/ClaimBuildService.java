@@ -3,6 +3,7 @@ package com.ardaslegends.data.service;
 import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
+import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.repository.RegionRepository;
@@ -15,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +30,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
     private final FactionService factionService;
 
-    public UpdateClaimbuildOwnerDto setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
+    @Transactional(readOnly = false)
+    public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
         log.debug("Trying to set the controlling faction of Claimbuild [{}] to [{}]", dto.claimbuildName(), dto.newFaction());
 
         ServiceUtils.checkNulls(dto, List.of("claimbuildName", "newFaction"));
@@ -51,8 +50,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         claimBuild = secureSave(claimBuild, claimbuildRepository);
 
         log.info("Successfully returning claimbuild [{}] with new controlling faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
-        UpdateClaimbuildOwnerDto returnDto = new UpdateClaimbuildOwnerDto(claimBuild.getName(), claimBuild.getOwnedBy().getName());
-        return returnDto;
+        return claimBuild;
     }
 
     public ClaimBuild createClaimbuild(CreateClaimBuildDto dto) {
@@ -66,7 +64,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Fetching claimbuild with name [{}]", dto.name());
         Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
         log.trace("Checking if a claimbuild was found");
-        if(existingClaimbuild.isPresent()) {
+        if (existingClaimbuild.isPresent()) {
             var claimbuild = existingClaimbuild.get();
             log.warn("Claimbuild with name [{}] already exists (region [{}] - owned by [{}])", claimbuild.getName(), claimbuild.getRegion(), claimbuild.getOwnedBy());
             throw ClaimBuildServiceException.cbAlreadyExists(claimbuild.getName(), claimbuild.getRegion().getId(), claimbuild.getOwnedBy().getName());
@@ -76,7 +74,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Fetching the region");
         Optional<Region> fetchedRegion = secureFind(dto.regionId(), regionRepository::findById);
         log.trace("Checking if region exists");
-        if(fetchedRegion.isEmpty()) {
+        if (fetchedRegion.isEmpty()) {
             log.warn("Region with id [{}] does not exist!", dto.regionId());
             throw ServiceException.regionDoesNotExist(dto.regionId());
         }
@@ -88,8 +86,19 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         Faction faction = factionService.getFactionByName(dto.faction());
 
 
-
         return null;
+    }
+    @Transactional(readOnly = false)
+    public ClaimBuild deleteClaimbuild(DeleteClaimbuildDto dto) {
+        log.debug("Trying to delete claimbuild with name [{}]", dto.claimbuildName());
+
+        ServiceUtils.checkNulls(dto, List.of("claimbuildName"));
+        ServiceUtils.checkBlanks(dto, List.of("claimbuildName"));
+
+        ClaimBuild claimBuild = getClaimBuildByName(dto.claimbuildName());
+
+        secureDelete(claimBuild, claimbuildRepository);
+        return claimBuild;
     }
 
     public ClaimBuild getClaimBuildByName(String name) {
