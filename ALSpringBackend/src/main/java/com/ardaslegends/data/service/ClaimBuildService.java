@@ -1,11 +1,10 @@
 package com.ardaslegends.data.service;
 
-import com.ardaslegends.data.domain.ClaimBuild;
-import com.ardaslegends.data.domain.Faction;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
+import com.ardaslegends.data.repository.ProductionSiteRepository;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
-import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -16,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
     private final ClaimBuildRepository claimbuildRepository;
     private final RegionRepository regionRepository;
+    private final ProductionSiteRepository productionSiteRepository;
 
     private final FactionService factionService;
 
@@ -119,53 +120,53 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         return fetchedBuild.get();
     }
 
-    public void validateUnitString(String unitString, Character[] syntaxChars, ServiceException exceptionToThrow) {
-        log.debug("Validating unitString [{}]", unitString);
+    public List<ProductionClaimbuild> createProductionSitesFromString(String prodString, @NotNull ClaimBuild claimBuild) {
+        log.debug("Creating production sites from string [{}]", prodString);
 
-        // Is also true at the start, from then every time a expectedChar is switched
-        boolean firstCharAfterExpected = true; //says if the current character is the first character after the last expected one
-        boolean possibleEnd = false;
+        ServiceUtils.validateStringSyntax(prodString, new Character[]{':', ':', '-'}, ClaimBuildServiceException.invalidProductionSiteString(prodString));
 
-        log.trace("Starting validation, unitString length: [{}]", unitString.length());
+        String[] prodSiteDataArr = prodString.split("-");
 
-        int currentExpectedCharIndex = 0; //index of the currently expected char
-        char expectedChar = syntaxChars[0]; //Set the expectedChar to first in array
+        List<ProductionClaimbuild> productionSites = new ArrayList<>();
 
-        for(int i = 0; i < unitString.length(); i++) {
-            log.trace("Index: [{}]", i);
-            log.trace("Expected next syntax char [{}]", expectedChar);
-            char currentChar = unitString.charAt(i);
-            possibleEnd = false;
-            log.trace("Current char: [{}]", currentChar);
+        for (String prodSiteData : prodSiteDataArr) {
+            log.trace("Generating productionSite from data: [{}]", prodSiteData);
+            String[] properties = prodSiteData.split(":");
 
-            if(currentChar == expectedChar) {
-                log.trace("Current char {} is expected char {}", currentChar, expectedChar);
+            ProductionSiteType type = null;
+            String resource = properties[1];
 
-                //Check if current char is second last
-                if(currentExpectedCharIndex == (syntaxChars.length - 2))
-                    possibleEnd = true;
-                /*
-                Increment the currentExpectedCharIndex so we expect the next character
-                If the index has reached the end of the array, start over from 0
-                 */
-                currentExpectedCharIndex++;
-                if(currentExpectedCharIndex == syntaxChars.length)
-                    currentExpectedCharIndex = 0;
-                log.trace("Incremented the currentExpectedCharIndex to {}", currentExpectedCharIndex);
-
-                expectedChar = syntaxChars[currentExpectedCharIndex];
+            try {
+                String inputtedType = properties[0].replace(' ', '_').toUpperCase(Locale.ROOT);
+                log.trace("Getting the enum for value [{}]", inputtedType);
+                type = ProductionSiteType.valueOf(inputtedType);
             }
-            else if(Arrays.asList(syntaxChars).contains(currentChar)) {
-                log.warn("Char [{}] at [{}] has created an error in string [{}], next expected was [{}]", currentChar, i, unitString, expectedChar);
-                throw exceptionToThrow;
+            catch(Exception e) {
+                log.warn("No Production Site type found for input [{}]", properties[0]);
+                throw ClaimBuildServiceException.noProductionSiteTypeFound(properties[0]);
             }
 
+            log.debug("Fetching Production Site with type [{}] and resource [{}]", type, resource);
+            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource);
 
-            if((i + 1) == unitString.length() && !possibleEnd) {
-                log.warn("String reached its end without having finished syntax!");
-                throw exceptionToThrow;
+            if(fetchedProdSite.isEmpty()) {
+                log.warn("No Production Site found for type [{}] and resource [{}]!", type, resource);
+                throw ClaimBuildServiceException.noProductionSiteFound(type.name(), resource);
             }
+
+            long prodSiteAmount = 0L;
+            try {
+                prodSiteAmount = Long.parseLong(properties[2]);
+                log.trace("Production Site amount: [{}]", prodSiteAmount);
+            }
+            catch (NumberFormatException e) {
+                log.warn("Production Site String expected a number but was: [{}]", properties[2]);
+                throw ClaimBuildServiceException.invalidProductionSiteString(prodString);
+            }
+
+            productionSites.add(new ProductionClaimbuild(fetchedProdSite.get(), claimBuild, prodSiteAmount));
         }
+        
+        return productionSites;
     }
-
 }

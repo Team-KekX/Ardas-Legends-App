@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -45,6 +46,19 @@ public abstract class AbstractService<T extends AbstractDomainEntity, R extends 
         } catch (PersistenceException pEx) {
             log.warn("Encountered Database Error while searching for entity, parameter [{}]", func);
             throw ServiceException.secureFindFailed(func, pEx);
+        }
+    }
+
+    public <G, T, A> A secureFind(G identifier, T other, BiFunction<G, T, A> func) {
+        if (func == null) {
+            log.warn("SecureFind Function parameter is null!");
+            throw ServiceException.passedNullFunction();
+        }
+        try {
+            return func.apply(identifier, other);
+        } catch (PersistenceException pEx) {
+            log.warn("Encountered Database Error while searching for entity, parameter [{}]", identifier);
+            throw ServiceException.secureFindFailed(identifier, pEx);
         }
     }
 

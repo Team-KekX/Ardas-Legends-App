@@ -40,4 +40,9 @@ public final class ProductionClaimbuild extends AbstractDomainEntity {
 
     private Long count;
 
+    public ProductionClaimbuild(ProductionSite productionSite, ClaimBuild claimbuild, Long count) {
+        this.productionSite = productionSite;
+        this.claimbuild = claimbuild;
+        this.count = count;
+    }
 }
