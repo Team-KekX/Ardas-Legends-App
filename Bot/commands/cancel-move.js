@@ -21,7 +21,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const commands = addSubcommands('cancel', false);
+        const commands = addSubcommands('cancel-move', false);
         const toExecute = commands[interaction.options.getSubcommand()];
         saveExecute(toExecute, interaction);
     },
