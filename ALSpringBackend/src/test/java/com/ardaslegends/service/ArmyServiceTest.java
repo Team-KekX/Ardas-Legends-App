@@ -239,7 +239,7 @@ public class ArmyServiceTest {
 
         army.setArmyType(ArmyType.TRADING_COMPANY);
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null, null);
 
         log.debug("Expecting Se on call, calling healStart");
         var result = assertThrows(ArmyServiceException.class, () -> armyService.healStart(dto));
