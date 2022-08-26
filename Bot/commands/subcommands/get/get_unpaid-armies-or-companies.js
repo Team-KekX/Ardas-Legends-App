@@ -9,8 +9,16 @@ module.exports = {
         axios.get(`http://${serverIP}:${serverPort}/api/army/unpaid`)
             .then(async function (response) {
 
-                console.log(response.data)
-                unpaidString = createUnpaidString(response.data);
+                let armyArray;
+                if (response.data == undefined) {
+                    armyArray = [];
+                } else {
+                    armyArray = response.data
+                }
+
+                console.log(armyArray)
+                console.log(`Data ${response.data}`)
+                unpaidString = createUnpaidString(armyArray);
 
                 var replyEmbed = new MessageEmbed()
                     .setTitle("Unpaid Armies or Companies")
@@ -24,10 +32,18 @@ module.exports = {
                 await interaction.reply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
+                let errorMessage;
+                if(error.response == undefined) {
+                    errorMessage = error.toString()
+                }
+                else {
+                    errorMessage = error.response.data.message
+                }
+
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Error while trying to get unpaid data")
                     .setColor("RED")
-                    .setDescription(error.response.data.message)
+                    .setDescription(errorMessage)
                     .setTimestamp()
                 await interaction.reply({embeds: [replyEmbed]})
             })

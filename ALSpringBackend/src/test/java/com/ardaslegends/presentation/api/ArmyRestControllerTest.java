@@ -313,7 +313,7 @@ public class ArmyRestControllerTest {
 
     @Test
     void ensureSeTPaidWorksProperly() throws Exception {
-        String dto = "Kek";
+        UpdateArmyDto dto = new UpdateArmyDto(null, "kek", null);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);

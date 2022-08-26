@@ -70,6 +70,7 @@ public final class Army extends AbstractDomainEntity {
     @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
     private List<Movement> movements = new ArrayList<>();
 
+    @Column(name = "is_paid")
     private Boolean isPaid;
 
     public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {

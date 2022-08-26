@@ -1115,11 +1115,12 @@ public class ArmyServiceTest {
 
         Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(false).build();
 
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), null);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
 
         log.debug("Calling armyService.setIsPaidToTrue, expecting no errors");
-        var result = armyService.setIsPaidToTrue(army.getName());
+        var result = armyService.setIsPaidToTrue(dto);
 
         assertThat(result).isTrue();
     }
@@ -1129,11 +1130,13 @@ public class ArmyServiceTest {
         log.debug("Testing if setIsPaid correctly throws Se when its already paid for");
 
         Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(true).build();
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(),null);
 
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
 
+
         log.debug("Calling armyService.setIsPaidToTrue, expecting Se");
-        var result = assertThrows(ArmyServiceException.class, () -> armyService.setIsPaidToTrue(army.getName()));
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.setIsPaidToTrue(dto));
 
         assertThat(result.getMessage()).isEqualTo(ArmyServiceException.isAlreadyPaidFor(army.getArmyType(), army.getName()).getMessage());
         log.info("Test passed: setIsPaidToTrue correctly throws Se when army or company is already paid for");

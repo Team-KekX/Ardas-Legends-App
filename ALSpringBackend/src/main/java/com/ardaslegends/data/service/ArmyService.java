@@ -687,11 +687,14 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         return upkeepDtoList;
     }
-    public boolean setIsPaidToTrue(String name) {
-        log.debug("Trying to set isPaid to true for army or company [{}]", name);
+    @Transactional(readOnly = false)
+    public boolean setIsPaidToTrue(UpdateArmyDto dto) {
+        log.debug("Trying to set isPaid to true for army or company [{}]", dto);
 
-        Objects.requireNonNull(name, "Name must not be null!");
-        ServiceUtils.checkBlankString(name, "army or company");
+        ServiceUtils.checkNulls(dto, List.of("armyName"));
+        ServiceUtils.checkBlanks(dto, List.of("armyName"));
+
+        String name = dto.armyName();
 
         log.debug("Fetching army or company with name [{}]", name);
         Army army = getArmyByName(name);
@@ -704,7 +707,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Setting is paid to true for [{}]", army.getName());
         army.setIsPaid(true);
 
-        log.debug("Persisting [{}]", army.getName());
+        log.debug("Persisting [{}], Payment [{}]", army.getName(), army.getIsPaid());
         army = secureSave(army, armyRepository);
 
         log.info("Successfully set isPaid to [{}]!", army.getIsPaid());

@@ -86,7 +86,11 @@ function createUnpaidString(armies) {
         createdAt = army.createdAt.substring(0,10);
         console.log( `${createdAt}`)
 
-        unpaidString += `Name: ${armyName}, Faction: ${faction}, Creation date: ${createdAt}\n`;
+        unpaidString += `Name: ${armyName} | Faction: ${faction} | Creation date: ${createdAt}\n`;
+    }
+    console.log(unpaidString)
+    if(unpaidString === "") {
+        unpaidString = "No armies unpaid";
     }
     return unpaidString;
 }

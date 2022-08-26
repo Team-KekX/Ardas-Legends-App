@@ -88,6 +88,17 @@ module.exports = {
                         .setDescription("The new amount of free tokens which will be set")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("paid-to-true")
+                .setDescription("Updates the payment attribute of an army or company to true")
+                .addStringOption(option =>
+                    option
+                        .setName("name")
+                        .setDescription("Name of the army or company that should receive a payment")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
