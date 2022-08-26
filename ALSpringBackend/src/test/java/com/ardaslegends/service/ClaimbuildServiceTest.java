@@ -1,7 +1,6 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.ClaimBuild;
-import com.ardaslegends.data.domain.Faction;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.repository.ProductionSiteRepository;
 import com.ardaslegends.data.repository.RegionRepository;
@@ -14,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +34,8 @@ public class ClaimbuildServiceTest {
     private Faction faction;
     private Faction faction2;
     private ClaimBuild claimbuild;
+    private ProductionSiteType productionSiteType;
+    private ProductionSite productionSite;
 
     @BeforeEach
     void setup() {
@@ -47,11 +49,16 @@ public class ClaimbuildServiceTest {
         faction = Faction.builder().name("Gondor").build();
         faction2 = Faction.builder().name("Mordor").build();
 
+        productionSiteType = ProductionSiteType.FISHING_LODGE;
+        productionSite = ProductionSite.builder().producedResource("Fish").type(productionSiteType).build();
         claimbuild = ClaimBuild.builder().name("Minas Tirith").ownedBy(faction2).build();
 
         when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
         when(mockFactionService.getFactionByName(faction2.getName())).thenReturn(faction2);
+        when(mockProductionSiteRepository.
+                findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite.getProducedResource()))
+                .thenReturn(Optional.of(productionSite));
     }
 
     @Test
@@ -97,5 +104,66 @@ public class ClaimbuildServiceTest {
 
         assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noCbWithName(name).getMessage());
         log.info("Test passed: getClaimbuildByName correctly throws Se when no cb entry with passed name in database");
+    }
+
+    @Test
+    void ensureCreateProductionSitesFromStringWorks() {
+        log.debug("Testing if createProductionSitesFromString works properly");
+
+        String prodString = "Fishing Lodge:Fish:5";
+
+        log.debug("Calling createProductionSitesFromString");
+        List<ProductionClaimbuild> result = claimBuildService.createProductionSitesFromString(prodString, claimbuild);
+
+        ProductionClaimbuild expected = ProductionClaimbuild.builder().claimbuild(claimbuild).productionSite(productionSite)
+                .count(5L).build();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getClaimbuild()).isEqualTo(expected.getClaimbuild());
+        assertThat(result.get(0).getProductionSite()).isEqualTo(expected.getProductionSite());
+        assertThat(result.get(0).getCount()).isEqualTo(expected.getCount());
+        log.info("Test passed: createProductionSitesFromString works properly");
+    }
+
+    @Test
+    void ensureCreateProductionSitesFromStringThrowsCBSEWhenNoProdTypeFound() {
+        log.debug("Testing if createProductionSitesFromString throws ClaimBuildServiceException when no ProductionSiteType found!");
+
+        String str = "kekw Lodge";
+        String prodString = str + ":Fish:5";
+
+        log.debug("Calling createProductionSitesFromString");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createProductionSitesFromString(prodString, claimbuild));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noProductionSiteTypeFound(str).getMessage());
+        log.info("Test passed: createProductionSitesFromString throws ClaimBuildServiceException when no ProductionSiteType found!");
+    }
+
+    @Test
+    void ensureCreateProductionSitesFromStringThrowsCBSEWhenNoProdSiteFound() {
+        log.debug("Testing if createProductionSitesFromString throws ClaimBuildServiceException when no ProductionSite found!");
+
+        String type = "Fishing Lodge";
+        String resource = "Almond";
+        String prodString = "%s:%s:5".formatted(type, resource);
+
+        log.debug("Calling createProductionSitesFromString");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createProductionSitesFromString(prodString, claimbuild));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noProductionSiteFound(productionSiteType.name(), resource).getMessage());
+        log.info("Test passed: createProductionSitesFromString throws ClaimBuildServiceException when no ProductionSite found!");
+    }
+
+    @Test
+    void ensureCreateProductionSitesFromStringThrowsCBSEWhenAmountNotANumber() {
+        log.debug("Testing if createProductionSitesFromString throws ClaimBuildServiceException when inputted amount is not a number!");
+
+        String prodString = "Fishing Lodge:Fish:awdada";
+
+        log.debug("Calling createProductionSitesFromString");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createProductionSitesFromString(prodString, claimbuild));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.invalidProductionSiteString(prodString).getMessage());
+        log.info("Test passed: createProductionSitesFromString throws ClaimBuildServiceException when inputted amount is not a number!");
     }
 }
