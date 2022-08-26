@@ -542,69 +542,10 @@ public class MovementServiceTest {
         log.info("Test passed: cancelArmyMovement throws Service Exception when Army not found!");
     }
 
-    @Test
-    void ensureCancelArmyMovementThrowsSEWhenPlayerNotBoundAndNotSameFaction() {
-        log.debug("Testing if cancelArmyMovement throws MovementServiceException when the player not bound and not in the same faction!");
 
-        //Assign
-        log.trace("Initializing data");
-        String armyName = "Knights of Gondor";
-        Faction gondor = Faction.builder().name("Gondor").build();
-        Faction mordor = Faction.builder().name("Mordor").build();
-        Army army = Army.builder().name(armyName).faction(gondor).build();
-        RPChar rpchar = RPChar.builder().name("Belegorn").build();
-        Player player = Player.builder().faction(mordor).ign("Luktronic").discordID("1234").rpChar(rpchar).build();
-        MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
-
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
-        when(mockArmyService.getArmyByName(armyName)).thenReturn(army);
-
-        //Act / Assert
-        log.trace("Calling cancelArmyMovement and asserting it throws MovementServiceException");
-        var exception = assertThrows(MovementServiceException.class, () -> movementService.cancelArmyMovement(dto));
-
-        //Assert
-        log.trace("Asserting");
-        assertThat(exception.getMessage()).isEqualTo(MovementServiceException.notAllowedToCancelMoveNotSameFaction(army.getName(), army.getFaction().getName()).getMessage());
-
-        log.info("Test passed: cancelArmyMovement throws ArmyServiceException when the player not bound and not in the same faction!");
-    }
 
     @Test
-    void ensureCancelArmyMovementWorksWhenPlayerBoundButNotSameFaction() {
-        log.debug("Testing if cancelArmyMovement works when the player is bound and not in the same faction!");
-
-        //Assign
-        log.trace("Initializing data");
-        String armyName = "Knights of Gondor";
-        Faction gondor = Faction.builder().name("Gondor").build();
-        Faction mordor = Faction.builder().name("Mordor").build();
-        Army army = Army.builder().name(armyName).faction(gondor).build();
-        RPChar rpchar = RPChar.builder().name("Belegorn").build();
-        Player player = Player.builder().faction(mordor).ign("Luktronic").discordID("1234").rpChar(rpchar).build();
-        Path path = Path.builder().path(List.of("90", "92")).build();
-        Movement movement = Movement.builder().isCharMovement(false).army(army).path(path).isCurrentlyActive(true).build();
-        MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
-        rpchar.setBoundTo(army);
-        army.setBoundTo(player);
-
-        when(mockPlayerService.getPlayerByDiscordId("1234")).thenReturn(player);
-        when(mockArmyService.getArmyByName(armyName)).thenReturn(army);
-        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
-
-        //Act
-        log.trace("Calling cancelArmyMovement");
-        movementService.cancelArmyMovement(dto);
-
-        //Assert
-        log.trace("Asserting");
-        assertThat(movement.getIsCurrentlyActive()).isFalse();
-
-        log.info("Test passed: cancelArmyMovement works when the player is bound and not in the same faction!");
-    }
-
-    @Test
-    void ensureCancelArmyMovementThrowsSEWhenPlayerNotLeader() {
+    void ensureCancelArmyMovementThrowsSEWhenPlayerNotAllowed() {
         log.debug("Testing if cancelArmyMovement throws MovementServiceException when the player is not faction leader!");
 
         //Assign
@@ -627,7 +568,7 @@ public class MovementServiceTest {
         log.trace("Asserting");
         assertThat(exception.getMessage()).isEqualTo(MovementServiceException.notAllowedToCancelMove().getMessage());
 
-        log.info("Test passed: cancelArmyMovement throws ArmyServiceException when the player is not faction leader!");
+        log.info("Test passed: cancelArmyMovement throws ArmyServiceException when the player is not allowed to move!");
     }
 
     @Test
