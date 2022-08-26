@@ -6,6 +6,7 @@ import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildDto;
+import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,19 @@ public class ClaimbuildServiceTest {
         assertThat(result.getOwnedBy().getName()).isEqualTo(dto.newFaction());
 
         log.info("Test passed: setOwnerFaction works properly with correct values");
+    }
+
+    @Test
+    void ensureGetClaimbuildByNameThrowsSeWhenPassedNameDoesNotHaveACb() {
+        log.debug("Testing if getClaimbuildByName throws Se when passed name does not have a corresponding claimbuild in database");
+
+        String name = "Kek";
+        when(mockClaimbuildRepository.findById(name)).thenReturn(Optional.empty());
+
+        log.debug("Calling getClaimbuildByName, expecting Se");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.getClaimBuildByName(name));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noCbWithName(name).getMessage());
+        log.info("Test passed: getClaimbuildByName correctly throws Se when no cb entry with passed name in database");
     }
 }
