@@ -1,6 +1,8 @@
 package com.ardaslegends.data.domain;
 
 public enum ClaimBuildType {
+
+    // maxArmies, maxTradingCompanies, freeArmies, freeTradingCompanies
     HAMLET(0,0,0,0),
     VILLAGE(0,0,0,0),
     TOWN(1,1,1,1),
