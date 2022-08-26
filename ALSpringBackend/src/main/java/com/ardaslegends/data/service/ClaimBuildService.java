@@ -44,7 +44,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         claimBuild = secureSave(claimBuild, claimbuildRepository);
 
         log.info("Successfully returning claimbuild [{}] with new controlling faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
-        UpdateClaimbuildOwnerDto returnDto = new UpdateClaimbuildOwnerDto(claimBuild.getName(), claimBuild.getOwnedBy().getName());j
+        UpdateClaimbuildOwnerDto returnDto = new UpdateClaimbuildOwnerDto(claimBuild.getName(), claimBuild.getOwnedBy().getName());
         return returnDto;
     }
 
