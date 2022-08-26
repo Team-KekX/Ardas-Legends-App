@@ -83,7 +83,7 @@ public class ClaimbuildServiceTest {
     void ensureDeleteClaimbuildWorksProperly() {
         log.debug("Testing if deleteClaimbuild works properly");
 
-        DeleteClaimbuildDto dto = new DeleteClaimbuildDto(claimbuild.getName(), null);
+        DeleteClaimbuildDto dto = new DeleteClaimbuildDto(claimbuild.getName(), null, null);
 
         log.debug("Calling deleteClaimbuild, expecting no errors");
         var result = claimBuildService.deleteClaimbuild(dto);

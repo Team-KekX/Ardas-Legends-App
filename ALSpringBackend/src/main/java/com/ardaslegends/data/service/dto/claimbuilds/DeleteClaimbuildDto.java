@@ -4,5 +4,5 @@ import com.ardaslegends.data.domain.Army;
 
 import java.util.List;
 
-public record DeleteClaimbuildDto(String claimbuildName, List<Army> armies){
+public record DeleteClaimbuildDto(String claimbuildName, List<Army> unstationedArmies, List<Army> deletedArmies){
 }

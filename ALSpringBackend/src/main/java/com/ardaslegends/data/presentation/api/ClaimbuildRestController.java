@@ -2,15 +2,13 @@ package com.ardaslegends.data.presentation.api;
 
 import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.ClaimBuildService;
+import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 
@@ -19,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ClaimbuildRestController.BASE_URL)
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
-    private static final String UPDATE_CLAIMBUILD_FATION = "update/claimbuild-faction";
+    private static final String UPDATE_CLAIMBUILD_FATION = "/update/claimbuild-faction";
+    private static final String DELETE_CLAIMBUILD = "/delete";
 
     private final ClaimBuildService claimBuildService;
 
@@ -34,6 +33,20 @@ public class ClaimbuildRestController extends AbstractRestController {
         UpdateClaimbuildOwnerDto response = new UpdateClaimbuildOwnerDto(result.getName(), result.getOwnedBy().getName());
 
         log.info("Sending successful response [{}] to bot!", response);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(DELETE_CLAIMBUILD)
+    public HttpEntity<DeleteClaimbuildDto> deleteClaimbuild(@RequestBody DeleteClaimbuildDto dto) {
+        log.debug("Incoming delete Claimbuild Request with data [{}]", dto);
+
+        log.trace("Calling wrappedServiceExecution of deleteClaimbuild");
+        var result = wrappedServiceExecution(dto, claimBuildService::deleteClaimbuild);
+
+        log.trace("Building response Dto");
+        DeleteClaimbuildDto response = new DeleteClaimbuildDto(result.getName(), result.getStationedArmies(), result.getCreatedArmies());
+
+        log.info("Sending successful delete claimbuild response [{}] to bot!", response);
         return ResponseEntity.ok(response);
     }
 }
