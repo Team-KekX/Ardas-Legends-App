@@ -45,7 +45,6 @@ public final class Army extends AbstractDomainEntity {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "rpChar.boundTo")
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Player boundTo; //rp character the army is currently bound to
-
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")
     private List<Unit> units = new ArrayList<>(); //the units in this army contains
 

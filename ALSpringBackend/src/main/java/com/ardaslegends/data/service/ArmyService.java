@@ -589,20 +589,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Getting player instance");
         Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
-        boolean isAllowed = false;
-        log.debug("Checking if player is bound to army");
-        if(army.getBoundTo() != null && army.getBoundTo().equals(player)) {
-            log.debug("Player is bound to army - has permission to pick siege");
-            isAllowed = true;
-        }
-
-        log.debug("Checking if player is faction leader");
-        if(!isAllowed && player.equals(army.getFaction().getLeader())) {
-            log.debug("Player is faction leader of [{}] and therefore has permission to pick siege without being bound", army.getFaction());
-            isAllowed = true;
-        }
-
-        //TODO: Check for lords as well
+        boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
 
         if(!isAllowed) {
             log.warn("Player is not bound to army and is not faction leader/lord of [{}]!", army.getFaction());

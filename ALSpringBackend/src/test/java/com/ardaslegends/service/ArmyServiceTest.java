@@ -957,8 +957,8 @@ public class ArmyServiceTest {
     }
 
     @Test
-    void ensurePickSiegeThrowsSEWhenPlayerIsNotBoundOrLeader() {
-        log.debug("Testing if pickSiege throws ArmyServiceException when player is not bound or leader!");
+    void ensurePickSiegeThrowsSEWhenPlayerIsNotAllowed() {
+        log.debug("Testing if pickSiege throws ArmyServiceException when player is not allowed!");
 
         log.trace("Initializing data");
         String siege = "trebuchet";
@@ -969,7 +969,7 @@ public class ArmyServiceTest {
         var exception = assertThrows(ArmyServiceException.class, () -> armyService.pickSiege(dto));
 
         assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.siegeNotFactionLeaderOrLord(faction.getName(), army.getName()).getMessage());
-        log.info("Test passed: pickSiege throws ArmyServiceException when player is not bound or leader!");
+        log.info("Test passed: pickSiege throws ArmyServiceException when player is not allowed!");
     }
 
     @Test
