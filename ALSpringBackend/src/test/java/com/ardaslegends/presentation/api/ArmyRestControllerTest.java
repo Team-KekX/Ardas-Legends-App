@@ -157,7 +157,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController healStart works properly with correct values");
 
         // Assign
-        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null);
+        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null, null);
 
         when(mockArmyService.healStart(dto)).thenReturn(new Army());
 
@@ -180,7 +180,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController healStop works properly with correct values");
 
         // Assign
-        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null);
+        UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null, null);
 
         when(mockArmyService.healStop(dto)).thenReturn(new Army());
 
@@ -247,7 +247,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController setFreeArmyTokens works properly with correct values");
 
         // Assign
-        UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20.0);
+        UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20.0, null);
 
         when(mockArmyService.setFreeArmyTokens(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
 
@@ -312,8 +312,8 @@ public class ArmyRestControllerTest {
     }
 
     @Test
-    void ensureSeTPaidWorksProperly() throws Exception {
-        UpdateArmyDto dto = new UpdateArmyDto(null, "kek", null);
+    void ensureSetPaidWorksProperly() throws Exception {
+        UpdateArmyDto dto = new UpdateArmyDto(null, "kek", null, true);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);

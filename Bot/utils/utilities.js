@@ -76,23 +76,31 @@ function createArmyUnitListString(army) {
     return unitString;
 }
 
-function createUnpaidString(armies) {
-    unpaidString = "";
+function createUnpaidStringArray(armies) {
+    nameString = "";
+    factionString = "";
+    dateString = "";
     for(i=0; i < armies.length; i++) {
         army = armies[i];
 
         armyName = army.name;
         faction = army.faction.name;
+        if(army.faction.name === undefined)
+            faction = army.faction
         createdAt = army.createdAt.substring(0,10);
-        console.log( `${createdAt}`)
 
-        unpaidString += `Name: ${armyName} | Faction: ${faction} | Creation date: ${createdAt}\n`;
+        nameString += `${armyName}\n`;
+        factionString +=`${faction}\n`;
+        dateString += `${createdAt}\n`;
     }
-    console.log(unpaidString)
-    if(unpaidString === "") {
-        unpaidString = "No armies unpaid";
+
+    if(armies.length === 0) {
+        nameString = " - ";
+        factionString = " - ";
+        dateString = " - ";
     }
-    return unpaidString;
+
+    return [nameString, factionString, dateString];
 }
 
 module.exports = {
@@ -110,5 +118,5 @@ module.exports = {
     addSubcommands: addSubcommands,
     isMemberStaff: isStaffMember,
     createArmyUnitListString: createArmyUnitListString,
-    createUnpaidString: createUnpaidString
+    createUnpaidStringArray: createUnpaidStringArray
 };

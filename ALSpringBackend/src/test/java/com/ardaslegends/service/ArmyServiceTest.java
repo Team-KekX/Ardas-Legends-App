@@ -223,7 +223,7 @@ public class ArmyServiceTest {
 
         log.trace("Initializing data");
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null, null);
 
         log.debug("Expecting no errors");
         log.debug("Calling healStart");
@@ -254,7 +254,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         army.setFaction(Faction.builder().name("Kekw").build());
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null, null);
 
         log.debug("Expecting SE on call");
         log.debug("Calling healStart");
@@ -271,7 +271,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         unit.setAmountAlive(unit.getCount());
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null, null);
 
         log.debug("Expecting SE on call");
         log.debug("Calling healStart");
@@ -288,7 +288,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         claimBuild.setSpecialBuildings(List.of());
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(),null, null);
 
         log.debug("Expecting SE on call");
         log.debug("Calling healStart");
@@ -307,7 +307,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         army.setHealing(true);
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null, null);
 
         log.debug("Expecting no errors");
         log.debug("Calling healStart");
@@ -323,7 +323,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         army.setHealing(false);
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null, null);
 
         log.debug("Expecting SE on call");
         log.debug("Calling healStop");
@@ -341,7 +341,7 @@ public class ArmyServiceTest {
         army.setHealing(true);
         army.setFaction(Faction.builder().name("Kekw").build());
 
-        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null, null);
 
         log.debug("Expecting SE on call");
         log.debug("Calling healStop");
@@ -865,7 +865,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens works with proper data!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10.0);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 10.0, null);
 
         log.debug("Calling setArmyTokens");
         Army returnedArmy = armyService.setFreeArmyTokens(dto);
@@ -880,7 +880,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to value above 30!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40.0);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), 40.0, null);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));
@@ -894,7 +894,7 @@ public class ArmyServiceTest {
         log.debug("Testing if setArmyTokens throws ArmyServiceException when trying to set tokens to negative value!");
 
         log.trace("Initializing data");
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1.0);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), -1.0, null);
 
         log.debug("Calling setArmyTokens");
         var exception = assertThrows(ArmyServiceException.class ,() -> armyService.setFreeArmyTokens(dto));
@@ -1125,36 +1125,19 @@ public class ArmyServiceTest {
     }
 
     @Test
-    void ensureSetIsPaidToTrueCorrectlyWorks() {
+    void ensureSetIsPaidCorrectlyWorks() {
         log.debug("Testing if setIsPaid correctly works with good values");
 
         Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(false).build();
 
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), null);
+        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(), null, true);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
 
-        log.debug("Calling armyService.setIsPaidToTrue, expecting no errors");
-        var result = armyService.setIsPaidToTrue(dto);
+        log.debug("Calling armyService.setIsPaid, expecting no errors");
+        var result = armyService.setIsPaid(dto);
 
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void ensureSetIsPaidToTrueCorrectlyThrowsSeWhenItsAlreadyPaidFor() {
-        log.debug("Testing if setIsPaid correctly throws Se when its already paid for");
-
-        Army army = Army.builder().name("Kek").armyType(ArmyType.ARMY).isPaid(true).build();
-        UpdateArmyDto dto = new UpdateArmyDto(null, army.getName(),null);
-
-        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
-
-
-        log.debug("Calling armyService.setIsPaidToTrue, expecting Se");
-        var result = assertThrows(ArmyServiceException.class, () -> armyService.setIsPaidToTrue(dto));
-
-        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.isAlreadyPaidFor(army.getArmyType(), army.getName()).getMessage());
-        log.info("Test passed: setIsPaidToTrue correctly throws Se when army or company is already paid for");
+        assertThat(result.getIsPaid()).isEqualTo(dto.isPaid());
     }
 
     @Test

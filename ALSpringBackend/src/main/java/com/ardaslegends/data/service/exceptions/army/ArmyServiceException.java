@@ -48,8 +48,6 @@ public class ArmyServiceException extends ServiceException{
     private static final String SIEGE_NOT_FACTION_LEADER_OR_LORD = "Only faction leaders/lords of '%s' can pick siege for the army '%s' without being bound to it!";
     private static final String SIEGE_ARMY_NOT_IN_SAME_REGION_AS_CB = "The army '%s' is currently in region %s while the claimbuild '%s' is located in region %s. Move the army into the claimbuild's region in order to pick up siege from it!";
     private static final String SIEGE_NOT_AVAILABLE = "The siege equipment '%s' is not available in claimbuild '%s'. Available sieges are: '%s'";
-    private static final String IS_ALREADY_PAID_FOR = "%s '%s' is already paid for!";
-    public static ArmyServiceException isAlreadyPaidFor(ArmyType armyType, String name) { return new ArmyServiceException(IS_ALREADY_PAID_FOR.formatted(armyType.getName(), name)); }
     public static ArmyServiceException noArmyWithName(String armyType, String armyName) { return new ArmyServiceException(NO_ARMYTYPE_WITH_NAME.formatted(armyType, armyName)); }
     public static ArmyServiceException tradingCompaniesCannotHeal(String name) {return new ArmyServiceException((TRADING_COMPANIES_CANNOT_HEAL.formatted(name)));}
     public static ArmyServiceException noPermissionToPerformThisAction() { return new ArmyServiceException(NO_PERMISSION_TO_PERFORM_ACTION);}

@@ -91,12 +91,18 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName("paid-to-true")
+                .setName("paid")
                 .setDescription("Updates the payment attribute of an army or company to true")
                 .addStringOption(option =>
                     option
                         .setName("name")
                         .setDescription("Name of the army or company that should receive a payment")
+                        .setRequired(true)
+                )
+                .addBooleanOption(option =>
+                    option
+                        .setName("is-paid")
+                        .setDescription("Sets if the army is paid")
                         .setRequired(true)
                 )
         ),

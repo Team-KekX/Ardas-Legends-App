@@ -1,9 +1,6 @@
 package com.ardaslegends.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,9 +46,11 @@ public final class ClaimBuild extends AbstractDomainEntity {
     private Coordinate coordinates; //coordinate locations
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "stationedAt")
+    @JsonIdentityReference(alwaysAsId=true)
     private List<Army> stationedArmies = new ArrayList<>(); //armies which are stationed in this CB
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
+    @JsonIdentityReference(alwaysAsId=true)
     private List<Army> createdArmies = new ArrayList<>(); //armies which were created from this CB. Usually only 1 army, but capitals can create 2
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "claimbuild")

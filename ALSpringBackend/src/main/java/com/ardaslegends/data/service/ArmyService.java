@@ -681,10 +681,10 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         return upkeepDtoList;
     }
     @Transactional(readOnly = false)
-    public boolean setIsPaidToTrue(UpdateArmyDto dto) {
+    public Army setIsPaid(UpdateArmyDto dto) {
         log.debug("Trying to set isPaid to true for army or company [{}]", dto);
 
-        ServiceUtils.checkNulls(dto, List.of("armyName"));
+        ServiceUtils.checkNulls(dto, List.of("armyName", "isPaid"));
         ServiceUtils.checkBlanks(dto, List.of("armyName"));
 
         String name = dto.armyName();
@@ -692,19 +692,14 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Fetching army or company with name [{}]", name);
         Army army = getArmyByName(name);
 
-        if(army.getIsPaid()) {
-            log.debug("Army or company [{}] is already paid for!", army.getName());
-            throw ArmyServiceException.isAlreadyPaidFor(army.getArmyType(), army.getName());
-        }
+        log.debug("Setting is paid to [{}] for [{}]",dto.isPaid(), army.getName());
+        army.setIsPaid(dto.isPaid());
 
-        log.debug("Setting is paid to true for [{}]", army.getName());
-        army.setIsPaid(true);
-
-        log.debug("Persisting [{}], Payment [{}]", army.getName(), army.getIsPaid());
+        log.debug("Persisting [{}], isPaid [{}]", army.getName(), army.getIsPaid());
         army = secureSave(army, armyRepository);
 
         log.info("Successfully set isPaid to [{}]!", army.getIsPaid());
-        return army.getIsPaid();
+        return army;
     }
 
     /***

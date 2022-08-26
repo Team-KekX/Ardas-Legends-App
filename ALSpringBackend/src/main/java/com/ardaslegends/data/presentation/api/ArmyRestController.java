@@ -184,11 +184,11 @@ public class ArmyRestController extends AbstractRestController {
     }
 
     @PatchMapping(PATH_SET_IS_PAID)
-    public HttpEntity<Boolean> setPaid(@RequestBody UpdateArmyDto dto) {
-        log.debug("Incoming setPaidToTrue Request for army or company [{}]", dto);
+    public HttpEntity<Army> setIsPaid(@RequestBody UpdateArmyDto dto) {
+        log.debug("Incoming setIsPaid Request for army or company [{}]", dto);
 
-        log.trace("Calling wrappedServiceExecution armyService.setPaidToTrue");
-        var result = wrappedServiceExecution(dto, armyService::setIsPaidToTrue);
+        log.trace("Calling wrappedServiceExecution armyService.setIsPaid");
+        var result = wrappedServiceExecution(dto, armyService::setIsPaid);
 
         log.info("Sending setPaid Response, success [{}]", result);
         return ResponseEntity.ok(result);

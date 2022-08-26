@@ -1,9 +1,6 @@
 package com.ardaslegends.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -32,6 +29,7 @@ public final class Faction extends AbstractDomainEntity {
     private Player leader; //the player who leads this faction
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
+    @JsonIdentityReference(alwaysAsId=true)
     private List<Army> armies; //all current armies of this faction
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
     private List<Player> players; //all current players of this faction
