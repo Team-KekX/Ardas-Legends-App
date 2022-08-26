@@ -2,6 +2,7 @@ package com.ardaslegends.service.utils;
 
 
 import com.ardaslegends.data.domain.Player;
+import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -83,5 +85,44 @@ public class ServiceUtilsTest {
 
         log.debug("Assert that discordID was blank");
         assertThat(exception.getMessage()).isEqualTo("discordID must not be blank!");
+    }
+
+    @Test
+    void ensureValidateStringSyntaxWorks() {
+        log.debug("Testing if validateStringSyntax works properly");
+
+        String string = "aw:au:aii:ai-aod:ajau:waiu:jwa";
+        Character[] syntaxChars = {':', ':', ':', '-'};
+
+        log.debug("Calling ServiceUtils.validateStringSyntax");
+        assertDoesNotThrow(() -> ServiceUtils.validateStringSyntax(string, syntaxChars, ArmyServiceException.invalidUnitString(string)));
+
+        log.info("Test passed: validateStringSyntax works properly");
+    }
+
+    @Test
+    void ensureValidateStringSyntaxThrowsExceptionWhenStringEndsUnexpectedly() {
+        log.debug("Testing if validateStringSyntax throws Exception when String ends unexpectedly");
+
+        String string = "aw:au:ai";
+        Character[] syntaxChars = {':', ':', ':', '-'};
+
+        log.debug("Calling ServiceUtils.validateStringSyntax");
+        assertThrows(ArmyServiceException.class, () -> ServiceUtils.validateStringSyntax(string, syntaxChars, ArmyServiceException.invalidUnitString(string)));
+
+        log.info("Test passed: validateStringSyntax throws Exception when String ends unexpectedly");
+    }
+
+    @Test
+    void ensureValidateStringSyntaxThrowsExceptionWhenStringHasWrongSyntax() {
+        log.debug("Testing if validateStringSyntax throws Exception when String has wrong syntax");
+
+        String string = "aw:au-ai";
+        Character[] syntaxChars = {':', ':', ':', '-'};
+
+        log.debug("Calling ServiceUtils.validateStringSyntax");
+        assertThrows(ArmyServiceException.class, () -> ServiceUtils.validateStringSyntax(string, syntaxChars, ArmyServiceException.invalidUnitString(string)));
+
+        log.info("Test passed: validateStringSyntax throws Exception when String has wrong syntax");
     }
 }
