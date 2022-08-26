@@ -1,5 +1,6 @@
 const fs = require("fs");
 const {staffRoles} = require("../configs/config.json");
+const {MessageEmbed} = require("discord.js");
 
 function isLongText(text) {
     return text.length >= 1900;
@@ -103,6 +104,18 @@ function createUnpaidStringArray(armies) {
     return [nameString, factionString, dateString];
 }
 
+function saveExecute(toExecute, interaction) {
+    toExecute.execute(interaction).catch(async (error) => {
+        console.log(error)
+        const replyEmbed = new MessageEmbed()
+            .setTitle("An unexpected error occured")
+            .setColor("RED")
+            .setDescription(error.toString() + "\nPlease contact the devs")
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]})
+    });
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -118,5 +131,6 @@ module.exports = {
     addSubcommands: addSubcommands,
     isMemberStaff: isStaffMember,
     createArmyUnitListString: createArmyUnitListString,
-    createUnpaidStringArray: createUnpaidStringArray
+    createUnpaidStringArray: createUnpaidStringArray,
+    saveExecute: saveExecute
 };

@@ -1,5 +1,5 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const {addSubcommands} = require("../utils/utilities");
+const {addSubcommands, saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,6 +22,6 @@ module.exports = {
         // Dynamically get all subcommands for called command
         const commands = addSubcommands('unbind', false);
         const toExecute = commands[interaction.options.getSubcommand()];
-        toExecute.execute(interaction);
+        saveExecute(toExecute, interaction);
     },
 };

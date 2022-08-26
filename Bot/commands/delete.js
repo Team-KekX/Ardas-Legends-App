@@ -1,5 +1,6 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
 const fs = require("fs");
+const {saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -34,7 +35,7 @@ module.exports = {
                         .setRequired(true)
                 )
         ),
-    async execute(interaction) {
+    execute: async function (interaction) {
         // Dynamically get all subcommands for called command. Does not call addSubcommands() function because it has
         // only admin subcommands. Ideally a third parameter would be added to check or not for non-admin subcommands.
         const commands = {};
@@ -45,6 +46,6 @@ module.exports = {
             commands[name] = require('./subcommands/admin/delete/' + file);
         }
         const toExecute = commands[interaction.options.getSubcommand()];
-        toExecute.execute(interaction);
+        saveExecute(toExecute, interaction);
     },
 };
