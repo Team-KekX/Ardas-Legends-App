@@ -25,6 +25,13 @@ module.exports = {
 
                 let unitString = createArmyUnitListString(army);
 
+                paymentString;
+                if (response.data.isPaid) {
+                    paymentString = "Army is free, no payment needed";
+                }
+                else {
+                    paymentString = "Yes, place 1000 Coins in a Pouch with the Army Name in the payment area!";
+                }
                 console.log(army)
 
                 const replyEmbed = new MessageEmbed()
@@ -38,6 +45,7 @@ module.exports = {
                         {name: "From Claimbuild", value: claimbuild, inline: true},
                         {name: "Region", value: army.currentRegion, inline: true},
                         {name: "Units", value: unitString, inline: false},
+                        {name: "Payment", value: paymentString, inline: false}
                     )
                     .setTimestamp()
 
@@ -54,3 +62,7 @@ module.exports = {
             })
     },
 };
+
+function paymentString(isPaid) {
+
+}
