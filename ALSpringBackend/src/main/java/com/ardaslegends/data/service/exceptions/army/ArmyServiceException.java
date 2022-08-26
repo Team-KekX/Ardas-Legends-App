@@ -1,8 +1,6 @@
 package com.ardaslegends.data.service.exceptions.army;
 
-import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.ArmyType;
-import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 
 public class ArmyServiceException extends ServiceException{
@@ -31,6 +29,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String ARMYTYPE_AND_PLAYER_IN_DIFFERENT_FACTION = "The %s '%s' and the player '%s' are not in the same faction - Cant execute command!";
     private static final String ARMYTYPE_MUST_BE_STATIONED_AT_A_CLAIMBUILD_WITH_HOUSE_OF_HEALING = "The %s '%s' is not stationed at a CB with a House of Healing, cannot start healing - Please station the %s at CB";
     private static final String ARMY_ALREADY_FULLY_HEALED = "The %s '%s' is already fully healed!";
+    private static final String ARMY_OR_COMPANY_WITH_NAME_ALREADY_EXISTS = "Army or company with name %s already exists, please choose a different name";
     private static final String INVALID_UNIT_STRING = "The string '%s' is not grammatically correct \n " +
             "A correct string would be: Gondorian Ranger:5-Mordor Orc:2 \n" +
             "Actual Grammar=[Unit name]:[Integer amount]-[Next Unit name]:[next integer amount]";
@@ -49,6 +48,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String SIEGE_ARMY_NOT_IN_SAME_REGION_AS_CB = "The army '%s' is currently in region %s while the claimbuild '%s' is located in region %s. Move the army into the claimbuild's region in order to pick up siege from it!";
     private static final String SIEGE_NOT_AVAILABLE = "The siege equipment '%s' is not available in claimbuild '%s'. Available sieges are: '%s'";
     public static ArmyServiceException noArmyWithName(String armyType, String armyName) { return new ArmyServiceException(NO_ARMYTYPE_WITH_NAME.formatted(armyType, armyName)); }
+    public static ArmyServiceException armyOrCompanyWithNameAlreadyExists(String name) {return new ArmyServiceException(ARMY_OR_COMPANY_WITH_NAME_ALREADY_EXISTS.formatted(name));}
     public static ArmyServiceException tradingCompaniesCannotHeal(String name) {return new ArmyServiceException((TRADING_COMPANIES_CANNOT_HEAL.formatted(name)));}
     public static ArmyServiceException noPermissionToPerformThisAction() { return new ArmyServiceException(NO_PERMISSION_TO_PERFORM_ACTION);}
     public static ArmyServiceException claimbuildNotInTheSameOrAlliedFaction(ArmyType armyType, String claimbuildName) { return new ArmyServiceException(CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION.formatted(claimbuildName, armyType.getName())); }

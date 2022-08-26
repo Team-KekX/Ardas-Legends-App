@@ -47,9 +47,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(fetchedArmy.isPresent()) {
             log.warn("Army with name [{}] already exists", dto.name());
-            throw new IllegalArgumentException("Army with name %s already exists, please choose a different name".formatted(dto.name()));
+            throw ArmyServiceException.armyOrCompanyWithNameAlreadyExists(dto.name());
         }
-
 
         log.trace("Fetching Executor by discordId [{}]", dto.executorDiscordId());
         Player fetchedPlayer = playerService.getPlayerByDiscordId(dto.executorDiscordId());

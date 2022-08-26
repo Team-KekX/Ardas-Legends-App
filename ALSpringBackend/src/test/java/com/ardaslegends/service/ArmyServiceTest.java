@@ -119,9 +119,9 @@ public class ArmyServiceTest {
 
         log.debug("Expecting IAE on call");
         log.debug("Calling createArmy()");
-        var result = assertThrows(IllegalArgumentException.class, () -> armyService.createArmy(dto));
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.createArmy(dto));
 
-        assertThat(result.getMessage()).contains("already exists");
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.armyOrCompanyWithNameAlreadyExists(dto.name()).getMessage());
         log.info("Test passed: IAE when Army Name is taken!");
     }
 
