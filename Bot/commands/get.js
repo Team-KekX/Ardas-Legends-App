@@ -15,6 +15,11 @@ module.exports = {
                         .setDescription("The name of the faction")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(option =>
+            option
+                .setName("unpaid-armies-or-companies")
+                .setDescription("Shows the 10 oldest unpaid armies or companies")
         ),
 
     async execute(interaction) {

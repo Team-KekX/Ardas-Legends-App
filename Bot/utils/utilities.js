@@ -76,6 +76,21 @@ function createArmyUnitListString(army) {
     return unitString;
 }
 
+function createUnpaidString(armies) {
+    unpaidString = "";
+    for(i=0; i < armies.length; i++) {
+        army = armies[i];
+
+        armyName = army.name;
+        faction = army.faction.name;
+        createdAt = army.createdAt.substring(0,10);
+        console.log( `${createdAt}`)
+
+        unpaidString += `Name: ${armyName}, Faction: ${faction}, Creation date: ${createdAt}\n`;
+    }
+    return unpaidString;
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -90,5 +105,6 @@ module.exports = {
     },
     addSubcommands: addSubcommands,
     isMemberStaff: isStaffMember,
-    createArmyUnitListString: createArmyUnitListString
+    createArmyUnitListString: createArmyUnitListString,
+    createUnpaidString: createUnpaidString
 };
