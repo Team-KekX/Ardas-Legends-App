@@ -52,6 +52,8 @@ public class ClaimbuildServiceTest {
 
         UpdateClaimbuildDto dto = new UpdateClaimbuildDto(claimbuild.getName(), faction.getName());
 
+        when(mockClaimbuildRepository.save(claimbuild)).thenReturn(claimbuild);
+
         log.debug("Calling setOwnerFaction, expecting no errors");
         var result = claimBuildService.setOwnerFaction(dto);
 

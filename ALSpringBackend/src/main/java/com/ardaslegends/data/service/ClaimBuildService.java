@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -51,8 +52,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
     public ClaimBuild getClaimBuildByName(String name) {
         log.debug("Getting Claimbuild with name [{}]", name);
 
-        ServiceUtils.checkAllNulls(name);
-        ServiceUtils.checkAllBlanks(name);
+        Objects.requireNonNull(name, "Name must not be null");
+        ServiceUtils.checkBlankString(name, "Name");
 
         log.debug("Fetching unit with name [{}]", name);
         Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findById);
@@ -62,7 +63,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
             throw ClaimBuildServiceException.noCbWithName(name);
         }
 
-        log.info("Successfully returning Claimbuild with name [{}]", name);
+        log.debug("Successfully returning Claimbuild with name [{}]", name);
         return fetchedBuild.get();
     }
 
