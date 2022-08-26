@@ -1,5 +1,7 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -15,6 +17,9 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "unit_types")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "unitName")
 public final class UnitType extends AbstractDomainEntity {
 
     @Id

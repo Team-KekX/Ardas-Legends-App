@@ -1,5 +1,6 @@
 const fs = require("fs");
 const {staffRoles} = require("../configs/config.json");
+const {MessageEmbed} = require("discord.js");
 
 function isLongText(text) {
     return text.length >= 1900;
@@ -62,6 +63,59 @@ function isStaffMember(interaction) {
     return staffRoles.some(role => interaction.member.roles.cache.has(role));
 }
 
+function createArmyUnitListString(army) {
+    let unitString = "";
+    for (let i = 0; i < army.units.length; i++) {
+        let unit = army.units[i];
+        let unitsAlive = `${unit.amountAlive}/${unit.count} `;
+        let unitName = `${unit.unitType.unitName}`
+        if(unit.unitType.unitName === undefined)
+            unitName = `${unit.unitType}`
+        unitString += unitsAlive + unitName + "\n";
+    }
+
+    return unitString;
+}
+
+function createUnpaidStringArray(armies) {
+    nameString = "";
+    factionString = "";
+    dateString = "";
+    for(i=0; i < armies.length; i++) {
+        army = armies[i];
+
+        armyName = army.name;
+        faction = army.faction.name;
+        if(army.faction.name === undefined)
+            faction = army.faction
+        createdAt = army.createdAt.substring(0,10);
+
+        nameString += `${armyName}\n`;
+        factionString +=`${faction}\n`;
+        dateString += `${createdAt}\n`;
+    }
+
+    if(armies.length === 0) {
+        nameString = " - ";
+        factionString = " - ";
+        dateString = " - ";
+    }
+
+    return [nameString, factionString, dateString];
+}
+
+function saveExecute(toExecute, interaction) {
+    toExecute.execute(interaction).catch(async (error) => {
+        console.log(error)
+        const replyEmbed = new MessageEmbed()
+            .setTitle("An unexpected error occured")
+            .setColor("RED")
+            .setDescription(error.toString() + "\nPlease contact the devs")
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed]})
+    });
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -75,5 +129,8 @@ module.exports = {
         return arr_text.join(" ");
     },
     addSubcommands: addSubcommands,
-    isMemberStaff: isStaffMember
+    isMemberStaff: isStaffMember,
+    createArmyUnitListString: createArmyUnitListString,
+    createUnpaidStringArray: createUnpaidStringArray,
+    saveExecute: saveExecute
 };

@@ -8,13 +8,13 @@ module.exports = {
     async execute(interaction) {
 
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: true});
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
         //name and title won't get capitalized here so people have more freedom when naming their chars
-        const name = interaction.options.getString('name');
-        const title = interaction.options.getString('title');
+        const name = capitalizeFirstLetters(interaction.options.getString('name'));
+        const title = capitalizeFirstLetters(interaction.options.getString('title'));
         const gear = capitalizeFirstLetters(interaction.options.getString('gear').toLowerCase());
         const pvp = interaction.options.getBoolean('pvp');
 
@@ -40,7 +40,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
             })
 
     },

@@ -1,5 +1,8 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -16,6 +19,9 @@ import java.util.Objects;
 @Builder
 
 @Embeddable
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class RPChar extends AbstractDomainEntity {
 
     @Column(unique = true)
@@ -33,7 +39,7 @@ public final class RPChar extends AbstractDomainEntity {
     @NotNull(message = "RpChar: currentRegion must not be null")
     private Region currentRegion; //the region the character is currently in
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Army boundTo; //the army that is bound to this character
 

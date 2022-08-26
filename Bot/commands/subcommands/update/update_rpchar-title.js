@@ -7,7 +7,7 @@ const axios = require("axios");
 module.exports = {
     async execute(interaction) {
         //name won't get capitalized here so people have more freedom when naming their chars
-        const title = interaction.options.getString('new-title');
+        const title = capitalizeFirstLetters(interaction.options.getString('new-title'));
 
         //data sent to server
         const data = {
@@ -28,7 +28,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: true});
+                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
             })
 
     },

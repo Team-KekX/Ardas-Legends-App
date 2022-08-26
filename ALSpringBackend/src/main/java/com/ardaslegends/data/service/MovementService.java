@@ -1,20 +1,28 @@
 package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
+import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.dto.army.CreateArmyDto;
+import com.ardaslegends.data.service.dto.army.MoveArmyDto;
 import com.ardaslegends.data.service.dto.player.DiscordIdDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
+import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,10 +34,125 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
     private final MovementRepository movementRepository;
     private final RegionRepository regionRepository;
-
+    private final ArmyRepository armyRepository;
+    private final ArmyService armyService;
     private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
     private final Pathfinder pathfinder;
 
+    // TODO: Check if time is frozen -> if yes, cancel request
+    // TODO: Check if army is in a battle -> if yes, cancel request
+    // TODO: Check if army is healing -> if yes, ask to stop healing
+    @Transactional(readOnly = false)
+    public Movement createArmyMovement(MoveArmyDto dto) {
+        log.debug("Trying to move Army [{}] executed by [{}] to Region [{}]", dto.armyName(), dto.executorDiscordId(), dto.toRegion());
+
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.debug("Fetching required data");
+
+        log.trace("Fetching player");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        log.trace("Fetching army entity");
+        Army army = armyService.getArmyByName(dto.armyName());
+
+        log.trace("Fetching region entity");
+        Optional<Region> fetchedRegion = secureFind(dto.toRegion(), regionRepository::findById);
+
+        if(fetchedRegion.isEmpty()) {
+            log.warn("Desired region [{}] does not exist in the database", dto.toRegion());
+            throw ServiceException.regionDoesNotExist(dto.toRegion());
+        }
+        Region region = fetchedRegion.get();
+
+        log.debug("Checking if army is already in the desired region");
+        if(dto.toRegion().equals(army.getCurrentRegion().getId())) {
+            log.warn("Army is already in desired region [{}], no movement required", dto.toRegion());
+            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(),dto.toRegion());
+        }
+
+        log.debug("Checking if army is currently performing a movement");
+        if(secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue).isPresent()) {
+            log.warn("Army [{}] is currently performing a movement", dto.armyName());
+            throw ArmyServiceException.cannotMoveArmyDueToArmyBeingInMovement(army.getArmyType(),army.getName());
+        }
+
+        log.debug("Checking if army is older than 24h");
+        if(LocalDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
+            log.warn("Army [{}] is younger than 24h and therefore cannot move!", army);
+            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), LocalDateTime.now()).toHours();
+            log.debug("Army can move again in [{}] hours", hoursUntilMove);
+            throw ArmyServiceException.cannotMoveArmyWasCreatedRecently(army.getName(), hoursUntilMove);
+        }
+
+        log.debug("Checking if executor is allowed to perform the movement");
+        boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
+
+        if(!isAllowed) {
+            log.warn("Player [{}] in Faction [{}] does not have permission to move armies", player.getIgn(), player.getFaction());
+            throw ArmyServiceException.noPermissionToPerformThisAction();
+        }
+
+        log.debug("Player [{}] is allowed to move army [{}], executing pathfinder", player, army);
+        Path path = pathfinder.findShortestWay(army.getCurrentRegion(),region,player, false);
+
+        var currentTime = LocalDateTime.now();
+        log.debug("Creating movement object");
+        Movement movement = Movement.builder()
+                .army(army)
+                .player(army.getBoundTo())
+                .isCharMovement(false)
+                .isAccepted(false)
+                .isCurrentlyActive(true)
+                .startTime(currentTime)
+                .endTime(currentTime.plusDays(path.getCost()))
+                .path(path)
+                .build();
+
+        log.debug("Saving Movement to database");
+        secureSave(movement, movementRepository);
+
+        log.info("Successfully saved movement [{}]", movement);
+        return movement;
+    }
+
+    @Transactional(readOnly = false)
+    public Movement cancelArmyMovement(MoveArmyDto dto) {
+        log.debug("Trying to cancel movement of army [{}] (executed by player [{}])", dto.armyName(), dto.executorDiscordId());
+
+        log.trace("Validating data");
+        ServiceUtils.checkNulls(dto, List.of("armyName", "executorDiscordId"));
+        ServiceUtils.checkBlanks(dto, List.of("armyName", "executorDiscordId"));
+
+        log.trace("Getting the army instance");
+        Army army = armyService.getArmyByName(dto.armyName());
+
+        log.trace("Getting the player instance");
+        Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
+
+        boolean isAllowed = ServiceUtils.boundLordLeaderPermission(player, army);
+
+        if(!isAllowed) {
+            log.warn("Player [{}] is not allowed to cancel movements of army [{}]", player, army);
+            throw MovementServiceException.notAllowedToCancelMove();
+        }
+
+        log.trace("Getting active movement for army [{}]", army);
+        Movement movement = getActiveMovementByArmy(army);
+
+        log.debug("Setting the movement to inactive");
+        movement.setIsCurrentlyActive(false);
+
+        log.debug("Persisting the movement");
+        movementRepository.save(movement);
+
+        log.info("Cancelled movement of army [{}] - Start: [{}] ([{}]) - End: [{}] ([{}])", army, movement.getStartRegionId(), movement.getStartTime(), movement.getDestinationRegionId(), movement.getEndTime());
+        return movement;
+    }
+
+    // TODO: Check if player is healing
     @Transactional(readOnly = false)
     public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
@@ -70,7 +193,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if rpChar is already in a movement");
-        List<Movement> playerMovements = secureFindList(player, movementRepository::findMovementsByPlayer);
+        List<Movement> playerMovements = secureFind(player, movementRepository::findMovementsByPlayer);
         if(playerMovements.stream().anyMatch(Movement::getIsCurrentlyActive)) { //Checking if there are any active movements
             log.warn("Player {} is already involved in a movement!", player);
             throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChar());
@@ -132,28 +255,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw ServiceException.noRpChar();
         }
 
-        log.debug("Searching for movements of this player");
-        List<Movement> allMovements = secureFindList(player, movementRepository::findMovementsByPlayer);
-        log.debug("Found {} movements for player {}", allMovements.size(), player.getIgn());
-
-        log.debug("Looking for active movements");
-        List<Movement> activeMovements = allMovements.stream().filter(Movement::getIsCurrentlyActive).toList();
-
-        log.debug("Checking if there is an active movement that can be cancelled");
-        if(activeMovements.size() == 0) {
-            log.warn("No active movements for player {}", player.getIgn());
-            throw ServiceException.noActiveMovement(rpChar);
-        }
-
-        //THIS SHOULD NEVER HAPPEN - CHECKING JUST IN CASE
-        log.debug("Checking if there are more than 1 active movements");
-        if(activeMovements.size() > 1) {
-            log.warn("Found more than one active movement for player {} - cancelling process", player.getIgn());
-            throw ServiceException.moreThanOneActiveMovement(rpChar);
-        }
+        log.trace("Searching for active movements of this player");
+        Movement movement = getActiveMovementByChar(player);
 
         log.debug("Setting movement to inactive");
-        Movement movement = activeMovements.get(0);
         movement.setIsCurrentlyActive(false);
 
         log.debug("Persisting movement");
@@ -161,4 +266,41 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
         return movement;
     }
+
+    public Movement getActiveMovementByArmy(Army army) {
+        log.debug("Trying to get an active Movement for the army [{}]", army);
+
+        log.trace("Executing the secureFind");
+        Optional<Movement> fetchedMove = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue);
+
+        log.debug("Checking if a movement was found");
+        if(fetchedMove.isEmpty()) {
+            log.warn("No active movement was found for the army [{}]!", army);
+            throw MovementServiceException.noActiveMovementArmy(army.getName());
+        }
+
+        Movement movement = fetchedMove.get();
+        log.debug("Found a movement from region [{}] to [{}]!", movement.getPath().getStart(), movement.getPath().getDestination());
+
+        return movement;
+    }
+
+    public Movement getActiveMovementByChar(Player player) {
+        log.debug("Trying to get an active Movement for the player [{}]", player);
+
+        log.trace("Executing the secureFind");
+        Optional<Movement> fetchedMove = secureFind(player, movementRepository::findMovementByPlayerAndIsCurrentlyActiveTrue);
+
+        log.debug("Checking if a movement was found");
+        if(fetchedMove.isEmpty()) {
+            log.warn("No active movement was found for the player [{}]!", player);
+            throw MovementServiceException.noActiveMovementChar(player.getRpChar().getName());
+        }
+
+        Movement movement = fetchedMove.get();
+        log.debug("Found a movement from region [{}] to [{}]!", movement.getPath().getStart(), movement.getPath().getDestination());
+
+        return movement;
+    }
+
 }

@@ -28,6 +28,7 @@ class ClaimBuild <<Entity>> {
     specialBuildings: List<SpecialBuilding>
     numberOfHouses: String
     traders: String
+    siege: String
     builtBy: List<Player>
 }
 

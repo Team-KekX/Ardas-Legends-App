@@ -30,10 +30,6 @@ public class PlayerServiceTest {
     private PlayerRepository mockPlayerRepository;
     private FactionService mockFactionService;
 
-    private MovementService mockMovementService;
-    private Pathfinder mockPathfinder;
-
-    private RegionRepository mockRegionRepository;
     private MojangApiService mockMojangApiService;
     private PlayerService playerService;
 
@@ -42,10 +38,7 @@ public class PlayerServiceTest {
         mockPlayerRepository = mock(PlayerRepository.class);
         mockFactionService = mock(FactionService.class);
         mockMojangApiService = mock(MojangApiService.class);
-        mockMovementService = mock(MovementService.class);
-        mockRegionRepository = mock(RegionRepository.class);
-        mockPathfinder = mock(Pathfinder.class);
-        playerService = new PlayerService(mockPlayerRepository, mockFactionService, mockRegionRepository , mockMovementService ,mockMojangApiService, mockPathfinder );
+        playerService = new PlayerService(mockPlayerRepository, mockFactionService ,mockMojangApiService);
     }
 
     // Create Method Tests
@@ -244,7 +237,7 @@ public class PlayerServiceTest {
         // Assert
         var result = assertThrows(ServiceException.class, () -> playerService.getPlayerByDiscordId(discordId));
 
-        assertThat(result.getMessage()).contains("No record of type");
+        assertThat(result.getMessage()).contains("No Player found for Discord");
     }
 
     // ------------------------------------------------ Update Method tests

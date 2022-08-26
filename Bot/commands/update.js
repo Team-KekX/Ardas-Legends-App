@@ -1,5 +1,5 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const {addSubcommands} = require("../utils/utilities");
+const {addSubcommands, saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -71,11 +71,45 @@ module.exports = {
                     option.setName('new-pvp')
                         .setDescription('The new PvP status of your rp char')
                         .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("free-tokens")
+                .setDescription("Sets the amount of free tokens an army has")
+                .addStringOption(option =>
+                    option
+                        .setName("army-name")
+                        .setDescription("The name of the army of which the free tokens will be changed")
+                        .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option
+                        .setName("tokens")
+                        .setDescription("The new amount of free tokens which will be set")
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("paid")
+                .setDescription("Updates the payment attribute of an army or company to true")
+                .addStringOption(option =>
+                    option
+                        .setName("name")
+                        .setDescription("Name of the army or company that should receive a payment")
+                        .setRequired(true)
+                )
+                .addBooleanOption(option =>
+                    option
+                        .setName("is-paid")
+                        .setDescription("Sets if the army is paid")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
         const commands = addSubcommands('update', true);
         const toExecute = commands[interaction.options.getSubcommand()];
-        toExecute.execute(interaction);
+        saveExecute(toExecute, interaction);
     },
 };

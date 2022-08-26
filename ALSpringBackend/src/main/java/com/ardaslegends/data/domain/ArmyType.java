@@ -1,7 +1,16 @@
 package com.ardaslegends.data.domain;
 
 public enum ArmyType {
-    ARMY,
-    TRADING_COMPANY,
-    ARMED_TRADERS
+    ARMY("Army"),
+    TRADING_COMPANY("Trading Company"),
+    ARMED_TRADERS("Armed Trading Company");
+
+    private final String name;
+    ArmyType(String name){
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

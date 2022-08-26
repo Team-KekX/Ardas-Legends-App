@@ -1,6 +1,6 @@
 package com.ardaslegends.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -17,6 +17,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "factions")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class Faction extends AbstractDomainEntity {
 
     @Id
@@ -26,9 +29,9 @@ public final class Faction extends AbstractDomainEntity {
     private Player leader; //the player who leads this faction
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
+    @JsonIdentityReference(alwaysAsId=true)
     private List<Army> armies; //all current armies of this faction
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "faction")
-    @JsonIgnore
     private List<Player> players; //all current players of this faction
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "claimedBy")
     private Set<Region> regions; //all regions this faction claims

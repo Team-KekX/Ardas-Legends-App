@@ -1,9 +1,14 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +16,9 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @Entity
 @Table(name = "movements")
 public final class Movement extends AbstractDomainEntity{
@@ -19,7 +27,7 @@ public final class Movement extends AbstractDomainEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "player_id")
     private Player player;
 
@@ -38,4 +46,19 @@ public final class Movement extends AbstractDomainEntity{
     private Boolean isAccepted;
     private Boolean isCurrentlyActive;
 
+    public String getStartRegionId() { return path.getStart(); }
+    public String getDestinationRegionId() { return path.getDestination(); }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movement movement = (Movement) o;
+        return Objects.equals(id, movement.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

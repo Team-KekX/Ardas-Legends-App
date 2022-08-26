@@ -1,3 +1,4 @@
+const {MessageEmbed} = require("discord.js");
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction) {
@@ -8,10 +9,16 @@ module.exports = {
         if (!command) return;
 
         try {
+
             await command.execute(interaction);
         } catch (error) {
-            console.error(error);
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            console.log(error)
+            const replyEmbed = new MessageEmbed()
+                .setTitle("An unexpected error occured")
+                .setColor("RED")
+                .setDescription(error.toString() + "\nPlease contact the devs")
+                .setTimestamp()
+            await interaction.reply({embeds: [replyEmbed]})
         }
     },
 };

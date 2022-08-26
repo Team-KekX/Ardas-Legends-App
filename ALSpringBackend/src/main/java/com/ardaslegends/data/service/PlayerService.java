@@ -34,10 +34,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     private final PlayerRepository playerRepository;
 
     private final FactionService factionService;
-    private final RegionRepository regionRepository;
-    private final MovementService movementService;
     private final MojangApiService mojangApiService;
-    private final Pathfinder pathfinder;
 
     @Transactional(readOnly = false)
     public Player createPlayer(CreatePlayerDto dto) {
@@ -165,14 +162,14 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     }
 
     public Player getPlayerByDiscordId(String discordId) {
-        log.debug("Fetching Player with Ign: {}", discordId);
+        log.debug("Fetching Player with Discord ID: {}", discordId);
         Objects.requireNonNull(discordId, "DiscordId must not be null!");
 
         Optional<Player> fetchedPlayer = secureFind(discordId, playerRepository::findByDiscordID);
 
         if (fetchedPlayer.isEmpty()) {
             log.warn("No player with discordId {} found!", discordId);
-            throw ServiceException.cannotReadEntityDueToNotExisting(Player.class.getSimpleName(), "discordId", discordId);
+            throw ServiceException.noPlayerFound(discordId);
         }
         log.info("Successfully fetched player: {}", fetchedPlayer.get());
         return fetchedPlayer.get();

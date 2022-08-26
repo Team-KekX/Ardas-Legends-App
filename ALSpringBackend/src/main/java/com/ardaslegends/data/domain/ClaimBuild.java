@@ -1,9 +1,13 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,9 +16,13 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 
 @Entity
 @Table(name = "claimbuilds")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
 public final class ClaimBuild extends AbstractDomainEntity {
     @Id
     private String name; //unique, name of the claimbuild
@@ -38,33 +46,78 @@ public final class ClaimBuild extends AbstractDomainEntity {
     private Coordinate coordinates; //coordinate locations
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "stationedAt")
-    private List<Army> stationedArmies; //armies which are stationed in this CB
+    @JsonIdentityReference(alwaysAsId=true)
+    private List<Army> stationedArmies = new ArrayList<>(); //armies which are stationed in this CB
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
-    private List<Army> createdArmies; //armies which were created from this CB. Usually only 1 army, but capitals can create 2
-
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "originalClaimbuild")
-    private List<Army> createdTradingCompanies; //TCs which were created from this CB. Seperated from armies so you can search for them more easily.
+    @JsonIdentityReference(alwaysAsId=true)
+    private List<Army> createdArmies = new ArrayList<>(); //armies which were created from this CB. Usually only 1 army, but capitals can create 2
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "claimbuild")
-    private List<ProductionClaimbuild> productionSites; //the production sites in this cb
+    private List<ProductionClaimbuild> productionSites = new ArrayList<>(); //the production sites in this cb
 
     @ElementCollection(targetClass = SpecialBuilding.class)
     @CollectionTable(name = "claimbuild_special_buildings",
             joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id")))
     @Column(name = "special_buildings")
     @Enumerated(EnumType.STRING)
-    private List<SpecialBuilding> specialBuildings; //special buildings in this cb, e.g. House of Healing
+    private List<SpecialBuilding> specialBuildings = new ArrayList<>(); //special buildings in this cb, e.g. House of Healing
 
     private String traders; //traders in this CB. e.g. Dwarven Smith. Only relevant for staff so they know which traders need to be added
 
+    private String siege; //the siege equipment the cb provides
     private String numberOfHouses; //houses in this CB, e.g. 4 large 12 small. Only relevant for staff
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "claimbuild_builders",
             joinColumns = { @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))},
             inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_player_id")) })
-    private Set<Player> builtBy; //the player who built the CB
+    private Set<Player> builtBy = new HashSet<>(); //the player who built the CB
 
+    private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
+    private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
 
+    public int getCountOfArmies() {
+        int count = (int) createdArmies.stream()
+                .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))
+                .count();
+        log.debug("Claimbuild [{}] has created [{}] armies", this.name, count);
+        return count;
+    }
+
+    public int getCountOfTradingCompanies() {
+        int count = (int) createdArmies.stream()
+                .filter(army -> ArmyType.TRADING_COMPANY.equals(army.getArmyType()))
+                .count();
+        log.debug("Claimbuild [{}] has created [{}] trading companies", this.name, count);
+        return count;
+    }
+    public boolean atMaxArmies() {
+        int countOfArmies = getCountOfArmies();
+        int maxArmies = getType().getMaxArmies();
+
+        if(countOfArmies >= maxArmies) {
+            log.debug("Claimbuild [{}] is at max armies, max armies [{}] - armies created [{}]", this.name, maxArmies, countOfArmies);
+            return true;
+        }
+        log.debug("Claimbuild [{}] can create more armies. max armies [{}] - armies created [{}]", this.name, maxArmies, countOfArmies);
+        return false;
+    }
+
+    public boolean atMaxTradingCompanies() {
+        int countOfTradingCompanies = getCountOfTradingCompanies();
+        int maxTradingCompanies = getType().getMaxTradingCompanies();
+
+        if(countOfTradingCompanies >= maxTradingCompanies) {
+            log.debug("Claimbuild [{}] is at max trading companies, max companies[{}] - companies created [{}]", this.name, maxTradingCompanies, countOfTradingCompanies);
+            return true;
+        }
+        log.debug("Claimbuild [{}] can create more trading companies. max companies [{}] - companies created [{}]", this.name, maxTradingCompanies, countOfTradingCompanies);
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

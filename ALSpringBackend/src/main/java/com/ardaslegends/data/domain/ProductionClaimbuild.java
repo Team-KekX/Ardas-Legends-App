@@ -1,5 +1,8 @@
 package com.ardaslegends.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,6 +20,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "production_claimbuild")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "productionSite")
 public final class ProductionClaimbuild extends AbstractDomainEntity {
 
     @EmbeddedId

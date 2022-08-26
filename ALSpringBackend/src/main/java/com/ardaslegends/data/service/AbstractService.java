@@ -9,13 +9,20 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractService<T extends AbstractDomainEntity, R extends JpaRepository<T, ?>>{
 
 
-
-    public <G, F extends AbstractDomainEntity> Optional<F> secureFind(G identifier, Function<G, Optional<F>> func) {
+    /***
+     * This method was specifically made for Query Operations of JPA Repository Classes.
+     * Wraps the passed method into a try catch block, catching PersistenceException and proper logging
+     * @param identifier the identifier, also the parameter of the passed function
+     * @param func function that will be used in the operation
+     * @return equals the passed function's return type
+     */
+    public <G, A> A secureFind(G identifier, Function<G, A> func) {
         if (func == null) {
             log.warn("SecureFind Function parameter is null!");
             throw ServiceException.passedNullFunction();
@@ -28,16 +35,16 @@ public abstract class AbstractService<T extends AbstractDomainEntity, R extends 
         }
     }
 
-    public <G, F extends AbstractDomainEntity> List<F> secureFindList(G identifier, Function<G, List<F>> func) {
+    public <A> A secureFind(Supplier<A> func) {
         if (func == null) {
             log.warn("SecureFind Function parameter is null!");
             throw ServiceException.passedNullFunction();
         }
         try {
-            return func.apply(identifier);
+            return func.get();
         } catch (PersistenceException pEx) {
-            log.warn("Encountered Database Error while searching for entity, parameter [{}]", identifier);
-            throw ServiceException.secureFindFailed(identifier, pEx);
+            log.warn("Encountered Database Error while searching for entity, parameter [{}]", func);
+            throw ServiceException.secureFindFailed(func, pEx);
         }
     }
 

@@ -1,5 +1,5 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const {addSubcommands} = require("../utils/utilities");
+const {addSubcommands, saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,21 +18,8 @@ module.exports = {
                         .setDescription('The name of the originating claimbuild')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('unit-list')
-                        .setDescription('The list of units in the army')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('trader')
-                .setDescription('Creates a trading company')
-                .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('claimbuild-name')
-                        .setDescription('The name of the originating claimbuild')
+                    option.setName('units')
+                        .setDescription('The list of units in the army - example syntax = Gondor Archer:5-Mordor Orc:3')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -55,32 +42,11 @@ module.exports = {
                     option.setName('pvp')
                         .setDescription('Should the character participate in PvP?')
                         .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('armed-company')
-                .setDescription('Creates an armed company')
-                .addStringOption(option =>
-                    option.setName('armed-company-name')
-                        .setDescription('The name of the armed company')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character bound to army/trader')
-                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
         const commands = addSubcommands('create', true);
         const toExecute = commands[interaction.options.getSubcommand()];
-        toExecute.execute(interaction);
+        saveExecute(toExecute, interaction);
     },
 };
