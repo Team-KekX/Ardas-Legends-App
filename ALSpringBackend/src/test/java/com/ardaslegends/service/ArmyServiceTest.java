@@ -845,6 +845,26 @@ public class ArmyServiceTest {
     }
 
     @Test
+    void ensureDisbandSetsBoundToToNull() {
+        log.debug("Testing if disbandArmy sets boundTo to null!");
+
+        faction.setLeader(player);
+        army.setBoundTo(player);
+        rpchar.setBoundTo(army);
+
+        log.trace("Initializing data");
+        DeleteArmyDto dto = new DeleteArmyDto(player.getDiscordID(), army.getName());
+
+        log.debug("Calling disbandArmy");
+        Army returnedArmy = armyService.disband(dto, false);
+
+        assertThat(returnedArmy.getBoundTo()).isNull();
+        assertThat(rpchar.getBoundTo()).isNull();
+        log.info("Test passed: disbandArmy sets boundTo to null!");
+
+    }
+
+    @Test
     void ensureForcedDisbandArmyWorks() {
         log.debug("Testing if disbandArmy works when forced!");
 
