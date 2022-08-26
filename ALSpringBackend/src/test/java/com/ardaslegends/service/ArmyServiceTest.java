@@ -86,7 +86,8 @@ public class ArmyServiceTest {
         log.debug("Testing if createArmy works properly");
 
         log.trace("Initializing data");
-        CreateArmyDto dto = new CreateArmyDto("Kek", "Kek", ArmyType.ARMY, "Kek", new UnitTypeDto[]{new UnitTypeDto("Kek", 11)});
+        CreateArmyDto dto = new CreateArmyDto("Kek", "Kek", ArmyType.ARMY, "Kek",
+                new UnitTypeDto[]{new UnitTypeDto("Kek", 11),new UnitTypeDto("Kek", 10) });
         ClaimBuild claimBuild = new ClaimBuild();
         ClaimBuildType type = ClaimBuildType.TOWN;
         claimBuild.setType(type);
@@ -104,7 +105,7 @@ public class ArmyServiceTest {
         log.debug("Calling createArmy()");
         var result = armyService.createArmy(dto);
 
-        assertThat(result.getFreeTokens()).isEqualTo(30-11);
+        assertThat(result.getFreeTokens()).isEqualTo(30-21);
         log.info("Test passed: CreateArmy works properly with correct values");
     }
 
