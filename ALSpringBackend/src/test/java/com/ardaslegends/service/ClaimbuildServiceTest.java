@@ -5,7 +5,7 @@ import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildDto;
+import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class ClaimbuildServiceTest {
     void ensureSetOwnerFactionWorksProperly() {
         log.debug("Testing if setOwnerFaction works properly with correct values");
 
-        UpdateClaimbuildDto dto = new UpdateClaimbuildDto(claimbuild.getName(), faction.getName());
+        UpdateClaimbuildOwnerDto dto = new UpdateClaimbuildOwnerDto(claimbuild.getName(), faction.getName());
 
         when(mockClaimbuildRepository.save(claimbuild)).thenReturn(claimbuild);
 
@@ -59,8 +59,8 @@ public class ClaimbuildServiceTest {
         var result = claimBuildService.setOwnerFaction(dto);
 
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(dto.claimbuildName());
-        assertThat(result.getOwnedBy().getName()).isEqualTo(dto.newFaction());
+        assertThat(result.claimbuildName()).isEqualTo(dto.claimbuildName());
+        assertThat(result.newFaction()).isEqualTo(dto.newFaction());
 
         log.info("Test passed: setOwnerFaction works properly with correct values");
     }

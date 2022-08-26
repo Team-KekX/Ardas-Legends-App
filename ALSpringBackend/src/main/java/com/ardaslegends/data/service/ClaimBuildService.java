@@ -2,10 +2,8 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.UnitType;
 import com.ardaslegends.data.repository.ClaimBuildRepository;
-import com.ardaslegends.data.service.dto.army.UpdateArmyDto;
-import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildDto;
+import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +25,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
     private final ClaimBuildRepository claimbuildRepository;
     private final FactionService factionService;
 
-    public ClaimBuild setOwnerFaction(UpdateClaimbuildDto dto) {
+    public UpdateClaimbuildOwnerDto setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
         log.debug("Trying to set the controlling faction of Claimbuild [{}] to [{}]", dto.claimbuildName(), dto.newFaction());
 
         ServiceUtils.checkNulls(dto, List.of("claimbuildName", "newFaction"));
@@ -46,8 +44,10 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         claimBuild = secureSave(claimBuild, claimbuildRepository);
 
         log.info("Successfully returning claimbuild [{}] with new controlling faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
-        return claimBuild;
+        UpdateClaimbuildOwnerDto returnDto = new UpdateClaimbuildOwnerDto(claimBuild.getName(), claimBuild.getOwnedBy().getName());j
+        return returnDto;
     }
+
 
     public ClaimBuild getClaimBuildByName(String name) {
         log.debug("Getting Claimbuild with name [{}]", name);
