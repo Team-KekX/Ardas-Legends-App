@@ -232,6 +232,21 @@ public class ArmyServiceTest {
         assertThat(army.isHealing()).isTrue();
         log.info("Test passed: heal start works properly with correct values");
     }
+
+    @Test
+    void ensureHealStartThrowsSeWhenArmyObjectIsATradingCompany() {
+        log.debug("Testing if healStart correctly throws Se when army object is a trading company");
+
+        army.setArmyType(ArmyType.TRADING_COMPANY);
+
+        UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null);
+
+        log.debug("Expecting Se on call, calling healStart");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.healStart(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.tradingCompaniesCannotHeal(dto.armyName()).getMessage());
+        log.info("Test passed: healStart throws Se when army object is a trading company");
+    }
     @Test
     void ensureHealStartThrwosSeWhenArmyAndPlayerAreNotInTheSameFaction() {
         log.debug("Testing if healStart correctly throws SE when Player and Army are not in the same faction");

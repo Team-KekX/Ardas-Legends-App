@@ -163,6 +163,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Fetching Army");
         Army army = getArmyByName(dto.armyName());
 
+        log.debug("Checking if army object is an army or armed company");
+        if(!ArmyType.ARMY.equals(army.getArmyType()) && !ArmyType.ARMED_TRADERS.equals(army.getArmyType())) {
+            log.warn("Army object [{}] is not a armed company or army: [{}]", army.getName(), army.getArmyType().getName());
+            throw ArmyServiceException.tradingCompaniesCannotHeal(army.getName());
+        }
+
         log.debug("Checking if army and player are in the same faction");
         if(!player.getFaction().equals(army.getFaction())) {
             log.warn("Player [{}:{}]and Army [{}:{}] are not in the same faction ", player, player.getFaction(), army, army.getFaction());

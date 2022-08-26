@@ -17,6 +17,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String NOT_IN_SAME_REGION = "%s '%s' is not in the same region as character '%s'!";
     private static final String NOT_SAME_FACTION = "You are not in the same faction as %s '%s'! Your faction: '%s' - %s faction: '%s'!";
     private static final String ALREADY_BOUND = "The %s '%s' is already bound to the player '%s'!";
+    private static final String TRADING_COMPANIES_CANNOT_HEAL = "%s is a trading company. Trading companies cannot heal!";
     private static final String NO_PLAYER_BOUND_TO_ARMYTYPE = "There is no player bound to the %s '%s'!";
     private static final String TOO_HIGH_TOKEN_COUNT = "%s token count exceeds the maximum of 30, it currently is '%s";
     private static final String CANNOT_MOVE_ARMYTYPE_DUE_TO_ALREADY_MOVING = "Cannot move %s '%s' because it is already in a movement! Cancel its movement to submit a new one";
@@ -50,6 +51,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String IS_ALREADY_PAID_FOR = "%s '%s' is already paid for!";
     public static ArmyServiceException isAlreadyPaidFor(ArmyType armyType, String name) { return new ArmyServiceException(IS_ALREADY_PAID_FOR.formatted(armyType.getName(), name)); }
     public static ArmyServiceException noArmyWithName(String armyType, String armyName) { return new ArmyServiceException(NO_ARMYTYPE_WITH_NAME.formatted(armyType, armyName)); }
+    public static ArmyServiceException tradingCompaniesCannotHeal(String name) {return new ArmyServiceException((TRADING_COMPANIES_CANNOT_HEAL.formatted(name)));}
     public static ArmyServiceException noPermissionToPerformThisAction() { return new ArmyServiceException(NO_PERMISSION_TO_PERFORM_ACTION);}
     public static ArmyServiceException claimbuildNotInTheSameOrAlliedFaction(ArmyType armyType, String claimbuildName) { return new ArmyServiceException(CLAIMBUILD_IS_NOT_IN_THE_SAME_OR_ALLIED_FACTION.formatted(claimbuildName, armyType.getName())); }
     public static ArmyServiceException armyAlreadyStationed(ArmyType armyType, String armyName, String claimbuildName) { return new ArmyServiceException(ARMYTYPE_IS_ALREADY_STATIONED.formatted(armyType.getName(), armyName, claimbuildName)); }
