@@ -30,6 +30,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
     private final ProductionSiteRepository productionSiteRepository;
 
     private final FactionService factionService;
+    private final PlayerService playerService;
 
     @Transactional(readOnly = false)
     public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
@@ -86,8 +87,42 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Fetching the faction");
         Faction faction = factionService.getFactionByName(dto.faction());
 
+        log.debug("Getting the Claimbuild Type");
+        ClaimBuildType type = null;
+        try {
+            log.trace("Trying to get enum value of inputted type [{}]", dto.type());
+            type = ClaimBuildType.valueOf(dto.type().replace(' ', '_').toUpperCase());
+        }
+        catch (Exception e) {
+            log.warn("Could not find claimbuild type [{}]!", dto.type());
+            throw ClaimBuildServiceException.noCbTypeFound(dto.type());
+        }
 
-        return null;
+        log.debug("Building Claimbuild coordinates");
+        Coordinate coordinate = new Coordinate(dto.xCoord(), dto.yCoord(), dto.zCoord());
+
+        log.trace("Calling createBuiltByFromString");
+        Set<Player> builtBy = createBuiltByFromString(dto.builtBy());
+
+        log.trace("Calling createSpecialBuildingsFromString");
+        List<SpecialBuilding> specialBuildings = createSpecialBuildingsFromString(dto.specialBuildings());
+
+        log.debug("Creating the claimbuild instance so we can instantiate production sites and special buildings");
+        //production sites will be set later on because they need the claimbuild instance when getting created
+        ClaimBuild claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
+                specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+
+        log.trace("Calling createProductionSitesFromString");
+        List<ProductionClaimbuild> prodSites = createProductionSitesFromString(dto.productionSites(), claimBuild);
+
+        log.trace("Setting production sites");
+        claimBuild.setProductionSites(prodSites);
+
+        log.debug("Persisting the newly created Claimbuild");
+        claimBuild = secureSave(claimBuild, claimbuildRepository);
+
+        log.info("Successfully created new [{}] claimbuild [{}] for faction [{}] in region [{}]", type, claimBuild.getName(), faction, region.getId());
+        return claimBuild;
     }
     @Transactional(readOnly = false)
     public ClaimBuild deleteClaimbuild(DeleteClaimbuildDto dto) {
@@ -118,6 +153,29 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.debug("Successfully returning Claimbuild with name [{}]", name);
         return fetchedBuild.get();
+    }
+
+    public Set<Player> createBuiltByFromString(String builtByString) {
+        log.debug("Creating builtBy from string [{}]", builtByString);
+
+        ServiceUtils.validateStringSyntax(builtByString, new Character[]{'-'}, ClaimBuildServiceException.invalidBuiltByString(builtByString));
+
+        String[] playerArray = builtByString.split("-");
+
+        Set<Player> builtBy = new HashSet<>();
+
+        for (String playerIgn : playerArray) {
+            log.trace("Generating builtBy from data: [{}]", playerIgn);
+
+            log.trace("Fetching player with ign [{}]", playerIgn);
+            Player player = playerService.getPlayerByIgn(playerIgn);
+            log.trace("Found player [{}]", player);
+
+            log.trace("Adding player [{}] to HashSet", player);
+            builtBy.add(player);
+        }
+
+        return builtBy;
     }
 
     public List<ProductionClaimbuild> createProductionSitesFromString(String prodString, @NotNull ClaimBuild claimBuild) {
@@ -168,5 +226,33 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         }
         
         return productionSites;
+    }
+
+    public List<SpecialBuilding> createSpecialBuildingsFromString(String specialBuildString) {
+        log.debug("Creating special buildings from string [{}]", specialBuildString);
+
+        ServiceUtils.validateStringSyntax(specialBuildString, new Character[]{'-'}, ClaimBuildServiceException.invalidProductionSiteString(specialBuildString));
+
+        String[] specialBuildArr = specialBuildString.split("-");
+
+        List<SpecialBuilding> specialBuildings = new ArrayList<>();
+
+        for (String specialBuildName : specialBuildArr) {
+            log.trace("Generating special buildings from name: [{}]", specialBuildName);
+
+            try {
+                log.trace("Trying to parse [{}] to SpecialBuilding", specialBuildName);
+                SpecialBuilding specialBuilding = SpecialBuilding.valueOf(specialBuildName.replace(' ', '_').toUpperCase());
+                log.trace("Found special building [{}]", specialBuilding);
+                log.trace("Adding special building to list");
+                specialBuildings.add(specialBuilding);
+            }
+            catch (Exception e) {
+                log.warn("Could not find special building for inputted value [{}]", specialBuildName);
+                throw ClaimBuildServiceException.noSpecialBuildingFound(specialBuildName);
+            }
+        }
+
+        return specialBuildings;
     }
 }

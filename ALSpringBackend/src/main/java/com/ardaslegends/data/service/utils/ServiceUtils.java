@@ -110,7 +110,7 @@ public class ServiceUtils {
 
         // Is also true at the start, from then every time a expectedChar is switched
         boolean firstCharAfterExpected = true; //says if the current character is the first character after the last expected one
-        boolean possibleEnd = false;
+        boolean possibleEnd = true;
 
         log.trace("Starting validation, unitString length: [{}]", string.length());
 

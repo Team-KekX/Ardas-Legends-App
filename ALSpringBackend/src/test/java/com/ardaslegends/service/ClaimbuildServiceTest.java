@@ -6,6 +6,7 @@ import com.ardaslegends.data.repository.ProductionSiteRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.FactionService;
+import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.data.service.exceptions.claimbuild.ClaimBuildServiceException;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,12 +32,16 @@ public class ClaimbuildServiceTest {
     private RegionRepository mockRegionRepository;
     private ProductionSiteRepository mockProductionSiteRepository;
     private FactionService mockFactionService;
+    private PlayerService mockPlayerService;
 
     private Faction faction;
     private Faction faction2;
     private ClaimBuild claimbuild;
     private ProductionSiteType productionSiteType;
     private ProductionSite productionSite;
+    private Player player;
+    private Player player2;
+    private Player player3;
 
     @BeforeEach
     void setup() {
@@ -43,8 +49,9 @@ public class ClaimbuildServiceTest {
         mockRegionRepository = mock(RegionRepository.class);
         mockFactionService = mock(FactionService.class);
         mockProductionSiteRepository = mock(ProductionSiteRepository.class);
+        mockPlayerService = mock(PlayerService.class);
 
-        claimBuildService = new ClaimBuildService(mockClaimbuildRepository, mockRegionRepository, mockProductionSiteRepository, mockFactionService);
+        claimBuildService = new ClaimBuildService(mockClaimbuildRepository, mockRegionRepository, mockProductionSiteRepository, mockFactionService, mockPlayerService);
 
         faction = Faction.builder().name("Gondor").build();
         faction2 = Faction.builder().name("Mordor").build();
@@ -52,6 +59,9 @@ public class ClaimbuildServiceTest {
         productionSiteType = ProductionSiteType.FISHING_LODGE;
         productionSite = ProductionSite.builder().producedResource("Fish").type(productionSiteType).build();
         claimbuild = ClaimBuild.builder().name("Minas Tirith").ownedBy(faction2).build();
+        player = Player.builder().ign("Luktronic").discordID("1234").faction(faction).build();
+        player2 = Player.builder().ign("mirak441").discordID("567").faction(faction).build();
+        player3 = Player.builder().ign("VernonRoche").discordID("8910").faction(faction).build();
 
         when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
@@ -59,6 +69,9 @@ public class ClaimbuildServiceTest {
         when(mockProductionSiteRepository.
                 findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite.getProducedResource()))
                 .thenReturn(Optional.of(productionSite));
+        when(mockPlayerService.getPlayerByIgn(player.getIgn())).thenReturn(player);
+        when(mockPlayerService.getPlayerByIgn(player2.getIgn())).thenReturn(player2);
+        when(mockPlayerService.getPlayerByIgn(player3.getIgn())).thenReturn(player3);
     }
 
     @Test
@@ -165,5 +178,51 @@ public class ClaimbuildServiceTest {
 
         assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.invalidProductionSiteString(prodString).getMessage());
         log.info("Test passed: createProductionSitesFromString throws ClaimBuildServiceException when inputted amount is not a number!");
+    }
+
+    @Test
+    void ensureCreateBuiltByFromStringWorks() {
+        log.debug("Testing if createBuiltByFromString works properly");
+
+        String builtByString = "%s-%s-%s".formatted(player.getIgn(), player2.getIgn(), player3.getIgn());
+
+        log.debug("Calling createBuiltByFromString");
+        Set<Player> result = claimBuildService.createBuiltByFromString(builtByString);
+
+        Set<Player> expected = Set.of(player, player2, player3);
+
+        assertThat(result.size()).isEqualTo(expected.size());
+        assertThat(result.containsAll(expected)).isTrue();
+        log.info("Test passed: createBuiltByFromString works properly");
+    }
+
+    @Test
+    void ensureCreateSpecialBuildingsFromStringWorks() {
+        log.debug("Testing if createSpecialBuildingsFromString works properly");
+
+        String specialBuildingString = "House of Healing-Watchtower-Embassy";
+
+        log.debug("Calling createSpecialBuildingsFromString");
+        List<SpecialBuilding> result = claimBuildService.createSpecialBuildingsFromString(specialBuildingString);
+
+        List<SpecialBuilding> expected = List.of(SpecialBuilding.HOUSE_OF_HEALING, SpecialBuilding.WATCHTOWER, SpecialBuilding.EMBASSY);
+
+        assertThat(result.size()).isEqualTo(expected.size());
+        assertThat(result.containsAll(expected)).isTrue();
+        log.info("Test passed: createSpecialBuildingsFromString works properly");
+    }
+
+    @Test
+    void ensureCreateSpecialBuildingsFromStringThrowsSEWhenNoBuildFound() {
+        log.debug("Testing if createSpecialBuildingsFromString throws ClaimBuildServiceException when no Special Building is found");
+
+
+        String specialBuildingString = "House awdada";
+
+        log.debug("Calling createSpecialBuildingsFromString");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createSpecialBuildingsFromString(specialBuildingString));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noSpecialBuildingFound(specialBuildingString).getMessage());
+        log.info("Test passed: createSpecialBuildingsFromString throws ClaimBuildServiceException when no Special Building is found");
     }
 }
