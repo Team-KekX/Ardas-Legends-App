@@ -3,6 +3,7 @@ package com.ardaslegends.data.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -27,4 +28,16 @@ public final class ProductionSite extends AbstractDomainEntity {
     @Column(name = "amount_produced")
     private Integer amountProduced; //the amount
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductionSite that = (ProductionSite) o;
+        return type == that.type && producedResource.equals(that.producedResource) && amountProduced.equals(that.amountProduced);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, producedResource, amountProduced);
+    }
 }
