@@ -74,6 +74,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
     private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
 
+    @JsonIgnore
     public int getCountOfArmies() {
         int count = (int) createdArmies.stream()
                 .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))
@@ -82,6 +83,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
         return count;
     }
 
+    @JsonIgnore
     public int getCountOfTradingCompanies() {
         int count = (int) createdArmies.stream()
                 .filter(army -> ArmyType.TRADING_COMPANY.equals(army.getArmyType()))
@@ -101,6 +103,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
         return false;
     }
 
+    @JsonIgnore
     public boolean atMaxTradingCompanies() {
         int countOfTradingCompanies = getCountOfTradingCompanies();
         int maxTradingCompanies = getType().getMaxTradingCompanies();

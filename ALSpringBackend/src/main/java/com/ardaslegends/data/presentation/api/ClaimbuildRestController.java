@@ -1,7 +1,9 @@
 package com.ardaslegends.data.presentation.api;
 
+import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.ClaimBuildService;
+import com.ardaslegends.data.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ClaimbuildRestController.BASE_URL)
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
+    public static final String PATH_CREATE_CLAIMBUILD = "/create";
     private static final String UPDATE_CLAIMBUILD_FATION = "/update/claimbuild-faction";
     private static final String DELETE_CLAIMBUILD = "/delete";
 
     private final ClaimBuildService claimBuildService;
+
+    @PostMapping(PATH_CREATE_CLAIMBUILD)
+    public HttpEntity<ClaimBuild> createClaimbuild(@RequestBody CreateClaimBuildDto dto) {
+        log.debug("Incoming createClaimbuild Request: Data [{}]", dto);
+
+        log.debug("Calling claimBuildService.createClaimbuild");
+        ClaimBuild claimBuild = wrappedServiceExecution(dto, claimBuildService::createClaimbuild);
+
+        log.info("Sending successful createClaimbuild Request for [{}]", claimBuild.getName());
+        return ResponseEntity.ok(claimBuild);
+    }
 
     @PatchMapping(UPDATE_CLAIMBUILD_FATION)
     public HttpEntity<UpdateClaimbuildOwnerDto> updateClaimbuildOwner(@RequestBody UpdateClaimbuildOwnerDto dto) {
