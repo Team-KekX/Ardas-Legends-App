@@ -128,6 +128,8 @@ public class ServiceUtils {
 
                 //Check if current char is second last
                 possibleEnd = currentExpectedCharIndex == (syntaxChars.length - 2);
+                if(syntaxChars.length == 1)
+                    possibleEnd = true;
                 /*
                 Increment the currentExpectedCharIndex so we expect the next character
                 If the index has reached the end of the array, start over from 0
