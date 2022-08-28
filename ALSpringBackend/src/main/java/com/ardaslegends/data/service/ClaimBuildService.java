@@ -168,6 +168,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         ClaimBuild claimBuild = getClaimBuildByName(dto.claimbuildName());
 
         secureDelete(claimBuild, claimbuildRepository);
+        log.trace("Stationed Armies [{}]", claimBuild.getStationedArmies());
+        log.trace("Created Armies [{}]", claimBuild.getCreatedArmies());
         return claimBuild;
     }
 

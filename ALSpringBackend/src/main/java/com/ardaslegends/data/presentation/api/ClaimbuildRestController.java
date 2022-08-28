@@ -72,6 +72,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.trace("Calling wrappedServiceExecution of deleteClaimbuild");
         var result = wrappedServiceExecution(dto, claimBuildService::deleteClaimbuild);
 
+
         log.trace("Building body Dto");
         DeleteClaimbuildDto body = new DeleteClaimbuildDto(result.getName(),
                  result.getStationedArmies().stream().map(Army::getName).collect(Collectors.toList()),

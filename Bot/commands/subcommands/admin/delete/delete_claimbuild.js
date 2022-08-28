@@ -21,13 +21,23 @@ module.exports = {
         axios.delete(`http://${serverIP}:${serverPort}/api/claimbuild/delete`, {data: data})
             .then(async function(response) {
                 console.log(response.data)
+
+                unstationedArmies = response.data.unstationedArmies.join("\n")
+                deletedArmies= response.data.deletedArmies.join("\n")
+
+                if(unstationedArmies === "")
+                    unstationedArmies = "None"
+
+                if(deletedArmies === "")
+                    deletedArmies = "None"
+
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Staff-Deleted Claimbuild")
                     .setColor("GREEN")
                     .setDescription(`${name} has been deleted!`)
                     .addFields([
-                        {name: "Unstationed Armies/Companies", value: response.data.unstationedArmies},
-                        {name: "Deleted Armies/Companies", value: response.data.deletedArmies}
+                        {name: "Unstationed Armies/Companies", value: unstationedArmies, inline:false},
+                        {name: "Deleted Armies/Companies", value: deletedArmies, inline:false}
                     ])
                     .setTimestamp()
 
