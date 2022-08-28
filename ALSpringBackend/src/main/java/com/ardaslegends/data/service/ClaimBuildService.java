@@ -55,6 +55,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         return claimBuild;
     }
 
+    @Transactional(readOnly = false)
     public ClaimBuild createClaimbuild(CreateClaimBuildDto dto, boolean isNewlyCreated) {
         log.debug("Trying to create claimbuild with data [{}]", dto);
 
@@ -244,7 +245,9 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.invalidProductionSiteString(prodString);
             }
 
-            productionSites.add(new ProductionClaimbuild(fetchedProdSite.get(), claimBuild, prodSiteAmount));
+            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getName());
+            ProductionClaimbuild productionClaimbuild = new ProductionClaimbuild(id, fetchedProdSite.get(), claimBuild, prodSiteAmount);
+            productionSites.add(productionClaimbuild);
         }
         
         return productionSites;
