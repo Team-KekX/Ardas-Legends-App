@@ -105,6 +105,23 @@ module.exports = {
                         .setDescription("Sets if the army is paid")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("claimbuild-faction")
+                .setDescription("Updates the controlling faction of a claimbuild")
+                .addStringOption(option =>
+                    option
+                        .setName("claimbuild")
+                        .setDescription("Name of the claimbuild where the owner is to be changed")
+                        .setRequired(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("faction")
+                        .setDescription("Name of the faction that should control the claimbuild")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
