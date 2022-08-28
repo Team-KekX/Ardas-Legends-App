@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
     public static final String PATH_CREATE_CLAIMBUILD = "/create";
+    public static final String PATH_UPDATE_CLAIMBUILD = "/update";
     private static final String UPDATE_CLAIMBUILD_FATION = "/update/claimbuild-faction";
     private static final String DELETE_CLAIMBUILD = "/delete";
 
@@ -30,9 +31,20 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming createClaimbuild Request: Data [{}]", dto);
 
         log.debug("Calling claimBuildService.createClaimbuild");
-        ClaimBuild claimBuild = wrappedServiceExecution(dto, claimBuildService::createClaimbuild);
+        ClaimBuild claimBuild = wrappedServiceExecution(dto, true, claimBuildService::createClaimbuild);
 
         log.info("Sending successful createClaimbuild Request for [{}]", claimBuild.getName());
+        return ResponseEntity.ok(claimBuild);
+    }
+
+    @PatchMapping(PATH_UPDATE_CLAIMBUILD)
+    public HttpEntity<ClaimBuild> updateClaimbuild(@RequestBody CreateClaimBuildDto dto) {
+        log.debug("Incoming updateClaimbuild Request: Data [{}]", dto);
+
+        log.debug("Calling claimBuildService.createClaimbuild");
+        ClaimBuild claimBuild = wrappedServiceExecution(dto, false, claimBuildService::createClaimbuild);
+
+        log.info("Sending successful updateClaimbuild Request for [{}]", claimBuild.getName());
         return ResponseEntity.ok(claimBuild);
     }
 

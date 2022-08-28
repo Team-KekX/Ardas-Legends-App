@@ -57,7 +57,7 @@ public class ClaimbuildRestControllerTest {
                 .ownedBy(Faction.builder().name(dto.faction()).build()).createdArmies(new ArrayList<>()).specialBuildings(new ArrayList<>())
                 .stationedArmies(new ArrayList<>())
                 .build();
-        when(mockClaimbuildService.createClaimbuild(dto)).thenReturn(claimBuild);
+        when(mockClaimbuildService.createClaimbuild(dto, true)).thenReturn(claimBuild);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -67,6 +67,46 @@ public class ClaimbuildRestControllerTest {
 
         var result = mockMvc.perform((MockMvcRequestBuilders
                         .post("http://localhost:8080/api/claimbuild/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var request = result.getRequest();
+        request.setCharacterEncoding("UTF-8");
+
+        log.error(result.getResponse().getContentAsString());
+        ClaimBuild response = mapper.readValue(result.getResponse().getContentAsString()
+                ,ClaimBuild.class);
+
+        assertThat(response.getName()).isEqualTo(claimBuild.getName());
+        assertThat(response.getOwnedBy().getName()).isEqualTo(claimBuild.getOwnedBy().getName());
+
+        log.info("Test passed: createClaimbuild builds the correct response");
+    }
+
+    @Test
+    void ensureCreateClaimbuildWorksProperlyWhenUpdatingCb() throws Exception {
+        log.debug("Testing if createClaimbuild works properly with correct values");
+
+        CreateClaimBuildDto dto = new CreateClaimBuildDto("Nimheria", "91", "Town", "Gondor", 2, 3, 4,
+                "huehue:huehue:5", "awdad", "awda", "awdw", "adwada", "Luk");
+
+        ClaimBuild claimBuild = ClaimBuild.builder()
+                .name(dto.name())
+                .ownedBy(Faction.builder().name(dto.faction()).build()).createdArmies(new ArrayList<>()).specialBuildings(new ArrayList<>())
+                .stationedArmies(new ArrayList<>())
+                .build();
+        when(mockClaimbuildService.createClaimbuild(dto, false)).thenReturn(claimBuild);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        String requestJson = ow.writeValueAsString(dto);
+
+        var result = mockMvc.perform((MockMvcRequestBuilders
+                        .patch("http://localhost:8080/api/claimbuild/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson)))
                 .andExpect(status().isOk())

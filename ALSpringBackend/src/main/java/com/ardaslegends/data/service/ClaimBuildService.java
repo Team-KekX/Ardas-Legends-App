@@ -55,7 +55,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         return claimBuild;
     }
 
-    public ClaimBuild createClaimbuild(CreateClaimBuildDto dto) {
+    public ClaimBuild createClaimbuild(CreateClaimBuildDto dto, boolean isNewlyCreated) {
         log.debug("Trying to create claimbuild with data [{}]", dto);
 
         log.trace("Validating data");
@@ -66,10 +66,14 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Fetching claimbuild with name [{}]", dto.name());
         Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
         log.trace("Checking if a claimbuild was found");
-        if (existingClaimbuild.isPresent()) {
+        if (existingClaimbuild.isPresent() && isNewlyCreated) {
             var claimbuild = existingClaimbuild.get();
-            log.warn("Claimbuild with name [{}] already exists (region [{}] - owned by [{}])", claimbuild.getName(), claimbuild.getRegion(), claimbuild.getOwnedBy());
+            log.warn("Cannot create new claimbuild with name [{}] because another one  with same name already exists (region [{}] - owned by [{}])", claimbuild.getName(), claimbuild.getRegion(), claimbuild.getOwnedBy());
             throw ClaimBuildServiceException.cbAlreadyExists(claimbuild.getName(), claimbuild.getRegion().getId(), claimbuild.getOwnedBy().getName());
+        }
+        else if(existingClaimbuild.isEmpty() && !isNewlyCreated) {
+            log.warn("Tried to updated claimbuild with name [{}] but no claimbuild was found!", dto.name());
+            throw ClaimBuildServiceException.couldNotUpdateClaimbuildBecauseNotFound(dto.name());
         }
 
         log.debug("Getting the inputted region");
@@ -109,8 +113,23 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.debug("Creating the claimbuild instance so we can instantiate production sites and special buildings");
         //production sites will be set later on because they need the claimbuild instance when getting created
-        ClaimBuild claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
-                specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+        ClaimBuild claimBuild = null;
+        if(isNewlyCreated) {
+            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
+                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+        }
+        else {
+            claimBuild = existingClaimbuild.get();
+            claimBuild.setRegion(region);
+            claimBuild.setType(type);
+            claimBuild.setOwnedBy(faction);
+            claimBuild.setCoordinates(coordinate);
+            claimBuild.setSpecialBuildings(specialBuildings);
+            claimBuild.setTraders(dto.traders());
+            claimBuild.setSiege(dto.siege());
+            claimBuild.setNumberOfHouses(dto.numberOfHouses());
+            claimBuild.setBuiltBy(builtBy);
+        }
 
         log.trace("Calling createProductionSitesFromString");
         List<ProductionClaimbuild> prodSites = createProductionSitesFromString(dto.productionSites(), claimBuild);
@@ -118,10 +137,13 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Setting production sites");
         claimBuild.setProductionSites(prodSites);
 
-        log.debug("Persisting the newly created Claimbuild");
+        String logStr = isNewlyCreated ? "newly created" : "updated";
+
+        log.debug("Persisting the {} Claimbuild", logStr);
         claimBuild = secureSave(claimBuild, claimbuildRepository);
 
-        log.info("Successfully created new [{}] claimbuild [{}] for faction [{}] in region [{}]", type, claimBuild.getName(), faction, region.getId());
+        logStr = isNewlyCreated ? "created new" : "updated";
+        log.info("Successfully {} [{}] claimbuild [{}] for faction [{}] in region [{}]",logStr, type, claimBuild.getName(), faction, region.getId());
         return claimBuild;
     }
     @Transactional(readOnly = false)

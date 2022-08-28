@@ -170,7 +170,7 @@ public class ClaimbuildServiceTest {
         when(mockClaimbuildRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         log.debug("Calling createClaimbuild");
-        ClaimBuild result = claimBuildService.createClaimbuild(createClaimBuildDto);
+        ClaimBuild result = claimBuildService.createClaimbuild(createClaimBuildDto, true);
 
         assertThat(result.getName()).isEqualTo(claimbuildName);
         assertThat(result.getRegion()).isEqualTo(region);
@@ -187,14 +187,50 @@ public class ClaimbuildServiceTest {
     }
 
     @Test
+    void ensureCreateClaimbuildWorksWithUpdatedClaimbuild() {
+        log.debug("Testing if createClaimbuild works properly when updating claimbuild");
+
+        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
+        when(mockClaimbuildRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), ClaimBuildType.CAPITAL.name().toLowerCase(), faction.getName(),
+                coordinate.getX(), coordinate.getY(), coordinate.getZ(),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource(), productionClaimbuild2.getCount()),
+                "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
+                "%s".formatted(player.getIgn()));
+
+        log.debug("Calling createClaimbuild");
+        ClaimBuild result = claimBuildService.createClaimbuild(createClaimBuildDto, false);
+
+        assertThat(result).isEqualTo(claimbuild);
+        assertThat(result.getType()).isEqualTo(ClaimBuildType.CAPITAL);
+        assertThat(result.getBuiltBy().size()).isEqualTo(1);
+        assertThat(result.getBuiltBy().contains(player)).isTrue();
+        log.info("Test passed: createClaimbuild works properly when updating claimbuild");
+    }
+
+    @Test
     void ensureCreateClaimbuildThrowsSeWhenCBAlreadyExists() {
         log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when claimbuild already exists!");
 
         log.debug("Calling createClaimbuild");
-        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto));
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, true));
 
         assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.cbAlreadyExists(claimbuildName, region.getId(), faction.getName()).getMessage());
         log.info("Test passed: createClaimbuild throws ClaimBuildServiceException when claimbuild already exists!");
+    }
+
+    @Test
+    void ensureCreateClaimbuildThrowsSeWhenUpdatedCBDoesNotExists() {
+        log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when updated claimbuild does not exist!");
+
+        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+
+        log.debug("Calling createClaimbuild");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, false));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.couldNotUpdateClaimbuildBecauseNotFound(claimbuildName).getMessage());
+        log.info("Test passed: createClaimbuild throws ClaimBuildServiceException when updated claimbuild does not exist!");
     }
 
     @Test
@@ -205,7 +241,7 @@ public class ClaimbuildServiceTest {
         when(mockRegionRepository.findById(region.getId())).thenReturn(Optional.empty());
 
         log.debug("Calling createClaimbuild");
-        var result = assertThrows(ServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto));
+        var result = assertThrows(ServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, true));
 
         assertThat(result.getMessage()).isEqualTo(ServiceException.regionDoesNotExist(region.getId()).getMessage());
         log.info("Test passed: createClaimbuild throws ServiceException when region does not exists!");
@@ -225,7 +261,7 @@ public class ClaimbuildServiceTest {
 
 
         log.debug("Calling createClaimbuild");
-        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto));
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, true));
 
         assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.noCbTypeFound(createClaimBuildDto.type()).getMessage());
         log.info("Test passed: createClaimbuild throws ClaimBuildServiceException when ClaimBuildType does not exists!");

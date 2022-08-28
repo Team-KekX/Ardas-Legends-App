@@ -10,6 +10,7 @@ public class ClaimBuildServiceException extends ServiceException {
 
     //Create claimbuild
     private static final String CB_ALREADY_EXISTS = "A claimbuild with the name '%s' already exists in Region '%s' (owned by %s)";
+    private static final String COULD_NOT_UPDATE_CB_BECAUSE_IT_DOES_NOT_EXIST = "Could not update claimbuild because no claimbuild with name '%s' was found!";
     private static final String NO_CLAIMBUILD_TYPE_FOUND = "No Claimbuild Type found for inputted value '%s'!";
     private static final String INVALID_PRODUCTION_SITE_STRING = "The production site string '%s' is not grammatically correct \n " +
             "A correct string would be: Fishing Lodge:Salmon:2-Mine:Iron:5 \n" +
@@ -28,6 +29,7 @@ public class ClaimBuildServiceException extends ServiceException {
 
     //Create claimbuild
     public static ClaimBuildServiceException cbAlreadyExists(String cbName, String regionId, String factionName) { return new ClaimBuildServiceException(CB_ALREADY_EXISTS.formatted(cbName, regionId, factionName)); }
+    public static ClaimBuildServiceException couldNotUpdateClaimbuildBecauseNotFound(String cbName) { return new ClaimBuildServiceException(COULD_NOT_UPDATE_CB_BECAUSE_IT_DOES_NOT_EXIST.formatted(cbName)); }
     public static ClaimBuildServiceException noCbTypeFound(String inputtedType) { return new ClaimBuildServiceException(NO_CLAIMBUILD_TYPE_FOUND.formatted(inputtedType)); }
     public static ClaimBuildServiceException invalidProductionSiteString(String string) { return new ClaimBuildServiceException(INVALID_PRODUCTION_SITE_STRING.formatted(string)); }
     public static ClaimBuildServiceException noProductionSiteTypeFound(String inputtedValue) { return new ClaimBuildServiceException(NO_PRODUCTION_SITE_TYPE_FOUND.formatted(inputtedValue)); }
