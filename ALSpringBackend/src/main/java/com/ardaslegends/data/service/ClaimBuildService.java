@@ -103,6 +103,17 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
             throw ClaimBuildServiceException.noCbTypeFound(dto.type());
         }
 
+        log.trace("Checking if type is [{}]", ClaimBuildType.CAPITAL);
+        if(type.equals(ClaimBuildType.CAPITAL) && isNewlyCreated) {
+            log.debug("CB Type is [{}] - Checking if faction already has a [{}]", ClaimBuildType.CAPITAL, ClaimBuildType.CAPITAL);
+            boolean hasCapital = faction.getClaimBuilds().stream().anyMatch(cb -> cb.getType().equals(ClaimBuildType.CAPITAL));
+            log.trace("Faction has capital: [{}]", hasCapital);
+            if(hasCapital) {
+                log.warn("Faction [{}] already has a claimbuild of type [{}]", faction, ClaimBuildType.CAPITAL);
+                throw ClaimBuildServiceException.factionAlreadyHasCapital(faction.getName());
+            }
+        }
+
         log.debug("Building Claimbuild coordinates");
         Coordinate coordinate = new Coordinate(dto.xCoord(), dto.yCoord(), dto.zCoord());
 

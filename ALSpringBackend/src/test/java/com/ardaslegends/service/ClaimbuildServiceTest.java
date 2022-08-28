@@ -221,6 +221,26 @@ public class ClaimbuildServiceTest {
     }
 
     @Test
+    void ensureCreateClaimbuildThrowsSeWhenFactionAlreadyHasCapital() {
+        log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when faction already has capital!");
+
+        claimbuild.setType(ClaimBuildType.CAPITAL);
+        createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), ClaimBuildType.CAPITAL.name().toLowerCase(), faction.getName(),
+                coordinate.getX(), coordinate.getY(), coordinate.getZ(),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource(), productionClaimbuild2.getCount()),
+                "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
+                "%s".formatted(player.getIgn()));
+        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        faction.setClaimBuilds(List.of(ClaimBuild.builder().type(ClaimBuildType.CAPITAL).build()));
+
+        log.debug("Calling createClaimbuild");
+        var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, true));
+
+        assertThat(result.getMessage()).isEqualTo(ClaimBuildServiceException.factionAlreadyHasCapital(faction.getName()).getMessage());
+        log.info("Test passed: createClaimbuild throws ClaimBuildServiceException when faction already has capital!");
+    }
+
+    @Test
     void ensureCreateClaimbuildThrowsSeWhenUpdatedCBDoesNotExists() {
         log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when updated claimbuild does not exist!");
 
