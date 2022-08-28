@@ -1,8 +1,9 @@
-const {capitalizeFirstLetters, isMemberStaff, createProductionSiteString} = require("../../../../utils/utilities");
-const {MessageEmbed} = require('discord.js');
-const {serverIP, serverPort} = require("../../../../configs/config.json");
-const {CREATE} = require('../../../../configs/embed_thumbnails.json');
+const {SlashCommandBuilder} = require("@discordjs/builders");
 const axios = require("axios");
+const {serverIP, serverPort} = require("../../../../configs/config.json");
+const {MessageEmbed} = require("discord.js");
+const {isMemberStaff, createProductionSiteString, capitalizeFirstLetters} = require("../../../../utils/utilities");
+const {CREATE} = require("../../../../configs/embed_thumbnails.json");
 
 module.exports = {
     async execute(interaction) {
@@ -11,6 +12,7 @@ module.exports = {
             await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
+
 
         //Not doing capitalizeFirstLetter here so people have more freedom in naming the cb
         const name = interaction.options.getString('name');
@@ -44,23 +46,24 @@ module.exports = {
             builtBy: builtBy
         }
 
-        axios.post(`http://${serverIP}:${serverPort}/api/claimbuild/create`, data)
+        axios.patch(`http://${serverIP}:${serverPort}/api/claimbuild/update`, data)
             .then(async function (response) {
                 var claimbuild = response.data;
                 console.log(claimbuild)
-                const coords = claimbuild.coordinates;
-                let specialBuildings = capitalizeFirstLetters(claimbuild.specialBuildings.join("\n").toLowerCase()).replaceAll(" ", "\n").replaceAll("_", " ")
                 const type = capitalizeFirstLetters(claimbuild.type.toLowerCase())
+                let specialBuildings = capitalizeFirstLetters(claimbuild.specialBuildings.join("\n").toLowerCase()).replaceAll(" ", "\n").replaceAll("_", " ")
+
+                const coords = claimbuild.coordinates;
                 var replyEmbed = new MessageEmbed()
-                    .setTitle(`Claimbuild ${name} was successfully created!`)
-                    .setDescription(`The claimbuild '${name}' was successfully created!`)
+                    .setTitle(`Claimbuild ${name} was successfully updated!`)
+                    .setDescription(`The claimbuild '${name}' was successfully updated!`)
                     .setColor("GREEN")
                     .setThumbnail(CREATE)
                     .addFields(
                         {name: "Name", value:name, inline: true  },
                         {name: "Faction", value:claimbuild.ownedBy.name, inline: true },
                         {name: "Region", value:claimbuild.region.id, inline: true  },
-                        {name: "Type", type, inline: true  },
+                        {name: "Type", value:type, inline: true  },
                         {name: "Production Sites", value: createProductionSiteString(claimbuild.productionSites), inline: false},
                         {name: "Special Buildings", value:specialBuildings, inline: false },
                         {name: "Traders", value:claimbuild.traders, inline: true  },
@@ -81,5 +84,6 @@ module.exports = {
                     .setTimestamp()
                 await interaction.reply({embeds: [replyEmbed]})
             })
-    },
-};
+
+    }
+}
