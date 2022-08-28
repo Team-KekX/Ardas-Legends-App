@@ -1,5 +1,6 @@
 package com.ardaslegends.data.presentation.api;
 
+import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.ClaimBuild;
 import com.ardaslegends.data.presentation.AbstractRestController;
 import com.ardaslegends.data.service.ClaimBuildService;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
@@ -69,10 +72,13 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.trace("Calling wrappedServiceExecution of deleteClaimbuild");
         var result = wrappedServiceExecution(dto, claimBuildService::deleteClaimbuild);
 
-        log.trace("Building response Dto");
-        DeleteClaimbuildDto response = new DeleteClaimbuildDto(result.getName(), result.getStationedArmies(), result.getCreatedArmies());
+        log.trace("Building body Dto");
+        DeleteClaimbuildDto body = new DeleteClaimbuildDto(result.getName(),
+                 result.getStationedArmies().stream().map(Army::getName).collect(Collectors.toList()),
+                 result.getCreatedArmies().stream().map(Army::getName).collect(Collectors.toList()));
 
-        log.info("Sending successful delete claimbuild response [{}] to bot!", response);
-        return ResponseEntity.ok(response);
+        log.info("Creating response with body [{}]", body);
+        var response = ResponseEntity.ok(body);
+        return response;
     }
 }
