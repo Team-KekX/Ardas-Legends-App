@@ -98,7 +98,7 @@ public class ClaimbuildRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var request = result.getRequest();
+        var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
         log.error(result.getResponse().getContentAsString());
@@ -138,7 +138,7 @@ public class ClaimbuildRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var request = result.getRequest();
+        var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
         log.error(result.getResponse().getContentAsString());
@@ -176,7 +176,7 @@ public class ClaimbuildRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var request = result.getRequest();
+        var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
         UpdateClaimbuildOwnerDto response = mapper.readValue(request.getContentAsString()
@@ -196,6 +196,7 @@ public class ClaimbuildRestControllerTest {
         when(mockClaimbuildService.deleteClaimbuild(dto)).thenReturn(this.claimBuild);
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 
         String requestJson = ow.writeValueAsString(dto);
@@ -213,19 +214,17 @@ public class ClaimbuildRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var request = result.getRequest();
+        var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
         System.out.println(request.getContentAsString());
         DeleteClaimbuildDto response = mapper.readValue(request.getContentAsString()
                 ,DeleteClaimbuildDto.class);
 
-        System.out.println(response.unstationedArmies());
-        System.out.println(response.deletedArmies());
 
         assertThat(response.claimbuildName()).isEqualTo(claimBuild.getName());
-        //assertThat(response.unstationedArmies()).isEqualTo(claimBuild.getStationedArmies());
-        //assertThat(response.deletedArmies()).isEqualTo(claimBuild.getCreatedArmies());
+        assertThat(response.unstationedArmies()).isEqualTo(claimBuild.getStationedArmies().stream().map(Army::getName).collect(Collectors.toList()));
+        assertThat(response.deletedArmies()).isEqualTo(claimBuild.getCreatedArmies().stream().map(Army::getName).collect(Collectors.toList()));
 
         log.info("Test passed: delete Claimbuild builds the correct response");
     }
