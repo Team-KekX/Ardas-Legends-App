@@ -3,6 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.service.FactionService;
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,15 +73,18 @@ public class FactionServiceTest {
     }
 
     @Test
-    void ensureGetByFactionNameThrowsIAEWhenFetchedFactionIsEmpty() {
-        log.debug("Testing if getByFaction in FactionService throws IAE when Fetched Faction is Empty");
+    void ensureGetByFactionNameThrowsSeWhenFetchedFactionIsEmpty() {
+        log.debug("Testing if getByFaction in FactionService throws Se when Fetched Faction is Empty");
 
         String name = "Mordor";
 
         when(mockFactionRepository.findById(name)).thenReturn(Optional.empty());
 
         // Assert
-        var result = assertThrows(IllegalArgumentException.class, () -> factionService.getFactionByName(name));
+        var result = assertThrows(FactionServiceException.class, () -> factionService.getFactionByName(name));
+
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionWithNameFound(name).getMessage());
+        log.info("Test passed: getFactionByName throws Se when no faction found in database");
     }
 
 }

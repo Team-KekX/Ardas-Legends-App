@@ -104,6 +104,20 @@ function createUnpaidStringArray(armies) {
     return [nameString, factionString, dateString];
 }
 
+function createProductionSiteString(prodSites) {
+    let prodString = "";
+    for (let i = 0; i < prodSites.length; i++) {
+        let siteCb = prodSites[i];
+        let site = siteCb.productionSite;
+        console.log(site)
+        let count = `${siteCb.count}`;
+        let name = `${site.producedResource} ${capitalizeFirstLetters(site.type.toLowerCase())}`
+        prodString += `${count} ${name}\n`;
+    }
+
+    return prodString;
+}
+
 function saveExecute(toExecute, interaction) {
     toExecute.execute(interaction).catch(async (error) => {
         console.log(error)
@@ -116,21 +130,24 @@ function saveExecute(toExecute, interaction) {
     });
 }
 
+function capitalizeFirstLetters(text) {
+    const arr_text = text.split(/[,.\s]+/);
+    for (let i = 0; i < arr_text.length; i++) {
+        arr_text[i] = arr_text[i].charAt(0).toUpperCase() + arr_text[i].slice(1);
+    }
+    return arr_text.join(" ");
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
         return separateLongTextLocal(text, look_for_format);
     },
-    capitalizeFirstLetters(text) {
-        const arr_text = text.split(/[,.\s]+/);
-        for (let i = 0; i < arr_text.length; i++) {
-            arr_text[i] = arr_text[i].charAt(0).toUpperCase() + arr_text[i].slice(1);
-        }
-        return arr_text.join(" ");
-    },
+    capitalizeFirstLetters: capitalizeFirstLetters,
     addSubcommands: addSubcommands,
     isMemberStaff: isStaffMember,
     createArmyUnitListString: createArmyUnitListString,
     createUnpaidStringArray: createUnpaidStringArray,
-    saveExecute: saveExecute
+    saveExecute: saveExecute,
+    createProductionSiteString: createProductionSiteString
 };

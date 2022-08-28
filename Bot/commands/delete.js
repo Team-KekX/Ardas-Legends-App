@@ -34,6 +34,16 @@ module.exports = {
                         .setDescription("Name of the army or company")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("claimbuild")
+                .setDescription("Staff Command - Deletes Claimbuild and all armies or companies that originate from it!")
+                .addStringOption(option =>
+                    option.setName("name")
+                        .setDescription("Name of claimbuild")
+                        .setRequired(true)
+                )
         ),
     execute: async function (interaction) {
         // Dynamically get all subcommands for called command. Does not call addSubcommands() function because it has

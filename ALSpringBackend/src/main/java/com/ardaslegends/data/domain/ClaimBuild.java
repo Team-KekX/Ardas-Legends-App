@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -77,6 +74,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
     private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
 
+    @JsonIgnore
     public int getCountOfArmies() {
         int count = (int) createdArmies.stream()
                 .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))
@@ -85,6 +83,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
         return count;
     }
 
+    @JsonIgnore
     public int getCountOfTradingCompanies() {
         int count = (int) createdArmies.stream()
                 .filter(army -> ArmyType.TRADING_COMPANY.equals(army.getArmyType()))
@@ -104,6 +103,7 @@ public final class ClaimBuild extends AbstractDomainEntity {
         return false;
     }
 
+    @JsonIgnore
     public boolean atMaxTradingCompanies() {
         int countOfTradingCompanies = getCountOfTradingCompanies();
         int maxTradingCompanies = getType().getMaxTradingCompanies();
@@ -119,5 +119,18 @@ public final class ClaimBuild extends AbstractDomainEntity {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClaimBuild that = (ClaimBuild) o;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

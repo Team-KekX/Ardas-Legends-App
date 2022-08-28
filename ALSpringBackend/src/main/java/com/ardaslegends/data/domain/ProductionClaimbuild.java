@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 /***
@@ -40,4 +41,22 @@ public final class ProductionClaimbuild extends AbstractDomainEntity {
 
     private Long count;
 
+    public ProductionClaimbuild(ProductionSite productionSite, ClaimBuild claimbuild, Long count) {
+        this.productionSite = productionSite;
+        this.claimbuild = claimbuild;
+        this.count = count;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductionClaimbuild that = (ProductionClaimbuild) o;
+        return productionSite.equals(that.productionSite) && claimbuild.equals(that.claimbuild) && count.equals(that.count);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, productionSite, claimbuild, count);
+    }
 }

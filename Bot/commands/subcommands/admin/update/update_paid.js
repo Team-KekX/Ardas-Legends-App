@@ -41,7 +41,6 @@ module.exports = {
                 await interaction.reply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
-                console.log(error)
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Error while updating payment")
                     .setColor("RED")

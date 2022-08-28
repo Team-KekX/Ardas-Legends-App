@@ -105,4 +105,53 @@ public class ServiceUtils {
         return fields;
     }
 
+    public static void validateStringSyntax(String string, Character[] syntaxChars, ServiceException exceptionToThrow) {
+        log.debug("Validating unitString [{}]", string);
+
+        // Is also true at the start, from then every time a expectedChar is switched
+        boolean firstCharAfterExpected = true; //says if the current character is the first character after the last expected one
+        boolean possibleEnd = true;
+
+        log.trace("Starting validation, unitString length: [{}]", string.length());
+
+        int currentExpectedCharIndex = 0; //index of the currently expected char
+        char expectedChar = syntaxChars[0]; //Set the expectedChar to first in array
+
+        for(int i = 0; i < string.length(); i++) {
+            log.trace("Index: [{}]", i);
+            log.trace("Expected next syntax char [{}]", expectedChar);
+            char currentChar = string.charAt(i);
+            log.trace("Current char: [{}]", currentChar);
+
+            if(currentChar == expectedChar) {
+                log.trace("Current char {} is expected char {}", currentChar, expectedChar);
+
+                //Check if current char is second last
+                possibleEnd = currentExpectedCharIndex == (syntaxChars.length - 2);
+                if(syntaxChars.length == 1)
+                    possibleEnd = true;
+                /*
+                Increment the currentExpectedCharIndex so we expect the next character
+                If the index has reached the end of the array, start over from 0
+                 */
+                currentExpectedCharIndex++;
+                if(currentExpectedCharIndex == syntaxChars.length)
+                    currentExpectedCharIndex = 0;
+                log.trace("Incremented the currentExpectedCharIndex to {}", currentExpectedCharIndex);
+
+                expectedChar = syntaxChars[currentExpectedCharIndex];
+            }
+            else if(Arrays.asList(syntaxChars).contains(currentChar)) {
+                log.warn("Char [{}] at [{}] has created an error in string [{}], next expected was [{}]", currentChar, i, string, expectedChar);
+                throw exceptionToThrow;
+            }
+
+
+            if((i + 1) == string.length() && !possibleEnd) {
+                log.warn("String reached its end without having finished syntax!");
+                throw exceptionToThrow;
+            }
+        }
+    }
+
 }
