@@ -6,6 +6,8 @@ public class PlayerServiceException extends ServiceException {
 
     public static final String NOT_REGISTERED = "You are not registered! please register your account with /register !";
     private static final String NO_RP_CHAR = "You have no Roleplay Character!";
+    public static final String NO_PLAYER_FOUND = "No Player found for Discord User %s - please register first if you haven't already!";
+
 
     //Heal start
     private static final String CANNOT_HEAL_CHAR_BECAUSE_NOT_INJURED = "Cannot heal character '%s' because it is not injured!";
@@ -18,6 +20,7 @@ public class PlayerServiceException extends ServiceException {
     public static PlayerServiceException noRpChar() {
         return new PlayerServiceException(NO_RP_CHAR);
     }
+    public static PlayerServiceException noPlayerFound(String discordId) {return new PlayerServiceException(NO_PLAYER_FOUND.formatted(discordId));}
 
     //Heal start
     public static PlayerServiceException cannotHealNotInjured(String charName) { return new PlayerServiceException(CANNOT_HEAL_CHAR_BECAUSE_NOT_INJURED.formatted(charName)); }

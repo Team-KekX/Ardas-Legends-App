@@ -4,6 +4,7 @@ import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.RPChar;
 import com.ardaslegends.data.repository.FactionRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
@@ -13,7 +14,6 @@ import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.PersistenceException;
 import java.util.Optional;
@@ -27,28 +27,30 @@ public class FactionServiceTest {
 
     private FactionRepository mockFactionRepository;
 
-    private PlayerService mockPlayerService;
+    private PlayerRepository mockPlayerRepository;
     private FactionService factionService;
+
+    private Player player;
+    private Faction faction;
+    private UpdateFactionLeaderDto dto;
     @BeforeEach
     void setup() {
         mockFactionRepository = mock(FactionRepository.class);
-        mockPlayerService = mock(PlayerService.class);
-        factionService = new FactionService(mockFactionRepository, mockPlayerService);
+        mockPlayerRepository = mock(PlayerRepository.class);
+        factionService = new FactionService(mockFactionRepository, mockPlayerRepository);
+
+        faction = Faction.builder().name("Gondrr").build();
+        player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
+        dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
+
+        when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
+        when(mockFactionRepository.findById(faction.getName())).thenReturn(Optional.of(faction));
+        when(mockFactionRepository.save(faction)).thenReturn(faction);
     }
 
     @Test
     void ensureSetFactionLeaderWorksProperlyWithCorrectValues() {
         log.debug("Testing if setFactionLeader works properly with correct values ");
-
-        UpdateFactionLeaderDto dto = new UpdateFactionLeaderDto("Kek", "kek");
-
-        Faction gondor = Faction.builder().name("Gondrr").build();
-        when(mockFactionRepository.findById(dto.factionName())).thenReturn(Optional.of(gondor));
-
-        Player player = Player.builder().ign("mirak551").faction(gondor).rpChar(new RPChar()).build();
-        when(mockPlayerService.getPlayerByDiscordId(dto.targetDiscordId())).thenReturn(player);
-
-        when(mockFactionRepository.save(gondor)).thenReturn(gondor);
 
         log.debug("Calling factionService.setFactionLeader, expecting no errors");
         var result = factionService.setFactionLeader(dto);
@@ -57,16 +59,23 @@ public class FactionServiceTest {
         log.info("Test passed: setFactionLeader works correctly!");
     }
     @Test
+    void ensureSetFactionLeaderThrowsSeWhenNoPlayerFound() {
+        log.debug("Testing if setFactionLeader properly throws Se when no player found");
+
+        when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.empty());
+
+        log.debug("Calling factionService.setFactionLeader, expecting Se");
+        var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noPlayerFound(player.getDiscordID()).getMessage());
+        log.info("Test passed: setFactionLeader correctly throws Se when no player found");
+    }
+
+    @Test
     void ensureSetFactionLeaderThrowsSeWhenPlayerIsNotInTheSameFactionAsTheTargetFaction() {
         log.debug("Testing if setFactionLeader properly throws Se when player is not in the same faction as the target faction");
 
-        UpdateFactionLeaderDto dto = new UpdateFactionLeaderDto("Kek", "kek");
-
-        Player player = Player.builder().ign("mirak551").faction(Faction.builder().name("WrongFactioN").build()).build();
-        when(mockPlayerService.getPlayerByDiscordId(dto.targetDiscordId())).thenReturn(player);
-
-        Faction gondor = Faction.builder().name("Gondrr").build();
-        when(mockFactionRepository.findById(dto.factionName())).thenReturn(Optional.of(gondor));
+        player.setFaction(Faction.builder().name("mordor").build());
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
         var result = assertThrows(FactionServiceException.class, () -> factionService.setFactionLeader(dto));
@@ -78,13 +87,7 @@ public class FactionServiceTest {
     void ensureSetFactionLeaderThrowsSeWhenPlayerDoesNotHaveAnRpChar() {
         log.debug("Testing if setFactionLeader properly throws Se when player does not have an rpchar");
 
-        UpdateFactionLeaderDto dto = new UpdateFactionLeaderDto("Kek", "kek");
-
-        Faction gondor = Faction.builder().name("Gondrr").build();
-        when(mockFactionRepository.findById(dto.factionName())).thenReturn(Optional.of(gondor));
-
-        Player player = Player.builder().ign("mirak551").faction(gondor).build();
-        when(mockPlayerService.getPlayerByDiscordId(dto.targetDiscordId())).thenReturn(player);
+        player.setRpChar(null);
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
         var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));

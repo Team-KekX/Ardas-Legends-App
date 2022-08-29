@@ -3,6 +3,7 @@ package com.ardaslegends.data.service;
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.repository.FactionRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.PlayerServiceException;
@@ -27,7 +28,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     private final FactionRepository factionRepository;
 
-    private final PlayerService playerService;
+    private final PlayerRepository playerRepository;
 
     @Transactional(readOnly = false)
     public Faction setFactionLeader(UpdateFactionLeaderDto dto) {
@@ -41,7 +42,12 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         log.trace("Fetched Faction [{}]", faction.getName());
 
         log.trace("Fetching player, dto [{}]", dto.targetDiscordId());
-        Player player = playerService.getPlayerByDiscordId(dto.targetDiscordId());
+        Optional<Player> fetchedPlayer = playerRepository.findByDiscordID(dto.targetDiscordId());
+        if(fetchedPlayer.isEmpty()) {
+            log.warn("Could not find a player with discord id [{}]", dto.targetDiscordId());
+            throw PlayerServiceException.noPlayerFound(dto.targetDiscordId());
+        }
+        Player player = fetchedPlayer.get();
         log.trace("Fetched Player, IGN:[{}], DiscordId: [{}]", player.getIgn(), player.getDiscordID());
 
         log.debug("Fetched relevant data!");

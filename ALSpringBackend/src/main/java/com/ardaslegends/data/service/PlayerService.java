@@ -166,7 +166,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         if (fetchedPlayer.isEmpty()) {
             log.warn("No player with discordId {} found!", discordId);
-            throw ServiceException.noPlayerFound(discordId);
+            throw PlayerServiceException.noPlayerFound(discordId);
         }
         log.info("Successfully fetched player: {}", fetchedPlayer.get());
         return fetchedPlayer.get();

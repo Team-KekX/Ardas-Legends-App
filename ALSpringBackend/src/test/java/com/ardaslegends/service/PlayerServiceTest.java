@@ -251,9 +251,9 @@ public class PlayerServiceTest {
         when(mockPlayerRepository.findByDiscordID(discordId)).thenReturn(Optional.empty());
 
         // Assert
-        var result = assertThrows(ServiceException.class, () -> playerService.getPlayerByDiscordId(discordId));
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.getPlayerByDiscordId(discordId));
 
-        assertThat(result.getMessage()).contains("No Player found for Discord");
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noPlayerFound(discordId).getMessage());
     }
 
     // ------------------------------------------------ Update Method tests
