@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +47,7 @@ public class PlayerServiceTest {
         faction = Faction.builder().name("Gondor").build();
         region = Region.builder().id("91").build();
         claimBuild = ClaimBuild.builder().region(region).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
-        region.setClaimBuilds(List.of(claimBuild));
+        region.setClaimBuilds(Set.of(claimBuild));
         rpChar = RPChar.builder().name("Belegorn").currentRegion(region).injured(false).isHealing(false).build();
         player = Player.builder().discordID("1234").ign("Luktronic").rpChar(rpChar).faction(faction).build();
 

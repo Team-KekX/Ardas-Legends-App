@@ -76,7 +76,7 @@ public class MovementServiceTest {
         unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
-        rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
+        rpchar = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         Path path = Path.builder().path(List.of("90","91")).cost(10).build();
@@ -100,7 +100,7 @@ public class MovementServiceTest {
         log.trace("Initializing player, rpchar and regions");
         Region fromRegion = Region.builder().id("90").build();
         Region toRegion = Region.builder().id("92").build();
-        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
+        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
         Path endPath = Path.builder().path(List.of("91", "92")).cost(2).build();
 
@@ -184,7 +184,7 @@ public class MovementServiceTest {
         log.trace("Initializing player, rpchar and regions");
         Region fromRegion = Region.builder().id("90").build();
         Region toRegion = Region.builder().id("92").build();
-        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
+        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
 
         log.trace("Initializing Dto");
@@ -261,6 +261,29 @@ public class MovementServiceTest {
     }
 
     @Test
+    void ensureMoveRpCharThrowsSEWhenCharIsHealing() {
+        log.debug("Testing if createRpCharMovement throws ServiceException when Char is healing!");
+
+        // Assign
+        log.trace("Initializing Dto");
+        MoveRpCharDto dto = new MoveRpCharDto(player.getDiscordID(), region2.getId());
+        rpchar.setIsHealing(true);
+
+        log.trace("Mocking methods");
+        when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
+        when(mockRegionRepository.findById(region2.getId())).thenReturn(Optional.of(region2));
+
+        //Act
+        var exception = assertThrows(MovementServiceException.class, () -> movementService.createRpCharMovement(dto));
+
+        //Assert
+        log.debug("Asserting that createRpCharMovement throws ServiceException");
+        assertThat(exception.getMessage()).isEqualTo(MovementServiceException.cannotMoveCharIsHealing(rpchar.getName()).getMessage());
+
+        log.info("Test passed: createRpCharMovement throws ServiceException when Char is healing!");
+    }
+
+    @Test
     void ensureMoveRpCharThrowsSEWhenCharAlreadyMoving() {
         log.debug("Testing if createRpCharMovement throws ServiceException when Char is already in a movement!");
 
@@ -268,7 +291,7 @@ public class MovementServiceTest {
         log.trace("Initializing player, rpchar and regions");
         Region fromRegion = Region.builder().id("90").build();
         Region toRegion = Region.builder().id("92").build();
-        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
+        RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
         Movement movement = Movement.builder().isCharMovement(true).isAccepted(false)
                 .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).player(player).build();

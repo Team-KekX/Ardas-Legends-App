@@ -91,7 +91,7 @@ public class ClaimbuildServiceTest {
 
         productionClaimbuild.setClaimbuild(claimbuild);
         productionClaimbuild2.setClaimbuild(claimbuild);
-        region.setClaimBuilds(List.of(claimbuild));
+        region.setClaimBuilds(Set.of(claimbuild));
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), claimBuildType.name().toLowerCase(), faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),

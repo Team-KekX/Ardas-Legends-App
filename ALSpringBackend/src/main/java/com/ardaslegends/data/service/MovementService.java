@@ -152,7 +152,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    // TODO: Check if player is healing
     @Transactional(readOnly = false)
     public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
@@ -190,6 +189,12 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         if(rpChar.getBoundTo() != null) {
             log.warn("RpChar is currently bound to army!");
             throw ServiceException.cannotMoveRpCharBoundToArmy(rpChar, rpChar.getBoundTo());
+        }
+
+        log.debug("Checking if rpchar is currently healing");
+        if(rpChar.getIsHealing()) {
+            log.warn("RpChar [{}] is currently healing and therefore cannot move", rpChar);
+            throw MovementServiceException.cannotMoveCharIsHealing(rpChar.getName());
         }
 
         log.debug("Checking if rpChar is already in a movement");
