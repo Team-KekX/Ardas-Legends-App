@@ -17,7 +17,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('character')
-                .setDescription('Stop the healing of a roleplay character')
+                .setDescription('Start the healing of your roleplay character.')
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command

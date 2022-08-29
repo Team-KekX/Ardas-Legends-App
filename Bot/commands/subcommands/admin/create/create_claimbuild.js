@@ -47,10 +47,11 @@ module.exports = {
         axios.post(`http://${serverIP}:${serverPort}/api/claimbuild/create`, data)
             .then(async function (response) {
                 var claimbuild = response.data;
-                console.log(claimbuild)
+                //console.log(claimbuild)
                 const coords = claimbuild.coordinates;
                 let specialBuildings = capitalizeFirstLetters(claimbuild.specialBuildings.join("\n").toLowerCase()).replaceAll(" ", "\n").replaceAll("_", " ")
                 const type = capitalizeFirstLetters(claimbuild.type.toLowerCase())
+
                 var replyEmbed = new MessageEmbed()
                     .setTitle(`Claimbuild ${name} was successfully created!`)
                     .setDescription(`The claimbuild '${name}' was successfully created!`)
@@ -60,7 +61,7 @@ module.exports = {
                         {name: "Name", value:name, inline: true  },
                         {name: "Faction", value:claimbuild.ownedBy.name, inline: true },
                         {name: "Region", value:claimbuild.region.id, inline: true  },
-                        {name: "Type", type, inline: true  },
+                        {name: "Type", value: type, inline: true  },
                         {name: "Production Sites", value: createProductionSiteString(claimbuild.productionSites), inline: false},
                         {name: "Special Buildings", value:specialBuildings, inline: false },
                         {name: "Traders", value:claimbuild.traders, inline: true  },

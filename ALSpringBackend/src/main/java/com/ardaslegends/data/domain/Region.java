@@ -34,8 +34,9 @@ public final class Region extends AbstractDomainEntity {
             inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
     private Set<Faction> claimedBy; //the list of factions which the region is claimed by
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ownedBy")
-    private List<ClaimBuild> claimBuilds; //list of claimbuilds in this region
+    @JsonIgnore
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "region")
+    private Set<ClaimBuild> claimBuilds; //list of claimbuilds in this region
 
     @Setter(value = AccessLevel.PRIVATE)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

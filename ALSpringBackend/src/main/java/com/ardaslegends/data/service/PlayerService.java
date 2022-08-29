@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -557,7 +554,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Character is injured - can heal");
 
         log.debug("Checking if there is a claimbuild with House of Healing in current region [{}] of character [{}]", rpchar.getCurrentRegion(), rpchar);
-        List<ClaimBuild> claimbuilds = rpchar.getCurrentRegion().getClaimBuilds();
+        Set<ClaimBuild> claimbuilds = rpchar.getCurrentRegion().getClaimBuilds();
         log.trace("Claimbuilds in region [{}]: [{}]", rpchar.getCurrentRegion(), claimbuilds);
         boolean hasClaimbuildWithHoH = claimbuilds.stream().anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING));
         log.trace("Region [{}] has claimbuild with House of Healing: [{}]", rpchar.getCurrentRegion(), hasClaimbuildWithHoH);
