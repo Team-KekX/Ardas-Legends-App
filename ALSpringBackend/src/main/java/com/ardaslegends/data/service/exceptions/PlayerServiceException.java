@@ -11,6 +11,9 @@ public class PlayerServiceException extends ServiceException {
     private static final String CANNOT_HEAL_CHAR_BECAUSE_NOT_INJURED = "Cannot heal character '%s' because it is not injured!";
     private static final String CANNOT_HEAL_NO_CB_WITH_HOH = "Cannot heal character '%s' because there is no claimbuild with a House of Healing in region '%s'! (Claimbuilds in region '%s': %s)";
 
+    //Heal stop
+    private static final String CANNOT_STOP_HEAL_NOT_HEALING = "Cannot stop healing of character '%s' since it is not healing at the moment!";
+
     public static PlayerServiceException notRegistered() { return new PlayerServiceException(NOT_REGISTERED); }
     public static PlayerServiceException noRpChar() {
         return new PlayerServiceException(NO_RP_CHAR);
@@ -21,6 +24,9 @@ public class PlayerServiceException extends ServiceException {
     public static PlayerServiceException cannotHealNoCbWithHoH(String charName, String regionId, String claimbuildsInRegion) {
         return new PlayerServiceException(CANNOT_HEAL_NO_CB_WITH_HOH.formatted(charName, regionId, regionId, claimbuildsInRegion));
     }
+
+    //Heal stop
+    public static PlayerServiceException cannotStopHealBecauseCharNotHealing(String charName) { return new PlayerServiceException(CANNOT_STOP_HEAL_NOT_HEALING.formatted(charName)); }
 
     protected PlayerServiceException(String message, Throwable rootCause) {
         super(message, rootCause);

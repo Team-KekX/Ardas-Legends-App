@@ -539,4 +539,46 @@ public class PlayerRestControllerTest {
         assertThat(response.getIsHealing()).isEqualTo(rpChar.getIsHealing());
         log.info("Test passed: startHeal builds the correct response");
     }
+
+    @Test
+    void ensureStopHealWorksProperly() throws Exception {
+        log.debug("Testing if stopHeal works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        DiscordIdDto dto = new DiscordIdDto("1234");
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().injured(true).isHealing(false).name("Belegorn").build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.healStop(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from DiscordIdDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/heal-stop";
+        log.debug("Performing Patch request to {}", url);
+        var result = mockMvc.perform(MockMvcRequestBuilders
+                        .patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var request = result.getResponse();
+        request.setCharacterEncoding("UTF-8");
+
+        RPChar response = mapper.readValue(request.getContentAsString()
+                ,RPChar.class);
+
+        assertThat(response.getName()).isEqualTo(rpChar.getName());
+        assertThat(response.getIsHealing()).isEqualTo(rpChar.getIsHealing());
+        log.info("Test passed: stopHeal builds the correct response");
+    }
 }

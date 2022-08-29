@@ -2,10 +2,7 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.MovementService;
-import com.ardaslegends.data.service.Pathfinder;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
@@ -840,5 +837,39 @@ public class PlayerServiceTest {
 
         assertThat(result.getMessage()).isEqualTo(PlayerServiceException.cannotHealNoCbWithHoH(rpChar.getName(), region.getId(), region.getClaimBuilds().toString()).getMessage());
         log.info("Test passed: healStart throws SE when no claimbuild with house of healing!");
+    }
+
+    //Stop heal
+
+    @Test
+    void ensureStopHealWorks() {
+        log.debug("Testing if healStop works properly!");
+
+        rpChar.setIsHealing(true);
+        RPChar result = playerService.healStop(discordIdDto);
+
+        assertThat(result.getIsHealing()).isFalse();
+        log.info("Test passed: healStop works properly!");
+    }
+
+    @Test
+    void ensureHealStopThrowsSEWhenNoRpChar() {
+        log.debug("Testing if healStop throws SE when player has no rp char!");
+
+        player.setRpChar(null);
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStop(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
+        log.info("Test passed: healStop throws SE when player has no rp char!");
+    }
+
+    @Test
+    void ensureHealStopThrowsSEWhenRpCharNotHealing() {
+        log.debug("Testing if healStop throws SE when rpchar not healing!");
+
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStop(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.cannotStopHealBecauseCharNotHealing(rpChar.getName()).getMessage());
+        log.info("Test passed: healStop throws SE when rpchar not healing!");
     }
 }

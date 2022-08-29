@@ -2,7 +2,6 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
@@ -574,6 +573,39 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         player = secureSave(player, playerRepository);
 
         log.info("Successfully started healing character [{}] of player [{}]!", rpchar, player);
+        return rpchar;
+    }
+
+    @Transactional(readOnly = false)
+    public RPChar healStop(DiscordIdDto dto) {
+        log.debug("Trying to stop healing character of player [{}]", dto.discordId());
+
+        log.trace("Fetching the player instance");
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player has a character");
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpchar = player.getRpChar();
+        log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
+
+        log.debug("Checking if rpchar is healing. Current healing flag: [{}]", rpchar.getIsHealing());
+        if(!rpchar.getIsHealing()) {
+            log.warn("Character [{}] of player [{}] is not currently healing and therefore cannot stop healing!", rpchar, player);
+            throw PlayerServiceException.cannotStopHealBecauseCharNotHealing(rpchar.getName());
+        }
+        log.debug("Char is healing - continuing");
+
+        log.debug("Setting isHealing to false");
+        rpchar.setIsHealing(false);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully stopped healing character [{}] of player [{}]", rpchar, player);
         return rpchar;
     }
 
