@@ -13,6 +13,7 @@ import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +34,26 @@ public class PlayerServiceTest {
     private MojangApiService mockMojangApiService;
     private PlayerService playerService;
 
+    private Player player;
+    private Faction faction;
+    private RPChar rpChar;
+    private DiscordIdDto discordIdDto;
+
     @BeforeEach
     void setup() {
         mockPlayerRepository = mock(PlayerRepository.class);
         mockFactionService = mock(FactionService.class);
         mockMojangApiService = mock(MojangApiService.class);
         playerService = new PlayerService(mockPlayerRepository, mockFactionService ,mockMojangApiService);
+
+        faction = Faction.builder().name("Gondor").build();
+        rpChar = RPChar.builder().name("Belegorn").injured(false).isHealing(false).build();
+        player = Player.builder().discordID("1234").ign("Luktronic").rpChar(rpChar).faction(faction).build();
+
+        discordIdDto = new DiscordIdDto(player.getDiscordID());
+
+        when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByIgn(player.getIgn())).thenReturn(Optional.of(player));
     }
 
     // Create Method Tests
@@ -749,5 +764,31 @@ public class PlayerServiceTest {
 
         log.debug("Asserting that correct error message is thrown");
         assertThat(result.getMessage()).isEqualTo("No roleplay character found!");
+    }
+
+    //Injure character
+
+    @Test
+    void ensureInjureCharacterWorks() {
+        log.debug("Testing if injure character works properly!");
+
+        log.debug("Calling playerService.injureChar");
+        var result = playerService.injureChar(discordIdDto);
+
+        assertThat(result.getInjured()).isTrue();
+        log.info("Test passed: injure character works properly!");
+    }
+
+    @Test
+    void ensureInjureCharacterThrowsSEWhenNoRpChar() {
+        log.debug("Testing if injure character throws PlayerServiceException when no RpChar!");
+
+        player.setRpChar(null);
+
+        log.debug("Calling playerService.injureChar");
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.injureChar(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
+        log.info("Test passed: injure character throws PlayerServiceException when no RpChar!");
     }
 }

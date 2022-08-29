@@ -6,6 +6,7 @@ import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
 import com.ardaslegends.data.service.utils.ServiceUtils;
@@ -136,7 +137,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Saving RPChar to the Database
 
         log.debug("Creating RpChar instance");
-        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null);
+        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null, false, false);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
         actualPlayer.setRpChar(createdChar);
@@ -503,6 +504,32 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.info("Succesfully deleted rpchar [{}]", deletedRpChar);
         return deletedRpChar;
+    }
+
+    @Transactional(readOnly = false)
+    public RPChar injureChar(DiscordIdDto dto) {
+        log.debug("Trying to injure character of player [{}]", dto.discordId());
+
+        log.trace("Fetching player instance of player [{}]", dto.discordId());
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player [{}] has an rpchar", player);
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] does not have a roleplay character!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpChar = player.getRpChar();
+        log.debug("Player [{}] has RpChar [{}]", player, rpChar);
+
+        log.debug("Setting injured = true for character [{}]", rpChar);
+        rpChar.setInjured(true);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully injured character [{}] of player [{}]", rpChar, player);
+        return rpChar;
     }
 
 

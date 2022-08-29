@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.api;
 
+import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.RPChar;
@@ -8,6 +9,7 @@ import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
+import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
@@ -24,6 +26,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.persistence.PersistenceException;
+
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -452,4 +456,45 @@ public class PlayerRestControllerTest {
     }
 
 
+    @Test
+    void ensureInjureCharWorksProperly() throws Exception {
+        log.debug("Testing if injureChar works properly with correct values");
+
+        // Assign
+        log.trace("Initializing dto");
+        DiscordIdDto dto = new DiscordIdDto("1234");
+
+        log.trace("Initialize RpChar");
+        RPChar rpChar = RPChar.builder().injured(true).name("Belegorn").build();
+
+        log.trace("Initializing mock methods");
+        when(mockPlayerService.injureChar(dto)).thenReturn(rpChar);
+
+        log.trace("Building JSON from DiscordIdDto");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(dto);
+
+        // Act
+        String url = "http://localhost:8080/api/player/injure-char";
+        log.debug("Performing Patch request to {}", url);
+        var result = mockMvc.perform(MockMvcRequestBuilders
+                        .patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var request = result.getResponse();
+        request.setCharacterEncoding("UTF-8");
+
+        RPChar response = mapper.readValue(request.getContentAsString()
+                ,RPChar.class);
+
+        assertThat(response.getName()).isEqualTo(rpChar.getName());
+        assertThat(response.getInjured()).isEqualTo(rpChar.getInjured());
+        log.info("Test passed: delete Claimbuild builds the correct response");
+    }
 }

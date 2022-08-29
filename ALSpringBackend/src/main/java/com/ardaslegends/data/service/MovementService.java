@@ -177,7 +177,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if the Player has a RP Char");
         if(rpChar == null) {
             log.warn("Player {} has no RP Char!", player);
-            throw ServiceException.noRpChar();
+            throw PlayerServiceException.noRpChar();
         }
 
         log.debug("Checking if destination is the current region");
@@ -252,7 +252,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if the Player has a RP Char");
         if(rpChar == null) {
             log.warn("Player {} has no RP Char!", player);
-            throw ServiceException.noRpChar();
+            throw PlayerServiceException.noRpChar();
         }
 
         log.trace("Searching for active movements of this player");

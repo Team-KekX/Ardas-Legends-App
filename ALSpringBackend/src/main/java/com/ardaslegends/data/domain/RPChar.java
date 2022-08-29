@@ -43,6 +43,9 @@ public final class RPChar extends AbstractDomainEntity {
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Army boundTo; //the army that is bound to this character
 
+    private Boolean injured;
+    private Boolean isHealing;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

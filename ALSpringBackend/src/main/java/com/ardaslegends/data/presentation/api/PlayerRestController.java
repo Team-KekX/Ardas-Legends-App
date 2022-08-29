@@ -40,8 +40,7 @@ public class PlayerRestController extends AbstractRestController {
     public static final String PATH_UPDATE_RPCHAR_TITLE = "/update/rpchar/title";
     public static final String PATH_UPDATE_RPCHAR_GEAR = "/update/rpchar/gear";
     public static final String PATH_UPDATE_RPCHAR_PVP = "/update/rpchar/pvp";
-
-
+    public static final String PATH_INJURE = "/injure-char";
     public static final String PATH_DELETE_PLAYER = "/delete";
     public static final String PATH_DELETE_RPCHAR = "/delete/rpchar";
 
@@ -219,6 +218,19 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Successfully deleted rpchar, [{}]", rpChar);
 
         log.info("Sending HttpResponse with successfully deleted RpChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
+
+    @PatchMapping(PATH_INJURE)
+    public HttpEntity<RPChar> injureChar(@RequestBody DiscordIdDto dto) {
+
+        log.debug("Incoming injureChar Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.injureChar");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::injureChar);
+        log.debug("Successfully injured character without encountering any errors");
+
+        log.info("Sending HttpResponse with successfully injured RPChar [{}]", rpChar);
         return ResponseEntity.ok(rpChar);
     }
 }

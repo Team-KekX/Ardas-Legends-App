@@ -167,10 +167,10 @@ public class MovementServiceTest {
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
+        var exception = assertThrows(PlayerServiceException.class, () -> movementService.createRpCharMovement(dto));
 
         //Assert
-        assertThat(exception.getMessage()).isEqualTo(ServiceException.noRpChar().getMessage());
+        assertThat(exception.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
 
         log.info("Test passed: createRpCharMovement throws IllegalArgumentException when player has no Rp Char!");
     }
@@ -356,11 +356,11 @@ public class MovementServiceTest {
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
 
         //Act
-        var exception = assertThrows(ServiceException.class, () -> movementService.cancelRpCharMovement(dto));
+        var exception = assertThrows(PlayerServiceException.class, () -> movementService.cancelRpCharMovement(dto));
 
         //Assert
         log.debug("Starting asserts");
-        assertThat(exception.getMessage()).isEqualTo(ServiceException.noRpChar().getMessage());
+        assertThat(exception.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
 
         log.info("Test passed: cancelRpCharMovement throws ServiceException when player has no rp char!");
     }
