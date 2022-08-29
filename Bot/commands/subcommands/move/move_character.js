@@ -38,7 +38,12 @@ module.exports = {
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Error while trying to move character!")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]})
             })
 
 
