@@ -229,7 +229,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     }
 
     @Transactional(readOnly = false)
-    public Army bind(BindArmyDto dto) { //TODO Change to Army.bind()
+    public Army bind(BindArmyDto dto) {
         log.debug("Binding army [{}] to player with discord id [{}]", dto.armyName(), dto.targetDiscordId());
 
         log.trace("Validating data");
@@ -298,6 +298,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if (army.getBoundTo() != null) {
             log.warn("Army [{}] is already bound to another player [{}]!", army.getName(), army.getBoundTo());
             throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getIgn());
+        }
+
+        log.debug("Checking if rpchar is injured");
+        if(targetPlayer.getRpChar().getInjured()) {
+            log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChar());
+            throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChar().getName(), army.getName());
         }
 
         log.debug("Checking if army is in an active movement");

@@ -15,6 +15,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String NOT_IN_SAME_REGION = "%s '%s' is not in the same region as character '%s'!";
     private static final String NOT_SAME_FACTION = "You are not in the same faction as %s '%s'! Your faction: '%s' - %s faction: '%s'!";
     private static final String ALREADY_BOUND = "The %s '%s' is already bound to the player '%s'!";
+    private static final String CANNOT_BIND_CHAR_INJURED = "The character '%s' is currently injured and cannot be bound to army '%s'!\nHeal the character in a House of Healing first!";
     private static final String TRADING_COMPANIES_CANNOT_HEAL = "%s is a trading company. Trading companies cannot heal!";
     private static final String NO_PLAYER_BOUND_TO_ARMYTYPE = "There is no player bound to the %s '%s'!";
     private static final String TOO_HIGH_TOKEN_COUNT = "%s token count exceeds the maximum of 30, it currently is '%s";
@@ -58,6 +59,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException notInSameRegion(ArmyType armyType, String armyName, String charName) { return new ArmyServiceException(NOT_IN_SAME_REGION.formatted(armyType.getName(), armyName, charName)); }
     public static ArmyServiceException notSameFaction(ArmyType armyType, String armyName, String playerFactionName, String armyFactionName) { return new ArmyServiceException(NOT_SAME_FACTION.formatted(armyType.getName(), armyName, playerFactionName, armyType.getName(), armyFactionName)); }
     public static ArmyServiceException alreadyBound(ArmyType armyType, String armyName, String playerName) { return new ArmyServiceException(ALREADY_BOUND.formatted(armyType.getName(), armyName, playerName)); }
+    public static ArmyServiceException cannotBindCharInjured(String charName, String armyName) { return new ArmyServiceException(CANNOT_BIND_CHAR_INJURED.formatted(charName, armyName)); }
     public static ArmyServiceException noPlayerBoundToArmy(ArmyType armyType, String armyName) { return new ArmyServiceException(NO_PLAYER_BOUND_TO_ARMYTYPE.formatted(armyType.getName(), armyName)); }
     public static ArmyServiceException tooHighTokenCount(ArmyType armyType, double tokenCount) {return new ArmyServiceException(TOO_HIGH_TOKEN_COUNT.formatted(armyType.getName(), tokenCount)); };
     public static ArmyServiceException maxArmyOrCompany(ArmyType armyType, String claimbuild, String units) {return new ArmyServiceException(MAX_ARMYTYPE_CREATED.formatted(claimbuild,armyType.getName(), units)); }

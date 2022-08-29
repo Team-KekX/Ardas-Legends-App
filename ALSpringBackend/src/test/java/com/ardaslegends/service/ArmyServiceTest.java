@@ -637,6 +637,29 @@ public class ArmyServiceTest {
     }
 
     @Test
+    void ensureBindArmyThrowsServiceExceptionWhenRpCharIsInjured() {
+        log.debug("Testing if SE is thrown SE when rpchar is injured");
+
+        log.trace("Initializing data");
+        BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
+        Faction gondor = Faction.builder().name("Gondor").build();
+        Region region = Region.builder().id("90").build();
+        RPChar rpchar = RPChar.builder().name("Belegorn").injured(true).currentRegion(region).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(rpchar).build();
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).build();
+
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
+        when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
+
+        log.debug("Calling bind()");
+        log.trace("Expecting ServiceException");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.bind(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotBindCharInjured(rpchar.getName(), army.getName()).getMessage());
+        log.info("Test passed: bind() correctly throws SE when rpchar is injured");
+    }
+
+    @Test
     void ensureBindArmyThrowsServiceExceptionWhenArmyIsMoving() {
         log.debug("Testing if SE is thrown when army is currently moving!");
 
