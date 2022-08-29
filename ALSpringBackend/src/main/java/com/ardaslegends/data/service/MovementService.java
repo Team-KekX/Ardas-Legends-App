@@ -103,15 +103,11 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
         var currentTime = LocalDateTime.now();
         log.debug("Creating movement object");
-        Movement movement = Movement.builder()
-                .army(army)
-                .player(army.getBoundTo())
-                .isCharMovement(false)
-                .isCurrentlyActive(true)
-                .startTime(currentTime)
-                .endTime(currentTime.plusDays(path.getCost()))
-                .path(path)
-                .build();
+
+        Region secondRegion = regionRepository.findById(path.getPath().get(1)).get();
+        int hoursUntilDone = path.getCostInHours();
+        int hoursUntilNextRegion = secondRegion.getCost();
+        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusDays(path.getCost()), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -228,7 +224,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         LocalDateTime currentTime = LocalDateTime.now();
 
         log.trace("Building the movement object");
-        Movement movement = Movement.builder().player(player).path(shortestPath).startTime(currentTime).endTime(currentTime.plusDays(shortestPath.getCost())).isCharMovement(true).isCurrentlyActive(true).build();
+        Region secondRegion = regionRepository.findById(shortestPath.getPath().get(1)).get();
+        int hoursUntilDone = shortestPath.getCostInHours();
+        int hoursUntilNextRegion = secondRegion.getCost();
+        Movement movement = new Movement(player, null, true, shortestPath, currentTime, currentTime.plusDays(shortestPath.getCost()), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);
@@ -308,6 +307,11 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Found a movement from region [{}] to [{}]!", movement.getPath().getStart(), movement.getPath().getDestination());
 
         return movement;
+    }
+
+    public Movement saveMovement(Movement movement) {
+        log.debug("Saving movement [{}]", movement);
+        return secureSave(movement, movementRepository);
     }
 
 }

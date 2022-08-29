@@ -44,9 +44,26 @@ public final class Movement extends AbstractDomainEntity{
     private LocalDateTime endTime;
 
     private Boolean isCurrentlyActive;
+    private Integer hoursUntilComplete;
+    private Integer hoursMoved;
+    private Integer hoursUntilNextRegion;
 
     public String getStartRegionId() { return path.getStart(); }
     public String getDestinationRegionId() { return path.getDestination(); }
+
+    public Movement(Player player, Army army, Boolean isCharMovement, Path path, LocalDateTime startTime, LocalDateTime endTime, Boolean isAccepted, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+        this.player = player;
+        this.army = army;
+        this.isCharMovement = isCharMovement;
+        this.path = path;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isAccepted = isAccepted;
+        this.isCurrentlyActive = isCurrentlyActive;
+        this.hoursUntilComplete = hoursUntilComplete;
+        this.hoursUntilNextRegion = hoursUntilNextRegion;
+        this.hoursMoved = hoursMoved;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -59,5 +76,17 @@ public final class Movement extends AbstractDomainEntity{
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Movement{" +
+                "player=" + player +
+                ", army=" + army +
+                ", isCharMovement=" + isCharMovement +
+                ", path=" + path +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
     }
 }

@@ -34,6 +34,8 @@ public class Path {
     }
     public String getStart() {return path.get(0);}
 
+    public int getCostInHours() { return cost * 24; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -69,6 +69,8 @@ public final class Region extends AbstractDomainEntity {
         return regionType.getCost();
     }
 
+    public int getCostInHours() { return regionType.getCost() * 24; }
+
 
     @Override
     public String toString() {

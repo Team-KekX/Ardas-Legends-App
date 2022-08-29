@@ -15,4 +15,5 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
     public List<Movement> findMovementsByPlayer(Player player);
     public Optional<Movement> findMovementByArmyAndIsCurrentlyActiveTrue(Army army);
     public Optional<Movement> findMovementByPlayerAndIsCurrentlyActiveTrue(Player player);
+    public List<Movement> findMovementsByIsCurrentlyActive(Boolean isActive);
 }
