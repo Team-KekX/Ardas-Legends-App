@@ -1,7 +1,9 @@
 package com.ardaslegends.data.domain;
 
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -15,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 
+@Slf4j
 @Entity
 @Table(name = "factions")
 @JsonIdentityInfo(
@@ -50,6 +53,41 @@ public final class Faction extends AbstractDomainEntity {
 
     @Length(max = 512)
     private String factionBuffDescr; //The description of this faction's buff
+
+    @Column(name = "food_stockpile")
+    private int foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
+
+
+    public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
+        this.name = name;
+        this.leader = leader;
+        this.armies = armies;
+        this.players = players;
+        this.regions = regions;
+        this.claimBuilds = claimBuilds;
+        this.allies = allies;
+        this.colorcode = colorcode;
+        this.homeRegion = homeRegion;
+        this.factionBuffDescr = factionBuffDescr;
+    }
+
+    public void addFoodToStockpile(int amount) {
+        log.debug("Adding food [amount:{}] to stockpile of faction [{}]", amount, this.name);
+        if(amount < 0) {
+            log.warn("Amount to add is below 0 [{}]", amount);
+            throw FactionServiceException.negativeStockpileAddNotSupported();
+        }
+        this.foodStockpile += amount;
+    }
+
+    public void subtractFoodFromStockpile(int amount) {
+        log.debug("Removing food [amount: {}] from stockpile of faction [{}]", amount, this.name);
+        if(amount < 0) {
+            log.warn("Amount to remove is above 0 [{}]", amount);
+            throw FactionServiceException.negativeStockpileSubtractNotSupported();
+        }
+        this.foodStockpile -= amount;
+    }
 
     @Override
     public boolean equals(Object o) {
