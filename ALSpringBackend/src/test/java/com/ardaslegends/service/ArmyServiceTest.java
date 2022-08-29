@@ -68,10 +68,12 @@ public class ArmyServiceTest {
         unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
-        rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
+        rpchar = RPChar.builder().name("Belegorn").isHealing(false).injured(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+
+        dto = new BindArmyDto(player.getDiscordID(), player.getDiscordID(), army.getName());
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
@@ -486,7 +488,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         Faction faction = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
-        RPChar rpChar = RPChar.builder().name("Belegorn").currentRegion(region).build();
+        RPChar rpChar = RPChar.builder().name("Belegorn").injured(false).isHealing(false).currentRegion(region).build();
         Player player = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).rpChar(rpChar).build();
         Army army = Army.builder().name("Gondorian Army").currentRegion(region).armyType(ArmyType.ARMY).faction(faction).build();
 
@@ -511,7 +513,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         Faction faction = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
-        RPChar rpChar = RPChar.builder().name("Belegorn").currentRegion(region).build();
+        RPChar rpChar = RPChar.builder().name("Belegorn").injured(false).isHealing(false).currentRegion(region).build();
         Player executor = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).rpChar(rpChar).build();
         Player target = Player.builder().ign("aned").discordID("2").faction(faction).rpChar(rpChar).build();
         Army army = Army.builder().name("Gondorian Army").currentRegion(region).armyType(ArmyType.ARMY).faction(faction).build();
@@ -660,19 +662,36 @@ public class ArmyServiceTest {
     }
 
     @Test
+    void ensureBindArmyThrowsServiceExceptionWhenRpCharIsHealing() {
+        log.debug("Testing if SE is thrown SE when rpchar is healing");
+
+        log.trace("Initializing data");
+
+        rpchar.setIsHealing(true);
+
+        army.setCurrentRegion(rpchar.getCurrentRegion());
+
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
+        when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
+
+        log.debug("Calling bind()");
+        log.trace("Expecting ServiceException");
+        var result = assertThrows(ArmyServiceException.class, () -> armyService.bind(dto));
+
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotBindCharHealing(rpchar.getName(), army.getName()).getMessage());
+        log.info("Test passed: bind() correctly throws SE when rpchar is healing");
+    }
+
+    @Test
     void ensureBindArmyThrowsServiceExceptionWhenArmyIsMoving() {
         log.debug("Testing if SE is thrown when army is currently moving!");
 
         log.trace("Initializing data");
-        BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
-        Faction gondor = Faction.builder().name("Gondor").build();
-        Region region = Region.builder().id("90").build();
-        RPChar rpchar = RPChar.builder().name("Belegorn").currentRegion(region).build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(rpchar).build();
-        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(null).build();
+
+        army.setCurrentRegion(rpchar.getCurrentRegion());
         Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
 
-        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
+        when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(move));
 
@@ -680,6 +699,7 @@ public class ArmyServiceTest {
         log.trace("Expecting ServiceException");
         var result = assertThrows(ArmyServiceException.class, () -> armyService.bind(dto));
 
+        assertThat(result.getMessage()).isEqualTo(ArmyServiceException.cannotBindArmyIsMoving(army.getArmyType(), army.getName(), move.getDestinationRegionId()).getMessage());
         log.info("Test passed: bind() correctly throws SE when army is currently moving!");
     }
 
@@ -691,7 +711,7 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
-        RPChar rpchar = RPChar.builder().name("Belegorn").currentRegion(region).build();
+        RPChar rpchar = RPChar.builder().injured(false).isHealing(false).name("Belegorn").currentRegion(region).build();
         Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(rpchar).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(null).build();
         Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).player(luk).path(Path.builder().path(List.of("90", "91")).build()).build();

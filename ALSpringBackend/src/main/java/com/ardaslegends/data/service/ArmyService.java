@@ -306,6 +306,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChar().getName(), army.getName());
         }
 
+        log.debug("Checking if rpchar is healing");
+        if(targetPlayer.getRpChar().getIsHealing()) {
+            log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChar());
+            throw ArmyServiceException.cannotBindCharHealing(targetPlayer.getRpChar().getName(), army.getName());
+        }
+
         log.debug("Checking if army is in an active movement");
         Optional<Movement> armyActiveMove = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army);
         if(armyActiveMove.isPresent()) {

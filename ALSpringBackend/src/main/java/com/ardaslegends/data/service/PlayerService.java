@@ -534,5 +534,47 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         return rpChar;
     }
 
+    @Transactional(readOnly = false)
+    public RPChar healStart(DiscordIdDto dto) {
+        log.debug("Trying to start healing character of player [{}]", dto.discordId());
+
+        log.trace("Fetching player instance of player [{}]", dto.discordId());
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player has a character");
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpchar = player.getRpChar();
+        log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
+
+        log.debug("Checking if the character is injured");
+        if(!rpchar.getInjured()) {
+            log.warn("Character [{}] of player [{}] is not injured and therefore cannot be healed!", rpchar, player);
+            throw PlayerServiceException.cannotHealNotInjured(rpchar.getName());
+        }
+        log.debug("Character is injured - can heal");
+
+        log.debug("Checking if there is a claimbuild with House of Healing in current region [{}] of character [{}]", rpchar.getCurrentRegion(), rpchar);
+        List<ClaimBuild> claimbuilds = rpchar.getCurrentRegion().getClaimBuilds();
+        log.trace("Claimbuilds in region [{}]: [{}]", rpchar.getCurrentRegion(), claimbuilds);
+        boolean hasClaimbuildWithHoH = claimbuilds.stream().anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING));
+        log.trace("Region [{}] has claimbuild with House of Healing: [{}]", rpchar.getCurrentRegion(), hasClaimbuildWithHoH);
+        if(!hasClaimbuildWithHoH) {
+            log.warn("Region [{}] has no claimbuilds with House of Healing!", rpchar.getCurrentRegion());
+            throw PlayerServiceException.cannotHealNoCbWithHoH(rpchar.getName(), rpchar.getCurrentRegion().getId(), claimbuilds.toString());
+        }
+
+        log.debug("Setting isHealing");
+        rpchar.setIsHealing(true);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully started healing character [{}] of player [{}]!", rpchar, player);
+        return rpchar;
+    }
 
 }
