@@ -524,6 +524,8 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.debug("Setting injured = true for character [{}]", rpChar);
         rpChar.setInjured(true);
+        log.debug("Unbinding player from army [{}]", rpChar.getBoundTo());
+        rpChar.setBoundTo(null);
 
         log.debug("Persisting player");
         player = secureSave(player, playerRepository);
