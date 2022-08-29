@@ -179,6 +179,23 @@ module.exports = {
                         option.setName('built-by')
                             .setDescription('Players who built the cb. Seperate player with -   Example: Luktronic-mirak441')
                             .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("faction-leader")
+                .setDescription("Sets the new faction leader of a faction")
+                .addStringOption(option =>
+                    option
+                        .setName("faction-name")
+                        .setDescription("Name of the faction that gets a new leader")
+                        .setRequired(true)
+                )
+                .addUserOption(option =>
+                    option
+                        .setName("leader")
+                        .setDescription("The player that becomes the new leader of the faction")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command

@@ -19,7 +19,6 @@ public class ServiceException extends RuntimeException {
     public static final String CANNOT_READ_ENTITY_DUE_TO_DATABASE_PROBLEMS = "Cannot read entity of type %s (%s) due to database problems!";
     public static final String CANNOT_READ_ENTITY_DUE_TO_DATABASE_PROBLEMS_NULL_ENTITY = "Cannot read entity of due to database problems!";
     public static final String CANNOT_READ_ENTITY_BECAUSE_OF_NO_EXISTING_RECORD = "No record of type %s found with %s (%s)!";
-    public static final String NO_PLAYER_FOUND = "No Player found for Discord User %s - please register first if you haven't already!";
 
     public static final String CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR = "External Mojang Api Error, message: %s";
 
@@ -52,7 +51,6 @@ public class ServiceException extends RuntimeException {
 
     //Player
 
-    private static final String NO_RP_CHAR = "You have no Roleplay Character!";
     private static final String CREATE_RP_CHAR_NO_FACTION = "Player %s is in no faction - cannot create Roleplay Character!";
     public static ServiceException cannotReadEntityDueToExternalMojangError(RestClientException ex) {
         String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(ex.getMessage());
@@ -83,7 +81,6 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(msg);
     }
 
-    public static ServiceException noPlayerFound(String discordId) {return new ServiceException(NO_PLAYER_FOUND.formatted(discordId));}
 
     public static <T> ServiceException cannotSaveEntity(T entity, PersistenceException pEx) {
         String msg = (entity == null)
@@ -125,9 +122,6 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(msg);
     }
 
-    public static ServiceException noRpChar() {
-        return new ServiceException(NO_RP_CHAR);
-    }
 
     public static ServiceException createRpCharNoFaction(String playerName) {
         return new ServiceException(CREATE_RP_CHAR_NO_FACTION.formatted(playerName));

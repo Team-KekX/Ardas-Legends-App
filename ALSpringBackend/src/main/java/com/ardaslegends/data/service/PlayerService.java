@@ -2,10 +2,10 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
 import com.ardaslegends.data.service.utils.ServiceUtils;
@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -136,7 +133,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Saving RPChar to the Database
 
         log.debug("Creating RpChar instance");
-        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null);
+        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null, false, false);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
         actualPlayer.setRpChar(createdChar);
@@ -169,7 +166,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         if (fetchedPlayer.isEmpty()) {
             log.warn("No player with discordId {} found!", discordId);
-            throw ServiceException.noPlayerFound(discordId);
+            throw PlayerServiceException.noPlayerFound(discordId);
         }
         log.info("Successfully fetched player: {}", fetchedPlayer.get());
         return fetchedPlayer.get();
@@ -505,5 +502,108 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         return deletedRpChar;
     }
 
+    @Transactional(readOnly = false)
+    public RPChar injureChar(DiscordIdDto dto) {
+        log.debug("Trying to injure character of player [{}]", dto.discordId());
+
+        log.trace("Fetching player instance of player [{}]", dto.discordId());
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player [{}] has an rpchar", player);
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] does not have a roleplay character!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpChar = player.getRpChar();
+        log.debug("Player [{}] has RpChar [{}]", player, rpChar);
+
+        log.debug("Setting injured = true for character [{}]", rpChar);
+        rpChar.setInjured(true);
+        log.debug("Unbinding player from army [{}]", rpChar.getBoundTo());
+        rpChar.setBoundTo(null);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully injured character [{}] of player [{}]", rpChar, player);
+        return rpChar;
+    }
+
+    @Transactional(readOnly = false)
+    public RPChar healStart(DiscordIdDto dto) {
+        log.debug("Trying to start healing character of player [{}]", dto.discordId());
+
+        log.trace("Fetching player instance of player [{}]", dto.discordId());
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player has a character");
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpchar = player.getRpChar();
+        log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
+
+        log.debug("Checking if the character is injured");
+        if(!rpchar.getInjured()) {
+            log.warn("Character [{}] of player [{}] is not injured and therefore cannot be healed!", rpchar, player);
+            throw PlayerServiceException.cannotHealNotInjured(rpchar.getName());
+        }
+        log.debug("Character is injured - can heal");
+
+        log.debug("Checking if there is a claimbuild with House of Healing in current region [{}] of character [{}]", rpchar.getCurrentRegion(), rpchar);
+        Set<ClaimBuild> claimbuilds = rpchar.getCurrentRegion().getClaimBuilds();
+        log.trace("Claimbuilds in region [{}]: [{}]", rpchar.getCurrentRegion(), claimbuilds);
+        boolean hasClaimbuildWithHoH = claimbuilds.stream().anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING));
+        log.trace("Region [{}] has claimbuild with House of Healing: [{}]", rpchar.getCurrentRegion(), hasClaimbuildWithHoH);
+        if(!hasClaimbuildWithHoH) {
+            log.warn("Region [{}] has no claimbuilds with House of Healing!", rpchar.getCurrentRegion());
+            throw PlayerServiceException.cannotHealNoCbWithHoH(rpchar.getName(), rpchar.getCurrentRegion().getId(), claimbuilds.toString());
+        }
+
+        log.debug("Setting isHealing");
+        rpchar.setIsHealing(true);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully started healing character [{}] of player [{}]!", rpchar, player);
+        return rpchar;
+    }
+
+    @Transactional(readOnly = false)
+    public RPChar healStop(DiscordIdDto dto) {
+        log.debug("Trying to stop healing character of player [{}]", dto.discordId());
+
+        log.trace("Fetching the player instance");
+        Player player = getPlayerByDiscordId(dto.discordId());
+        log.trace("Found player [{}]", player);
+
+        log.debug("Checking if player has a character");
+        if(player.getRpChar() == null) {
+            log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
+            throw PlayerServiceException.noRpChar();
+        }
+        RPChar rpchar = player.getRpChar();
+        log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
+
+        log.debug("Checking if rpchar is healing. Current healing flag: [{}]", rpchar.getIsHealing());
+        if(!rpchar.getIsHealing()) {
+            log.warn("Character [{}] of player [{}] is not currently healing and therefore cannot stop healing!", rpchar, player);
+            throw PlayerServiceException.cannotStopHealBecauseCharNotHealing(rpchar.getName());
+        }
+        log.debug("Char is healing - continuing");
+
+        log.debug("Setting isHealing to false");
+        rpchar.setIsHealing(false);
+
+        log.debug("Persisting player");
+        player = secureSave(player, playerRepository);
+
+        log.info("Successfully stopped healing character [{}] of player [{}]", rpchar, player);
+        return rpchar;
+    }
 
 }

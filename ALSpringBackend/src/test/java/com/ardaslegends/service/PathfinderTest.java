@@ -31,14 +31,14 @@ public class PathfinderTest {
     void testData() {
         // Initialize Data
         // Initialize regions, player, factions, army, rpchar and finally claimbuild
-        r1 = new Region("1", "one", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        r2 = new Region("2", "two", RegionType.MOUNTAIN, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        r3 = new Region("3", "three", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        r4 = new Region("4", "four", RegionType.HILL, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        r5 = new Region("5", "five", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        r6 = new Region("6", "six", RegionType.LAND, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        rs1 = new Region("1.S", "one_sea", RegionType.SEA, new HashSet<>(), new ArrayList<>(), new HashSet<>());
-        rs2 = new Region("2.S", "two_sea", RegionType.SEA, new HashSet<>(), new ArrayList<>(), new HashSet<>());
+        r1 = new Region("1", "one", RegionType.LAND, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        r2 = new Region("2", "two", RegionType.MOUNTAIN, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        r3 = new Region("3", "three", RegionType.LAND, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        r4 = new Region("4", "four", RegionType.HILL, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        r5 = new Region("5", "five", RegionType.LAND, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        r6 = new Region("6", "six", RegionType.LAND, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        rs1 = new Region("1.S", "one_sea", RegionType.SEA, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        rs2 = new Region("2.S", "two_sea", RegionType.SEA, new HashSet<>(), new HashSet<>(), new HashSet<>());
 
         player = Player.builder().ign("VernonRoche").discordID("VernonRocheDiscord").build();
         Faction faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");

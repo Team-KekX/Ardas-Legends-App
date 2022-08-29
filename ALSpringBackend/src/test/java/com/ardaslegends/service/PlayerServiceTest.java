@@ -1,25 +1,22 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.domain.Region;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.MovementService;
-import com.ardaslegends.data.service.Pathfinder;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.*;
 import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.external.MojangApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,12 +30,31 @@ public class PlayerServiceTest {
     private MojangApiService mockMojangApiService;
     private PlayerService playerService;
 
+    private Player player;
+    private Faction faction;
+    private RPChar rpChar;
+    private Region region;
+    private ClaimBuild claimBuild;
+    private DiscordIdDto discordIdDto;
+
     @BeforeEach
     void setup() {
         mockPlayerRepository = mock(PlayerRepository.class);
         mockFactionService = mock(FactionService.class);
         mockMojangApiService = mock(MojangApiService.class);
         playerService = new PlayerService(mockPlayerRepository, mockFactionService ,mockMojangApiService);
+
+        faction = Faction.builder().name("Gondor").build();
+        region = Region.builder().id("91").build();
+        claimBuild = ClaimBuild.builder().region(region).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
+        region.setClaimBuilds(Set.of(claimBuild));
+        rpChar = RPChar.builder().name("Belegorn").currentRegion(region).injured(false).isHealing(false).build();
+        player = Player.builder().discordID("1234").ign("Luktronic").rpChar(rpChar).faction(faction).build();
+
+        discordIdDto = new DiscordIdDto(player.getDiscordID());
+
+        when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
+        when(mockPlayerRepository.findPlayerByIgn(player.getIgn())).thenReturn(Optional.of(player));
     }
 
     // Create Method Tests
@@ -235,9 +251,9 @@ public class PlayerServiceTest {
         when(mockPlayerRepository.findByDiscordID(discordId)).thenReturn(Optional.empty());
 
         // Assert
-        var result = assertThrows(ServiceException.class, () -> playerService.getPlayerByDiscordId(discordId));
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.getPlayerByDiscordId(discordId));
 
-        assertThat(result.getMessage()).contains("No Player found for Discord");
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noPlayerFound(discordId).getMessage());
     }
 
     // ------------------------------------------------ Update Method tests
@@ -749,5 +765,112 @@ public class PlayerServiceTest {
 
         log.debug("Asserting that correct error message is thrown");
         assertThat(result.getMessage()).isEqualTo("No roleplay character found!");
+    }
+
+    //Injure character
+
+    @Test
+    void ensureInjureCharacterWorks() {
+        log.debug("Testing if injure character works properly!");
+
+        log.debug("Calling playerService.injureChar");
+        var result = playerService.injureChar(discordIdDto);
+
+        assertThat(result.getInjured()).isTrue();
+        log.info("Test passed: injure character works properly!");
+    }
+
+    @Test
+    void ensureInjureCharacterThrowsSEWhenNoRpChar() {
+        log.debug("Testing if injure character throws PlayerServiceException when no RpChar!");
+
+        player.setRpChar(null);
+
+        log.debug("Calling playerService.injureChar");
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.injureChar(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
+        log.info("Test passed: injure character throws PlayerServiceException when no RpChar!");
+    }
+
+    //Start heal
+
+    @Test
+    void ensureHealStartWorks() {
+        log.debug("Testing if healStart works properly!");
+
+        rpChar.setInjured(true);
+        RPChar result = playerService.healStart(discordIdDto);
+
+        assertThat(result.getIsHealing()).isTrue();
+        log.info("Test passed: healStart works properly!");
+    }
+
+    @Test
+    void ensureHealStartThrowsSEWhenNoRpChar() {
+        log.debug("Testing if healStart throws SE when player has no rp char!");
+
+        player.setRpChar(null);
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStart(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
+        log.info("Test passed: healStart throws SE when player has no rp char!");
+    }
+
+    @Test
+    void ensureHealStartThrowsSEWhenRpCharNotInjured() {
+        log.debug("Testing if healStart throws SE when rpchar not injured!");
+
+        rpChar.setInjured(false);
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStart(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.cannotHealNotInjured(rpChar.getName()).getMessage());
+        log.info("Test passed: healStart throws SE when rpchar not injured!");
+    }
+
+    @Test
+    void ensureHealStartThrowsSEWhenNoClaimbuildWithHouseOfHealing() {
+        log.debug("Testing if healStart throws SE when no claimbuild with house of healing!");
+
+        rpChar.setInjured(true);
+        claimBuild.setSpecialBuildings(List.of());
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStart(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.cannotHealNoCbWithHoH(rpChar.getName(), region.getId(), region.getClaimBuilds().toString()).getMessage());
+        log.info("Test passed: healStart throws SE when no claimbuild with house of healing!");
+    }
+
+    //Stop heal
+
+    @Test
+    void ensureStopHealWorks() {
+        log.debug("Testing if healStop works properly!");
+
+        rpChar.setIsHealing(true);
+        RPChar result = playerService.healStop(discordIdDto);
+
+        assertThat(result.getIsHealing()).isFalse();
+        log.info("Test passed: healStop works properly!");
+    }
+
+    @Test
+    void ensureHealStopThrowsSEWhenNoRpChar() {
+        log.debug("Testing if healStop throws SE when player has no rp char!");
+
+        player.setRpChar(null);
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStop(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
+        log.info("Test passed: healStop throws SE when player has no rp char!");
+    }
+
+    @Test
+    void ensureHealStopThrowsSEWhenRpCharNotHealing() {
+        log.debug("Testing if healStop throws SE when rpchar not healing!");
+
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.healStop(discordIdDto));
+
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.cannotStopHealBecauseCharNotHealing(rpChar.getName()).getMessage());
+        log.info("Test passed: healStop throws SE when rpchar not healing!");
     }
 }

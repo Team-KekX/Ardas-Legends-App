@@ -1,4 +1,4 @@
-const {isMemberStaff} = require("../../../../utils/utilities");
+const {isMemberStaff, capitalizeFirstLetters} = require("../../../../utils/utilities");
 const {MessageEmbed} = require("discord.js");
 const {ADMIN} = require("../../../../configs/embed_thumbnails.json");
 const {serverIP, serverPort} = require("../../../../configs/config.json");
@@ -10,33 +10,34 @@ module.exports = {
             await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
-        const oldId = interaction.options.getString('old-discord-id');
-        const newId = interaction.options.getString('new-discord-id');
-        // send to server
+
+        const faction = capitalizeFirstLetters(interaction.options.getString("faction-name"))
+        const user = interaction.options.getUser("leader")
+
         const data = {
-            oldDiscordId: oldId,
-            newDiscordId: newId
+            factionName: faction,
+            targetDiscordId: user.id
         }
 
-        axios.patch('http://'+serverIP+':'+serverPort+'/api/player/update/discordid', data)
+        axios.patch('http://'+serverIP+':'+serverPort+'/api/faction/update/faction-leader', data)
             .then(async function (response) {
                 const replyEmbed = new MessageEmbed()
-                    .setTitle(`Update Discord ID`)
-                    .setColor('NAVY')
-                    .setDescription(`Updated discord ID of player from ${oldId} to ${newId}.`)
+                    .setTitle(`Updated Faction Leader`)
+                    .setColor('GREEN')
+                    .setDescription(`The player ${user} is now the faction leader of ${faction}.`)
                     .setThumbnail(ADMIN)
                     .setTimestamp()
                 await interaction.reply({embeds: [replyEmbed]});
             })
             .catch(async function (error) {
                 const replyEmbed = new MessageEmbed()
-                .setTitle("Error while updating the discord Id")
+                .setTitle("Error while updating the faction leader")
                 .setColor("RED")
                 .setDescription(error.response.data.message)
                 .setTimestamp()
 
                 await interaction.reply({embeds: [replyEmbed]})
             })
-        
+
     },
 };

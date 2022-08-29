@@ -3,25 +3,16 @@ const {addSubcommands, saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('heal-start')
+        .setName('injure')
         .setDescription('Starts healing an entity (army, character, company, ...)')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('army')
-                .setDescription('Start healing an army')
-                .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
-                        .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName('character')
-                .setDescription('Start the healing of your roleplay character.')
+                .setDescription('Injure your roleplay character.')
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const commands = addSubcommands('heal-start', false);
+        const commands = addSubcommands('injure', false);
         const toExecute = commands[interaction.options.getSubcommand()];
         saveExecute(toExecute, interaction);
     },

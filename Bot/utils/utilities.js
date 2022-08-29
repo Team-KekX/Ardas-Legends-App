@@ -109,7 +109,6 @@ function createProductionSiteString(prodSites) {
     for (let i = 0; i < prodSites.length; i++) {
         let siteCb = prodSites[i];
         let site = siteCb.productionSite;
-        console.log(site)
         let count = `${siteCb.count}`;
         let name = `${site.producedResource} ${capitalizeFirstLetters(site.type.toLowerCase())}`
         prodString += `${count} ${name}\n`;

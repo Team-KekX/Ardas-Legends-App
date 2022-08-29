@@ -40,8 +40,9 @@ public class PlayerRestController extends AbstractRestController {
     public static final String PATH_UPDATE_RPCHAR_TITLE = "/update/rpchar/title";
     public static final String PATH_UPDATE_RPCHAR_GEAR = "/update/rpchar/gear";
     public static final String PATH_UPDATE_RPCHAR_PVP = "/update/rpchar/pvp";
-
-
+    public static final String PATH_INJURE = "/injure-char";
+    public static final String PATH_HEAL_START = "/heal-start";
+    public static final String PATH_HEAL_STOP = "/heal-stop";
     public static final String PATH_DELETE_PLAYER = "/delete";
     public static final String PATH_DELETE_RPCHAR = "/delete/rpchar";
 
@@ -219,6 +220,45 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Successfully deleted rpchar, [{}]", rpChar);
 
         log.info("Sending HttpResponse with successfully deleted RpChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
+
+    @PatchMapping(PATH_INJURE)
+    public HttpEntity<RPChar> injureChar(@RequestBody DiscordIdDto dto) {
+
+        log.debug("Incoming injureChar Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.injureChar");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::injureChar);
+        log.debug("Successfully injured character without encountering any errors");
+
+        log.info("Sending HttpResponse with successfully injured RPChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
+
+    @PatchMapping(PATH_HEAL_START)
+    public HttpEntity<RPChar> healStart(@RequestBody DiscordIdDto dto) {
+
+        log.debug("Incoming healStart Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.healStart");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::healStart);
+        log.debug("Successfully started healing of character without encountering any errors");
+
+        log.info("Sending HttpResponse with successful start of healing of RPChar [{}]", rpChar);
+        return ResponseEntity.ok(rpChar);
+    }
+
+    @PatchMapping(PATH_HEAL_STOP)
+    public HttpEntity<RPChar> healStop(@RequestBody DiscordIdDto dto) {
+
+        log.debug("Incoming healStop Request: Data [{}]", dto);
+
+        log.trace("Executing playerService.healStop");
+        RPChar rpChar = wrappedServiceExecution(dto, playerService::healStop);
+        log.debug("Successfully started healing of character without encountering any errors");
+
+        log.info("Sending HttpResponse with successful stop of healing of RPChar [{}]", rpChar);
         return ResponseEntity.ok(rpChar);
     }
 }
