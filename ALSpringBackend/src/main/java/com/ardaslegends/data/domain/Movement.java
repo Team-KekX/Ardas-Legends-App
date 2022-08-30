@@ -43,7 +43,6 @@ public final class Movement extends AbstractDomainEntity{
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    private Boolean isAccepted;
     private Boolean isCurrentlyActive;
 
     public String getStartRegionId() { return path.getStart(); }

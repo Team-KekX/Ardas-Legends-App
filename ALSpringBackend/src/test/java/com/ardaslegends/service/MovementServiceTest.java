@@ -74,7 +74,7 @@ public class MovementServiceTest {
         region2 = Region.builder().id("91").build();
         unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
         unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
-        faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
+        faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).foodStockpile(10).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
@@ -122,7 +122,6 @@ public class MovementServiceTest {
         assertThat(createdMovement.getIsCharMovement()).isTrue();
         assertThat(createdMovement.getStartTime().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(createdMovement.getEndTime().toLocalDate()).isEqualTo(LocalDate.now().plusDays(endPath.getCost()));
-        assertThat(createdMovement.getIsAccepted()).isFalse();
         assertThat(createdMovement.getArmy()).isNull();
 
         log.info("Test passed: createRpCharMovement works with valid values!");
@@ -293,7 +292,7 @@ public class MovementServiceTest {
         Region toRegion = Region.builder().id("92").build();
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
-        Movement movement = Movement.builder().isCharMovement(true).isAccepted(false)
+        Movement movement = Movement.builder().isCharMovement(true)
                 .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).player(player).build();
 
         log.trace("Initializing Dto");
@@ -429,7 +428,6 @@ public class MovementServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getArmy()).isEqualTo(army);
         assertThat(result.getPlayer()).isEqualTo(player);
-        assertThat(result.getIsAccepted()).isFalse();
         assertThat(result.getIsCurrentlyActive()).isTrue();
         assertThat(result.getIsCharMovement()).isFalse();
         assertThat(result.getPath()).isEqualTo(movement.getPath());

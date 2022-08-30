@@ -8,6 +8,7 @@ import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.service.FactionService;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
+import com.ardaslegends.data.service.dto.faction.UpdateStockpileDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -39,7 +40,7 @@ public class FactionServiceTest {
         mockPlayerRepository = mock(PlayerRepository.class);
         factionService = new FactionService(mockFactionRepository, mockPlayerRepository);
 
-        faction = Faction.builder().name("Gondrr").build();
+        faction = Faction.builder().name("Gondor").foodStockpile(10).build();
         player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
         dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
 
@@ -90,12 +91,39 @@ public class FactionServiceTest {
         player.setRpChar(null);
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
-        var result = assertThrows(FactionServiceException.class, () -> factionService.setFactionLeader(dto));
+        var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));
 
-        assertThat(result.getMessage()).isEqualTo(FactionServiceException.playerHasNoRpchar().getMessage());
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.playerHasNoRpchar().getMessage());
         log.info("Test passed: setFactionLeader correctly throws Se when player does not have an rpchar");
     }
 
+    @Test
+    void ensureAddToStockpileWorksProperly() {
+        log.debug("Testing if addToStockpile works properly with correct values");
+
+        UpdateStockpileDto dto = new UpdateStockpileDto("Gondor", 10);
+
+        var result = factionService.addToStockpile(dto);
+
+        assertThat(result.getName()).isEqualTo(faction.getName());
+        assertThat(result.getFoodStockpile()).isEqualTo(10 + dto.amount());
+
+        log.info("Test passed: addToStockpile service works properly with correct values");
+    }
+
+    @Test
+    void ensureRemoveFromStockpileWorksProperly() {
+        log.debug("Testing if removeFromStockpile works properly with correct values");
+
+        UpdateStockpileDto dto = new UpdateStockpileDto("Gondor", 10);
+
+        var result = factionService.removeFromStockpile(dto);
+
+        assertThat(result.getName()).isEqualTo(faction.getName());
+        assertThat(result.getFoodStockpile()).isEqualTo(10 - dto.amount());
+
+        log.info("Test passed: removeFromStockpile service works properly with correct values");
+    }
     @Test
     void ensureGetByFactionNameWorksProperly() {
         // Assign

@@ -5,6 +5,7 @@ import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.repository.FactionRepository;
 import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
+import com.ardaslegends.data.service.dto.faction.UpdateStockpileDto;
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,6 +31,49 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
     private final FactionRepository factionRepository;
 
     private final PlayerRepository playerRepository;
+
+    @Transactional(readOnly = false)
+    public Faction addToStockpile(UpdateStockpileDto dto) {
+        log.debug("Updating stockpile of faction with data [{}]",dto);
+
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkBlanks(dto, List.of("factionName"));
+
+        log.trace("Fetching faction with name [{}]", dto.factionName());
+        Faction faction = getFactionByName(dto.factionName());
+        log.trace("Fetched Faction [{}]", faction.getName());
+
+        log.debug("Adding amount");
+        faction.addFoodToStockpile(dto.amount());
+
+        log.debug("Persisting faction [{}] with stockpile [{}]", faction.getName(), faction.getFoodStockpile());
+        secureSave(faction, factionRepository);
+
+        log.info("Returning faction [{}] with stockpile [{}]", faction.getName(), faction.getFoodStockpile());
+        return faction;
+    }
+
+    @Transactional(readOnly = false)
+    public Faction removeFromStockpile(UpdateStockpileDto dto) {
+        log.debug("Updating stockpile of faction with data [{}]",dto);
+
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkBlanks(dto, List.of("factionName"));
+
+        log.trace("Fetching faction with name [{}]", dto.factionName());
+        Faction faction = getFactionByName(dto.factionName());
+        log.trace("Fetched Faction [{}]", faction.getName());
+
+        log.debug("Removing amount");
+        faction.subtractFoodFromStockpile(dto.amount());
+
+        log.debug("Persisting faction [{}] with stockpile [{}]", faction.getName(), faction.getFoodStockpile());
+        secureSave(faction, factionRepository);
+
+        log.info("Returning faction [{}] with stockpile [{}]", faction.getName(), faction.getFoodStockpile());
+        return faction;
+    }
+
 
     @Transactional(readOnly = false)
     public Faction setFactionLeader(UpdateFactionLeaderDto dto) {
@@ -61,7 +106,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         log.debug("Checking if player has an RpChar");
         if(player.getRpChar() == null) {
             log.warn("Player [ign:{}] does not have an RpChar and cannot be leader", player.getIgn());
-            throw FactionServiceException.playerHasNoRpchar();
+            throw PlayerServiceException.playerHasNoRpchar();
         }
 
         log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), player.getRpChar().getName());
@@ -77,7 +122,6 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         log.info("Persisted faction [{}] object with new leader [ign:{}]", faction.getName(), faction.getLeader().getIgn());
         return faction;
     }
-
 
     public Faction getFactionByName(String name) {
         log.debug("Fetching Faction with name [{}]", name);
