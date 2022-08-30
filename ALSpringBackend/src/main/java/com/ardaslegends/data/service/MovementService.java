@@ -98,13 +98,15 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Player [{}] is allowed to move army [{}], executing pathfinder", player, army);
         Path path = pathfinder.findShortestWay(army.getCurrentRegion(),region,player, false);
 
+        log.debug("Removing movement cost from faction stockpile");
+        army.getFaction().subtractFoodFromStockpile(path.getCost());
+
         var currentTime = LocalDateTime.now();
         log.debug("Creating movement object");
         Movement movement = Movement.builder()
                 .army(army)
                 .player(army.getBoundTo())
                 .isCharMovement(false)
-                .isAccepted(false)
                 .isCurrentlyActive(true)
                 .startTime(currentTime)
                 .endTime(currentTime.plusDays(path.getCost()))
@@ -226,7 +228,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         LocalDateTime currentTime = LocalDateTime.now();
 
         log.trace("Building the movement object");
-        Movement movement = Movement.builder().player(player).path(shortestPath).startTime(currentTime).endTime(currentTime.plusDays(shortestPath.getCost())).isCharMovement(true).isAccepted(false).isCurrentlyActive(true).build();
+        Movement movement = Movement.builder().player(player).path(shortestPath).startTime(currentTime).endTime(currentTime.plusDays(shortestPath.getCost())).isCharMovement(true).isCurrentlyActive(true).build();
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);

@@ -557,8 +557,8 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         Faction mordor = Faction.builder().name("Mordor").build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
-        Player aned = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(new RPChar()).build();
+        Player aned = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).rpChar(new RPChar()).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(mordor).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
@@ -578,8 +578,8 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         Faction wanderer = Faction.builder().name("Wanderer").build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
-        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(wanderer).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(new RPChar()).build();
+        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(wanderer).rpChar(new RPChar()).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);

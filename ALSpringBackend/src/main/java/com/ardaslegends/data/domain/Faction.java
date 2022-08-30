@@ -71,6 +71,7 @@ public final class Faction extends AbstractDomainEntity {
         this.foodStockpile = 0;
     }
 
+    @JsonIgnore
     public void addFoodToStockpile(int amount) {
         log.debug("Adding food [amount:{}] to stockpile of faction [{}]", amount, this.name);
         if(amount < 0) {
@@ -80,11 +81,17 @@ public final class Faction extends AbstractDomainEntity {
         this.foodStockpile += amount;
     }
 
+    @JsonIgnore
     public void subtractFoodFromStockpile(int amount) {
         log.debug("Removing food [amount: {}] from stockpile of faction [{}]", amount, this.name);
         if(amount < 0) {
             log.warn("Amount to remove is above 0 [{}]", amount);
             throw FactionServiceException.negativeStockpileSubtractNotSupported();
+        }
+
+        if(this.foodStockpile - amount < 0) {
+            log.warn("Subtract would set the stockpile of faction [{}] to below zero!", this.name);
+            throw FactionServiceException.notEnoughFoodInStockpile(this.name, this.foodStockpile, amount);
         }
         this.foodStockpile -= amount;
     }

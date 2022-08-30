@@ -40,7 +40,7 @@ public class FactionServiceTest {
         mockPlayerRepository = mock(PlayerRepository.class);
         factionService = new FactionService(mockFactionRepository, mockPlayerRepository);
 
-        faction = Faction.builder().name("Gondor").foodStockpile(0).build();
+        faction = Faction.builder().name("Gondor").foodStockpile(10).build();
         player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
         dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
 
@@ -106,7 +106,7 @@ public class FactionServiceTest {
         var result = factionService.addToStockpile(dto);
 
         assertThat(result.getName()).isEqualTo(faction.getName());
-        assertThat(result.getFoodStockpile()).isEqualTo(0 + dto.amount());
+        assertThat(result.getFoodStockpile()).isEqualTo(10 + dto.amount());
 
         log.info("Test passed: addToStockpile service works properly with correct values");
     }
@@ -120,7 +120,7 @@ public class FactionServiceTest {
         var result = factionService.removeFromStockpile(dto);
 
         assertThat(result.getName()).isEqualTo(faction.getName());
-        assertThat(result.getFoodStockpile()).isEqualTo(0 - dto.amount());
+        assertThat(result.getFoodStockpile()).isEqualTo(10 - dto.amount());
 
         log.info("Test passed: removeFromStockpile service works properly with correct values");
     }

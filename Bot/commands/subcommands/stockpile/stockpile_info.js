@@ -14,7 +14,6 @@ module.exports = {
 
                 const faction = response.data;
 
-                console.log(faction)
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Food-Stockpile of Faction ${name}`)
@@ -29,7 +28,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 const replyEmbed = new MessageEmbed()
-                    .setTitle("Error while removing from food stockpile")
+                    .setTitle("Error while getting stockpile information")
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()

@@ -267,6 +267,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         Army army = getArmyByName(dto.armyName());
 
+        targetPlayer.hasRpCharThrowExceptionOnFalse();
+
         // TODO: Check for Wanderer or Allied Faction
         log.debug("Checking if army and player are in the same faction");
         if (!army.getFaction().equals(targetPlayer.getFaction())) {

@@ -1,8 +1,11 @@
 package com.ardaslegends.data.domain;
 
+import com.ardaslegends.data.service.exceptions.FactionServiceException;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 
+@Slf4j
 @Entity
 @Table(name = "players")
 @JsonIdentityInfo(
@@ -44,6 +48,15 @@ public final class Player extends AbstractDomainEntity {
     @Embedded
     private RPChar rpChar; //the player's rp character
 
+    @JsonIgnore
+    public void hasRpCharThrowExceptionOnFalse() {
+        log.debug("Checking if player [{}] has an rpchar and throwing exception on false", this.getIgn());
+
+        if(rpChar == null) {
+            log.warn("Player [{}] has no rpchar", this.getIgn());
+            throw FactionServiceException.playerHasNoRpchar();
+        }
+    }
     @Override
     public String toString() {
         return ign;

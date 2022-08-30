@@ -7,7 +7,9 @@ public class FactionServiceException extends ServiceException {
 
     public static final String NEGATIVE_STOCKPILE_ADD_NOT_SUPPORTED = "You are trying to add a negative amount to the stockpile. Please use /stockpile remove to lower food stockpiles";
     public static final String NEGATIVE_STOCKPILE_SUBTRACT_NOT_SUPPORTED = "You are trying to subtract a negative amount to the stockpile. Please use /stockpile add to increase food stockpiles";
+    public static final String NOT_ENOUGH_FOOD_IN_STOCKPILE_TO_COVER_COST = "There is not enough food in the stockpile of '%s' \n'%d' Stacks are in stockpile, cannot subtract/pay '%d' Stacks because the amount would fall below zero!";
     public static final String PLAYER_HAS_NO_RPCHAR= "The inputted player does not have a roleplay character.";
+    public static FactionServiceException notEnoughFoodInStockpile(String faction, int amountInStockpile, int amountToRemove) {return new FactionServiceException(NOT_ENOUGH_FOOD_IN_STOCKPILE_TO_COVER_COST.formatted(faction, amountInStockpile, amountToRemove));}
     public static FactionServiceException factionLeaderMustBeOfSameFaction() {return new FactionServiceException(FACTION_LEADER_MUST_BE_OF_SAME_FACTION);}
     public static FactionServiceException negativeStockpileAddNotSupported() {return new FactionServiceException((NEGATIVE_STOCKPILE_ADD_NOT_SUPPORTED));}
     public static FactionServiceException negativeStockpileSubtractNotSupported() {return new FactionServiceException((NEGATIVE_STOCKPILE_SUBTRACT_NOT_SUPPORTED));}
