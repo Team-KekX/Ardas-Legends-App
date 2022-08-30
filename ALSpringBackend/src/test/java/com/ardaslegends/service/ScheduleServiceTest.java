@@ -78,8 +78,8 @@ public class ScheduleServiceTest {
         pathElement3 = PathElement.builder().region(region3).actualCost(region3.getCost()).baseCost(region3.getCost()).build();
         pathElement4 = PathElement.builder().region(region4).actualCost(region4.getCost()).baseCost(region4.getCost()).build();
         path = List.of(pathElement, pathElement2, pathElement3, pathElement4);
-        path2 = List.of(pathElement4, pathElement3, pathElement2, pathElement);
-        path3 = List.of(pathElement2, pathElement3, pathElement4);
+        path2 = List.of(pathElement4, pathElement3, pathElement2);
+        path3 = List.of(pathElement2, pathElement3);
         startTime = LocalDateTime.now();
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
@@ -111,9 +111,6 @@ public class ScheduleServiceTest {
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
 
-        log.trace("Now: [{}]", LocalDateTime.now());
-        log.trace("Clock: [{}]", LocalDateTime.now(mockClock));
-
         scheduleService.handleMovements();
 
         assertThat(army.getCurrentRegion()).isEqualTo(region2);
@@ -130,7 +127,6 @@ public class ScheduleServiceTest {
         pathElement2.setActualCost(pathElement2.getActualCost()/2);
         pathElement3.setActualCost(pathElement3.getActualCost()/2);
         pathElement4.setActualCost(pathElement4.getActualCost()/2);
-        log.trace("Total path cost for path 2: [{}]", ServiceUtils.getTotalPathCost(path2));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         movement2.setStartTime(startTime);
         movement2.setEndTime(endTime2);
@@ -139,12 +135,32 @@ public class ScheduleServiceTest {
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement2));
 
-        log.trace("Now: [{}]", LocalDateTime.now());
-        log.trace("Clock: [{}]", LocalDateTime.now(mockClock));
-
         scheduleService.handleMovements();
 
         assertThat(rpChar2.getCurrentRegion()).isEqualTo(region2);
         log.info("Test passed: handleMovements works properly!");
+    }
+
+    @Test
+    void ensureHandleMovementsExitsWhenHourHasNotPassed() {
+        log.debug("Testing if handleMovements works properly!");
+
+        fixedClock = Clock.fixed(LocalDateTime.now().plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        when(mockClock.instant()).thenReturn(fixedClock.instant());
+        when(mockClock.getZone()).thenReturn(fixedClock.getZone());
+
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
+
+        scheduleService.handleMovements();
+
+        assertThat(army.getCurrentRegion()).isEqualTo(path.get(0).getRegion());
+        assertThat(rpChar.getCurrentRegion()).isEqualTo(path.get(0).getRegion());
+        assertThat(army2.getCurrentRegion()).isEqualTo(path3.get(0).getRegion());
+        log.info("Test passed: handleMovements works properly!");
+    }
+
+    @Test
+    void ensureClockGetsReturned() {
+        assertThat(scheduleService.clock()).isEqualTo(Clock.systemDefaultZone());
     }
 }
