@@ -91,9 +91,9 @@ public class FactionServiceTest {
         player.setRpChar(null);
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
-        var result = assertThrows(FactionServiceException.class, () -> factionService.setFactionLeader(dto));
+        var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));
 
-        assertThat(result.getMessage()).isEqualTo(FactionServiceException.playerHasNoRpchar().getMessage());
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.playerHasNoRpchar().getMessage());
         log.info("Test passed: setFactionLeader correctly throws Se when player does not have an rpchar");
     }
 

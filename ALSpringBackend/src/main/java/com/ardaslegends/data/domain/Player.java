@@ -1,6 +1,7 @@
 package com.ardaslegends.data.domain;
 
 import com.ardaslegends.data.service.exceptions.FactionServiceException;
+import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -54,7 +55,7 @@ public final class Player extends AbstractDomainEntity {
 
         if(rpChar == null) {
             log.warn("Player [{}] has no rpchar", this.getIgn());
-            throw FactionServiceException.playerHasNoRpchar();
+            throw PlayerServiceException.playerHasNoRpchar();
         }
     }
     @Override

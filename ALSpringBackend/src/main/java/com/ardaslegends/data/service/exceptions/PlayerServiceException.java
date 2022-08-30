@@ -6,6 +6,7 @@ public class PlayerServiceException extends ServiceException {
 
     public static final String NOT_REGISTERED = "You are not registered! please register your account with /register !";
     private static final String NO_RP_CHAR = "You have no Roleplay Character!";
+    public static final String PLAYER_HAS_NO_RPCHAR= "The inputted player does not have a roleplay character.";
     public static final String NO_PLAYER_FOUND = "No Player found for Discord User %s - please register first if you haven't already!";
 
 
@@ -22,6 +23,7 @@ public class PlayerServiceException extends ServiceException {
     }
     public static PlayerServiceException noPlayerFound(String discordId) {return new PlayerServiceException(NO_PLAYER_FOUND.formatted(discordId));}
 
+    public static PlayerServiceException playerHasNoRpchar() {return new PlayerServiceException(PLAYER_HAS_NO_RPCHAR);}
     //Heal start
     public static PlayerServiceException cannotHealNotInjured(String charName) { return new PlayerServiceException(CANNOT_HEAL_CHAR_BECAUSE_NOT_INJURED.formatted(charName)); }
     public static PlayerServiceException cannotHealNoCbWithHoH(String charName, String regionId, String claimbuildsInRegion) {

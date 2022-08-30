@@ -106,7 +106,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         log.debug("Checking if player has an RpChar");
         if(player.getRpChar() == null) {
             log.warn("Player [ign:{}] does not have an RpChar and cannot be leader", player.getIgn());
-            throw FactionServiceException.playerHasNoRpchar();
+            throw PlayerServiceException.playerHasNoRpchar();
         }
 
         log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), player.getRpChar().getName());
