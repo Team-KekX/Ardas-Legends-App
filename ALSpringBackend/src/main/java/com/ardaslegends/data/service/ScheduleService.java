@@ -1,9 +1,9 @@
 package com.ardaslegends.data.service;
 
-import com.ardaslegends.data.domain.Movement;
-import com.ardaslegends.data.domain.PathElement;
-import com.ardaslegends.data.domain.Region;
+import com.ardaslegends.data.domain.*;
+import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.utils.ServiceUtils;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,8 +32,11 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 public class ScheduleService {
 
     private final MovementRepository movementRepository;
+    private final ArmyRepository armyRepository;
+    private final PlayerRepository playerRepository;
     private final MovementService movementService;
-    private final RegionRepository regionRepository;
+    private final ArmyService armyService;
+    private final PlayerService playerService;
     private final Clock clock;
 
     @Scheduled(cron = "0 */15 * ? * *")
@@ -48,10 +52,43 @@ public class ScheduleService {
         log.debug("Calling parallelStream handleSingleMovement");
         allActiveMoves.parallelStream().forEach(movement -> handleSingleMovement(movement, startDateTime));
 
+        log.debug("Saving all movements");
+        allActiveMoves = movementService.saveMovements(allActiveMoves);
+
         long endNanos = System.nanoTime();
         BigDecimal neededTime = BigDecimal.valueOf((double) MILLISECONDS.convert(endNanos - startNanos, NANOSECONDS) / 1000);
         log.debug("Needed time in nanos: [{}]", endNanos - startNanos);
-        log.info("Finished handling army movements. Updated armies: [{}] - finished in {} seconds", allActiveMoves.size(), neededTime.toPlainString());
+        log.info("Finished handling movements. Updated movements: [{}] - finished in {} seconds", allActiveMoves.size(), neededTime.toPlainString());
+    }
+
+    @Scheduled(cron = "0 */15 * ? * *")
+    public void handleHealings() {
+        LocalDateTime startDateTime = LocalDateTime.now(clock);
+        long startNanos = System.nanoTime();
+        log.info("Starting scheduled handling of healings - System time: [{}]", startDateTime);
+
+        log.debug("Getting all armies that are healing");
+        List<Army> healingArmies = armyRepository.findArmyByIsHealingTrue();
+        log.debug("Found [{}] healing armies - continuing with handling", healingArmies.size());
+
+        log.debug("Getting all characters that are healing");
+        List<Player> healingPlayers = playerRepository.findPlayerByRpCharIsHealingTrue();
+        log.debug("Found [{}] healing chars - continuing with handling", healingPlayers.size());
+
+        log.debug("Calling parallelStream handleHealingArmy");
+        healingArmies.parallelStream().forEach(army -> handleHealingArmy(army, startDateTime));
+
+        log.debug("Calling parallelStream handleHealingPlayer");
+        healingPlayers.parallelStream().forEach(player -> handleHealingPlayer(player, startDateTime));
+
+        log.trace("Persisting data");
+        healingArmies = armyService.saveArmies(healingArmies);
+        healingPlayers = playerService.savePlayers(healingPlayers);
+
+        long endNanos = System.nanoTime();
+        BigDecimal neededTime = BigDecimal.valueOf((double) MILLISECONDS.convert(endNanos - startNanos, NANOSECONDS) / 1000);
+        log.debug("Needed time in nanos: [{}]", endNanos - startNanos);
+        log.info("Finished handling healing. Updated armies: [{}], updated chars: [{}] - finished in {} seconds", healingArmies.size(), healingPlayers.size(), neededTime.toPlainString());
     }
 
     private void handleSingleMovement(Movement movement, LocalDateTime now) {
@@ -200,9 +237,156 @@ public class ScheduleService {
 
         }
         log.trace("Exited while loop");
+    }
 
-        log.debug("Saving movement - current region is now ");
-        movementService.saveMovement(movement);
+    private void handleHealingArmy(Army army, LocalDateTime now) {
+        log.debug("Handling healing army [{}]", army);
+        LocalDateTime endTime = army.getHealEnd();
+
+        log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
+
+        /*
+        Get difference between now and endTime in hours
+        This shows us how many hours are left of healing process
+         */
+
+        //we have to add 1 here because we want to know how many hours have passed
+        //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
+        int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        log.debug("Hours left: [{}]", hoursLeft);
+
+        if(hoursLeft <= 0) {
+            log.info("Healing of army [{}] ended - healing all units to max", army);
+            army.getUnits()
+                    .forEach(unit -> unit.setAmountAlive(unit.getCount()));
+
+            army.resetHealingStats();
+            return;
+        }
+
+        /*
+        We get the hours healed since last time by subtracting the current hours left
+        with the last hours left (the value that was last stored in army)
+         */
+
+        int hoursHealedSinceLastTime = army.getHoursHealed() - hoursLeft;
+        log.debug("Hours healed since last time: [{}]", hoursHealedSinceLastTime);
+
+        //If we didn't move an hour since last time, exit function
+
+        if(hoursHealedSinceLastTime == 0) {
+            log.debug("No hour has passed for this healing - exiting function");
+            return;
+        }
+
+        /*
+        Sets the divisor to 24
+        If stationed at a stronghold, set it to half the amount (x2 heal speed)
+        This is explained in the later comment
+         */
+
+        int divisor = 24;
+        log.trace("Setting divisor to [{}]", divisor);
+        if(army.getStationedAt().getType().equals(ClaimBuildType.STRONGHOLD)) {
+            divisor /= 2;
+            log.trace("Army is stationed at Stronghold, setting divisor to [{}]", divisor);
+        }
+
+        //The amount of hours the army has healed after the last replenish (excluding hoursHealedSinceLastTime)
+        int hoursSinceLastReplenishWithoutCurrent = army.getHoursHealed() % divisor;
+        //The amount of hours the army has healed after the last replenish (including hoursHealedSinceLastTime)
+        int hoursHealedSinceLastReplenish = hoursSinceLastReplenishWithoutCurrent + hoursHealedSinceLastTime;
+
+        /*
+        We enter a loop that lasts as long as we hoursHealedSinceLastReplenish > divisor
+        We replenish the troops in every iteration and subtract hoursHealedSinceLastReplenish - divisor
+        For example 48 - 24 = 24 - 24 = 0 -> replenish alive units 2 times
+        When army stationed claimbuild is a STRONGHOLD, then subtract by 12 (replenish every 12h)
+         */
+
+        log.trace("Entering loop");
+        while(hoursHealedSinceLastReplenish > divisor) {
+            log.trace("hoursHealedSinceLastReplenish: [{}]", hoursHealedSinceLastReplenish);
+            log.trace("Subtracting divisor [{}] from hoursHealedSinceLastReplenish [{}]", divisor, hoursHealedSinceLastReplenish);
+            hoursHealedSinceLastReplenish -= divisor;
+            log.trace("New hoursHealedSinceLastReplenish: [{}]", hoursHealedSinceLastReplenish);
+
+            //only get units that are not fully replenished sorted by token cost ascending
+            List<Unit> units = army.getUnits().stream()
+                    .filter(unit -> unit.getAmountAlive() < unit.getCount())
+                    .sorted(Comparator.comparing(u -> u.getUnitType().getTokenCost()))
+                    .toList();
+
+            int replenishTokens = 6;
+            int currentUnitIndex = 0;
+            Unit currentUnit = units.get(currentUnitIndex);
+
+            while(replenishTokens > 0) {
+                log.trace("Starting to replenish unit: [{}]", currentUnit);
+                log.trace("Unit [{}] has currently {}/{} alive units", currentUnit.getUnitType(), currentUnit.getAmountAlive(), currentUnit.getCount());
+                log.trace("Replenish tokens left: [{}]", replenishTokens);
+
+                int unitsToHeal = currentUnit.getCount() - currentUnit.getAmountAlive();
+                log.trace("Units to heal: [{}]", unitsToHeal);
+                if(unitsToHeal >= replenishTokens) {
+                    log.trace("More units to heal than replenish tokens available - using all replenish tokens on unit [{}]", currentUnit);
+                    currentUnit.setAmountAlive(currentUnit.getAmountAlive() + replenishTokens);
+                    log.trace("Unit now has {}/{} units", currentUnit.getAmountAlive(), currentUnit.getCount());
+                    replenishTokens = 0;
+                    log.trace("Set replenish tokens to [{}]", replenishTokens);
+                }
+                else {
+                    log.trace("Less units to heal than replenish tokens available - healing unit [{}] to full", currentUnit.getUnitType());
+                    currentUnit.setAmountAlive(currentUnit.getCount());
+                    log.trace("Unit now has {}/{} units", currentUnit.getAmountAlive(), currentUnit.getCount());
+                    replenishTokens -= unitsToHeal;
+                    log.trace("Set replenish tokens to [{}]", replenishTokens);
+
+                    log.trace("Setting the next unit");
+                    if(currentUnitIndex == units.size()-1) {
+                        log.trace("current unit was last in list, not setting new current unit");
+                        log.info("Army [{}] has finished its healing process!", army.getName());
+                        army.resetHealingStats();
+                        replenishTokens = 0;
+                    }
+                    else {
+                        currentUnitIndex++;
+                        currentUnit = units.get(currentUnitIndex);
+                        log.trace("Set new current unit to [{}]", currentUnit);
+                    }
+                }
+            }
+            log.trace("Exited loop");
+        }
+    }
+
+    private void handleHealingPlayer(Player player, LocalDateTime now) {
+        log.debug("Handling healing player [{}]", player);
+        RPChar rpChar = player.getRpChar();
+        log.trace("Got player's rpchar [{}]", rpChar);
+        LocalDateTime endTime = rpChar.getHealEnds();
+
+        log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
+
+        /*
+        Get difference between now and endTime in hours
+        This shows us how many hours are left of healing process
+         */
+
+        //we have to add 1 here because we want to know how many hours have passed
+        //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
+        int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        log.debug("Hours left: [{}]", hoursLeft);
+
+        if(hoursLeft <= 0) {
+            log.info("Character [{}] of player [{}] finished healing - setting isInjured and isHealing to false", rpChar, player);
+            rpChar.setInjured(false);
+            rpChar.setIsHealing(false);
+            log.trace("Exiting function");
+            return;
+        }
+        log.debug("Character [{}] of player [{}] still has [{}] hours left for healing and therefore has not finished yet!", rpChar, player, hoursLeft);
+
     }
 
     @Bean

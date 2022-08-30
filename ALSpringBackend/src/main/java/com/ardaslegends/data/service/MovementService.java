@@ -311,4 +311,9 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return secureSave(movement, movementRepository);
     }
 
+    public List<Movement> saveMovements(List<Movement> movements) {
+        log.debug("Saving movements [{}]", movements);
+        return secureSaveAll(movements, movementRepository);
+    }
+
 }

@@ -126,6 +126,10 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 inputClaimBuild,
                 30-tokenCount,
                 false,
+                null,
+                null,
+                0,
+                0,
                 inputClaimBuild,
                 LocalDateTime.now(),
                 isPaid);
@@ -189,7 +193,17 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("All checks validated, persisting now");
 
-        army.setHealing(true);
+        log.trace("getting amount of hours army needs to heal");
+        int hoursHeal = army.getAmountOfHealHours();
+        log.debug("Army needs to heal for [{}] hours", hoursHeal);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        army.setIsHealing(true);
+        army.setHealStart(now);
+        army.setHealEnd(now.plusHours(hoursHeal));
+        army.setHoursHealed(0);
+        army.setHoursLeftHealing(hoursHeal);
         army = secureSave(army, armyRepository);
 
         log.info("Army [{}] is now healing", army.toString());
@@ -210,7 +224,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Army army = getArmyByName(dto.armyName());
 
         log.debug("Checking if army is healing");
-        if(!army.isHealing()) {
+        if(!army.getIsHealing()) {
             log.warn("Army [{}] is not healing, cant stop it!");
             throw ArmyServiceException.armyIsNotHealing(army.getArmyType(), army.toString());
         }
@@ -221,7 +235,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             throw ArmyServiceException.armyAndPlayerInDifferentFaction(army.getArmyType(), player.getFaction().toString(), army.getFaction().toString());
         }
 
-        army.setHealing(false);
+        army.resetHealingStats();
         army = secureSave(army, armyRepository);
 
         log.info("Army [{}] now stopped healing", army.toString());
@@ -837,5 +851,10 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 throw ArmyServiceException.invalidUnitString(unitString);
             }
         }
+    }
+
+    public List<Army> saveArmies(List<Army> armies) {
+        log.debug("Saving armies [{}]", armies);
+        return secureSaveAll(armies, armyRepository);
     }
 }
