@@ -5,7 +5,6 @@ import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.service.dto.army.CreateArmyDto;
 import com.ardaslegends.data.service.dto.army.MoveArmyDto;
 import com.ardaslegends.data.service.dto.player.DiscordIdDto;
 import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -96,18 +94,17 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Player [{}] is allowed to move army [{}], executing pathfinder", player, army);
-        Path path = pathfinder.findShortestWay(army.getCurrentRegion(),region,player, false);
+        List<PathElement> path = pathfinder.findShortestWay(army.getCurrentRegion(),region,player, false);
 
         log.debug("Removing movement cost from faction stockpile");
-        army.getFaction().subtractFoodFromStockpile(path.getCost());
+        army.getFaction().subtractFoodFromStockpile((int)Math.ceil(ServiceUtils.getTotalPathCost(path) / 24.0));
 
         var currentTime = LocalDateTime.now();
         log.debug("Creating movement object");
-
-        Region secondRegion = regionRepository.findById(path.getPath().get(1)).get();
-        int hoursUntilDone = path.getCostInHours();
+        int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
+        Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusDays(path.getCost()), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -218,16 +215,16 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         Region fromRegion = rpChar.getCurrentRegion();
 
         log.debug("Calling the pathfinder to find the fastest way from '{}' -> '{}'", fromRegion.getId(), toRegion.getId());
-        Path shortestPath = pathfinder.findShortestWay(fromRegion, toRegion, player, true);
+        List<PathElement> path = pathfinder.findShortestWay(fromRegion, toRegion, player, true);
 
         log.trace("Getting the current time");
         LocalDateTime currentTime = LocalDateTime.now();
 
         log.trace("Building the movement object");
-        Region secondRegion = regionRepository.findById(shortestPath.getPath().get(1)).get();
-        int hoursUntilDone = shortestPath.getCostInHours();
+        int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
+        Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player, null, true, shortestPath, currentTime, currentTime.plusDays(shortestPath.getCost()), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);
@@ -286,7 +283,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         Movement movement = fetchedMove.get();
-        log.debug("Found a movement from region [{}] to [{}]!", movement.getPath().getStart(), movement.getPath().getDestination());
+        log.debug("Found a movement from region [{}] to [{}]!", movement.getStartRegionId(), movement.getDestinationRegionId());
 
         return movement;
     }
@@ -304,7 +301,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         Movement movement = fetchedMove.get();
-        log.debug("Found a movement from region [{}] to [{}]!", movement.getPath().getStart(), movement.getPath().getDestination());
+        log.debug("Found a movement from region [{}] to [{}]!", movement.getStartRegionId(), movement.getDestinationRegionId());
 
         return movement;
     }

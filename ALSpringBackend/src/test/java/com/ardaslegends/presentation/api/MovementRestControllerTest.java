@@ -1,7 +1,9 @@
 package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.data.domain.Movement;
-import com.ardaslegends.data.domain.Path;
+import com.ardaslegends.data.domain.PathElement;
+import com.ardaslegends.data.domain.Region;
+import com.ardaslegends.data.domain.RegionType;
 import com.ardaslegends.data.presentation.api.MovementRestController;
 import com.ardaslegends.data.service.MovementService;
 import com.ardaslegends.data.service.dto.army.MoveArmyDto;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -34,11 +37,24 @@ public class MovementRestControllerTest {
 
     MovementRestController movementRestController;
 
+    private Region region;
+    private Region region2;
+    private PathElement pathElement;
+    private PathElement pathElement2;
+    private List<PathElement> path;
+
+
     @BeforeEach
     void setup() {
         mockMovementService = mock(MovementService.class);
         movementRestController = new MovementRestController(mockMovementService);
         mockMvc = MockMvcBuilders.standaloneSetup(movementRestController).build();
+
+        region = Region.builder().id("91").neighboringRegions(Set.of()).regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("92").neighboringRegions(Set.of()).regionType(RegionType.LAND).build();
+        pathElement = PathElement.builder().region(region).build();
+        pathElement2 = PathElement.builder().region(region2).build();
+        path = List.of(pathElement, pathElement2);
     }
 
     @Test
@@ -49,7 +65,7 @@ public class MovementRestControllerTest {
         MoveRpCharDto dto = new MoveRpCharDto("RandoId","12.S");
 
         log.trace("Initialize return movement");
-        Movement movement = Movement.builder().path(Path.builder().path(List.of("91", "92")).build()).build();
+        Movement movement = Movement.builder().path(path).build();
 
         log.trace("Initializing mock methods");
         when(mockMovementService.createRpCharMovement(dto)).thenReturn(movement);
@@ -75,7 +91,7 @@ public class MovementRestControllerTest {
         DiscordIdDto dto  = new DiscordIdDto("RandoId");
 
         log.trace("Initialize return movement");
-        Movement movement = Movement.builder().path(Path.builder().path(List.of("91", "92")).build()).build();
+        Movement movement = Movement.builder().path(path).build();
 
         log.trace("Initializing mock methods");
         when(mockMovementService.cancelRpCharMovement(dto)).thenReturn(movement);
@@ -101,7 +117,7 @@ public class MovementRestControllerTest {
         MoveArmyDto dto = new MoveArmyDto("1234","Knights of Gondor", "92");
 
         log.trace("Initialize return movement");
-        Movement movement = Movement.builder().path(Path.builder().path(List.of("91", "92")).build()).build();
+        Movement movement = Movement.builder().path(path).build();
 
         log.trace("Initializing mock methods");
         when(mockMovementService.createArmyMovement(dto)).thenReturn(movement);
@@ -127,7 +143,7 @@ public class MovementRestControllerTest {
         MoveArmyDto dto = new MoveArmyDto("1234","Knights of Gondor", null);
 
         log.trace("Initialize return movement");
-        Movement movement = Movement.builder().path(Path.builder().path(List.of("91", "92")).build()).build();
+        Movement movement = Movement.builder().path(path).build();
 
         log.trace("Initializing mock methods");
         when(mockMovementService.cancelArmyMovement(dto)).thenReturn(movement);

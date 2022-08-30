@@ -3,11 +3,10 @@ package com.ardaslegends.data.domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -37,8 +36,8 @@ public final class Movement extends AbstractDomainEntity{
 
     private Boolean isCharMovement; //Should be true when army = null
 
-    @Embedded
-    private Path path;
+    @ElementCollection
+    private List<PathElement> path;
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -48,10 +47,10 @@ public final class Movement extends AbstractDomainEntity{
     private Integer hoursMoved;
     private Integer hoursUntilNextRegion;
 
-    public String getStartRegionId() { return path.getStart(); }
-    public String getDestinationRegionId() { return path.getDestination(); }
+    public String getStartRegionId() { return path.get(0).getRegion().getId(); }
+    public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(Player player, Army army, Boolean isCharMovement, Path path, LocalDateTime startTime, LocalDateTime endTime, Boolean isAccepted, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isAccepted, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
         this.player = player;
         this.army = army;
         this.isCharMovement = isCharMovement;

@@ -1,7 +1,9 @@
 package com.ardaslegends.data.service.utils;
 
 import com.ardaslegends.data.domain.Army;
+import com.ardaslegends.data.domain.PathElement;
 import com.ardaslegends.data.domain.Player;
+import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -152,6 +154,14 @@ public class ServiceUtils {
                 throw exceptionToThrow;
             }
         }
+    }
+
+    public static int getTotalPathCost(List<PathElement> path) {
+        return path.stream().map(PathElement::getActualCost).reduce(0, Integer::sum);
+    }
+
+    public static String buildPathString(List<PathElement> path) {
+        return path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> "));
     }
 
 }

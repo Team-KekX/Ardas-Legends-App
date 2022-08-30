@@ -1,26 +1,24 @@
 package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.Movement;
-import com.ardaslegends.data.domain.Path;
+import com.ardaslegends.data.domain.PathElement;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.repository.MovementRepository;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -124,15 +122,12 @@ public class ScheduleService {
 
 
         log.trace("Entering while loop as long as hoursUntilNextRegion is negative");
-        List<String> path = movement.getPath().getPath();
-        Region nextRegion = null;
+        List<PathElement> path = movement.getPath();
+        Region finalCurrentRegion = currentRegion;
+        int currentRegionIndex = path.indexOf(path.stream().filter(pe -> pe.hasRegion(finalCurrentRegion)).findFirst().get());
+        PathElement nextPathRegion = null;
         while(hoursUntilNextRegion < 0) {
             log.trace("Hours until next region: [{}]", hoursUntilNextRegion);
-
-            //Getting the ID of the next region in the path list
-            int currentRegionIndex = path.indexOf(currentRegion.getId());
-            String nextRegionId = path.get(currentRegionIndex + 1);
-            log.trace("Id of next region: [{}]", nextRegionId);
 
             /*
             Fetch the next region, but only if nextRegion is null
@@ -140,16 +135,10 @@ public class ScheduleService {
             I did this so we don't fetch the same region twice
              */
 
-            if(nextRegion == null) {
-                log.trace("Fetching region with id [{}]", nextRegionId);
-                Optional<Region> fetchedRegion = regionRepository.findById(nextRegionId);
-                if(fetchedRegion.isEmpty()) {
-                    //This should never be reached because movements are only created with valid regions
-                    log.error("FATAL WHILE HANDLING MOVEMENT: Could not find a region with id [{}]!", nextRegionId);
-                    throw ServiceException.regionDoesNotExist(nextRegionId);
-                }
-                nextRegion = fetchedRegion.get();
-                log.trace("Found region [{}]", nextRegion);
+            if(nextPathRegion == null) {
+                log.trace("Setting nextRegion");
+                nextPathRegion = path.get(currentRegionIndex + 1);
+                log.trace("Set next region to [{}]", nextPathRegion);
             }
 
             /*
@@ -159,15 +148,15 @@ public class ScheduleService {
              */
 
             if(movement.getIsCharMovement()) {
-                log.trace("Movement is char movement, setting current region to [{}]", nextRegion);
-                movement.getPlayer().getRpChar().setCurrentRegion(nextRegion);
+                log.trace("Movement is char movement, setting current region to [{}]", nextPathRegion);
+                movement.getPlayer().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
             }
             else {
-                log.trace("Movement is army movement, setting current region to [{}]", nextRegion);
-                movement.getArmy().setCurrentRegion(nextRegion);
+                log.trace("Movement is army movement, setting current region to [{}]", nextPathRegion);
+                movement.getArmy().setCurrentRegion(nextPathRegion.getRegion());
                 if(movement.getArmy().getBoundTo() != null) {
-                    log.trace("Army is bound to a character, setting the character's region to [{}]", nextRegion);
-                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(nextRegion);
+                    log.trace("Army is bound to a character, setting the character's region to [{}]", nextPathRegion);
+                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
                 }
             }
 
@@ -177,13 +166,13 @@ public class ScheduleService {
              */
 
             log.trace("Checking if next region is destination");
-            if(movement.getPath().getDestination().equals(nextRegionId)) {
+            if(path.get(path.size()-1).equals(nextPathRegion)) {
                 if(movement.getIsCharMovement())
                     log.info("Movement of character [{}] with path [{}] reached its destination, setting isActive to false"
-                            , movement.getPlayer().getRpChar(), String.join(" -> ", path));
+                            , movement.getPlayer().getRpChar(), ServiceUtils.buildPathString(path));
                 else
                     log.info("Movement of army [{}] with path [{}] reached its destination, setting isActive to false"
-                            , movement.getArmy(), String.join(" -> ", path));
+                            , movement.getArmy(), ServiceUtils.buildPathString(path));
                 log.trace("Next region is destination");
                 log.trace("Setting hoursUntilNextRegion to 0");
                 hoursUntilNextRegion = 0;
@@ -202,23 +191,12 @@ public class ScheduleService {
                 //Incrementing the currentRegionIndex because we iterated to the next region
                 currentRegionIndex++;
                 //Get the Id of the new next region
-                nextRegionId = path.get(currentRegionIndex + 1);
-
-                log.trace("Fetching next region with id [{}]", nextRegionId);
-                Optional<Region> fetchedRegion = regionRepository.findById(nextRegionId);
-                if(fetchedRegion.isEmpty()) {
-                    //This should never be reached because movements are only created with valid regions
-                    log.error("FATAL WHILE HANDLING MOVEMENT: Could not find a region with id [{}]!", nextRegionId);
-                    throw ServiceException.regionDoesNotExist(nextRegionId);
-                }
-                nextRegion = fetchedRegion.get();
-                log.trace("Found region [{}]", nextRegion);
+                nextPathRegion = path.get(currentRegionIndex + 1);
+                log.trace("Set region [{}] as next path region", nextPathRegion);
 
                 log.trace("Calculating new hoursUntilNextRegion");
-                if(movement.getIsCharMovement())
-                    hoursUntilNextRegion = hoursUntilNextRegion + (int) (Math.ceil((double)nextRegion.getCost()/2))*24;
-                else
-                    hoursUntilNextRegion = hoursUntilNextRegion + nextRegion.getCostInHours();
+
+                hoursUntilNextRegion = hoursUntilNextRegion + nextPathRegion.getActualCost();
                 log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 

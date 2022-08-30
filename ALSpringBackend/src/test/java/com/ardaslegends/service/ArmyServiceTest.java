@@ -71,7 +71,7 @@ public class ArmyServiceTest {
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).injured(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
-        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(List.of(PathElement.builder().region(region1).build())).build();
 
         dto = new BindArmyDto(player.getDiscordID(), player.getDiscordID(), army.getName());
 
@@ -689,7 +689,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
 
         army.setCurrentRegion(rpchar.getCurrentRegion());
-        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(Path.builder().path(List.of("90", "91")).build()).build();
+        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(List.of(PathElement.builder().region(region1).build())).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
@@ -714,7 +714,7 @@ public class ArmyServiceTest {
         RPChar rpchar = RPChar.builder().injured(false).isHealing(false).name("Belegorn").currentRegion(region).build();
         Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChar(rpchar).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(null).build();
-        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).player(luk).path(Path.builder().path(List.of("90", "91")).build()).build();
+        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).player(luk).path(List.of(PathElement.builder().region(region1).build())).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
         when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));

@@ -317,7 +317,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if army is in an active movement");
         Optional<Movement> armyActiveMove = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army);
         if(armyActiveMove.isPresent()) {
-            String destinationRegion =  armyActiveMove.get().getPath().getDestination();
+            String destinationRegion =  armyActiveMove.get().getDestinationRegionId();
             log.warn("Army [{}] is currently moving to region [{}] and therefore cannot be bound to player [{}]!", army.getName(), destinationRegion, targetPlayer);
             throw ArmyServiceException.cannotBindArmyIsMoving(army.getArmyType(), army.getName(), destinationRegion);
         }
@@ -325,7 +325,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if rp char is in an active movement");
         Optional<Movement> charActiveMove = movementRepository.findMovementByPlayerAndIsCurrentlyActiveTrue(targetPlayer);
         if(charActiveMove.isPresent()) {
-            String destinationRegion =  charActiveMove.get().getPath().getDestination();
+            String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
             throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),army.getName(), destinationRegion);
         }

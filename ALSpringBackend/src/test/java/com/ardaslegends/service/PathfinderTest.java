@@ -2,8 +2,9 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.domain.Path;
+import com.ardaslegends.data.domain.PathElement;
 import com.ardaslegends.data.service.Pathfinder;
+import com.ardaslegends.data.service.exceptions.PathfinderServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -106,17 +108,17 @@ public class PathfinderTest {
 
     @Test
     void ensureNormalMoveSucceeds() {
-        Path path = pathfinder.findShortestWay(r1, r2, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(RegionType.MOUNTAIN.getCost());
+        List<PathElement> path = pathfinder.findShortestWay(r1, r2, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.MOUNTAIN.getCost());
 
         path = pathfinder.findShortestWay(r1, r5, player, false);
-        assertThat(path.getPath().size()).isEqualTo(3);
-        assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() + RegionType.HILL.getCost());
+        assertThat(path.size()).isEqualTo(3);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.LAND.getCost() + RegionType.HILL.getCost());
 
         path = pathfinder.findShortestWay(r1, r6, player, false);
-        assertThat(path.getPath().size()).isEqualTo(4);
-        assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() * 2 + RegionType.HILL.getCost());
+        assertThat(path.size()).isEqualTo(4);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.LAND.getCost() * 2 + RegionType.HILL.getCost());
     }
 
     @Test
@@ -130,9 +132,9 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(r2, rs1, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(1);
+        List<PathElement> path = pathfinder.findShortestWay(r2, rs1, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(1);
     }
 
     @Test
@@ -146,15 +148,16 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(rs2, r6, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(2);
+        List<PathElement> path = pathfinder.findShortestWay(rs2, r6, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(2);
     }
 
     @Test
     void ensureThatMoveInEnemyFails() {
-        Path path = pathfinder.findShortestWay(r1, r3, player, false);
-        assertEquals(-1, path.getCost());
+        var result = assertThrows(PathfinderServiceException.class,
+                () -> pathfinder.findShortestWay(r1, r3, player, false));
+        assertEquals(result.getMessage(), PathfinderServiceException.noPathFound(r1.getId(), r3.getId()).getMessage());
     }
 
     /*
@@ -172,11 +175,15 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(r2, r6, player, false);
+        List<PathElement> path = pathfinder.findShortestWay(r2, r6, player, false);
         /*assertThat(path.getPath().size()).isEqualTo(4);
         assertThat(path.getCost()).isEqualTo(RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
         assertFalse(path.getPath().contains(r3));*/
 
+    }
+
+    private Integer sumPathCost(List<PathElement> path) {
+        return path.stream().map(PathElement::getActualCost).reduce(0, Integer::sum);
     }
 
 }
