@@ -106,8 +106,36 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    void ensureHandleMovementsWorks() {
+    void ensureHandleMovementsWorksForArmyMoves() {
         log.debug("Testing if handleMovements works properly!");
+
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
+
+        log.trace("Now: [{}]", LocalDateTime.now());
+        log.trace("Clock: [{}]", LocalDateTime.now(mockClock));
+
+        scheduleService.handleMovements();
+
+        assertThat(army.getCurrentRegion()).isEqualTo(region2);
+        assertThat(rpChar.getCurrentRegion()).isEqualTo(region2);
+        assertThat(army2.getCurrentRegion()).isEqualTo(region3);
+        log.info("Test passed: handleMovements works properly!");
+    }
+
+    @Test
+    void ensureHandleMovementsWorksForCharMoves() {
+        log.debug("Testing if handleMovements works properly!");
+
+        pathElement.setActualCost(pathElement.getActualCost()/2);
+        pathElement2.setActualCost(pathElement2.getActualCost()/2);
+        pathElement3.setActualCost(pathElement3.getActualCost()/2);
+        pathElement4.setActualCost(pathElement4.getActualCost()/2);
+        log.trace("Total path cost for path 2: [{}]", ServiceUtils.getTotalPathCost(path2));
+        endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
+        movement2.setStartTime(startTime);
+        movement2.setEndTime(endTime2);
+        movement2.setHoursUntilComplete(ServiceUtils.getTotalPathCost(path2));
+        movement2.setHoursUntilNextRegion(pathElement3.getActualCost());
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement2));
 
@@ -116,10 +144,7 @@ public class ScheduleServiceTest {
 
         scheduleService.handleMovements();
 
-//        assertThat(army.getCurrentRegion()).isEqualTo(region2);
-//        assertThat(rpChar.getCurrentRegion()).isEqualTo(region2);
         assertThat(rpChar2.getCurrentRegion()).isEqualTo(region2);
-//        assertThat(army2.getCurrentRegion()).isEqualTo(region3);
         log.info("Test passed: handleMovements works properly!");
     }
 }

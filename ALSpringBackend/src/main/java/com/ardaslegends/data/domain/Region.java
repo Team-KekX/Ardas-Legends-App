@@ -38,7 +38,6 @@ public final class Region extends AbstractDomainEntity {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "region")
     private Set<ClaimBuild> claimBuilds; //list of claimbuilds in this region
 
-    @Setter(value = AccessLevel.PRIVATE)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "region_neighbours",
             joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},

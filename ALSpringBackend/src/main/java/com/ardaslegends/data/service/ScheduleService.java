@@ -119,8 +119,6 @@ public class ScheduleService {
         int hoursUntilNextRegion = movement.getHoursUntilNextRegion() - hoursMovedSinceLastTime;
         log.trace("Hours until next region: [{}] - [{}] = [{}]", movement.getHoursUntilNextRegion(), hoursMovedSinceLastTime, hoursUntilNextRegion);
 
-
-
         log.trace("Entering while loop as long as hoursUntilNextRegion is negative");
         List<PathElement> path = movement.getPath();
         Region finalCurrentRegion = currentRegion;

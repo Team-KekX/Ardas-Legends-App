@@ -9,10 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -134,7 +131,7 @@ public class PathfinderTest {
 
         List<PathElement> path = pathfinder.findShortestWay(r2, rs1, player, false);
         assertThat(path.size()).isEqualTo(2);
-        assertThat(sumPathCost(path)).isEqualTo(1);
+        assertThat(sumPathCost(path)).isEqualTo(rs1.getCost());
     }
 
     @Test
@@ -150,11 +147,14 @@ public class PathfinderTest {
 
         List<PathElement> path = pathfinder.findShortestWay(rs2, r6, player, false);
         assertThat(path.size()).isEqualTo(2);
-        assertThat(sumPathCost(path)).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(r6.getCost());
     }
 
     @Test
     void ensureThatMoveInEnemyFails() {
+        r1.setNeighboringRegions(Set.of(r3));
+        r3.setNeighboringRegions(Set.of(r1));
+
         var result = assertThrows(PathfinderServiceException.class,
                 () -> pathfinder.findShortestWay(r1, r3, player, false));
         assertEquals(result.getMessage(), PathfinderServiceException.noPathFound(r1.getId(), r3.getId()).getMessage());

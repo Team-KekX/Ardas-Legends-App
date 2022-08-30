@@ -4,6 +4,7 @@ import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
 import com.ardaslegends.data.service.exceptions.PathfinderServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,7 +102,7 @@ public class Pathfinder {
 
           if (isNotClaimedByAlly && isNotClaimedByFaction && isNotUnclaimed) {
             log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies!", neighbourRegion.getId());
-            thisDist = 9999;
+            thisDist = 99999999;
           }
         }
 
@@ -125,7 +126,7 @@ public class Pathfinder {
           // Should be part of the next code review.
           if (!canEmbark) {
             log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
-            thisDist = 9999;
+            thisDist = 99999999;
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) { //Checks if current region is Sea and neighbor is land
           log.debug("Current region is Sea region and neighbors land region - can disembark");
@@ -181,6 +182,10 @@ public class Pathfinder {
     currentNode = endRegion;
     while (!Objects.equals(currentNode.getId(), startRegion.getId())) {
       log.trace("Getting the cost of the path");
+      if(smallestWeights.get(currentNode) >= 99999999) {
+        log.warn("Could not find a valid path from region [{}] to region [{}]", startRegion, endRegion);
+        throw PathfinderServiceException.noPathFound(startRegion.getId(), endRegion.getId());
+      }
       int baseCost = currentNode.getCost();
       int actualCost = baseCost;
       if(isCharacterMove) {
@@ -189,18 +194,19 @@ public class Pathfinder {
       }
       PathElement pathElement = new PathElement(actualCost, baseCost, currentNode);
       currentNode = prevNodes.get(currentNode);
+      path.add(pathElement);
     }
     PathElement pathElement = new PathElement(0, startRegion.getCost(), startRegion);
+    path.add(pathElement);
 
     log.trace("Reversing the path so it starts with the start region");
     //reverse the path so it starts with startRegion
     Collections.reverse(path);
 
-    int summedCost = path.stream().map(PathElement::getActualCost).reduce(0, Integer::sum);
-    if(summedCost >= 9999) {
-      log.warn("Could not find a valid path from region [{}] to region [{}]", startRegion, endRegion);
-      throw PathfinderServiceException.noPathFound(startRegion.getId(), endRegion.getId());
-    }
+    log.trace("Final path is now: {}", ServiceUtils.buildPathString(path));
+
+    int summedCost = ServiceUtils.getTotalPathCost(path);
+
     log.debug("Final cost is {}", summedCost);
 
     log.info("Finished finding shortest path from {} to {}", startRegion.getId(), endRegion.getId());
