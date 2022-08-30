@@ -55,8 +55,7 @@ public final class Faction extends AbstractDomainEntity {
     private String factionBuffDescr; //The description of this faction's buff
 
     @Column(name = "food_stockpile")
-    private int foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
-
+    private Integer foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;
@@ -69,6 +68,7 @@ public final class Faction extends AbstractDomainEntity {
         this.colorcode = colorcode;
         this.homeRegion = homeRegion;
         this.factionBuffDescr = factionBuffDescr;
+        this.foodStockpile = 0;
     }
 
     public void addFoodToStockpile(int amount) {

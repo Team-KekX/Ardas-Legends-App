@@ -30,7 +30,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming update faction-leader request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution setFactionLeader");
-        var result = factionService.setFactionLeader(dto);
+        var result = wrappedServiceExecution(dto, factionService::setFactionLeader);
 
         log.trace("Result: [faction:{}] and new leader [discId:{}]. Dto discId [{}]", result.getName(), result.getLeader().getDiscordID(), dto.targetDiscordId());
         log.trace("Building response body");
@@ -47,7 +47,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming add to stockpile request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution addToStockpile");
-        var result = factionService.addToStockpile(dto);
+        var result = wrappedServiceExecution(dto, factionService::addToStockpile);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful update add to stockpile request to bot! Body:[{}]", body);
@@ -58,7 +58,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming remove from stockpile request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution removeFromStockpile");
-        var result = factionService.removeFromStockpile(dto);
+        var result = wrappedServiceExecution(dto, factionService::removeFromStockpile);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful update remove from stockpile request to bot! Body:[{}]", body);
@@ -70,7 +70,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming getStockpile info request with data [{}]", faction);
 
         log.trace("Calling wrappedServiceExecution getFactionByName");
-        var result = factionService.getFactionByName(faction);
+        var result = wrappedServiceExecution(faction, factionService::getFactionByName);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful get stockpile info request to bot! Body:[{}]", body);
