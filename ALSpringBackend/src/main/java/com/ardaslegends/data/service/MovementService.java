@@ -104,7 +104,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -224,7 +224,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), false, true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);

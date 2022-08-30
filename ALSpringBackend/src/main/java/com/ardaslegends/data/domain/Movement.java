@@ -50,14 +50,13 @@ public final class Movement extends AbstractDomainEntity{
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isAccepted, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
         this.player = player;
         this.army = army;
         this.isCharMovement = isCharMovement;
         this.path = path;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isAccepted = isAccepted;
         this.isCurrentlyActive = isCurrentlyActive;
         this.hoursUntilComplete = hoursUntilComplete;
         this.hoursUntilNextRegion = hoursUntilNextRegion;
