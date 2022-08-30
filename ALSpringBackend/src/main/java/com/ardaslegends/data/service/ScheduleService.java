@@ -9,9 +9,12 @@ import com.ardaslegends.data.service.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jni.Local;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 @RequiredArgsConstructor
 
@@ -30,22 +35,25 @@ public class ScheduleService {
     private final MovementRepository movementRepository;
     private final MovementService movementService;
     private final RegionRepository regionRepository;
+    private final Clock clock;
 
     @Scheduled(cron = "0 */15 * ? * *")
     public void handleMovements() {
-        LocalDateTime startTime = LocalDateTime.now();
-        log.info("Starting scheduled handling of movement - System time: [{}]", startTime);
+        LocalDateTime startDateTime = LocalDateTime.now(clock);
+        long startNanos = System.nanoTime();
+        log.info("Starting scheduled handling of movement - System time: [{}]", startDateTime);
 
         log.debug("Getting all active movements");
         List<Movement> allActiveMoves = movementRepository.findMovementsByIsCurrentlyActive(true);
         log.debug("Found [{}] active movements - continuing with handling", allActiveMoves.size());
 
         log.debug("Calling parallelStream handleSingleMovement");
-        allActiveMoves.parallelStream().forEach(movement -> handleSingleMovement(movement, startTime));
+        allActiveMoves.parallelStream().forEach(movement -> handleSingleMovement(movement, startDateTime));
 
-        LocalDateTime endTime = LocalDateTime.now();
-        double neededTime = ((double) (MILLIS.between(startTime, endTime)) / 1000);
-        log.info("Finished handling army movements. Updated armies: [{}] - finished in {} seconds", allActiveMoves.size(), neededTime);
+        long endNanos = System.nanoTime();
+        BigDecimal neededTime = BigDecimal.valueOf((double) MILLISECONDS.convert(endNanos - startNanos, NANOSECONDS) / 1000);
+        log.debug("Needed time in nanos: [{}]", endNanos - startNanos);
+        log.info("Finished handling army movements. Updated armies: [{}] - finished in {} seconds", allActiveMoves.size(), neededTime.toPlainString());
     }
 
     private void handleSingleMovement(Movement movement, LocalDateTime now) {
@@ -59,8 +67,10 @@ public class ScheduleService {
         This shows us how many hours are left in the movement
          */
 
-        int hoursLeft = (int) HOURS.between(now, endTime);
-        log.trace("Hours left: [{}]", hoursLeft);
+        //we have to add 1 here because we want to know how many hours have passed
+        //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
+        int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        log.debug("Hours left: [{}]", hoursLeft);
 
         /*
         We get the hours moved since last time by subtracting the current hours left
@@ -205,7 +215,11 @@ public class ScheduleService {
                 log.trace("Found region [{}]", nextRegion);
 
                 log.trace("Calculating new hoursUntilNextRegion");
-                hoursUntilNextRegion = hoursUntilNextRegion + nextRegion.getCostInHours();
+                if(movement.getIsCharMovement())
+                    hoursUntilNextRegion = hoursUntilNextRegion + (int) (Math.ceil((double)nextRegion.getCost()/2))*24;
+                else
+                    hoursUntilNextRegion = hoursUntilNextRegion + nextRegion.getCostInHours();
+                log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 
         }
@@ -213,5 +227,10 @@ public class ScheduleService {
 
         log.debug("Saving movement - current region is now ");
         movementService.saveMovement(movement);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 }
