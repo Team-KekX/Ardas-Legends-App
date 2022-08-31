@@ -1,4 +1,5 @@
 const {MessageEmbed} = require("discord.js");
+const {interactionInAllowedChannel, wrongChannelReply} = require("../utils/utilities");
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction) {
@@ -8,17 +9,21 @@ module.exports = {
 
         if (!command) return;
 
-        try {
+        if (!interactionInAllowedChannel(interaction)) {
+            wrongChannelReply(interaction)
+        } else {
+            try {
 
-            await command.execute(interaction);
-        } catch (error) {
-            console.log(error)
-            const replyEmbed = new MessageEmbed()
-                .setTitle("An unexpected error occured")
-                .setColor("RED")
-                .setDescription(error.toString() + "\nPlease contact the devs")
-                .setTimestamp()
-            await interaction.reply({embeds: [replyEmbed]})
+                await command.execute(interaction);
+            } catch (error) {
+                console.log(error)
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("An unexpected error occured")
+                    .setColor("RED")
+                    .setDescription(error.toString() + "\nPlease contact the devs")
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]})
+            }
         }
-    },
+    }
 };
