@@ -95,7 +95,7 @@ public class ScheduleService {
         log.debug("Handling movement [{}]", movement);
         LocalDateTime endTime = movement.getEndTime();
 
-        log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
+        log.debug("Getting the hours between current time [{}] and end date [{}]", now, endTime);
 
         /*
         Get difference between now and endTime in hours
@@ -105,6 +105,10 @@ public class ScheduleService {
         //we have to add 1 here because we want to know how many hours have passed
         //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
         int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        if(now.isAfter(endTime)) {
+            log.debug("Current date is after end date, setting hours left to 0");
+            hoursLeft = 0;
+        }
         log.debug("Hours left: [{}]", hoursLeft);
 
         /*
@@ -253,6 +257,10 @@ public class ScheduleService {
         //we have to add 1 here because we want to know how many hours have passed
         //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
         int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        if(now.isAfter(endTime)) {
+            log.debug("Current date is after end date, setting hours left to 0");
+            hoursLeft = 0;
+        }
         log.debug("Hours left: [{}]", hoursLeft);
 
         if(hoursLeft <= 0) {
@@ -317,7 +325,7 @@ public class ScheduleService {
                     .sorted(Comparator.comparing(u -> u.getUnitType().getTokenCost()))
                     .toList();
 
-            int replenishTokens = 6;
+            double replenishTokens = 6.0;
             int currentUnitIndex = 0;
             Unit currentUnit = units.get(currentUnitIndex);
 
@@ -326,11 +334,15 @@ public class ScheduleService {
                 log.trace("Unit [{}] has currently {}/{} alive units", currentUnit.getUnitType(), currentUnit.getAmountAlive(), currentUnit.getCount());
                 log.trace("Replenish tokens left: [{}]", replenishTokens);
 
-                int unitsToHeal = currentUnit.getCount() - currentUnit.getAmountAlive();
-                log.trace("Units to heal: [{}]", unitsToHeal);
-                if(unitsToHeal >= replenishTokens) {
-                    log.trace("More units to heal than replenish tokens available - using all replenish tokens on unit [{}]", currentUnit);
-                    currentUnit.setAmountAlive(currentUnit.getAmountAlive() + replenishTokens);
+                int deadUnits = currentUnit.getCount() - currentUnit.getAmountAlive();
+                log.trace("Dead units: [{}]", deadUnits);
+                double tokensToHeal = deadUnits * currentUnit.getUnitType().getTokenCost();
+                log.trace("Tokens to heal: [{}]", tokensToHeal);
+                if(tokensToHeal >= replenishTokens) {
+                    log.trace("More tokens to heal than replenish tokens available - using all replenish tokens on unit [{}]", currentUnit);
+                    int canHealUnits = (int) (replenishTokens / currentUnit.getUnitType().getTokenCost());
+                    log.trace("Unit has cost [{}] - can heal [{}] with [{}] refresh tokens", currentUnit.getUnitType().getTokenCost(), canHealUnits, replenishTokens);
+                    currentUnit.setAmountAlive(currentUnit.getAmountAlive() + canHealUnits);
                     log.trace("Unit now has {}/{} units", currentUnit.getAmountAlive(), currentUnit.getCount());
                     replenishTokens = 0;
                     log.trace("Set replenish tokens to [{}]", replenishTokens);
@@ -339,7 +351,7 @@ public class ScheduleService {
                     log.trace("Less units to heal than replenish tokens available - healing unit [{}] to full", currentUnit.getUnitType());
                     currentUnit.setAmountAlive(currentUnit.getCount());
                     log.trace("Unit now has {}/{} units", currentUnit.getAmountAlive(), currentUnit.getCount());
-                    replenishTokens -= unitsToHeal;
+                    replenishTokens -= tokensToHeal;
                     log.trace("Set replenish tokens to [{}]", replenishTokens);
 
                     log.trace("Setting the next unit");
@@ -376,6 +388,10 @@ public class ScheduleService {
         //we have to add 1 here because we want to know how many hours have passed
         //HOURS.between returns 0 if you have 00:59:59 minutes/seconds
         int hoursLeft = (int) HOURS.between(now, endTime) + 1;
+        if(now.isAfter(endTime)) {
+            log.debug("Current date is after end date, setting hours left to 0");
+            hoursLeft = 0;
+        }
         log.debug("Hours left: [{}]", hoursLeft);
 
         if(hoursLeft <= 0) {

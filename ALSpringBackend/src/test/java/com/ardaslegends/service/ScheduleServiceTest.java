@@ -55,11 +55,18 @@ public class ScheduleServiceTest {
     private Movement movement;
     private Movement movement2;
     private Movement movement3;
+    private ClaimBuild claimBuild;
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime endTime2;
     private LocalDateTime endTime3;
+    private UnitType unitType;
+    private UnitType unitType2;
+    private UnitType unitType3;
+    private Unit unit;
+    private Unit unit2;
+    private Unit unit3;
 
     @BeforeEach
     void setup() {
@@ -73,6 +80,10 @@ public class ScheduleServiceTest {
 
         scheduleService = new ScheduleService(mockMovementRepository, mockArmyRepository, mockPlayerRepository, mockMovementService, mockArmyService, mockPlayerService, mockClock);
 
+        unitType = UnitType.builder().unitName("Gondor Soldier").tokenCost(1.0).build();
+        unitType2 = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
+        unitType3 = UnitType.builder().unitName("Tower Guaard").tokenCost(2.0).build();
+        unit = Unit.builder().unitType(unitType).amountAlive(2).count(4).build();
         region = Region.builder().id("91").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("92").regionType(RegionType.LAND).build();
         region3 = Region.builder().id("93").regionType(RegionType.LAND).build();
@@ -103,6 +114,7 @@ public class ScheduleServiceTest {
         movement3 = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army2).player(null).path(path3)
                 .startTime(startTime).endTime(endTime3).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path3)).hoursUntilNextRegion(path3.get(1).getActualCost())
                 .build();
+        claimBuild = ClaimBuild.builder().type(ClaimBuildType.CASTLE).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).region(region).build();
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement2, movement3));
         fixedClock = Clock.fixed(startTime.plusDays(1).plusSeconds(1).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
@@ -113,7 +125,11 @@ public class ScheduleServiceTest {
     @Test
     void ensureHandleMovementsWorksForArmyMoves() {
         log.debug("Testing if handleMovements works properly!");
-        
+
+        //This is so we check if the bot instantly completes movements that are already over the end date
+        movement3.setStartTime(startTime.minusMonths(1));
+        movement3.setEndTime(startTime.minusMonths(1).plusHours(ServiceUtils.getTotalPathCost(path3)));
+
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
 
         scheduleService.handleMovements();
@@ -162,6 +178,47 @@ public class ScheduleServiceTest {
         assertThat(rpChar.getCurrentRegion()).isEqualTo(path.get(0).getRegion());
         assertThat(army2.getCurrentRegion()).isEqualTo(path3.get(0).getRegion());
         log.info("Test passed: handleMovements works properly!");
+    }
+
+    @Test
+    void ensureHandleHealingWorksForChars() {
+        log.debug("Testing if handleHealings works properly for rp chars!");
+
+        rpChar.setInjured(true);
+        rpChar.setIsHealing(true);
+        rpChar.setCurrentRegion(region);
+        rpChar.setStartedHeal(startTime);
+        rpChar.setHealEnds(startTime.plusDays(2));
+
+        rpChar2.setInjured(true);
+        rpChar2.setIsHealing(true);
+        rpChar2.setCurrentRegion(region);
+        rpChar2.setStartedHeal(startTime.minusDays(1));
+        rpChar2.setHealEnds(startTime.plusDays(1));
+
+        log.info("Current time: [{}] - start time: [{}] - end time: [{}]", LocalDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
+
+        when(mockPlayerRepository.findPlayerByRpCharIsHealingTrue()).thenReturn(List.of(player, player2));
+
+        scheduleService.handleHealings();
+
+        assertThat(rpChar.getIsHealing()).isTrue();
+        assertThat(rpChar.getInjured()).isTrue();
+        assertThat(rpChar2.getIsHealing()).isFalse();
+        assertThat(rpChar2.getInjured()).isFalse();
+        log.info("Test passed: handleHealings works properly for rp chars!");
+    }
+
+    @Test
+    void ensureHealingWorksForArmies() {
+        log.debug("Testing if healing armies works");
+
+        army.setIsHealing(true);
+        army.setHealStart(startTime);
+        army.setHealEnd(startTime.plusHours(army.getAmountOfHealHours()));
+        
+
+        log.info("Test passed: healing armies works");
     }
 
     @Test
