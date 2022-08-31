@@ -25,7 +25,7 @@ public class PlayerRepositoryTest {
         Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").build()).uuid("vernonUUID").build();
         Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").build()).uuid("luksUUID").build();
         Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").build()).uuid("anedsUUID").build();
-        RPChar rpChar = new RPChar("Sauron", "s","s", true,null, null, false, false);
+        RPChar rpChar = new RPChar("Sauron", "s","s", true,null, null, false, false, null, null);
         Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").build()).uuid("anotherOneUUID").rpChar(rpChar).build();;
 
 
@@ -65,7 +65,7 @@ public class PlayerRepositoryTest {
     void ensureFindByRPCharWorks() {
         // Assign
 
-        RPChar rpChar2 = new RPChar("Sauron", "e", "e",true, null,null, false, false);
+        RPChar rpChar2 = new RPChar("Sauron", "e", "e",true, null,null, false, false, null, null);
 
         // Act
         var result = repository.findPlayerByRpChar(rpChar2.getName());
@@ -81,7 +81,7 @@ public class PlayerRepositoryTest {
     void ensureFindByRPCharReturnsEmptyOptionalWhenNothingFound() {
         // Assign
 
-        RPChar rpChar2 = new RPChar("SomebodyThatIUsedToKnoooow", "e", "e", true, null,null, false, false);
+        RPChar rpChar2 = new RPChar("SomebodyThatIUsedToKnoooow", "e", "e", true, null,null, false, false, null, null);
 
         // Act
         var result = repository.findPlayerByRpChar(rpChar2.getName());

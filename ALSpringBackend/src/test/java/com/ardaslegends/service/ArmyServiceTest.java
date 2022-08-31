@@ -233,7 +233,7 @@ public class ArmyServiceTest {
         log.debug("Calling healStart");
         var result = armyService.healStart(dto);
 
-        assertThat(army.isHealing()).isTrue();
+        assertThat(army.getIsHealing()).isTrue();
         log.info("Test passed: heal start works properly with correct values");
     }
 
@@ -309,7 +309,7 @@ public class ArmyServiceTest {
         log.debug("Testing if heal stop works properly with correct values");
 
         log.trace("Initializing data");
-        army.setHealing(true);
+        army.setIsHealing(true);
 
         UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(), army.getName(), null, null);
 
@@ -317,7 +317,7 @@ public class ArmyServiceTest {
         log.debug("Calling healStart");
         var result = armyService.healStop(dto);
 
-        assertThat(army.isHealing()).isFalse();
+        assertThat(army.getIsHealing()).isFalse();
         log.info("Test passed: heal stop works properly with correct values");
     }
     @Test
@@ -325,7 +325,7 @@ public class ArmyServiceTest {
         log.debug("Testing if heal stop correctly throws SE when army is not healing");
 
         log.trace("Initializing data");
-        army.setHealing(false);
+        army.setIsHealing(false);
 
         UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null, null);
 
@@ -342,7 +342,7 @@ public class ArmyServiceTest {
         log.debug("Testing if heal stop correctly throws SE when army is not in same faction as player");
 
         log.trace("Initializing data");
-        army.setHealing(true);
+        army.setIsHealing(true);
         army.setFaction(Faction.builder().name("Kekw").build());
 
         UpdateArmyDto dto = new UpdateArmyDto(player.getDiscordID(),army.getName(), null, null);

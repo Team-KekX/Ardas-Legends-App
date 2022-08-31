@@ -1,9 +1,13 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.data.domain.*;
+import com.ardaslegends.data.repository.ArmyRepository;
 import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.data.repository.PlayerRepository;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.MovementService;
+import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.ScheduleService;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +26,13 @@ import static org.mockito.Mockito.when;
 public class ScheduleServiceTest {
 
     private ScheduleService scheduleService;
-    private RegionRepository mockRegionRepository;
     private MovementRepository mockMovementRepository;
+    private RegionRepository mockRegionRepository;
+    private ArmyRepository mockArmyRepository;
+    private PlayerRepository mockPlayerRepository;
     private MovementService mockMovementService;
+    private ArmyService mockArmyService;
+    private PlayerService mockPlayerService;
     private Clock mockClock;
     private Clock fixedClock;
 
@@ -56,12 +64,16 @@ public class ScheduleServiceTest {
 
     @BeforeEach
     void setup() {
-        mockRegionRepository = mock(RegionRepository.class);
         mockMovementRepository = mock(MovementRepository.class);
+        mockRegionRepository = mock(RegionRepository.class);
+        mockArmyRepository = mock(ArmyRepository.class);
+        mockPlayerRepository = mock(PlayerRepository.class);
         mockMovementService = mock(MovementService.class);
+        mockArmyService = mock(ArmyService.class);
+        mockPlayerService = mock(PlayerService.class);
         mockClock = mock(Clock.class);
 
-        scheduleService = new ScheduleService(mockMovementRepository, mockMovementService, mockRegionRepository, mockClock);
+        scheduleService = new ScheduleService(mockMovementRepository, mockArmyRepository, mockPlayerRepository, mockMovementService, mockArmyService, mockPlayerService, mockClock);
 
         region = Region.builder().id("91").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("92").regionType(RegionType.LAND).build();
@@ -94,12 +106,11 @@ public class ScheduleServiceTest {
                 .startTime(startTime).endTime(endTime3).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path3)).hoursUntilNextRegion(path3.get(1).getActualCost())
                 .build();
 
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement2, movement3));
         when(mockRegionRepository.findById(region.getId())).thenReturn(Optional.of(region));
         when(mockRegionRepository.findById(region2.getId())).thenReturn(Optional.of(region2));
         when(mockRegionRepository.findById(region3.getId())).thenReturn(Optional.of(region3));
         when(mockRegionRepository.findById(region4.getId())).thenReturn(Optional.of(region4));
-        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement2, movement3));
-
         fixedClock = Clock.fixed(LocalDateTime.now().plusDays(1).plusHours(1).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
@@ -108,7 +119,7 @@ public class ScheduleServiceTest {
     @Test
     void ensureHandleMovementsWorksForArmyMoves() {
         log.debug("Testing if handleMovements works properly!");
-
+        
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
 
         scheduleService.handleMovements();
