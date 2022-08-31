@@ -331,8 +331,4 @@ public class ScheduleServiceTest {
         log.info("Test passed: healing armies does nothing when no hour has passed");
     }
 
-    @Test
-    void ensureClockGetsReturned() {
-        assertThat(scheduleService.clock()).isEqualTo(Clock.systemDefaultZone());
-    }
 }
