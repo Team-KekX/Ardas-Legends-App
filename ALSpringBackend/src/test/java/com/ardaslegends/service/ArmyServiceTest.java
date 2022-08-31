@@ -67,7 +67,7 @@ public class ArmyServiceTest {
         unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
         unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
-        claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
+        claimBuild = ClaimBuild.builder().name("Nimheria").type(ClaimBuildType.CASTLE).siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).injured(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
