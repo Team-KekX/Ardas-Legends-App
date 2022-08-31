@@ -161,7 +161,7 @@ public class ScheduleService {
         Region finalCurrentRegion = currentRegion;
         int currentRegionIndex = path.indexOf(path.stream().filter(pe -> pe.hasRegion(finalCurrentRegion)).findFirst().get());
         PathElement nextPathRegion = null;
-        while(hoursUntilNextRegion < 0) {
+        while(hoursUntilNextRegion <= 0) {
             log.trace("Hours until next region: [{}]", hoursUntilNextRegion);
 
             /*
@@ -210,9 +210,9 @@ public class ScheduleService {
                             , movement.getArmy(), ServiceUtils.buildPathString(path));
                 log.trace("Next region is destination");
                 log.trace("Setting hoursUntilNextRegion to 0");
-                hoursUntilNextRegion = 0;
                 log.trace("Setting movement isActive = false");
                 movement.setIsCurrentlyActive(false);
+                break;
             }
             else {
 

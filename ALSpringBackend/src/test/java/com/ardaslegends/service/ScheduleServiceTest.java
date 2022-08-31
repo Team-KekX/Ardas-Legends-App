@@ -27,7 +27,6 @@ public class ScheduleServiceTest {
 
     private ScheduleService scheduleService;
     private MovementRepository mockMovementRepository;
-    private RegionRepository mockRegionRepository;
     private ArmyRepository mockArmyRepository;
     private PlayerRepository mockPlayerRepository;
     private MovementService mockMovementService;
@@ -65,7 +64,6 @@ public class ScheduleServiceTest {
     @BeforeEach
     void setup() {
         mockMovementRepository = mock(MovementRepository.class);
-        mockRegionRepository = mock(RegionRepository.class);
         mockArmyRepository = mock(ArmyRepository.class);
         mockPlayerRepository = mock(PlayerRepository.class);
         mockMovementService = mock(MovementService.class);
@@ -92,7 +90,7 @@ public class ScheduleServiceTest {
         path = List.of(pathElement, pathElement2, pathElement3, pathElement4);
         path2 = List.of(pathElement4, pathElement3, pathElement2);
         path3 = List.of(pathElement2, pathElement3);
-        startTime = LocalDateTime.now();
+        startTime = LocalDateTime.of(2022, 8, 31, 0, 0, 0);
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
@@ -107,11 +105,7 @@ public class ScheduleServiceTest {
                 .build();
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement2, movement3));
-        when(mockRegionRepository.findById(region.getId())).thenReturn(Optional.of(region));
-        when(mockRegionRepository.findById(region2.getId())).thenReturn(Optional.of(region2));
-        when(mockRegionRepository.findById(region3.getId())).thenReturn(Optional.of(region3));
-        when(mockRegionRepository.findById(region4.getId())).thenReturn(Optional.of(region4));
-        fixedClock = Clock.fixed(LocalDateTime.now().plusDays(1).plusHours(1).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        fixedClock = Clock.fixed(startTime.plusDays(1).plusSeconds(1).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
     }
@@ -156,7 +150,7 @@ public class ScheduleServiceTest {
     void ensureHandleMovementsExitsWhenHourHasNotPassed() {
         log.debug("Testing if handleMovements works properly!");
 
-        fixedClock = Clock.fixed(LocalDateTime.now().plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(startTime)), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
 
