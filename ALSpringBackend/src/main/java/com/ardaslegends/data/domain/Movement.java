@@ -3,11 +3,10 @@ package com.ardaslegends.data.domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -37,16 +36,32 @@ public final class Movement extends AbstractDomainEntity{
 
     private Boolean isCharMovement; //Should be true when army = null
 
-    @Embedded
-    private Path path;
+    @ElementCollection
+    private List<PathElement> path;
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     private Boolean isCurrentlyActive;
+    private Integer hoursUntilComplete;
+    private Integer hoursMoved;
+    private Integer hoursUntilNextRegion;
 
-    public String getStartRegionId() { return path.getStart(); }
-    public String getDestinationRegionId() { return path.getDestination(); }
+    public String getStartRegionId() { return path.get(0).getRegion().getId(); }
+    public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
+
+    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+        this.player = player;
+        this.army = army;
+        this.isCharMovement = isCharMovement;
+        this.path = path;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isCurrentlyActive = isCurrentlyActive;
+        this.hoursUntilComplete = hoursUntilComplete;
+        this.hoursUntilNextRegion = hoursUntilNextRegion;
+        this.hoursMoved = hoursMoved;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -59,5 +74,17 @@ public final class Movement extends AbstractDomainEntity{
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Movement{" +
+                "player=" + player +
+                ", army=" + army +
+                ", isCharMovement=" + isCharMovement +
+                ", path=" + path +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
     }
 }

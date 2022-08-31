@@ -15,5 +15,6 @@ public interface ArmyRepository extends JpaRepository<Army, String> {
 
     public Optional<Army> findArmyByName(String name);
     public List<Army> findAllByArmyType(ArmyType armyType);
+    public List<Army> findArmyByIsHealingTrue();
 
 }

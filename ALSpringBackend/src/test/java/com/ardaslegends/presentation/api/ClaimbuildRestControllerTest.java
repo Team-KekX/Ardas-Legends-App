@@ -1,9 +1,7 @@
 package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.presentation.api.ArmyRestController;
 import com.ardaslegends.data.presentation.api.ClaimbuildRestController;
-import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.InstanceOfAssertFactories.map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +43,9 @@ public class ClaimbuildRestControllerTest {
     private Army army1;
     private Army army2;
     private Army army3;
+    private PathElement pathElement;
+    private PathElement pathElement2;
+    private List<PathElement> path;
     private Movement movement;
     private ClaimBuild claimBuild;
     @BeforeEach
@@ -54,8 +54,8 @@ public class ClaimbuildRestControllerTest {
         claimbuildRestController = new ClaimbuildRestController(mockClaimbuildService);
         mockMvc = MockMvcBuilders.standaloneSetup(claimbuildRestController).build();
 
-        region1 = Region.builder().id("90").build();
-        region2 = Region.builder().id("91").build();
+        region1 = Region.builder().id("90").regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("91").regionType(RegionType.LAND).build();
         unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
         unit = Unit.builder().unitType(unitType).army(army1).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
@@ -65,7 +65,10 @@ public class ClaimbuildRestControllerTest {
         army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         army2 = Army.builder().name("Knights of Luk").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         army3 = Army.builder().name("Knights of Kek").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
-        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(Path.builder().path(List.of("90", "91")).build()).build();
+        pathElement = PathElement.builder().region(region1).actualCost(region1.getCost()).baseCost(region1.getCost()).build();
+        pathElement2 = PathElement.builder().region(region2).actualCost(region2.getCost()).baseCost(region2.getCost()).build();
+        path = List.of(pathElement, pathElement2);
+        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
 
         claimBuild.setStationedArmies(List.of(army1));
         claimBuild.setCreatedArmies(List.of(army2, army3));

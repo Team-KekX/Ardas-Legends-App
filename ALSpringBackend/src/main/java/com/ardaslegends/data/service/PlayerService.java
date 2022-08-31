@@ -11,9 +11,11 @@ import com.ardaslegends.data.service.external.MojangApiService;
 import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,7 +135,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Saving RPChar to the Database
 
         log.debug("Creating RpChar instance");
-        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null, false, false);
+        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null, false, false, null, null);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
         actualPlayer.setRpChar(createdChar);
@@ -565,6 +567,9 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.debug("Setting isHealing");
         rpchar.setIsHealing(true);
+        LocalDateTime now = LocalDateTime.now();
+        rpchar.setStartedHeal(now);
+        rpchar.setHealEnds(now.plusDays(2));
 
         log.debug("Persisting player");
         player = secureSave(player, playerRepository);
@@ -598,6 +603,8 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.debug("Setting isHealing to false");
         rpchar.setIsHealing(false);
+        rpchar.setStartedHeal(null);
+        rpchar.setHealEnds(null);
 
         log.debug("Persisting player");
         player = secureSave(player, playerRepository);
@@ -606,4 +613,8 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         return rpchar;
     }
 
+    public List<Player> savePlayers(List<Player> players) {
+        log.debug("Saving players [{}]", players);
+        return secureSaveAll(players, playerRepository);
+    }
 }

@@ -2,18 +2,17 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.domain.Path;
+import com.ardaslegends.data.domain.PathElement;
 import com.ardaslegends.data.service.Pathfinder;
+import com.ardaslegends.data.service.exceptions.PathfinderServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +43,9 @@ public class PathfinderTest {
         Faction faction_good = new Faction("Gondor", player, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "white", r1, "Double move in Gondor");
         Faction faction_bad = new Faction("Mordor", null, new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), "black", r3, "Move in Mordor");
 
-        Army army = new Army("Test army", ArmyType.ARMY, faction_good, r1, null, new ArrayList<>(), new ArrayList<>(), null, 15.0,false,  null, LocalDateTime.now(), false);
+        Army army = Army.builder().name("Test army").armyType(ArmyType.ARMY).faction(faction_good).currentRegion(r1).boundTo(null). units(new ArrayList<>())
+                .sieges(new ArrayList<>()).stationedAt(null).freeTokens(15.0).isHealing(false).healStart(null).healEnd(null).hoursHealed(0).hoursLeftHealing(0)
+                .originalClaimbuild(null).createdAt(null).isPaid(false).build();
         RPChar rpchar = RPChar.builder().name("Aldwin").currentRegion(r1).boundTo(army).build();
 
         ClaimBuild claimbuild = ClaimBuild.builder().name("claimbuild").region(r2).type(ClaimBuildType.CAPITAL).ownedBy(faction_good).coordinates(new Coordinate(1, 1, 1))
@@ -106,17 +107,17 @@ public class PathfinderTest {
 
     @Test
     void ensureNormalMoveSucceeds() {
-        Path path = pathfinder.findShortestWay(r1, r2, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(RegionType.MOUNTAIN.getCost());
+        List<PathElement> path = pathfinder.findShortestWay(r1, r2, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.MOUNTAIN.getCost());
 
         path = pathfinder.findShortestWay(r1, r5, player, false);
-        assertThat(path.getPath().size()).isEqualTo(3);
-        assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() + RegionType.HILL.getCost());
+        assertThat(path.size()).isEqualTo(3);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.LAND.getCost() + RegionType.HILL.getCost());
 
         path = pathfinder.findShortestWay(r1, r6, player, false);
-        assertThat(path.getPath().size()).isEqualTo(4);
-        assertThat(path.getCost()).isEqualTo(RegionType.LAND.getCost() * 2 + RegionType.HILL.getCost());
+        assertThat(path.size()).isEqualTo(4);
+        assertThat(sumPathCost(path)).isEqualTo(RegionType.LAND.getCost() * 2 + RegionType.HILL.getCost());
     }
 
     @Test
@@ -130,9 +131,9 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(r2, rs1, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(1);
+        List<PathElement> path = pathfinder.findShortestWay(r2, rs1, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(rs1.getCost());
     }
 
     @Test
@@ -146,15 +147,19 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(rs2, r6, player, false);
-        assertThat(path.getPath().size()).isEqualTo(2);
-        assertThat(path.getCost()).isEqualTo(2);
+        List<PathElement> path = pathfinder.findShortestWay(rs2, r6, player, false);
+        assertThat(path.size()).isEqualTo(2);
+        assertThat(sumPathCost(path)).isEqualTo(r6.getCost());
     }
 
     @Test
     void ensureThatMoveInEnemyFails() {
-        Path path = pathfinder.findShortestWay(r1, r3, player, false);
-        assertEquals(-1, path.getCost());
+        r1.setNeighboringRegions(Set.of(r3));
+        r3.setNeighboringRegions(Set.of(r1));
+
+        var result = assertThrows(PathfinderServiceException.class,
+                () -> pathfinder.findShortestWay(r1, r3, player, false));
+        assertEquals(result.getMessage(), PathfinderServiceException.noPathFound(r1.getId(), r3.getId()).getMessage());
     }
 
     /*
@@ -172,11 +177,15 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r2, r3, r6, rs1, rs2);
         mockRepository.saveAll(regionList);
 
-        Path path = pathfinder.findShortestWay(r2, r6, player, false);
+        List<PathElement> path = pathfinder.findShortestWay(r2, r6, player, false);
         /*assertThat(path.getPath().size()).isEqualTo(4);
         assertThat(path.getCost()).isEqualTo(RegionType.SEA.getCost() * 2 + RegionType.LAND.getCost() + 1);
         assertFalse(path.getPath().contains(r3));*/
 
+    }
+
+    private Integer sumPathCost(List<PathElement> path) {
+        return path.stream().map(PathElement::getActualCost).reduce(0, Integer::sum);
     }
 
 }

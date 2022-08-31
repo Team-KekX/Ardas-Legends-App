@@ -20,6 +20,6 @@ public enum RegionType {
     }
 
     public int getCost() {
-        return cost;
+        return cost * 24;
     }
 }

@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -45,6 +47,8 @@ public final class RPChar extends AbstractDomainEntity {
 
     private Boolean injured;
     private Boolean isHealing;
+    private LocalDateTime startedHeal;
+    private LocalDateTime healEnds;
 
     @Override
     public boolean equals(Object o) {

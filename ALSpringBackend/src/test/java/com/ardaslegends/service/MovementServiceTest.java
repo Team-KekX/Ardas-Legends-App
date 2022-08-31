@@ -16,8 +16,8 @@ import com.ardaslegends.data.service.exceptions.PlayerServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import com.ardaslegends.data.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.data.service.exceptions.movement.MovementServiceException;
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -56,6 +55,9 @@ public class MovementServiceTest {
     private UnitType unitType;
     private Unit unit;
     private Army army;
+    private PathElement pathElement1;
+    private PathElement pathElement2;
+    private List<PathElement> path;
     private Movement movement;
     private ClaimBuild claimBuild;
 
@@ -70,8 +72,8 @@ public class MovementServiceTest {
         mockPathfinder = mock(Pathfinder.class);
         movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder);
 
-        region1 = Region.builder().id("90").build();
-        region2 = Region.builder().id("91").build();
+        region1 = Region.builder().id("90").regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("91").regionType(RegionType.LAND).build();
         unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
         unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).foodStockpile(10).build();
@@ -79,7 +81,9 @@ public class MovementServiceTest {
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
-        Path path = Path.builder().path(List.of("90","91")).cost(10).build();
+        pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(region1.getCost()).build();
+        pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
+        path = List.of(pathElement1, pathElement2);
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(path).build();
 
         when(mockPlayerService.getPlayerByDiscordId(player.getDiscordID())).thenReturn(player);
@@ -102,15 +106,13 @@ public class MovementServiceTest {
         Region toRegion = Region.builder().id("92").build();
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
-        Path endPath = Path.builder().path(List.of("91", "92")).cost(2).build();
-
         log.trace("Initializing Dto");
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
 
         log.trace("Mocking methods");
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.of(toRegion));
-        when(mockPathfinder.findShortestWay(fromRegion, toRegion, player, true)).thenReturn(endPath);
+        when(mockPathfinder.findShortestWay(fromRegion, toRegion, player, true)).thenReturn(path);
         when(mockMovementRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         //Act
@@ -121,7 +123,7 @@ public class MovementServiceTest {
         assertThat(createdMovement.getPlayer()).isEqualTo(player);
         assertThat(createdMovement.getIsCharMovement()).isTrue();
         assertThat(createdMovement.getStartTime().toLocalDate()).isEqualTo(LocalDate.now());
-        assertThat(createdMovement.getEndTime().toLocalDate()).isEqualTo(LocalDate.now().plusDays(endPath.getCost()));
+        assertThat(createdMovement.getEndTime().toLocalDate()).isEqualTo(LocalDate.now().plusDays(ServiceUtils.getTotalPathCost(path)/24));
         assertThat(createdMovement.getArmy()).isNull();
 
         log.info("Test passed: createRpCharMovement works with valid values!");
@@ -322,8 +324,7 @@ public class MovementServiceTest {
         Region fromRegion = Region.builder().id("91").build();
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
-        Path endPath = Path.builder().path(List.of("91", "92")).cost(2).build();
-        Movement movement = Movement.builder().isCharMovement(true).player(player).path(endPath).isCurrentlyActive(true).build();
+        Movement movement = Movement.builder().isCharMovement(true).player(player).path(path).isCurrentlyActive(true).build();
 
         log.trace("Initializing Dto");
         DiscordIdDto dto = new DiscordIdDto("1234");
@@ -518,7 +519,6 @@ public class MovementServiceTest {
         String armyName = "Knights of Gondor";
         Faction faction = Faction.builder().name("Gondor").build();
         Army army = Army.builder().name(armyName).faction(faction).build();
-        Path path = Path.builder().path(List.of("90", "92")).build();
         Movement movement = Movement.builder().isCharMovement(false).army(army).path(path).isCurrentlyActive(true).build();
         RPChar rpchar = RPChar.builder().name("Belegorn").boundTo(army).build();
         Player player = Player.builder().ign("Luktronic").discordID("1234").faction(faction).rpChar(rpchar).build();

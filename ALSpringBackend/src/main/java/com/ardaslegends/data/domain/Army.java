@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,11 @@ public final class Army extends AbstractDomainEntity {
     @NotNull(message = "Army: freeTokens must not be null")
     private Double freeTokens; //how many free unit tokens this army has left
 
-    private boolean isHealing = false;
+    private Boolean isHealing = false;
+    private LocalDateTime healStart;
+    private LocalDateTime healEnd;
+    private Integer hoursHealed;
+    private Integer hoursLeftHealing;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_origin_claimbuild"))
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
@@ -69,10 +74,10 @@ public final class Army extends AbstractDomainEntity {
     @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
     private List<Movement> movements = new ArrayList<>();
 
-    @Column(name = "is_paid")
     private Boolean isPaid;
 
-    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
+    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, LocalDateTime healStart, LocalDateTime healEnd,
+                Integer hoursHealed, Integer hoursLeftHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
         this.name = name;
         this.armyType = armyType;
         this.faction = faction;
@@ -83,6 +88,10 @@ public final class Army extends AbstractDomainEntity {
         this.stationedAt = stationedAt;
         this.freeTokens = freeTokens;
         this.isHealing = isHealing;
+        this.healStart = healStart;
+        this.healEnd = healEnd;
+        this.hoursHealed = hoursHealed;
+        this.hoursLeftHealing = hoursLeftHealing;
         this.originalClaimbuild = originalClaimbuild;
         this.createdAt = createdAt;
         this.isPaid = isPaid;
@@ -108,5 +117,30 @@ public final class Army extends AbstractDomainEntity {
 
     public boolean allUnitsAlive() {
         return this.units.stream().allMatch(unit -> Objects.equals(unit.getAmountAlive(), unit.getCount()));
+    }
+
+    @JsonIgnore
+    public int getAmountOfHealHours() {
+        double tokensMissing = units.stream()
+                .map(unit -> ((unit.getCount()-unit.getAmountAlive())) * unit.getUnitType().getTokenCost())
+                .reduce(0.0, Double::sum);
+        double hoursHeal = tokensMissing * 24 / 6;
+        int divisor = 24;
+        if(this.stationedAt.getType().equals(ClaimBuildType.STRONGHOLD)) {
+            hoursHeal /= 2;
+            divisor = 12;
+        }
+        int intHoursHeal = (int) Math.ceil(hoursHeal);
+        int hoursLeftUntil24h = divisor - (intHoursHeal % divisor);
+        return intHoursHeal + hoursLeftUntil24h;
+    }
+
+    @JsonIgnore
+    public void resetHealingStats() {
+        this.setIsHealing(false);
+        this.setHealStart(null);
+        this.setHealEnd(null);
+        this.setHoursHealed(0);
+        this.setHoursLeftHealing(0);
     }
 }

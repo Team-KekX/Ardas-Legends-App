@@ -71,6 +71,15 @@ public abstract class AbstractService<T extends AbstractDomainEntity, R extends 
        }
     }
 
+    public List<T> secureSaveAll(List<T> entities, R repository) {
+        try {
+            return repository.saveAll(entities);
+        } catch (PersistenceException pEx) {
+            log.warn("Encountered Database Error while saving entity [{}]", entities);
+            throw ServiceException.cannotSaveEntity(entities, pEx);
+        }
+    }
+
     public void secureDelete(T entity, R repository) {
         try {
             repository.delete(entity);

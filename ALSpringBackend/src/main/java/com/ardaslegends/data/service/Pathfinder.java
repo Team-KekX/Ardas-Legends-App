@@ -2,13 +2,16 @@ package com.ardaslegends.data.service;
 
 import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.repository.RegionRepository;
+import com.ardaslegends.data.service.exceptions.PathfinderServiceException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Builder
@@ -23,7 +26,7 @@ public class Pathfinder {
    * Return an object which contains the path and sum of weights
    */
 
-  public Path findShortestWay(
+  public List<PathElement> findShortestWay(
           Region startRegion,
           Region endRegion,
           Player player,
@@ -31,6 +34,11 @@ public class Pathfinder {
   ){
     log.info("Finding Path for player '{}': from '{}' to '{}' isRpChar: {}",player.getIgn(), startRegion.getId(), endRegion.getId(), isCharacterMove);
     log.debug("Movement is army move: {}", (!isCharacterMove));
+
+    if(startRegion.equals(endRegion)) {
+      log.warn("StartRegion [{}] is the same as endRegion [{}]", startRegion, endRegion);
+      throw PathfinderServiceException.alreadyInRegion();
+    }
 
     log.debug("Initializing data for Pathfinding...");
     //smallest weights between startRegion and all the other nodes
@@ -94,7 +102,7 @@ public class Pathfinder {
 
           if (isNotClaimedByAlly && isNotClaimedByFaction && isNotUnclaimed) {
             log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies!", neighbourRegion.getId());
-            thisDist = 1000;
+            thisDist = 99999999;
           }
         }
 
@@ -118,7 +126,7 @@ public class Pathfinder {
           // Should be part of the next code review.
           if (!canEmbark) {
             log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
-            thisDist = 1000;
+            thisDist = 99999999;
           }
         } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) { //Checks if current region is Sea and neighbor is land
           log.debug("Current region is Sea region and neighbors land region - can disembark");
@@ -168,32 +176,41 @@ public class Pathfinder {
     }
 
     //get the shortest path into an array
-    ArrayList<String> path = new ArrayList<>();
+    ArrayList<PathElement> path = new ArrayList<>();
 
     log.trace("Building the Path");
     currentNode = endRegion;
     while (!Objects.equals(currentNode.getId(), startRegion.getId())) {
-      path.add(currentNode.getId());
+      log.trace("Getting the cost of the path");
+      if(smallestWeights.get(currentNode) >= 99999999) {
+        log.warn("Could not find a valid path from region [{}] to region [{}]", startRegion, endRegion);
+        throw PathfinderServiceException.noPathFound(startRegion.getId(), endRegion.getId());
+      }
+      int baseCost = currentNode.getCost();
+      int actualCost = baseCost;
+      if(isCharacterMove) {
+        log.trace("Halving the cost since the movement is a RpChar move");
+        actualCost = (int) (baseCost / 2.0);
+      }
+      PathElement pathElement = new PathElement(actualCost, baseCost, currentNode);
       currentNode = prevNodes.get(currentNode);
+      path.add(pathElement);
     }
-    path.add(startRegion.getId());
+    PathElement pathElement = new PathElement(0, startRegion.getCost(), startRegion);
+    path.add(pathElement);
 
     log.trace("Reversing the path so it starts with the start region");
     //reverse the path so it starts with startRegion
     Collections.reverse(path);
-    log.trace("Getting the cost of the path");
-    int cost = smallestWeights.get(endRegion);
-    if (isCharacterMove) {
-      log.trace("Halving the cost since the movement is a RpChar move");
-      cost = (int) Math.ceil(cost / 2.0);
-    }
-    if (cost >= 1000) {
-      cost = -1;
-    }
-    log.debug("Final cost is {}", cost);
+
+    log.trace("Final path is now: {}", ServiceUtils.buildPathString(path));
+
+    int summedCost = ServiceUtils.getTotalPathCost(path);
+
+    log.debug("Final cost is {}", summedCost);
 
     log.info("Finished finding shortest path from {} to {}", startRegion.getId(), endRegion.getId());
-    log.info("Cost: {} - Path: {}", cost, String.join(" -> ", path));
-    return new Path(cost, path);
+    log.info("Cost: {}h - Path: {}", summedCost, path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> ")));
+    return path;
   }
 }
