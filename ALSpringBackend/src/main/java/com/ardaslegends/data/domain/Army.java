@@ -122,12 +122,17 @@ public final class Army extends AbstractDomainEntity {
     @JsonIgnore
     public int getAmountOfHealHours() {
         double tokensMissing = units.stream()
-                .map(unit -> (unit.getCount()-unit.getAmountAlive()) * unit.getUnitType().getTokenCost())
+                .map(unit -> ((unit.getCount()-unit.getAmountAlive())) * unit.getUnitType().getTokenCost())
                 .reduce(0.0, Double::sum);
         double hoursHeal = tokensMissing * 24 / 6;
-        if(this.stationedAt.getType().equals(ClaimBuildType.STRONGHOLD))
+        int divisor = 24;
+        if(this.stationedAt.getType().equals(ClaimBuildType.STRONGHOLD)) {
             hoursHeal /= 2;
-        return (int) Math.ceil(hoursHeal);
+            divisor = 12;
+        }
+        int intHoursHeal = (int) Math.ceil(hoursHeal);
+        int hoursLeftUntil24h = divisor - (intHoursHeal % divisor);
+        return intHoursHeal + hoursLeftUntil24h;
     }
 
     @JsonIgnore

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,8 +83,10 @@ public class ScheduleServiceTest {
 
         unitType = UnitType.builder().unitName("Gondor Soldier").tokenCost(1.0).build();
         unitType2 = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
-        unitType3 = UnitType.builder().unitName("Tower Guaard").tokenCost(2.0).build();
+        unitType3 = UnitType.builder().unitName("Tower Guard").tokenCost(2.0).build();
         unit = Unit.builder().unitType(unitType).amountAlive(2).count(4).build();
+        unit2 = Unit.builder().unitType(unitType2).amountAlive(2).count(5).build();
+        unit3 = Unit.builder().unitType(unitType3).amountAlive(2).count(4).build();
         region = Region.builder().id("91").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("92").regionType(RegionType.LAND).build();
         region3 = Region.builder().id("93").regionType(RegionType.LAND).build();
@@ -130,7 +133,9 @@ public class ScheduleServiceTest {
         movement3.setStartTime(startTime.minusMonths(1));
         movement3.setEndTime(startTime.minusMonths(1).plusHours(ServiceUtils.getTotalPathCost(path3)));
 
-        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
+        List<Movement> movements = List.of(movement, movement3);
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(movements);
+        when(mockMovementService.saveMovements(movements)).thenReturn(movements);
 
         scheduleService.handleMovements();
 
@@ -154,7 +159,9 @@ public class ScheduleServiceTest {
         movement2.setHoursUntilComplete(ServiceUtils.getTotalPathCost(path2));
         movement2.setHoursUntilNextRegion(pathElement3.getActualCost());
 
-        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement2));
+        List<Movement> movements = List.of(movement2);
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(movements);
+        when(mockMovementService.saveMovements(movements)).thenReturn(movements);
 
         scheduleService.handleMovements();
 
@@ -170,7 +177,9 @@ public class ScheduleServiceTest {
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
 
-        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement3));
+        List<Movement> movements = List.of(movement, movement3);
+        when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(movements);
+        when(mockMovementService.saveMovements(movements)).thenReturn(movements);
 
         scheduleService.handleMovements();
 
@@ -198,7 +207,9 @@ public class ScheduleServiceTest {
 
         log.info("Current time: [{}] - start time: [{}] - end time: [{}]", LocalDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
 
-        when(mockPlayerRepository.findPlayerByRpCharIsHealingTrue()).thenReturn(List.of(player, player2));
+        List<Player> players = List.of(player, player2);
+        when(mockPlayerRepository.findPlayerByRpCharIsHealingTrue()).thenReturn(players);
+        when(mockPlayerService.savePlayers(players)).thenReturn(players);
 
         scheduleService.handleHealings();
 
@@ -213,12 +224,111 @@ public class ScheduleServiceTest {
     void ensureHealingWorksForArmies() {
         log.debug("Testing if healing armies works");
 
+        army.setUnits(List.of(unit3, unit2, unit));
+        army.setStationedAt(claimBuild);
         army.setIsHealing(true);
         army.setHealStart(startTime);
         army.setHealEnd(startTime.plusHours(army.getAmountOfHealHours()));
-        
+        army.setHoursHealed(0);
+        army.setHoursLeftHealing(army.getAmountOfHealHours());
 
+        List<Army> armies = List.of(army);
+        when(mockArmyRepository.findArmyByIsHealingTrue()).thenReturn(armies);
+        when(mockArmyService.saveArmies(armies)).thenReturn(armies);
+
+        scheduleService.handleHealings();
+
+        assertThat(unit.getAmountAlive()).isEqualTo(unit.getCount());
+        assertThat(unit2.getAmountAlive()).isEqualTo(4);
+        assertThat(unit3.getAmountAlive()).isEqualTo(2);
         log.info("Test passed: healing armies works");
+    }
+
+    @Test
+    void ensureHealingWorksForArmiesWhenHealingIsDone() {
+        log.debug("Testing if healing armies works when healing is done");
+
+
+        army.setUnits(List.of(unit3, unit2, unit));
+        army.setStationedAt(claimBuild);
+        army.setIsHealing(true);
+        army.setHealStart(startTime.minusDays(3));
+        army.setHealEnd(startTime.minusDays(3).plusHours(army.getAmountOfHealHours()));
+        army.setHoursHealed(0);
+        army.setHoursLeftHealing(army.getAmountOfHealHours());
+        log.info("Army needs to heal for [{}] hours", army.getAmountOfHealHours());
+
+        List<Army> armies = List.of(army);
+        when(mockArmyRepository.findArmyByIsHealingTrue()).thenReturn(armies);
+        when(mockArmyService.saveArmies(armies)).thenReturn(armies);
+
+        scheduleService.handleHealings();
+
+        assertThat(unit.getAmountAlive()).isEqualTo(unit.getCount());
+        assertThat(unit2.getAmountAlive()).isEqualTo(unit2.getCount());
+        assertThat(unit3.getAmountAlive()).isEqualTo(unit3.getCount());
+        assertThat(army.getIsHealing()).isFalse();
+        assertThat(army.getHealStart()).isNull();
+        assertThat(army.getHealEnd()).isNull();
+        assertThat(army.getHoursHealed()).isEqualTo(0);
+        assertThat(army.getHoursLeftHealing()).isEqualTo(0);
+        assertThat(army.allUnitsAlive()).isTrue();
+        log.info("Test passed: healing armies works when healing is done");
+    }
+
+    @Test
+    void ensureHealingIsDoubledInStrongholds() {
+        log.debug("Testing if healing armies is double the speed when healing in strongholds");
+
+        army.setUnits(List.of(unit3, unit2, unit));
+        claimBuild.setType(ClaimBuildType.STRONGHOLD);
+        army.setStationedAt(claimBuild);
+        army.setIsHealing(true);
+        army.setHealStart(startTime);
+        army.setHealEnd(startTime.plusHours(army.getAmountOfHealHours()));
+        army.setHoursHealed(0);
+        army.setHoursLeftHealing(army.getAmountOfHealHours());
+
+        List<Army> armies = List.of(army);
+        when(mockArmyRepository.findArmyByIsHealingTrue()).thenReturn(armies);
+        when(mockArmyService.saveArmies(armies)).thenReturn(armies);
+
+        scheduleService.handleHealings();
+
+        assertThat(unit.getAmountAlive()).isEqualTo(unit.getCount());
+        assertThat(unit2.getAmountAlive()).isEqualTo(unit2.getCount());
+        assertThat(unit3.getAmountAlive()).isEqualTo(unit3.getCount());
+        log.info("Test passed: healing armies is double the speed when healing in strongholds");
+    }
+
+    @Test
+    void ensureHealingArmiesDoesNothingWhenNoHourHasPassed() {
+        log.debug("Testing if healing armies does nothing when no hour has passed");
+
+        int before1 = unit.getAmountAlive();
+        int before2 = unit2.getAmountAlive();
+        int before3 = unit3.getAmountAlive();
+
+        army.setUnits(List.of(unit3, unit2, unit));
+        army.setStationedAt(claimBuild);
+        army.setIsHealing(true);
+        army.setHealStart(startTime);
+        army.setHealEnd(startTime.plusHours(army.getAmountOfHealHours()));
+        army.setHoursHealed(0);
+        army.setHoursLeftHealing(army.getAmountOfHealHours());
+
+        List<Army> armies = List.of(army);
+        when(mockArmyRepository.findArmyByIsHealingTrue()).thenReturn(armies);
+        when(mockArmyService.saveArmies(armies)).thenReturn(armies);
+        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        when(mockClock.instant()).thenReturn(fixedClock.instant());
+        when(mockClock.getZone()).thenReturn(fixedClock.getZone());
+        scheduleService.handleHealings();
+
+        assertThat(unit.getAmountAlive()).isEqualTo(before1);
+        assertThat(unit2.getAmountAlive()).isEqualTo(before2);
+        assertThat(unit3.getAmountAlive()).isEqualTo(before3);
+        log.info("Test passed: healing armies does nothing when no hour has passed");
     }
 
     @Test

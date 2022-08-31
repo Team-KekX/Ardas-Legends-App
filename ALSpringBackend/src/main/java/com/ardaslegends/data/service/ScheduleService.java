@@ -263,21 +263,13 @@ public class ScheduleService {
         }
         log.debug("Hours left: [{}]", hoursLeft);
 
-        if(hoursLeft <= 0) {
-            log.info("Healing of army [{}] ended - healing all units to max", army);
-            army.getUnits()
-                    .forEach(unit -> unit.setAmountAlive(unit.getCount()));
-
-            army.resetHealingStats();
-            return;
-        }
 
         /*
         We get the hours healed since last time by subtracting the current hours left
         with the last hours left (the value that was last stored in army)
          */
 
-        int hoursHealedSinceLastTime = army.getHoursHealed() - hoursLeft;
+        int hoursHealedSinceLastTime = army.getHoursLeftHealing() - hoursLeft;
         log.debug("Hours healed since last time: [{}]", hoursHealedSinceLastTime);
 
         //If we didn't move an hour since last time, exit function
@@ -313,7 +305,7 @@ public class ScheduleService {
          */
 
         log.trace("Entering loop");
-        while(hoursHealedSinceLastReplenish > divisor) {
+        while(hoursHealedSinceLastReplenish >= divisor) {
             log.trace("hoursHealedSinceLastReplenish: [{}]", hoursHealedSinceLastReplenish);
             log.trace("Subtracting divisor [{}] from hoursHealedSinceLastReplenish [{}]", divisor, hoursHealedSinceLastReplenish);
             hoursHealedSinceLastReplenish -= divisor;
@@ -369,6 +361,16 @@ public class ScheduleService {
                 }
             }
             log.trace("Exited loop");
+
+            if(!army.allUnitsAlive()) {
+                log.trace("Army not fully healed - updating parameters");
+                log.trace("Setting the new amount of hours healed to [{}]", army.getHoursHealed() + hoursHealedSinceLastTime);
+                army.setHoursHealed(army.getHoursHealed() + hoursHealedSinceLastTime);
+                log.trace("Setting new hours left to [{}]", hoursLeft);
+                army.setHoursLeftHealing(hoursLeft);
+            }
+
+            log.debug("Finished army [{}]", army);
         }
     }
 
