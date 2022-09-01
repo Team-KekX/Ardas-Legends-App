@@ -1,5 +1,5 @@
 const fs = require("fs");
-const {staffRoles} = require("../configs/config.json");
+const {staffRoles, rpCommandsChannelID} = require("../configs/config.json");
 const {MessageEmbed} = require("discord.js");
 
 function isLongText(text) {
@@ -137,6 +137,35 @@ function capitalizeFirstLetters(text) {
     return arr_text.join(" ");
 }
 
+function getFactionBanner2(faction_name) {
+    return `/Bot/assets/banners/${faction_name}`+`_Banner.png`;
+}
+
+function getFactionBanner(faction_name, isSubcommand) {
+    if (isSubcommand) {
+        return `../../assets/banners/${faction_name}`+`_Banner.png`;
+    }
+    return `../assets/banners/${faction_name}`+`_Banner.png`;
+}
+
+function interactionInAllowedChannel(interaction) {
+    if (interaction.channel.id != rpCommandsChannelID) {
+        return false
+    }
+    else {
+        return true;
+    }
+}
+
+async function wrongChannelReply(interaction) {
+    const replyEmbed = new MessageEmbed()
+            .setTitle("Wrong Channel")
+            .setColor("RED")
+            .setDescription("Only allowed to post commands in War Commands Channel")
+            .setTimestamp()
+        await interaction.reply({embeds: [replyEmbed], ephemeral:true})
+}
+
 module.exports = {
 
     separate_long_text(text, look_for_format = false) {
@@ -148,5 +177,9 @@ module.exports = {
     createArmyUnitListString: createArmyUnitListString,
     createUnpaidStringArray: createUnpaidStringArray,
     saveExecute: saveExecute,
-    createProductionSiteString: createProductionSiteString
+    createProductionSiteString: createProductionSiteString,
+    getFactionBanner: getFactionBanner,
+    getFactionBanner2: getFactionBanner2,
+    interactionInAllowedChannel:interactionInAllowedChannel,
+    wrongChannelReply:wrongChannelReply,
 };
