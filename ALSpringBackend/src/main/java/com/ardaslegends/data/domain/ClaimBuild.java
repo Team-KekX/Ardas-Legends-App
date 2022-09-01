@@ -1,5 +1,6 @@
 package com.ardaslegends.data.domain;
 
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

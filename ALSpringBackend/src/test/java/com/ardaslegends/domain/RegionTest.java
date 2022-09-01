@@ -1,16 +1,93 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.data.domain.ClaimBuild;
+import com.ardaslegends.data.domain.Faction;
 import com.ardaslegends.data.domain.Region;
 import com.ardaslegends.data.domain.RegionType;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class RegionTest {
+
+    Faction gondor;
+    Faction mordor;
+    Set<ClaimBuild> cbSet;
+    Set<Faction> factionSet;
+    Region region;
+    Faction factionWithNoCbInClaimedBy;
+    @BeforeEach
+    void setup() {
+
+        gondor = Faction.builder().name("Gondor").build();
+        mordor = Faction.builder().name("Mordor").build();
+        factionWithNoCbInClaimedBy = Faction.builder().name("No Cb Faction").regions(new HashSet<>()).build();
+
+        factionSet = new HashSet<>();
+        factionSet.addAll(Set.of(mordor,gondor,factionWithNoCbInClaimedBy));
+
+        ClaimBuild claimBuild1 = ClaimBuild.builder().name("kek1").ownedBy(gondor).build();
+        ClaimBuild claimBuild2 = ClaimBuild.builder().name("kek2").ownedBy(gondor).build();
+        ClaimBuild claimBuild3 = ClaimBuild.builder().name("kek3").ownedBy(gondor).build();
+        ClaimBuild claimBuild4 = ClaimBuild.builder().name("kek4").ownedBy(gondor).build();
+        ClaimBuild claimBuild5 = ClaimBuild.builder().name("kek5").ownedBy(gondor).build();
+
+        ClaimBuild claimBuild6 = ClaimBuild.builder().name("kek6").ownedBy(mordor).build();
+        ClaimBuild claimBuild7 = ClaimBuild.builder().name("kek7").ownedBy(mordor).build();
+        ClaimBuild claimBuild8 = ClaimBuild.builder().name("kek8").ownedBy(mordor).build();
+
+        cbSet = new HashSet<>();
+        cbSet.addAll(Set.of(claimBuild1, claimBuild2, claimBuild3, claimBuild4, claimBuild5, claimBuild6, claimBuild7, claimBuild8));
+
+        region = Region.builder().claimBuilds(cbSet).claimedBy(factionSet).build();
+        factionWithNoCbInClaimedBy.getRegions().add(region);
+    }
+
+    @Test
+    void ensureRemoveFactionFromClaimedByWorksProperly() {
+
+        region.removeFactionFromClaimedBy(factionWithNoCbInClaimedBy);
+
+        assertThat(region.getClaimedBy().contains(factionWithNoCbInClaimedBy)).isFalse();
+        assertThat(region.isHasOwnershipChanged()).isTrue();
+        assertThat(factionWithNoCbInClaimedBy.getRegions().contains(region)).isFalse();
+
+    }
+
+    @Test
+    void ensureAddFactionToClaimedByWorksProperly() {
+
+        Faction faction = Faction.builder().name("New Faction cope").regions(new HashSet<>()).build();
+
+        region.addFactionToClaimedBy(faction);
+
+        assertThat(region.getClaimedBy().contains(faction)).isTrue();
+        assertThat(faction.getRegions().contains(region)).isTrue();
+        assertThat(region.isHasOwnershipChanged()).isTrue();
+
+    }
+
+    @Test
+    void ensureHasClaimbuildInRegionWorksProperly() {
+        log.debug("Testing if hasClaimbuildInRegion works properly");
+
+        var result = region.hasClaimbuildInRegion(gondor);
+
+        assertThat(result).isTrue();
+
+        var result2 = region.hasClaimbuildInRegion(Faction.builder().name("False2").build());
+
+        assertThat(result2).isFalse();
+    }
 
     @Test
     void ensureEqualsWorksCorrectly() {

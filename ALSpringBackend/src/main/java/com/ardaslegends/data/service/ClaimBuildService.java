@@ -141,6 +141,9 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
             claimBuild.setSiege(dto.siege());
             claimBuild.setNumberOfHouses(dto.numberOfHouses());
             claimBuild.setBuiltBy(builtBy);
+
+            log.debug("Setting the region [{}] to be claimed by [{}]", region.getId(), faction.getName());
+            region.addFactionToClaimedBy(faction);
         }
 
         log.trace("Calling createProductionSitesFromString");

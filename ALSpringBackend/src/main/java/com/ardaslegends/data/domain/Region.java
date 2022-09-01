@@ -1,7 +1,9 @@
 package com.ardaslegends.data.domain;
 
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 
+@Slf4j
 @Entity
 @Table(name = "regions")
 @JsonIdentityInfo(
@@ -32,11 +35,11 @@ public final class Region extends AbstractDomainEntity {
     @JoinTable(name = "faction_claimed_regions",
             joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
             inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
-    private Set<Faction> claimedBy; //the list of factions which the region is claimed by
+    private Set<Faction> claimedBy = new HashSet<>(); //the list of factions which the region is claimed by
 
     @JsonIgnore
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "region")
-    private Set<ClaimBuild> claimBuilds; //list of claimbuilds in this region
+    private Set<ClaimBuild> claimBuilds = new HashSet<>(); //list of claimbuilds in this region
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "region_neighbours",
@@ -44,6 +47,21 @@ public final class Region extends AbstractDomainEntity {
             inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_neighbour")) })
     private Set<Region> neighboringRegions = new HashSet<>(); //list of neighboring regions
 
+    @Column(name = "has_ownership_changed_since_last_claimmap_update")
+    private boolean hasOwnershipChanged;
+
+    @JsonIgnore
+    public Region(String id, String name, RegionType regionType, Set<Faction> claimedBy, Set<ClaimBuild> claimBuilds, Set<Region> neighboringRegions) {
+        this.id = id;
+        this.name = name;
+        this.regionType = regionType;
+        this.claimedBy = claimedBy;
+        this.claimBuilds = claimBuilds;
+        this.neighboringRegions = neighboringRegions;
+        this.hasOwnershipChanged = false;
+    }
+
+    @JsonIgnore
     /**
      *
      * @param possibleNeighbour, the region that you want to add, Not-Null-Constraint
@@ -60,12 +78,60 @@ public final class Region extends AbstractDomainEntity {
 
     }
 
+    @JsonIgnore
+    public void addFactionToClaimedBy(Faction faction) {
+        log.debug("Add claiming faction [{}] to region [{}]", faction, this.id);
+
+        Objects.requireNonNull(faction, "Faction must not be nulL!");
+        ServiceUtils.checkBlankString(faction.getName(),"faction name");
+
+        if(!this.claimedBy.contains(faction)) {
+            log.debug("Faction [{}] is not in region [{}]'s claimedBy Set, adding it", faction, this.id);
+            this.claimedBy.add(faction);
+            faction.getRegions().add(this);
+
+            this.hasOwnershipChanged = true;
+            log.debug("Also setting hasOwnershipChanged to true [ownershipChanged: {}]", this.hasOwnershipChanged);
+        }
+
+        log.debug("Faction [{}] is in region [{}]'s claimedBy Set");
+    }
+
+    @JsonIgnore
+    public void removeFactionFromClaimedBy(Faction faction) {
+        log.debug("Remove claiming faction [{}] from region [{}]", faction, this.id);
+
+        Objects.requireNonNull(faction, "Faction must not be nulL!");
+        ServiceUtils.checkBlankString(faction.getName(),"faction name");
+
+        if(!hasClaimbuildInRegion(faction)) {
+            log.debug("Faction [{}] is in region [{}]'s claimedBy Set, removing it", faction, this.id);
+            this.claimedBy.remove(faction);
+            faction.getRegions().remove(this);
+
+            this.hasOwnershipChanged = true;
+            log.debug("Also setting hasOwnershipChanged to true [ownershipChanged: {}]", this.hasOwnershipChanged);
+        }
+
+        log.debug("Faction [{}] is not in region [{}]'s claimedBy Set", faction, this.id);
+    }
     public Set<Region> getNeighboringRegions() {
         return Collections.unmodifiableSet(neighboringRegions);
     }
 
     public int getCost() {
         return regionType.getCost();
+    }
+
+    @JsonIgnore
+    public boolean hasClaimbuildInRegion(Faction faction) {
+        Objects.requireNonNull(faction, "Faction must not be null");
+
+        boolean hasClaimbuild = claimBuilds.stream()
+                .anyMatch(claimBuild -> claimBuild.getOwnedBy().equals(faction));
+
+        log.debug("Does faction [{}] have a claimbuild in region [{}]? Returning [{}]", faction.getName(), this.id, hasClaimbuild);
+        return hasClaimbuild;
     }
 
     @Override
