@@ -54,12 +54,6 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Player fetchedPlayer = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.debug("Assembling Units Map, fetching units");
-        var unitTypes = Arrays.stream(dto.units())
-                .collect(Collectors.toMap(
-                        unitTypeDto -> unitTypeService.getUnitTypeByName(unitTypeDto.unitTypeName()), // Key
-                        UnitTypeDto::amount, // Value
-                        ((integer, integer2) -> integer + integer2) // Merge function, called on duplicate key
-                ));
 
         log.trace("Fetching Claimbuild with name [{}]", dto.claimBuildName());
         Optional<ClaimBuild> fetchedClaimbuild = secureFind(dto.claimBuildName(), claimBuildRepository::findById);
@@ -91,10 +85,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.trace("Calculating amount of tokens used");
         double tokenCount = 0;
         List<Unit> units = new ArrayList<>();
-        for (UnitType unit: unitTypes.keySet()) {
+        for (UnitTypeDto unitDto: dto.units()) {
+            UnitType type = unitTypeService.getUnitTypeByName(unitDto.unitTypeName());
             // Get the UnitType cost and multiply it by the count of that unit, which is stored in the units Map
-            tokenCount += unit.getTokenCost() * unitTypes.get(unit);
-            units.add(new Unit(null, unit, null, unitTypes.get(unit),unitTypes.get(unit)));
+            Unit unit = new Unit(null, type, null, unitDto.amount(), unitDto.amount(), unitDto.mounted());
+            units.add(unit);
+            tokenCount += unit.getCost() * unit.getCount();
         }
 
         log.debug("Calculated Token count is [{}]", tokenCount);
@@ -783,9 +779,15 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             log.trace("Length of split: [{}]", unit.length);
 
             String unitName = unit[0];
+            boolean isMounted = false;
+            if(unitName.toLowerCase().startsWith("mounted")) {
+                log.trace("Unit is mounted");
+                isMounted = true;
+                unitName = unitName.split("ounted")[1].stripLeading();
+            }
             int amount = Integer.parseInt(unit[1]);
 
-            units.add(new UnitTypeDto(unitName, amount));
+            units.add(new UnitTypeDto(unitName, amount, isMounted));
         }
 
         return units.toArray(new UnitTypeDto[0]);

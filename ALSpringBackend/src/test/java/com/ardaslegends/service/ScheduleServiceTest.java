@@ -84,9 +84,9 @@ public class ScheduleServiceTest {
         unitType = UnitType.builder().unitName("Gondor Soldier").tokenCost(1.0).build();
         unitType2 = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
         unitType3 = UnitType.builder().unitName("Tower Guard").tokenCost(2.0).build();
-        unit = Unit.builder().unitType(unitType).amountAlive(2).count(4).build();
-        unit2 = Unit.builder().unitType(unitType2).amountAlive(2).count(5).build();
-        unit3 = Unit.builder().unitType(unitType3).amountAlive(2).count(4).build();
+        unit = Unit.builder().unitType(unitType).amountAlive(2).count(4).isMounted(false).build();
+        unit2 = Unit.builder().unitType(unitType2).amountAlive(2).count(5).isMounted(false).build();
+        unit3 = Unit.builder().unitType(unitType3).amountAlive(2).count(4).isMounted(false).build();
         region = Region.builder().id("91").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("92").regionType(RegionType.LAND).build();
         region3 = Region.builder().id("93").regionType(RegionType.LAND).build();
@@ -280,12 +280,14 @@ public class ScheduleServiceTest {
     void ensureHealingIsDoubledInStrongholds() {
         log.debug("Testing if healing armies is double the speed when healing in strongholds");
 
+        unit3.setIsMounted(true);
+
         army.setUnits(List.of(unit3, unit2, unit));
         claimBuild.setType(ClaimBuildType.STRONGHOLD);
         army.setStationedAt(claimBuild);
         army.setIsHealing(true);
-        army.setHealStart(startTime);
-        army.setHealEnd(startTime.plusHours(army.getAmountOfHealHours()));
+        army.setHealStart(startTime.minusDays(1));
+        army.setHealEnd(startTime.minusDays(1).plusHours(army.getAmountOfHealHours()));
         army.setHoursHealed(0);
         army.setHoursLeftHealing(army.getAmountOfHealHours());
 

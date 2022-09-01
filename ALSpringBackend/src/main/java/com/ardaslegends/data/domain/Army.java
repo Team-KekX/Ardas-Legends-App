@@ -122,7 +122,7 @@ public final class Army extends AbstractDomainEntity {
     @JsonIgnore
     public int getAmountOfHealHours() {
         double tokensMissing = units.stream()
-                .map(unit -> ((unit.getCount()-unit.getAmountAlive())) * unit.getUnitType().getTokenCost())
+                .map(unit -> ((unit.getCount()-unit.getAmountAlive())) * unit.getCost())
                 .reduce(0.0, Double::sum);
         double hoursHeal = tokensMissing * 24 / 6;
         int divisor = 24;

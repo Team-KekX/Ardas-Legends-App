@@ -315,7 +315,7 @@ public class ScheduleService {
             //only get units that are not fully replenished sorted by token cost ascending
             List<Unit> units = army.getUnits().stream()
                     .filter(unit -> unit.getAmountAlive() < unit.getCount())
-                    .sorted(Comparator.comparing(u -> u.getUnitType().getTokenCost()))
+                    .sorted(Comparator.comparing(Unit::getCost))
                     .toList();
 
             double replenishTokens = 6.0;
@@ -329,12 +329,12 @@ public class ScheduleService {
 
                 int deadUnits = currentUnit.getCount() - currentUnit.getAmountAlive();
                 log.trace("Dead units: [{}]", deadUnits);
-                double tokensToHeal = deadUnits * currentUnit.getUnitType().getTokenCost();
+                double tokensToHeal = deadUnits * currentUnit.getCost();
                 log.trace("Tokens to heal: [{}]", tokensToHeal);
                 if(tokensToHeal >= replenishTokens) {
                     log.trace("More tokens to heal than replenish tokens available - using all replenish tokens on unit [{}]", currentUnit);
-                    int canHealUnits = (int) (replenishTokens / currentUnit.getUnitType().getTokenCost());
-                    log.trace("Unit has cost [{}] - can heal [{}] with [{}] refresh tokens", currentUnit.getUnitType().getTokenCost(), canHealUnits, replenishTokens);
+                    int canHealUnits = (int) (replenishTokens / currentUnit.getCost());
+                    log.trace("Unit has cost [{}] - can heal [{}] with [{}] refresh tokens", currentUnit.getCost(), canHealUnits, replenishTokens);
                     currentUnit.setAmountAlive(currentUnit.getAmountAlive() + canHealUnits);
                     log.trace("Unit now has {}/{} units", currentUnit.getAmountAlive(), currentUnit.getCount());
                     replenishTokens = 0;

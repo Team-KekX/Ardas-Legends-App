@@ -1,6 +1,7 @@
 package com.ardaslegends.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
@@ -34,6 +35,11 @@ public final class Unit extends AbstractDomainEntity {
     private Integer count; //maximum aamount of those units that are in the army
 
     private Integer amountAlive; //current alive soldiers
+    private Boolean isMounted;
 
+    @JsonIgnore
+    public Double getCost() {
+        return isMounted ? unitType.getTokenCost() + 1 : unitType.getTokenCost();
+    }
 
 }
