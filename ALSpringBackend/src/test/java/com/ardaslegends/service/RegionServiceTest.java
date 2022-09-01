@@ -47,7 +47,7 @@ public class RegionServiceTest {
     }
 
     boolean allOwnershipFalse(List<Region> regions) {
-        return regions.stream().noneMatch(region -> Boolean.TRUE.equals(region.getHasOwnershipChanged()));
+        return regions.stream().noneMatch(region -> Boolean.TRUE.equals(region.isHasOwnershipChanged()));
     }
 
 }

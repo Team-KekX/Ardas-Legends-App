@@ -26,7 +26,7 @@ public class RegionService extends AbstractService<Region, RegionRepository> {
 
         log.trace("Changing every region to true with stream [size:{}]", regions.size());
         regions.stream().forEach(region -> {
-            log.trace("Region [{}: ownership: {}] gets set to false", region.getId(), region.getHasOwnershipChanged());
+            log.trace("Region [{}: ownership: {}] gets set to false", region.getId(), region.isHasOwnershipChanged());
             region.setHasOwnershipChanged(false);
         });
 

@@ -48,7 +48,7 @@ public final class Region extends AbstractDomainEntity {
     private Set<Region> neighboringRegions = new HashSet<>(); //list of neighboring regions
 
     @Column(name = "has_ownership_changed_since_last_claimmap_update")
-    private Boolean hasOwnershipChanged;
+    private boolean hasOwnershipChanged;
 
     @JsonIgnore
     public Region(String id, String name, RegionType regionType, Set<Faction> claimedBy, Set<ClaimBuild> claimBuilds, Set<Region> neighboringRegions) {

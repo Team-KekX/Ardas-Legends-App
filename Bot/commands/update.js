@@ -196,6 +196,11 @@ module.exports = {
                         .setDescription("The player that becomes the new leader of the faction")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("reset-region-ownership")
+                .setDescription("Updates all regions and sets the hasOwnershipChanged attribute to false")
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command

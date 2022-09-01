@@ -58,7 +58,7 @@ public class RegionTest {
         region.removeFactionFromClaimedBy(factionWithNoCbInClaimedBy);
 
         assertThat(region.getClaimedBy().contains(factionWithNoCbInClaimedBy)).isFalse();
-        assertThat(region.getHasOwnershipChanged()).isTrue();
+        assertThat(region.isHasOwnershipChanged()).isTrue();
         assertThat(factionWithNoCbInClaimedBy.getRegions().contains(region)).isFalse();
 
     }
@@ -72,7 +72,7 @@ public class RegionTest {
 
         assertThat(region.getClaimedBy().contains(faction)).isTrue();
         assertThat(faction.getRegions().contains(region)).isTrue();
-        assertThat(region.getHasOwnershipChanged()).isTrue();
+        assertThat(region.isHasOwnershipChanged()).isTrue();
 
     }
 
