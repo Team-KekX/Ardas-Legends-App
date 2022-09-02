@@ -12,12 +12,15 @@ module.exports = {
 
         axios.patch('http://'+serverIP+':'+serverPort+'/api/movement/cancel-char-move', data)
             .then(async function(response) {
+
+                console.log(response.data.player.rpChar)
+
                 const name = response.data.player.rpChar.name;
-                const currentRegion = response.data.player.rpChar.currentRegion.id;
+                const currentRegion = response.data.player.rpChar.currentRegion;
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Cancel Character Movement`)
-                    .setColor('RED')
+                    .setColor('GREEN')
                     .setDescription(`Cancelled the ongoing movement of character ${name}. The character is now at region ${currentRegion}.`)
                     .setThumbnail(CANCEL_MOVE)
                     .setTimestamp()

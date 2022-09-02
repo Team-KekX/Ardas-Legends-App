@@ -71,6 +71,7 @@ public final class Army extends AbstractDomainEntity {
 
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
     private List<Movement> movements = new ArrayList<>();
 

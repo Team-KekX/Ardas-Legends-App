@@ -16,7 +16,8 @@ module.exports = {
 
         axios.patch('http://'+serverIP+':'+serverPort+'/api/movement/cancel-army-move', data)
             .then(async function(response) {
-                var currentRegion = response.data.path.start;
+
+                var currentRegion = response.data.startRegionId;
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Cancel Army Movement`)

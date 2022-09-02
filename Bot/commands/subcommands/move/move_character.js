@@ -29,7 +29,7 @@ module.exports = {
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Move character`)
-                    .setColor('YELLOW')
+                    .setColor('GREEN')
                     .setDescription(startMsg)
                     .setFields(
                         {name: "Route", value: path, inline:false},
