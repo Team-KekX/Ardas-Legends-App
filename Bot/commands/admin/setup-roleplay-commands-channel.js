@@ -28,6 +28,6 @@ module.exports = {
             .setDescription(`Successfully set the default roleplay commands channel.`)
             .setThumbnail(ADMIN)
             .setTimestamp()
-        await interaction.reply({embeds: [replyEmbed]});
+        await interaction.editReply({embeds: [replyEmbed]});
     },
 };

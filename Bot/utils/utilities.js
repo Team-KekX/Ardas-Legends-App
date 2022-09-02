@@ -125,7 +125,7 @@ function saveExecute(toExecute, interaction) {
             .setColor("RED")
             .setDescription(error.toString() + "\nPlease contact the devs")
             .setTimestamp()
-        await interaction.reply({embeds: [replyEmbed]})
+        await interaction.editReply({embeds: [replyEmbed]})
     });
 }
 
@@ -163,7 +163,7 @@ async function wrongChannelReply(interaction) {
             .setColor("RED")
             .setDescription("Only allowed to post commands in War Commands Channel")
             .setTimestamp()
-        await interaction.reply({embeds: [replyEmbed], ephemeral:true})
+        await interaction.editReply({embeds: [replyEmbed], ephemeral:true})
 }
 
 module.exports = {
