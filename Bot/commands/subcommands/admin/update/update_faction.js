@@ -1,13 +1,16 @@
-const {capitalizeFirstLetters} = require("../../../utils/utilities");
-const {availableFactions} = require("../../../configs/config.json");
+const {capitalizeFirstLetters, isMemberStaff} = require("../../../../utils/utilities");
+const {availableFactions} = require("../../../../configs/config.json");
 const {MessageEmbed} = require("discord.js");
-const {UPDATE_FACTION} = require("../../../configs/embed_thumbnails.json");
-const {serverIP, serverPort} = require("../../../configs/config.json");
+const {UPDATE_FACTION} = require("../../../../configs/embed_thumbnails.json");
+const {serverIP, serverPort} = require("../../../../configs/config.json");
 const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
-
+        if (!isMemberStaff(interaction)) {
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            return;
+        }
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
 
         if (!availableFactions.includes(faction)) {
@@ -19,7 +22,7 @@ module.exports = {
         } else {
             // send to server
             const data = {
-                discordId: interaction.member.id,
+                discordId: interaction.options.getString('discord-id'),
                 factionName: faction
             }
     

@@ -1,15 +1,19 @@
 const {MessageEmbed} = require("discord.js");
-const {UPDATE_IGN} = require("../../../configs/embed_thumbnails.json");
-const {serverIP, serverPort} = require("../../../configs/config.json");
+const {UPDATE_IGN} = require("../../../../configs/embed_thumbnails.json");
+const {serverIP, serverPort} = require("../../../../configs/config.json");
 const axios = require("axios");
+const {isMemberStaff} = require("../../../../utils/utilities");
 
 module.exports = {
     async execute(interaction) {
-
+        if (!isMemberStaff(interaction)) {
+            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            return;
+        }
         const ign = interaction.options.getString('ign');
         // send to server and edit reply
         const data = {
-            discordId: interaction.member.id,
+            discordId: interaction.options.getString('discord-id'),
             ign: ign
         }
 

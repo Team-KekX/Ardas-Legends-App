@@ -76,7 +76,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Creating player and Saving into database
 
         log.debug("Trying to create and save entity");
-        Player player = Player.builder().ign(dto.ign()).uuid(uuidConverterDto.id()).discordID(dto.discordID()).faction(queriedFaction).build();
+        Player player = new Player(dto.ign(), uuidConverterDto.id(), dto.discordID(), queriedFaction, null);
 
         log.debug("Persisting player entity with ign {}, discordId {} into the database", dto.ign(), dto.discordID());
         player = secureSave(player, playerRepository);
@@ -331,7 +331,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Check if player actually has an rpchar
         if (playerToUpdate.getRpChar() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its name!");
+            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its name!");
         }
         // Check if a player has already taken the name
         log.debug("Fetching player with new RpChar name to see if that name is already taken");
@@ -373,7 +373,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Check if player actually has an rpchar
         if (playerToUpdate.getRpChar() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its title!");
+            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its title!");
         }
 
         log.debug("Update RpChar Title");
@@ -402,7 +402,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Check if player actually has an rpchar
         if (playerToUpdate.getRpChar() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its gear!");
+            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its gear!");
         }
 
         //Update the gear
@@ -433,7 +433,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Check if player actually has an rpchar
         if (playerToUpdate.getRpChar() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("You do not have an RPChar and therefore cannot update its pvp status!");
+            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its pvp status!");
         }
 
         //Update the pvp status

@@ -56,6 +56,20 @@ public final class Player extends AbstractDomainEntity {
     public List<Movement> movements = new ArrayList<>();
 
     @JsonIgnore
+    @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    public List<ClaimBuild> builtClaimbuilds;
+
+    public Player(String ign, String uuid, String discordID, Faction faction, RPChar rpChar) {
+        this.ign = ign;
+        this.uuid = uuid;
+        this.discordID = discordID;
+        this.faction = faction;
+        this.rpChar = rpChar;
+        this.movements = new ArrayList<>(1);
+        this.builtClaimbuilds = new ArrayList<>(1);
+    }
+
+    @JsonIgnore
     public void hasRpCharThrowExceptionOnFalse() {
         log.debug("Checking if player [{}] has an rpchar and throwing exception on false", this.getIgn());
 

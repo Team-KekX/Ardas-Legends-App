@@ -8,10 +8,14 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('faction')
-                .setDescription('Update your faction')
+                .setDescription('Updates faction of a character')
                 .addStringOption(option =>
                     option.setName('faction-name')
                         .setDescription('The name of the faction')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -20,7 +24,11 @@ module.exports = {
                 .setDescription('Update your minecraft IGN')
                 .addStringOption(option =>
                     option.setName('ign')
-                        .setDescription('Your new IGN')
+                        .setDescription('Change IGN of a player')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -39,37 +47,53 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('rpchar-name')
-                .setDescription('Update the name of your Roleplay Character')
+                .setDescription('Update the name of a Roleplay Character')
                 .addStringOption(option =>
                     option.setName('new-name')
-                        .setDescription('The new name of your rp char')
+                        .setDescription('The new name of the rp char')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('rpchar-title')
-                .setDescription('Update the title of your Roleplay Character')
+                .setDescription('Update the title of a Roleplay Character')
                 .addStringOption(option =>
                     option.setName('new-title')
-                        .setDescription('The new title of your rp char')
+                        .setDescription('The new title of the rp char')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('rpchar-gear')
-                .setDescription('Update the gear of your Roleplay Character')
+                .setDescription('Update the gear of a Roleplay Character')
                 .addStringOption(option =>
                     option.setName('new-gear')
-                        .setDescription('The new gear of your rp char')
+                        .setDescription('The new gear of the rp char')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('rpchar-pvp')
-                .setDescription('Update the PvP status of your Roleplay Character')
+                .setDescription('Update the PvP status of a Roleplay Character')
                 .addBooleanOption(option =>
                     option.setName('new-pvp')
-                        .setDescription('The new PvP status of your rp char')
+                        .setDescription('The new PvP status of the rp char')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('discord-id')
+                        .setDescription("Discord ID of the target player")
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -126,7 +150,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                     .setName('claimbuild')
-                    .setDescription('Creates a claimbuild')
+                    .setDescription('Updates a claimbuild')
                     .addStringOption(option =>
                         option.setName('name')
                             .setDescription('Name of the claimbuild')
