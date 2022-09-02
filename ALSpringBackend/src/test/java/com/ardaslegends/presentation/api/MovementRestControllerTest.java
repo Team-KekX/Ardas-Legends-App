@@ -52,8 +52,8 @@ public class MovementRestControllerTest {
 
         region = Region.builder().id("91").neighboringRegions(Set.of()).regionType(RegionType.LAND).build();
         region2 = Region.builder().id("92").neighboringRegions(Set.of()).regionType(RegionType.LAND).build();
-        pathElement = PathElement.builder().region(region).build();
-        pathElement2 = PathElement.builder().region(region2).build();
+        pathElement = PathElement.builder().region(region).actualCost(2).build();
+        pathElement2 = PathElement.builder().region(region2).actualCost(2).build();
         path = List.of(pathElement, pathElement2);
     }
 
