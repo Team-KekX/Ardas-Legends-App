@@ -6,6 +6,7 @@ const axios = require('axios');
 
 module.exports = {
     async execute(interaction) {
+
         const destination = interaction.options.getString('end-region');
 
         const data = {
@@ -33,7 +34,6 @@ module.exports = {
                     .setThumbnail(MOVE_CHARACTER)
                     .setTimestamp()
 
-                await interaction.deferReply();
                 await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
@@ -43,7 +43,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
 

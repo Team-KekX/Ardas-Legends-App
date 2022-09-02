@@ -19,7 +19,7 @@ module.exports = {
                     .setColor('GREEN')
                     .setDescription(`${rpchar.name} is now injured.\nThey cannot bind to armies anymore and have possibly been unbound from their last bound army.`)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
                 const replyEmbed = new MessageEmbed()
@@ -27,7 +27,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

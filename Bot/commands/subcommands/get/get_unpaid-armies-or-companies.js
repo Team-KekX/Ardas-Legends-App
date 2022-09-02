@@ -16,7 +16,6 @@ module.exports = {
                     armyArray = response.data
                 }
 
-                console.log(response.data)
                 unpaidStringArray = createUnpaidStringArray(armyArray);
 
                 var replyEmbed = new MessageEmbed()
@@ -30,11 +29,11 @@ module.exports = {
                     .setColor("GREEN")
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
                 let errorMessage;
-                if(error.response == undefined) {
+                if(error.response === undefined) {
                     errorMessage = error.toString()
                 }
                 else {
@@ -48,7 +47,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(errorMessage)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     }

@@ -24,7 +24,7 @@ module.exports = {
             .setTitle(`${name} character application.`)
             .setDescription(`${application}`)
             .setTimestamp();
-        await interaction.reply({embeds: [application_embed]});
+        await interaction.editReply({embeds: [application_embed]});
         const message = await interaction.fetchReply();
         await message.react('👍');
         await message.react('👎');

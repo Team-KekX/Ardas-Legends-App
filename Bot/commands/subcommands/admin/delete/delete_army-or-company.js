@@ -6,9 +6,8 @@ const {isMemberStaff} = require("../../../../utils/utilities");
 
 module.exports = {
     async execute(interaction) {
-
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
@@ -28,7 +27,7 @@ module.exports = {
                     .setDescription(`${name} has been deleted!`)
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error)  {
                 console.log(error)
@@ -38,7 +37,7 @@ module.exports = {
                     .setDescription(error.response.data.message)
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

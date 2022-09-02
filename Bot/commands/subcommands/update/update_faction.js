@@ -7,6 +7,7 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
 
         if (!availableFactions.includes(faction)) {
@@ -31,11 +32,11 @@ module.exports = {
                         .setDescription(`You were successfully registered as ${faction}.`)
                         .setThumbnail(UPDATE_FACTION)
                         .setTimestamp()
-                    await interaction.reply({embeds: [replyEmbed], ephemeral: false});
+                    await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
                 })
                 .catch(async function (error) {
                     // An error occurred during the request.
-                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                    await interaction.editReply({content: `${error.response.data.message}`, ephemeral: false});
                 })
         }
     },

@@ -6,6 +6,7 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         //name won't get capitalized here so people have more freedom when naming their chars
         const name = capitalizeFirstLetters(interaction.options.getString('new-name'));
 
@@ -24,7 +25,7 @@ module.exports = {
                     .setDescription(`The name of your Roleplay Character has been updated to ${name}!`)
                     .setThumbnail(UPDATE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
             const replyEmbed = new MessageEmbed()
@@ -32,7 +33,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },

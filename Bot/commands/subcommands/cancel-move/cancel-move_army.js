@@ -25,7 +25,7 @@ module.exports = {
                     .addFields({name: 'Current Region', value: currentRegion.toString(), inline: false})
                     .setThumbnail(CANCEL_MOVE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
                 //error occurred
@@ -34,7 +34,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

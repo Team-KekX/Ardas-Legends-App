@@ -5,8 +5,9 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
@@ -16,7 +17,7 @@ module.exports = {
                     .setTitle(`Reset all regions to hasChanged false!`)
                     .setColor('GREEN')
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function (error) {
                 const replyEmbed = new MessageEmbed()
@@ -25,7 +26,7 @@ module.exports = {
                     .setDescription(error.response.data.message)
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },

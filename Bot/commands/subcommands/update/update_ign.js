@@ -5,6 +5,7 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         const ign = interaction.options.getString('ign');
         // send to server and edit reply
         const data = {
@@ -21,7 +22,7 @@ module.exports = {
                     .setDescription(`You successfully updated your ign to ${ign}.`)
                     .setThumbnail(UPDATE_IGN)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed], ephemeral: false});
+                await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
             })
             .catch(async function (error) {
             const replyEmbed = new MessageEmbed()
@@ -29,7 +30,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

@@ -46,7 +46,7 @@ module.exports = {
                         .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
                         .setThumbnail(REGISTER)
                         .setTimestamp()
-                    await interaction.reply({embeds: [replyEmbed], ephemeral: false});
+                    await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
                 })
                 .catch(async function (error) {
                     const replyEmbed = new MessageEmbed()
@@ -54,7 +54,7 @@ module.exports = {
                         .setColor('RED')
                         .setDescription(error.response.data.message)
                         .setTimestamp()
-                    await interaction.reply({embeds: [replyEmbed]});
+                    await interaction.editReply({embeds: [replyEmbed]});
                 })
 
         }

@@ -6,8 +6,9 @@ const axios = require('axios');
 
 module.exports = {
     async execute(interaction) {
+
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
         const discId = interaction.options.getString('discord-id');
@@ -28,7 +29,7 @@ module.exports = {
                     .setDescription(`Deleted the character ${characterName} of user with Discord ID ${discId}.`)
                     .setThumbnail(ADMIN)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function (error) {
                 const replyEmbed = new MessageEmbed()
@@ -36,7 +37,7 @@ module.exports = {
                     .setColor('RED')
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
         
     },

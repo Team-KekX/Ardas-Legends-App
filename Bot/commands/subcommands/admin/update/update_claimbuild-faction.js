@@ -6,10 +6,12 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
+
 
         claimbuild = interaction.options.getString("claimbuild");
         faction = interaction.options.getString("faction");
@@ -28,7 +30,7 @@ module.exports = {
                     .setDescription(`Updated owner of claimbuild "${response.data.claimbuildName}" to be faction "${response.data.newFaction}"`)
                     .setThumbnail(ADMIN)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function (error) {
                 const replyEmbed = new MessageEmbed()
@@ -37,7 +39,7 @@ module.exports = {
                 .setDescription(error.response.data.message)
                 .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },
