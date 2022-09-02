@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,6 +50,9 @@ public final class Player extends AbstractDomainEntity {
 
     @Embedded
     private RPChar rpChar; //the player's rp character
+
+    @OneToMany(mappedBy = "player", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
+    public List<Movement> movements = new ArrayList<>();
 
     @JsonIgnore
     public void hasRpCharThrowExceptionOnFalse() {
