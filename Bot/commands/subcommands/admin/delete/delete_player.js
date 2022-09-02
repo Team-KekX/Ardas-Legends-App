@@ -29,8 +29,12 @@ module.exports = {
                 await interaction.reply({embeds: [replyEmbed]});
             })
             .catch(async function (error) {
-                // An error occurred during the request.
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle(`Error while deleting Roleplay Character`)
+                    .setColor('RED')
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.reply({embeds: [replyEmbed]});
             })
     }
 };
