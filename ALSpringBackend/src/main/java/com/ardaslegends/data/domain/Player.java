@@ -51,6 +51,7 @@ public final class Player extends AbstractDomainEntity {
     @Embedded
     private RPChar rpChar; //the player's rp character
 
+    @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     public List<Movement> movements = new ArrayList<>();
 
