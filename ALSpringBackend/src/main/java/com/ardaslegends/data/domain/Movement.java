@@ -1,8 +1,10 @@
 package com.ardaslegends.data.domain;
 
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -61,6 +63,10 @@ public final class Movement extends AbstractDomainEntity{
         this.hoursUntilComplete = hoursUntilComplete;
         this.hoursUntilNextRegion = hoursUntilNextRegion;
         this.hoursMoved = hoursMoved;
+    }
+
+    public Integer getCost() {
+        return ServiceUtils.getTotalPathCost(path);
     }
 
     @Override

@@ -117,6 +117,24 @@ function createProductionSiteString(prodSites) {
     return prodString;
 }
 
+function createPathString(pathElements) {
+    let path = [];
+    for(let i = 0; i < pathElements.length; i++) {
+        path.push(pathElements[i].region);
+    }
+    return path.join(" -> ");
+}
+
+function createCostString(costInHours) {
+    const days = Math.floor(costInHours / 24);
+    const hours = costInHours % 24;
+    let costStr = `${days} day(s)`
+    if(hours > 0) {
+        costStr += ` and ${hours} hour(s)`
+    }
+    return costStr;
+}
+
 function saveExecute(toExecute, interaction) {
     toExecute.execute(interaction).catch(async (error) => {
         console.log(error)
@@ -178,6 +196,8 @@ module.exports = {
     createUnpaidStringArray: createUnpaidStringArray,
     saveExecute: saveExecute,
     createProductionSiteString: createProductionSiteString,
+    createPathString: createPathString,
+    createCostString: createCostString,
     getFactionBanner: getFactionBanner,
     getFactionBanner2: getFactionBanner2,
     interactionInAllowedChannel:interactionInAllowedChannel,

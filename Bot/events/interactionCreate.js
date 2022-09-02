@@ -13,7 +13,9 @@ module.exports = {
             await wrongChannelReply(interaction)
         } else {
             try {
+                console.log("Starting deferReply")
                 await interaction.deferReply();
+                console.log("deferReply done")
                 await command.execute(interaction);
             } catch (error) {
                 console.log(error)
