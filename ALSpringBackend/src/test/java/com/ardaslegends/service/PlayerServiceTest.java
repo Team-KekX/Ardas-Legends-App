@@ -91,9 +91,9 @@ public class PlayerServiceTest {
         when(mockPlayerRepository.findByDiscordID(dto.discordID())).thenReturn(Optional.of(Player.builder().ign(dto.ign()).discordID(dto.discordID()).build()));
         when(mockPlayerRepository.findPlayerByIgn(dto.ign())).thenReturn(Optional.of(Player.builder().ign(dto.ign()).discordID(dto.discordID()).build()));
         // Assert
-        var result = assertThrows(ServiceException.class, () -> playerService.createPlayer(dto));
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.createPlayer(dto));
 
-        assertThat(result.getMessage()).contains("due to it already existing!");
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.ignAlreadyUsed(dto.ign()).getMessage());
     }
     @Test
     void ensureCreatePlayerThrowsServiceExceptionFindingDatabaseEntryWithSameDiscordId() {
@@ -102,9 +102,9 @@ public class PlayerServiceTest {
         when(mockFactionService.getFactionByName(dto.faction())).thenReturn(Faction.builder().name(dto.faction()).build());
         when(mockPlayerRepository.findByDiscordID(dto.discordID())).thenReturn(Optional.of(Player.builder().ign(dto.ign()).discordID(dto.discordID()).build()));
         // Assert
-        var result = assertThrows(ServiceException.class, () -> playerService.createPlayer(dto));
+        var result = assertThrows(PlayerServiceException.class, () -> playerService.createPlayer(dto));
 
-        assertThat(result.getMessage()).contains("due to it already existing!");
+        assertThat(result.getMessage()).isEqualTo(PlayerServiceException.alreadyRegistered().getMessage());
     }
 
 

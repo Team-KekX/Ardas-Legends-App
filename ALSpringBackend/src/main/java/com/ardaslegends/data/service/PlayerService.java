@@ -56,12 +56,12 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         UUIDConverterDto uuidConverterDto = mojangApiService.getUUIDByIgn(dto.ign());
 
         log.debug("Querying Player by IGN {}", dto.ign());
-        var userQueriedById = secureFind(dto.ign(), playerRepository::findPlayerByIgn);
-        log.debug("Result of queryById: {}", userQueriedById.orElse(null));
+        var userQueriedByIgn = secureFind(dto.ign(), playerRepository::findPlayerByIgn);
+        log.debug("Result of queryByIgn: {}", userQueriedByIgn.orElse(null));
 
-        if (userQueriedById.isPresent()) {
-            log.warn("Player with same IGN has been found! Data {}, Player {}", dto, userQueriedById.get());
-            throw ServiceException.cannotCreateEntityThatAlreadyExists(userQueriedById.get());
+        if (userQueriedByIgn.isPresent()) {
+            log.warn("Player with same IGN has been found! Data {}, Player {}", dto, userQueriedByIgn.get());
+            throw PlayerServiceException.ignAlreadyUsed(dto.ign());
         }
 
         log.debug("Querying Player by DiscordId {}", dto.discordID());
@@ -69,7 +69,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         if (userQueriedByDiscordID.isPresent()) {
             log.warn("Player with same IGN or DiscordId has been found! Data {}, Player {}", dto, userQueriedByDiscordID);
-            throw ServiceException.cannotCreateEntityThatAlreadyExists(userQueriedByDiscordID.get());
+            throw PlayerServiceException.alreadyRegistered();
         }
         log.debug("No player with ign, {} and discordId, {} found in database", dto.ign(), dto.discordID());
 
