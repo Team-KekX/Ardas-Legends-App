@@ -24,11 +24,15 @@ module.exports = {
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
 
         if (!availableFactions.includes(faction)) {
-            await interaction.reply({content: `${faction} is not a valid faction.`, ephemeral: false});
-            await interaction.followUp({
-                content: `Available factions: ${availableFactions.join(', ')}`,
-                ephemeral: false
-            });
+            const replyEmbed = new MessageEmbed()
+                .setTitle(`Error while linking Discord-Account and Roleplay-System`)
+                .setColor('RED')
+                .setDescription(`'${faction}' is not a valid faction.`)
+                .setFields(
+                    {name: "Available Factions", value: availableFactions.join(', '), inline: false}
+                )
+                .setTimestamp()
+            await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
         } else {
             // send to server
             const data = {
@@ -46,11 +50,15 @@ module.exports = {
                         .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
                         .setThumbnail(REGISTER)
                         .setTimestamp()
-                    await interaction.reply({embeds: [replyEmbed], ephemeral: false});
+                    await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
                 })
                 .catch(async function (error) {
-                    // An error occurred during the request.
-                    await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                    const replyEmbed = new MessageEmbed()
+                        .setTitle(`Error while linking Discord-Account and Roleplay-System`)
+                        .setColor('RED')
+                        .setDescription(error.response.data.message)
+                        .setTimestamp()
+                    await interaction.editReply({embeds: [replyEmbed]});
                 })
 
         }

@@ -6,6 +6,7 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         const name = capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
         const claimbuild = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
         const units = interaction.options.getString('units');
@@ -32,7 +33,6 @@ module.exports = {
                 else {
                     paymentString = "Yes, place 1000 Coins in a Pouch with the Army Name in the payment area!";
                 }
-                console.log(army)
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Army '${name}' created!`)
@@ -49,7 +49,7 @@ module.exports = {
                     )
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
                 console.log(error)
@@ -58,7 +58,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

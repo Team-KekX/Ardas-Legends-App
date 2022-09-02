@@ -6,6 +6,7 @@ const axios = require("axios");
 
 module.exports = {
     async execute(interaction) {
+
         //name won't get capitalized here so people have more freedom when naming their chars
         const gear = capitalizeFirstLetters(interaction.options.getString('new-gear'));
 
@@ -24,11 +25,15 @@ module.exports = {
                     .setDescription(`The gear of your Roleplay Character has been updated to ${gear}!`)
                     .setThumbnail(UPDATE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
-                //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Error while updating roleplay character gear")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },

@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
 
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
@@ -36,11 +36,16 @@ module.exports = {
                     .setDescription(`The Roleplay Character ${name} - ${title} has been created!`)
                     .setThumbnail(CREATE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
                 //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle(`Error while creating Roleplay Character`)
+                    .setColor('RED')
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.editReply({embeds: [replyEmbed]});
             })
 
     },

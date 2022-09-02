@@ -7,6 +7,7 @@ const {serverIP, serverPort} = require("../../../configs/config.json");
 module.exports = {
     // TO BE EXPANDED
     async execute(interaction) {
+
         const armyName = capitalizeFirstLetters(interaction.options.getString('army-or-company-name').toLowerCase());
         const food = capitalizeFirstLetters(interaction.options.getString('food-type').toLowerCase());
         const destination = interaction.options.getString('destination-region').toUpperCase();
@@ -32,7 +33,7 @@ module.exports = {
                         {name: "Path", value:path, inline: false  },
                     )
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
                 const replyEmbed = new MessageEmbed()
@@ -40,7 +41,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },

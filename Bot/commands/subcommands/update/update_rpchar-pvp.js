@@ -29,11 +29,15 @@ module.exports = {
                     .setDescription(`Your Roleplay Character will ${description} participate in PvP!`)
                     .setThumbnail(UPDATE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
-                //error occurred
-                await interaction.reply({content: `${error.response.data.message}`, ephemeral: false});
+                const replyEmbed = new MessageEmbed()
+                    .setTitle("Error while updating roleplay character pvp")
+                    .setColor("RED")
+                    .setDescription(error.response.data.message)
+                    .setTimestamp()
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     },

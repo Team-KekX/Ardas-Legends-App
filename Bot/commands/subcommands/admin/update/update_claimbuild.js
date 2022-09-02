@@ -9,7 +9,7 @@ module.exports = {
     async execute(interaction) {
 
         if (!isMemberStaff(interaction)) {
-            await interaction.reply({content: "You don't have permission to use this command.", ephemeral: false});
+            await interaction.editReply({content: "You don't have permission to use this command.", ephemeral: false});
             return;
         }
 
@@ -73,7 +73,7 @@ module.exports = {
                         {name: "Built by", value:claimbuild.builtBy.join(", "), inline: true  },
                     )
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
                 console.log(error)
@@ -82,7 +82,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     }

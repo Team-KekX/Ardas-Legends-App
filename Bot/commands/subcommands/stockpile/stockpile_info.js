@@ -6,7 +6,6 @@ const {capitalizeFirstLetters} = require("../../../utils/utilities");
 module.exports = {
     async execute(interaction) {
 
-
         const name = capitalizeFirstLetters(interaction.options.getString("faction-name"));
 
         axios.get(`http://${serverIP}:${serverPort}/api/faction/get/stockpile/info/${name}`)
@@ -24,7 +23,7 @@ module.exports = {
                     .setColor("GREEN")
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
                 const replyEmbed = new MessageEmbed()
@@ -33,7 +32,7 @@ module.exports = {
                     .setDescription(error.response.data.message)
                     .setTimestamp()
 
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
 
     }

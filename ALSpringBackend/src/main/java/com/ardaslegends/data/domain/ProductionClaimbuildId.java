@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /***
@@ -27,6 +28,16 @@ public final class ProductionClaimbuildId extends AbstractDomainEntity implement
 
     private String claimbuildId;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductionClaimbuildId that = (ProductionClaimbuildId) o;
+        return Objects.equals(productionSiteId, that.productionSiteId) && Objects.equals(claimbuildId, that.claimbuildId);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(productionSiteId, claimbuildId);
+    }
 }

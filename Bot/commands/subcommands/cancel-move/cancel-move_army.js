@@ -16,7 +16,8 @@ module.exports = {
 
         axios.patch('http://'+serverIP+':'+serverPort+'/api/movement/cancel-army-move', data)
             .then(async function(response) {
-                var currentRegion = response.data.path.start;
+
+                var currentRegion = response.data.startRegionId;
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Cancel Army Movement`)
@@ -25,7 +26,7 @@ module.exports = {
                     .addFields({name: 'Current Region', value: currentRegion.toString(), inline: false})
                     .setThumbnail(CANCEL_MOVE)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]});
+                await interaction.editReply({embeds: [replyEmbed]});
             })
             .catch(async function(error) {
                 //error occurred
@@ -34,7 +35,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.response.data.message)
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             })
     },
 };

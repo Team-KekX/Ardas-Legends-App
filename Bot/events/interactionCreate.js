@@ -10,10 +10,12 @@ module.exports = {
         if (!command) return;
 
         if (!interactionInAllowedChannel(interaction)) {
-            wrongChannelReply(interaction)
+            await wrongChannelReply(interaction)
         } else {
             try {
-
+                console.log("Starting deferReply")
+                await interaction.deferReply();
+                console.log("deferReply done")
                 await command.execute(interaction);
             } catch (error) {
                 console.log(error)
@@ -22,7 +24,7 @@ module.exports = {
                     .setColor("RED")
                     .setDescription(error.toString() + "\nPlease contact the devs")
                     .setTimestamp()
-                await interaction.reply({embeds: [replyEmbed]})
+                await interaction.editReply({embeds: [replyEmbed]})
             }
         }
     }
