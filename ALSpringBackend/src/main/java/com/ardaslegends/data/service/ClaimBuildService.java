@@ -66,6 +66,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         log.trace("Checking if claimbuild with name [{}] already exists", dto.name());
         log.trace("Fetching claimbuild with name [{}]", dto.name());
         Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
+
         log.trace("Checking if a claimbuild was found");
         if (existingClaimbuild.isPresent() && isNewlyCreated) {
             var claimbuild = existingClaimbuild.get();
@@ -127,8 +128,16 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         //production sites will be set later on because they need the claimbuild instance when getting created
         ClaimBuild claimBuild = null;
         if(isNewlyCreated) {
+
+            if(!region.isClaimable(faction)) {
+                log.warn("Claimbuild [{}] cannot be created since the region [{}] is not claimable", dto.name(), region.getId());
+                throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
+            }
+
             claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
                     specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+
+            region.addFactionToClaimedBy(faction);
         }
         else {
             claimBuild = existingClaimbuild.get();

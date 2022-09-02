@@ -134,6 +134,16 @@ public final class Region extends AbstractDomainEntity {
         return hasClaimbuild;
     }
 
+    @JsonIgnore
+    public boolean isClaimable(Faction faction) {
+        Objects.requireNonNull(faction, "Faction must not be null");
+
+        boolean hasClaimbuild = hasClaimbuildInRegion(faction);
+        boolean regionHasNoCb = this.claimBuilds.isEmpty();
+
+        return hasClaimbuild || regionHasNoCb;
+    }
+
     @Override
     public String toString() {
         return "Region{" +
