@@ -11,7 +11,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <vaadin.version>23.0.9</vaadin.version>
+        <vaadin.version>23.1.7</vaadin.version>
         <selenium.version>4.1.2</selenium.version>
     </properties>
 
@@ -197,54 +197,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.40.2</version>
-
-                <configuration>
-                    <images>
-                        <!-- A single's image configuration -->
-                        <image>
-                            <name>%g/%a:%l</name>
-                            <alias>alspringbackend</alias>
-                            <run>
-                                <ports>
-                                    <port>8080:8080</port>
-                                </ports>
-                            </run>
-                            <build>
-                                <ports>
-                                    <port>8080</port>
-                                </ports>
-                            </build>
-                        </image>
-                    </images>
-                </configuration>
-
-                <!-- Connect start/stop to pre- and
-                     post-integration-test phase, respectively if you want to start
-                     your docker containers during integration tests -->
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <!-- "build" should be used to create the images with the
-                                 artifact -->
-                            <goal>build</goal>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
