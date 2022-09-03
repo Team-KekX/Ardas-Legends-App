@@ -179,7 +179,7 @@ async function wrongChannelReply(interaction) {
     const replyEmbed = new MessageEmbed()
             .setTitle("Wrong Channel")
             .setColor("RED")
-            .setDescription("Only allowed to post commands in War Commands Channel")
+            .setDescription("Only allowed to post commands in roleplay-commands Channel")
             .setTimestamp()
         await interaction.reply({embeds: [replyEmbed], ephemeral:true})
 }
