@@ -181,7 +181,7 @@ async function wrongChannelReply(interaction) {
             .setColor("RED")
             .setDescription("Only allowed to post commands in War Commands Channel")
             .setTimestamp()
-        await interaction.editReply({embeds: [replyEmbed], ephemeral:true})
+        await interaction.reply({embeds: [replyEmbed], ephemeral:true})
 }
 
 module.exports = {
