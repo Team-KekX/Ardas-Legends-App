@@ -1,6 +1,7 @@
 const fs = require("fs");
 const {staffRoles, rpCommandsChannelID} = require("../configs/config.json");
 const {MessageEmbed} = require("discord.js");
+const log = require("log4js").getLogger();
 
 function isLongText(text) {
     return text.length >= 1900;
@@ -137,7 +138,7 @@ function createCostString(costInHours) {
 
 function saveExecute(toExecute, interaction) {
     toExecute.execute(interaction).catch(async (error) => {
-        console.log(error)
+        log.error(`Encountered unexpected error: ${error.message} - Stacktrace: ${error.stack}`)
         const replyEmbed = new MessageEmbed()
             .setTitle("An unexpected error occured")
             .setColor("RED")
@@ -176,6 +177,7 @@ function interactionInAllowedChannel(interaction) {
 }
 
 async function wrongChannelReply(interaction) {
+    log.warn("User posted command in a restricted channel")
     const replyEmbed = new MessageEmbed()
             .setTitle("Wrong Channel")
             .setColor("RED")

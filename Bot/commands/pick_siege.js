@@ -4,6 +4,8 @@ const {PICK_SIEGE} = require('../configs/embed_thumbnails.json');
 const axios = require("axios");
 const {serverIP, serverPort} = require("../configs/config.json");
 const {MessageEmbed} = require("discord.js");
+const {getLogger} = require("log4js");
+const log = getLogger();
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,6 +28,8 @@ module.exports = {
         const claimbuildName = capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
         const siege = capitalizeFirstLetters(interaction.options.getString('siege-name').toLowerCase());
 
+        log.debug(`Called pick-siege with data armyName=${armyName}, claimbuildName=${claimbuildName}, siege=${siege}`)
+
         const data = {
             executorDiscordId: interaction.member.id,
             armyName: armyName,
@@ -33,10 +37,13 @@ module.exports = {
             siege: siege
         }
 
+        log.debug("Sending request to server")
         axios.patch(`http://${serverIP}:${serverPort}/api/army/pick-siege`, data)
             .then(async function (response) {
+                log.debug("Received response")
                 const responseData = response.data;
 
+                log.debug("Building embed")
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Army '${armyName}' has picked up siege equipment!'`)
                     .setColor('GREEN')
@@ -47,9 +54,12 @@ module.exports = {
                         {name: "Current equipment", value: responseData.sieges.join(", "), inline: true}
                     )
                     .setTimestamp()
+                log.debug("Sending reply to discord")
                 await interaction.editReply({embeds: [replyEmbed]});
+                log.info("Finished pick-siege command")
             })
             .catch(async function(error) {
+                log.warn(`Received backend error: ${error.response.data.message}`)
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Error while trying to pick siege!")
                     .setColor("RED")

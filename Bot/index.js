@@ -2,6 +2,7 @@
 const fs = require('fs');
 const {Client, Collection, Intents} = require('discord.js');
 const {token} = require('./configs/bot_token.json');
+const log4js = require("log4js");
 
 // Create a new client instance
 const client = new Client({
@@ -32,6 +33,10 @@ for (const file of eventFiles) {
     }
 }
 
+log4js.configure({
+    appenders: { file: { type: "file", filename: "ardaslegendsbot.log", compress: true}, console: { type: "console"} },
+    categories: { default: { appenders: ["file", "console"], level: "debug"} },
+});
 
 // Login to Discord with your client's token
 client.login(token).then();

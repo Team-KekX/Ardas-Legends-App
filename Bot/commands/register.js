@@ -4,6 +4,7 @@ const {availableFactions, serverIP, serverPort} = require("../configs/config.jso
 const {MessageEmbed} = require("discord.js");
 const {REGISTER} = require("../configs/embed_thumbnails.json");
 const axios = require("axios");
+const log = require("log4js").getLogger();
 
 // Needs to be further implemented.
 // Reaction counting is currently not implemented.
@@ -20,10 +21,14 @@ module.exports = {
                 .setDescription('The faction you want to join')
                 .setRequired(true)),
     async execute(interaction) {
+
         const ign = interaction.options.getString('ign');
         const faction = capitalizeFirstLetters(interaction.options.getString('faction-name').toLowerCase());
+        log.debug(`Called register with data ign=${ign}, faction=${faction}`)
 
+        log.debug("Checking if faction is valid")
         if (!availableFactions.includes(faction)) {
+            log.warn(`Faction ${faction} is not a valid faction`)
             const replyEmbed = new MessageEmbed()
                 .setTitle(`Error while linking Discord-Account and Roleplay-System`)
                 .setColor('RED')
@@ -41,18 +46,24 @@ module.exports = {
                 faction: faction
             }
 
+            log.debug("Sending request to server")
             axios.post('http://'+serverIP+':'+serverPort+'/api/player/create', data)
                 .then(async function (response) {
+                    log.debug("Received response")
                     // The request and data is successful.
+                    log.debug("Building embed")
                     const replyEmbed = new MessageEmbed()
                         .setTitle(`Register`)
                         .setColor('GREEN')
                         .setDescription(`You were successfully registered as ${ign} in the faction ${faction}.`)
                         .setThumbnail(REGISTER)
                         .setTimestamp()
+                    log.debug("Sending reply to discord")
                     await interaction.editReply({embeds: [replyEmbed], ephemeral: false});
+                    log.info("Finished register command")
                 })
                 .catch(async function (error) {
+                    log.warn(`Received backend error: ${error.response.data.message}`)
                     const replyEmbed = new MessageEmbed()
                         .setTitle(`Error while linking Discord-Account and Roleplay-System`)
                         .setColor('RED')
