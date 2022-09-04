@@ -1,0 +1,13 @@
+- `/create claimbuild` +
+creates a claimbuild and adds it to the database, may claim a region for a faction
+
+NOTE: Please refer to the xref:../../guide/starters-guide.adoc[starter guide] regarding this command as it has several pitfalls which can break it!
+
+- `/update claimbuild-faction` +
+updates the controlling faction of a claimbuild -> won't be used until 1.1 **War Update**
+
+- `/update claimbuild` +
+updates a claimbuild, happens when players re-apply a claimbuild so that they can upgrade their production sites
+
+- `/delete claimbuild` +
+deletes the claimbuild and all of its created Armies + trading companies from the database
