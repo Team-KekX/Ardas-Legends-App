@@ -1,5 +1,4 @@
 = Arda's Legends Bot Documentation
-:navtitle: Introduction
 :icons: font
 
 Welcome to the documentation of the Arda's Legends Bot!
