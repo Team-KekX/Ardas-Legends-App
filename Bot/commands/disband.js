@@ -13,15 +13,6 @@ module.exports = {
                     option.setName('name')
                         .setDescription('The name of the army / company')
                         .setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('armed-company')
-                .setDescription('Breaks the armed company into separate trader and army. Character gets unbound.')
-                .addStringOption(option =>
-                    option.setName('armed-company-name')
-                        .setDescription('The name of the armed company')
-                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
