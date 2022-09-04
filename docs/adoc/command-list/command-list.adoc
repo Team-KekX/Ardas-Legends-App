@@ -39,7 +39,7 @@ include::staff/armies.adoc[]
 
 === Factions
 
-include::staff/armies.adoc[]
+include::staff/factions.adoc[]
 
 === Claimbuilds
 
