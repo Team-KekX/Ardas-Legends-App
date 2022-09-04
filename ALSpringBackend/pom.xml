@@ -218,7 +218,8 @@
                 </dependencies>
 
                 <configuration>
-                    <sourceDirectory>${basedir}/../docs</sourceDirectory>
+                    <sourceDirectory>${basedir}/../docs/adoc</sourceDirectory>
+                    <outputDirectory>${basedir}/../docs/html</outputDirectory>
                     <requires>asciidoctor-diagram</requires>
                     <preserveDirectories>true</preserveDirectories>
                     <attributes>
