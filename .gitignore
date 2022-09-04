@@ -8,6 +8,9 @@ ALSpringBackend/package-lock.json
 docs/*.html
 docs/*.pdf
 docs/*.docx
+docs/*/*.html
+docs/*/*.pdf
+docs/*/*.docx
 
 # Jpa buddy
 .jpb
