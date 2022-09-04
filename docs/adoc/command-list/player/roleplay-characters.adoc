@@ -1,0 +1,18 @@
+* `/move character [end-region]` +
+moves the roleplay character of the player that executed the command to the desired **region**. +
+The Bot takes the **shortest path** possible and displays the required days for the movement. +
+It also updates the position of the character automatically.
+
+* `/cancel-move character` +
+This cancels the movement of the character. The character stops moving and stays at the current region.
+
+* `/injure character` +
+Players can injure their character for various reasons, **when injured** players must move to a region of their faction (or allies) with a **Claimbuild** that has a **House of Healing**. Injured characters cannot **bind to armies**.
+
+* `/heal-start character` +
+Starts the healing of a character if it currently resides in a region with a friendly Claimbuild that +
+has a **House of Healing**. Healing a character takes **2 days**. More information about healing in the xref:../../guide/roleplay-characters/roleplay-characters.adoc#_heal_character[starter guide].
+
+* `/heal-stop characcter` +
+Stops the healing process of a character, may stay injured and canot bind to armies.
+
