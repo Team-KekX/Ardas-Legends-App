@@ -1,0 +1,136 @@
+= Ardas Legends Bot Guide
+:toc: left
+:icons: font
+
+Along with the server's roleplay system comes a bot application developed by the dev team.
+This is a guide with the aim to clarify the possibilities and commands of the bot/application.
+
+== Before you continue
+
+At first, we need to clarify some things about this guide.
+Most of the time the commands will be displayed in their actual syntax, for example:
+
+.Register Command
+====
+[source]
+----
+/register [ign] [faction-name]
+----
+====
+
+The words inside the ``[]`` brackets are **parameters**, so inputs you give the command. Do not input stuff **with** the brackets, they are only used here
+for explanation purposes!
+
+Most of the time the inputs are self-explanatory, but if you at some point do not know what to write, read the description of the input
+or ask the devs/staff.
+Most of the error messages the bot returns are very clear about what went wrong. However, if you have issues with commands
+or encounter an unexpected error message/disfunction of the bot, ***PLEASE CONTACT THE DEVS***!
+
+== Getting started
+
+=== Register
+Before being able to interact with the bot, you will have to register.After you've done that the bot will have you registered
+in its system and will recognize you as a player.
+In order to register, simply use the ``/register`` command.
+
+[source]
+----
+    /register [ign] [faction-name]
+----
+
+.Register Command
+====
+[source]
+----
+    /register [Luktronic] [Gondor]
+----
+====
+IMPORTANT: TYPE IN YOUR IGN CORRECTLY - IF YOU MAKE A TYPO IT CAN CAUSE MANY PROBLEMS
+
+After you have registered you're ready to go and get a roleplay character!
+
+=== Creating a Roleplay Character
+Before you can actually engage in roleplay, you will need to create a character.
+
+This is done by writing a roleplay application on the discord server. Said application needs to be accepted by staff. As soon as that happened, one
+of the staff members will create a roleplay character for you with the command:
+
+[source]
+----
+    /create rpchar [name] [title] [gear] [pvp]
+----
+.Create RpChar Command
+====
+[source]
+----
+    /create rpchar Belegorn [title] [gear] [pvp]
+----
+====
+WARNING: The above command can be only done by staff members
+
+TIP: Your roleplay character will be created in the home region of your faction
+
+Congrats! Now you have full access to all the roleplay commands and start with your journey!
+
+== Roleplay Characters
+
+Roleplay characters are essential for the roleplay system of the application. Hardly anything functions without them.
+
+There are lots of things you can do with your character, some of which we are going to discuss now. There are more things to do with characters, such as binding
+them to armies, but those things are talked about in other, more fitting chapters.
+
+=== Moving Characters
+You can move your character around the map with the command
+
+[source]
+----
+    /move character [end-region]
+----
+.Move Character Command
+====
+[source]
+----
+    /move character [123]
+----
+====
+
+The bot will calculate the fastest way to the end region and start the movement. The movement will get updated automatically, so
+your character will arrive at their destination after the required amount of time has passed!
+
+TIP: Map regions now take longer to move through depending on their terrain. More on that and movements in general in the chapter <<_map_movement>>.
+
+=== Injure Character
+Roleplay characters can be injured by using the command
+
+.Injure Character Command
+====
+[source]
+----
+    /injure character
+----
+====
+
+IMPORTANT: This will injure your own character!
+
+Injured characters cannot be bound to armies. In order to heal an injured character, move to a region that has a Claimbuild of your faction
+with a House of Healing present.
+
+As soon as the war update gets released and battles are happening, dying in a battle will result in your roleplay character being injured.
+
+TIP: If you injure your character, it will automatically get unbound from armies.
+
+=== Heal Character
+In order to heal an injured character, first move into a region that has a Claimbuild owned by your faction. Said Claimbuild needs to have a House of Healing,
+otherwise your character cannot heal there.
+
+NOTE: Healing a character takes 2 days. If you stop the healing process, the progress will be lost and you will need to wait for 2 days again!
+
+.Heal Start Command
+====
+[source]
+----
+    /heal-start character
+----
+====
+
+== Map Movement
