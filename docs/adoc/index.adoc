@@ -7,5 +7,6 @@ Welcome to the documentation of the Arda's Legends Bot!
 .Useful Links
 ****
 - xref:guide/starters-guide.adoc[Starter's Guide]
-- xref:guide/starters-guide.adoc[Patch Notes]
+- xref:patch-notes/patch-notes.adoc[Patch Notes]
+- xref:command-list/command-list.adoc[List of all commands]
 ****

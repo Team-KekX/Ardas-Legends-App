@@ -221,6 +221,7 @@
                     <sourceDirectory>${basedir}/../docs/adoc</sourceDirectory>
                     <outputDirectory>${basedir}/../docs/html</outputDirectory>
                     <requires>asciidoctor-diagram</requires>
+                    <relativeBaseDir>true</relativeBaseDir>
                     <preserveDirectories>true</preserveDirectories>
                     <attributes>
                         <endpoint-url>http://example.org</endpoint-url>

@@ -1,0 +1,107 @@
+= v1.0 - Release
+
+== Features
+- Players and Roleplay Characters
+- Armies (Including the new Food-stockpile mechanic)
+- Claimbuilds
+- Scheduled Task with **Healing** and **Moving**
+
+== New Commands
+=== Players and Roleplay Characters
+==== Regular Commands
+- `/register` +
+registers a player in the database, saved data is **ign**, **discordId**, **Minecraft UUID**, and **faction**
+- `/injure character` +
+injures a character, injured characters cannot bind to armies and must go to a house of healing to replenish
+- `heal-start character` +
+starts the healing process for a character if it is in a region with a friendly claimbuild that has a House Of Healing
+- `/heal-stop character` +
+stops the healing process of a character
+- `/move character` +
+starts a character movement to the specified region using our **pathfinder algorithm** (**SPF**)
+- `/cancel-move character` +
+stops the movement of a character, the character stays at the current region
+
+==== Staff Commands
+- `/create rpchar` +
+creates an rpchar and appends it to the corresponding player
+- `/update ign` +
+updates the ign of a player
+- `/update faction` +
+updates the faction of a player
+- `/update discordId` +
+updates discordId of a player
+- `/delete player` +
+deletes a player from the database,
+- `/update rpchar-name` +
+updates the roleplay character's name
+- `/update rpchar-title` +
+updates the title of the rpchar
+- `/update rpchar-pvp` +
+updates the pvp boolean of the rpchar
+- `/update rpchar-gear` +
+updates the stated gear of the rpchar
+- `/delete character` +
+deletes a character and unbinds it from any armies
+
+=== Armies
+==== Regular Commands
+- `/create army` +
+Raises a new army from an existing claimbuild. Every military claimbuild can have one active army, with the exception of capitals, which can have two.
+- `/disband army-or-company` +
+Disbands an army or company. Can only be done by faction leaders or lords.
+- `/bind army-or-company` +
+Binds an army to an existing Player/Roleplay Character. The army has to be of the same faction as the player or one of its allies. Note that the army must be located in the same region as the player. Faction leaders/Lords can also bind other players of the same faction.
+- `/unbind army-or-company` +
+Unbinds a player from an army. Leaders/Lords can unbind other players of the same faction.
+- `/move army-or-company` +
+Creates a movement for an army or company. The shortest path to the destination is calculated by the application. Armies/Companies that were created less than 24 hours ago are unable to move.
+- `/cancel-move army` +
+Cancels an ongoing army/company movement. The army/company stays at the current location.
+- `/station army-or-company` +
+Stations an army/company at a claimbuild. Armies/companies can only be stationed at allied claimbuilds. Stationed armies are unable to move.
+- `/unstation army-or-company` +
+Unstations an army/company from a claimbuild. The army/company is able to move again.
+- `/pick-siege` +
+Picks up siege equipment from a claimbuild. Only sieges available at the claimbuild can be picked up.
+- `/heal-start army` +
+Starts healing an army that has lost units in a battle. The army needs to be stationed at a claimbuild that has a house of healing.
+- `/heal-stop army` +
+Stops the healing of an army that is currently healing.
+- `/get upkeep` +
+Prints out the amount of monthly upkeep a faction has to pay for their armies.
+- `/get upkeep-per-faction` +
+Prints out only the amount of 1 specified faction has to pay for their armies, monthly
+- `/get unpaid-armies-or-companies` +
+Prints out all the armies or companies that have no registered payment yet.
+
+==== Staff Commands
+- `/delete army-or-company` +
+Force-deletes an army or company without checks for faction leader permissions, etc.
+- `/update paid` +
+Updates if an army is paid for or not.
+
+=== Claimbuilds
+==== Staff Commands
+- `/create claimbuild` +
+creates a claimbuild and adds it to the database, may claim a region for a faction
+- `/update claimbuild-faction` +
+updates the controlling faction of a claimbuild -> won't be used until 1.1 **War Update**
+- `/update claimbuild` +
+updates a claimbuild, happens when players re-apply a claimbuild so that they can upgrade their production sites
+- `/delete claimbuild` +
+deletes the claimbuild and all of its created Armies + trading companies from the database
+
+=== Faction
+==== Regular Commands
+- `/stockpile info` +
+Displays the amount of food stockpiled by the specified faction
+
+==== Staff Command
+- `update faction-leader` +
+Sets the faction leader of the specified faction to the specified player, removes the previous leader of that faction from his position
+- `/stockpile add` +
+Adds stacks of food to the stockpile of a faction.
+- `/stockpile remove` +
+Removes stacks of food from the stockpile of a faction.
+ 
