@@ -1,0 +1,6 @@
+=== The Map
+
+The map can be found at the
+link:https://drive.google.com/file/d/1MV8Amm2fRJ_XuLeZGzriDbgmxN4brFJE/view?usp=sharing[Google Drive].
+
+image::http://drive.google.com/uc?export=view&id=1MV8Amm2fRJ_XuLeZGzriDbgmxN4brFJE[]

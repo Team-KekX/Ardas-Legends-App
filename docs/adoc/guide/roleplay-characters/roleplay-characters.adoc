@@ -24,7 +24,7 @@ The bot will calculate the fastest way to the end region and start the movement.
 your character will arrive at their destination after the required amount of time has passed!
 
 TIP: Map regions now take longer to move through depending on their terrain. More on that and movements in general in the chapter
-xref:../map-movement/map-movement.adoc#_map_movement[Map Movement].
+<<_regions_and_terrain>>.
 
 === Injure Character
 Roleplay characters can be injured by using the command

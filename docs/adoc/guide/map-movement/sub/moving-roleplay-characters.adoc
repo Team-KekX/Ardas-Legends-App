@@ -1,0 +1,7 @@
+=== Moving Roleplay Characters
+
+While being mostly the same, there are some differences between movements of armies and roleplay characters:
+
+* Roleplay characters move twice as fast as armies
+* RP-Chars can move through all regions, whether or not they are claimed.
+* You do not need to pay for RP-Char movements.

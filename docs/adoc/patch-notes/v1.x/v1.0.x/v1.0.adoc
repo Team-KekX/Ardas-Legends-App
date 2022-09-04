@@ -97,7 +97,7 @@ deletes the claimbuild and all of its created Armies + trading companies from th
 - `/stockpile info` +
 Displays the amount of food stockpiled by the specified faction
 
-==== Staff Command
+==== Staff Commands
 - `update faction-leader` +
 Sets the faction leader of the specified faction to the specified player, removes the previous leader of that faction from his position
 - `/stockpile add` +

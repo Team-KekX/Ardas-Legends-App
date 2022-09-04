@@ -1,0 +1,5 @@
+=== Updating the current region
+
+Every 15 minutes the bot will automatically go through all active movements and check if they have progressed.
+
+That means that the location of your army/character will be updated dynamically.

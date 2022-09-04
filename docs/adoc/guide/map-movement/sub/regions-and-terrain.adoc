@@ -1,0 +1,31 @@
+=== Regions and Terrain
+
+The map is split into separate *regions*.When moving around the map, you always move from one region to another.
+The duration of the movement is based on how many regions you move through and what the terrain of those regions is like.
+
+There are exactly 9 region terrain types.Next to them is the amount of days it takes to move *into* a region of this type.
+
+1. Sea (1 day)
+2. Land (1 day)
+3. Hill (2 days)
+4. Ice (2 days)
+5. Desert (3 days)
+6. Forest (3 days)
+7. Swamp (4 days)
+8. Jungle (5 days)
+9. Mountain (6 days)
+
+.Movement duration
+====
+As stated above, the duration of a movement is determined by the terrain type of *the region you move into*.
+
+Let's assume we move from region 209, which has regular 'Land' terrain, into region 237 of type 'Mountain'
+
+207 (Land) -> 237 (Mountain)
+
+This movement will take 6 days to complete, since mountain regions have a duration cost of 6 days.
+====
+
+NOTE: When moving through multiple regions, the duration cost of all the regions you move through will be added together.
+
+IMPORTANT: *You cannot move armies through regions that are claimed by other factions.*
