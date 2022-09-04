@@ -9,7 +9,6 @@ module.exports = {
     async execute(interaction) {
 
         const armyName = capitalizeFirstLetters(interaction.options.getString('army-or-company-name').toLowerCase());
-        const food = capitalizeFirstLetters(interaction.options.getString('food-type').toLowerCase());
         const destination = interaction.options.getString('destination-region').toUpperCase();
 
         const data = {
@@ -29,17 +28,21 @@ module.exports = {
                     .setColor("GREEN")
                     .addFields(
                         {name: "Duration", value:movement.path.cost.toString() + " days", inline: true  },
-                        {name: "Payment food", value:food, inline: true  },
                         {name: "Path", value:path, inline: false  },
                     )
                     .setTimestamp()
                 await interaction.editReply({embeds: [replyEmbed]})
             })
             .catch(async function(error) {
+                let err;
+                if( error.response.data.message = undefined)
+                    err = error
+                else
+                    err = error.response.data.message
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Error while trying to move army!")
                     .setColor("RED")
-                    .setDescription(error.response.data.message)
+                    .setDescription(err)
                     .setTimestamp()
                 await interaction.editReply({embeds: [replyEmbed]})
             })

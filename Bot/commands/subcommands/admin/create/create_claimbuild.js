@@ -46,11 +46,26 @@ module.exports = {
         axios.post(`http://${serverIP}:${serverPort}/api/claimbuild/create`, data)
             .then(async function (response) {
                 var claimbuild = response.data;
-                //console.log(claimbuild)
+                console.log(claimbuild)
                 const coords = claimbuild.coordinates;
                 let specialBuildings = capitalizeFirstLetters(claimbuild.specialBuildings.join("\n").toLowerCase()).replaceAll(" ", "\n").replaceAll("_", " ")
                 const type = capitalizeFirstLetters(claimbuild.type.toLowerCase())
 
+
+                console.log("Name:" +name)
+                console.log("Faction:" +claimbuild.ownedBy.name)
+                console.log("Region:" +claimbuild.region.id)
+                console.log("Type:" +type)
+                console.log("Prod:" +createProductionSiteString(claimbuild.productionSites))
+                console.log("SpecialB:" +specialBuildings)
+                console.log("Traders:" +claimbuild.traders)
+                console.log("Houses:" +claimbuild.numberOfHouses)
+                console.log("Coords:" +`${coords.x}/${coords.y}/${coords.z}`)
+                console.log("Built  By:" +claimbuild.builtBy.join(", "))
+
+                ownedBy = claimbuild.ownedBy.name
+                if(claimbuild.ownedBy.name === undefined)
+                    ownedBy = claimbuild.ownedBy
                 var replyEmbed = new MessageEmbed()
                     .setTitle(`Claimbuild ${name} was successfully created!`)
                     .setDescription(`The claimbuild '${name}' was successfully created!`)
@@ -58,7 +73,7 @@ module.exports = {
                     .setThumbnail(CREATE)
                     .addFields(
                         {name: "Name", value:name, inline: true  },
-                        {name: "Faction", value:claimbuild.ownedBy.name, inline: true },
+                        {name: "Faction", value:ownedBy, inline: true },
                         {name: "Region", value:claimbuild.region.id, inline: true  },
                         {name: "Type", value: type, inline: true  },
                         {name: "Production Sites", value: createProductionSiteString(claimbuild.productionSites), inline: false},
@@ -74,6 +89,7 @@ module.exports = {
             })
             .catch(async function(error) {
                 console.log(error)
+
                 const replyEmbed = new MessageEmbed()
                     .setTitle("Error while trying to create claimbuild!")
                     .setColor("RED")

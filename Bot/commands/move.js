@@ -26,10 +26,6 @@ module.exports = {
                     option.setName('destination-region')
                         .setDescription('The destination of the army/company')
                         .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('food-type')
-                        .setDescription('The food used to pay the movement')
-                        .setRequired(true))
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
