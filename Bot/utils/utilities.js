@@ -123,6 +123,7 @@ function createPathString(pathElements) {
     for(let i = 0; i < pathElements.length; i++) {
         path.push(pathElements[i].region);
     }
+    path[0] = path[0] + " (current)"
     return path.join(" -> ");
 }
 
