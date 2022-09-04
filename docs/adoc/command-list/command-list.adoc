@@ -1,5 +1,6 @@
 = List of all Bot Commands
 :toc: left
+:icons: font
 
 == Commands used by Players
 === General
