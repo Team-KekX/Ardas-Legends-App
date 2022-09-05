@@ -6,7 +6,7 @@ There are lots of things you can do with your character, some of which we are go
 them to armies, but those things are talked about in other, more fitting chapters.
 
 === Moving Characters
-You can move your character around the map with the command
+You can move your character around the map with the command:
 
 [source]
 ----
@@ -27,7 +27,7 @@ TIP: Map regions now take longer to move through depending on their terrain. Mor
 <<_regions_and_terrain>>.
 
 === Injure Character
-Roleplay characters can be injured by using the command
+Roleplay characters can be injured by using the command:
 
 .Injure Character Command
 ====
