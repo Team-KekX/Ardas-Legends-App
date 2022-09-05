@@ -1,0 +1,13 @@
+=== Food Payment
+
+Before you can move an army, you need to pay food in order for the movement to succeed.
+
+Generally you need to pay *9 stacks of food* for *1 day* of moving.
+The payment food must be put into pouches and then handed over at the *payment area*. Refer to the link:https://docs.google.com/document/d/1XqMzhv3kFzISpDWdPIEqG4nQRZzGpzCP[War Guide]
+to see which food is allowed for payment.
+
+The bot has a stockpile system which allows you to pay for movements beforehand. As soon as staff finds food in your faction's chest at the
+payment area, they will add this food to your faction's stockpile.
+
+NOTE: When you move an army, the bot will check if there is enough food in your faction's stockpile. Always try to have enough food in your stockpile
+so you can move your armies freely!

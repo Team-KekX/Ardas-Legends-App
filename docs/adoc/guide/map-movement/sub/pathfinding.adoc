@@ -1,0 +1,8 @@
+=== Pathfinding
+
+When you create a movement, the application will automatically calculate the fastest way to your destination.
+
+TIP: If you want to go a specific path which is not the fastest path to your destination, just split up your movement
+into multiple movements.
+
+IMPORTANT: IF YOU NOTICE A BUG OR A MOVEMENT PATH DOES NOT GET CALCULATED CORRECTLY, PLEASE CONTACT THE DEVS!

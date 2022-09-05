@@ -1,0 +1,61 @@
+== Roleplay Characters
+
+Roleplay characters are essential for the roleplay system of the application. Hardly anything functions without them.
+
+There are lots of things you can do with your character, some of which we are going to discuss now. There are more things to do with characters, such as binding
+them to armies, but those things are talked about in other, more fitting chapters.
+
+=== Moving Characters
+You can move your character around the map with the command:
+
+[source]
+----
+    /move character [end-region]
+----
+.Move Character Command
+====
+[source]
+----
+    /move character [123]
+----
+====
+
+The bot will calculate the fastest way to the end region and start the movement. The movement will get updated automatically, so
+your character will arrive at their destination after the required amount of time has passed!
+
+TIP: Map regions now take longer to move through depending on their terrain. More on that and movements in general in the chapter
+<<_regions_and_terrain>>.
+
+=== Injure Character
+Roleplay characters can be injured by using the command:
+
+.Injure Character Command
+====
+[source]
+----
+    /injure character
+----
+====
+
+IMPORTANT: This will injure your own character!
+
+Injured characters cannot be bound to armies. In order to heal an injured character, move to a region that has a Claimbuild of your faction
+with a House of Healing present.
+
+As soon as the war update gets released and battles are happening, dying in a battle will result in your roleplay character being injured.
+
+TIP: If you injure your character, it will automatically get unbound from armies.
+
+=== Heal Character
+In order to heal an injured character, first move into a region that has a Claimbuild owned by your faction. Said Claimbuild needs to have a House of Healing,
+otherwise your character cannot heal there.
+
+NOTE: Healing a character takes 2 days. If you stop the healing process, the progress will be lost and you will need to wait for 2 days again!
+
+.Heal Start Command
+====
+[source]
+----
+    /heal-start character
+----
+====

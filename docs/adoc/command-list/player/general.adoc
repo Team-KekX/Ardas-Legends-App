@@ -1,0 +1,6 @@
+* `/register [ign] [faction]` +
+Registers you in the system. The bot saves the following information about you:
+** Minecraft ign
+** Discord Account ID
+** Minecraft UUID
+** Faction

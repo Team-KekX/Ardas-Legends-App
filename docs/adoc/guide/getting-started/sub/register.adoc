@@ -1,0 +1,20 @@
+=== Register
+Before being able to interact with the bot, you will have to register.After you've done that the bot will have you registered
+in its system and will recognize you as a player.
+In order to register, simply use the ``/register`` command.
+
+[source]
+----
+    /register [ign] [faction-name]
+----
+
+.Register Command
+====
+[source]
+----
+    /register [Luktronic] [Gondor]
+----
+====
+IMPORTANT: TYPE IN YOUR IGN CORRECTLY - IF YOU MAKE A TYPO IT CAN CAUSE MANY PROBLEMS
+
+After you have registered you're ready to go and get a roleplay character!
