@@ -12,6 +12,7 @@ module.exports = {
             return;
         }
 
+        const user = interaction.options.getUser("target-player").id;
         //name and title won't get capitalized here so people have more freedom when naming their chars
         const name = capitalizeFirstLetters(interaction.options.getString('name'));
         const title = capitalizeFirstLetters(interaction.options.getString('title'));
@@ -20,7 +21,7 @@ module.exports = {
 
         //data sent to server
         const data = {
-            discordId: interaction.member.id,
+            discordId: user,
             rpCharName: name,
             title: title,
             gear: gear,

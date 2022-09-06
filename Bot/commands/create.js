@@ -26,6 +26,12 @@ module.exports = {
             subcommand
                 .setName('rpchar')
                 .setDescription('Creates a Roleplay Character')
+                .addUserOption(option =>
+                    option
+                        .setName("target-player")
+                        .setDescription("The player you want to create an RPChar for")
+                        .setRequired(true)
+                )
                 .addStringOption(option =>
                     option.setName('name')
                         .setDescription("Character's name")
