@@ -1,23 +1,28 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const {capitalizeFirstLetters} = require("../utils/utilities");
+const {SlashCommandBuilder} = require("@discordjs/builders");
+const {addSubcommands, saveExecute} = require("../utils/utilities");
 
-// Needs to be further implemented.
-// Reaction counting is currently not implemented.
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('station')
-        .setDescription('Station an army in a claimbuild')
-        .addStringOption(option =>
-            option.setName('army-name')
-                .setDescription('Your army\'s name')
-                .setRequired(true))
-        .addStringOption(option =>
-            option.setName('claimbuild-name')
-                .setDescription('The claimbuild\'s name')
-                .setRequired(true)),
+        .setDescription('Station a trader or armed company to take different actions.')
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('army-or-company')
+                .setDescription('Station an army or company at a claimbuild.')
+                .addStringOption(option =>
+                    option.setName('name')
+                        .setDescription('The name of the army or company')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('claimbuild-name')
+                        .setDescription('The name of the claimbuild to station at')
+                        .setRequired(true))
+        ),
+
     async execute(interaction) {
-        const name=capitalizeFirstLetters(interaction.options.getString('army-name').toLowerCase());
-        const claimbuild=capitalizeFirstLetters(interaction.options.getString('claimbuild-name').toLowerCase());
-        await interaction.reply(`${name} is now stationed in ${claimbuild}.`);
+        // Dynamically get all subcommands for called command
+        const commands = addSubcommands('station', false);
+        const toExecute = commands[interaction.options.getSubcommand()];
+        saveExecute(toExecute, interaction);
     },
 };

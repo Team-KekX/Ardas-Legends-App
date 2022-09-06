@@ -1,10 +1,10 @@
 const {SlashCommandBuilder} = require("@discordjs/builders");
-const fs = require("fs");
+const {addSubcommands, saveExecute} = require("../utils/utilities");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('create')
-        .setDescription('Creates an entity (army, trader etc.)')
+        .setDescription('Creates an entity (RpChar, army, trader etc.)')
         .addSubcommand(subcommand =>
             subcommand
                 .setName('army')
@@ -18,54 +18,99 @@ module.exports = {
                         .setDescription('The name of the originating claimbuild')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('unit-list')
-                        .setDescription('The list of units in the army')
+                    option.setName('units')
+                        .setDescription('The list of units in the army - example syntax = Gondor Archer:5-Mordor Orc:3')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('trader')
-                .setDescription('Creates a trading company')
+                .setName('rpchar')
+                .setDescription('Creates a Roleplay Character')
+                .addUserOption(option =>
+                    option
+                        .setName("target-player")
+                        .setDescription("The player you want to create an RPChar for")
+                        .setRequired(true)
+                )
                 .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
+                    option.setName('name')
+                        .setDescription("Character's name")
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('claimbuild-name')
-                        .setDescription('The name of the originating claimbuild')
+                    option.setName('title')
+                        .setDescription("Character's title")
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('gear')
+                        .setDescription("Character's gear")
+                        .setRequired(true))
+                .addBooleanOption(option =>
+                    option.setName('pvp')
+                        .setDescription('Should the character participate in PvP?')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('armed-company')
-                .setDescription('Creates an armed company')
+                .setName('claimbuild')
+                .setDescription('Creates a claimbuild')
                 .addStringOption(option =>
-                    option.setName('armed-company-name')
-                        .setDescription('The name of the armed company')
+                    option.setName('name')
+                        .setDescription('Name of the claimbuild')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('army-name')
-                        .setDescription('The name of the army')
+                    option.setName('region')
+                        .setDescription('The id of the region the claimbuild is located in')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('trader-name')
-                        .setDescription('The name of the trader')
+                    option.setName('type')
+                        .setDescription('Claimbuild type, e.g. Hamlet or Capital. You can look up the types on the data spreadsheet')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('character-name')
-                        .setDescription('The name of the character bound to army/trader')
+                    option.setName('faction')
+                        .setDescription('The faction that owns this claimbuild')
                         .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('x')
+                        .setDescription('The x coordinate of the build')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('y')
+                        .setDescription('The y coordinate of the build')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('z')
+                        .setDescription('The z coordinate of the build')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('traders')
+                        .setDescription('Trader NPCs present at this build. The bot does not handle this input.')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('siege')
+                        .setDescription('Siege present at this building. Seperate the sieges with ,')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('number-of-houses')
+                        .setDescription('Number of houses in the build. E.g. 14 small houses. The bot does not handle this input.')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('built-by')
+                        .setDescription('Players who built the cb. Seperate player with -   Example: Luktronic-mirak441')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('production-sites')
+                        .setDescription('Production Sites in the cb. Example: Fishing Lodge:Salmon:2-Mine:Iron:5')
+                        .setRequired(false))
+                .addStringOption(option =>
+                    option.setName('special-buildings')
+                        .setDescription('Seperate the buildings with -   Example: House of Healing-Embassy')
+                        .setRequired(false))
+
         ),
     async execute(interaction) {
         // Dynamically get all subcommands for called command
-        const path = './Bot/commands/subcommands/create/';
-        const files = fs.readdirSync(path, (err, tmp_files) => tmp_files.filter(file => file.contains('create_')));
-        const commands = {};
-        for (const file of files) {
-            const name = file.split('create_')[1].slice(0, -3);
-            commands[name] = require('./subcommands/create/' + file);
-        }
+        const commands = addSubcommands('create', true);
         const toExecute = commands[interaction.options.getSubcommand()];
-        toExecute.execute(interaction);
+        saveExecute(toExecute, interaction);
     },
 };

@@ -1,0 +1,12 @@
+= Arda's Legends Bot Documentation
+:icons: font
+
+Welcome to the documentation of the Arda's Legends Bot!
+
+
+.Useful Links
+****
+- xref:guide/starters-guide.adoc[Starter's Guide]
+- xref:patch-notes/patch-notes.adoc[Patch Notes]
+- xref:command-list/command-list.adoc[List of all commands]
+****

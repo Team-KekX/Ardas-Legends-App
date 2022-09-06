@@ -1,0 +1,14 @@
+= Ardas Legends Bot Guide
+:toc: left
+:icons: font
+
+Along with the server's roleplay system comes a bot application developed by the dev team.
+This is a guide with the aim to clarify the possibilities and commands of the bot/application.
+
+include::before-you-continue/before-you-continue.adoc[]
+
+include::getting-started/getting-started.adoc[]
+
+include::roleplay-characters/roleplay-characters.adoc[]
+
+include::map-movement/map-movement.adoc[]

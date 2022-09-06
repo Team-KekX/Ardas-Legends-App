@@ -1,0 +1,55 @@
+- `/create army [army-name] [claimbuild-name] [units]` +
+Raises a new army from an existing claimbuild. Every military claimbuild [Castles, Strongholds and Towns] can have one active army, except capitals, which can have two. +
+
+WARNING: The unit input takes a **very specific** format. If the syntax is not correct, the bot will not know what to do with it.
+
+- `/disband army-or-company [name]` +
+Disbands an army or company. Can only be done by faction leaders or lords who have the relevant permission.
+
+- `/bind army-or-company [army-or-company-name] [target-player]` +
+
+Binds an army to an existing Player / Character. The army has to be of the same faction as the player or one of its allies. +
+Note that the army must be located in the same region as the player. Faction leaders/Lords can also bind other players of the same faction. +
+**Once a player is bound **to an army or company, that player **can move** by himself! +
+
+TIP: Faction Leaders and lords can also bind players of **allies** and **Wanderers**.
+
+NOTE: The **target-player** input *needs* to be a *ping* (@Mirak#5828) so that the Bot knows which player to bind!
+
+- `/unbind army-or-company [army-or-company-name] [target-player]` +
+Unbinds a player from an army. Leaders/Lords can unbind other players of the same faction, normal players only themselves. +
+
+NOTE: The **target-player** input *needs* to be a *ping* (@Mirak#5828) so that the Bot knows which player to unbind!
+
+- `/move army-or-company [army-or-company-name] [destination-region]` +
+Creates a movement for an army or company. The shortest path to the destination is calculated by the application. Armies/Companies that were created less than 24 hours ago are unable to move.
+
+NOTE: The payment will automatically be taken from the **army's faction** food stockpile
+
+- `/cancel-move army [army-name]` +
+Cancels an ongoing army/company movement. The army/company stays at the current location.
+
+- `/station army-or-company [army-or-company-name] [claimbuild-name]` +
+Stations an army/company at a claimbuild. Armies/companies can only be stationed at allied claimbuilds. Stationed armies are unable to move.
+
+- `/unstation army-or-company [army-or-company-name] [claimbuild-name]` +
+Unstations an army/company from a claimbuild. The army/company is able to move again.
+
+- `/pick-siege [army-name] [claimbuild-name] [siege-name]` +
+Picks up siege equipment from a claimbuild. Only sieges available at the claimbuild can be picked up.
+
+- `/heal-start army [army-name]` +
+Starts healing an army that has lost units in a battle. The army needs to be **stationed** at a claimbuild that has a house of healing.
+
+NOTE: The **Stronghold's** House of Healing heals twice as fast, **12 Tokens per day**. Every other build heals **6 tokens**
+
+- `/heal-stop army [army-name]` +
+Stops the healing of an army that is currently healing.
+
+- `/get upkeep-per-faction [faction-name]` +
+Prints out only the amount of 1 specified faction has to pay for their armies, monthly
+
+- `/get unpaid-armies-or-companies` +
+Prints out the **10 oldest** armies or companies that have no registered payment yet.
+
+WARNING: Staff can delete these armies whenever they feel like it! If you notice that one of your armies is still on this list even though you paid for it, **please contact staff**

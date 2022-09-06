@@ -1,0 +1,46 @@
+= List of all Bot Commands
+:toc: left
+:icons: font
+
+== Commands used by Players
+=== General
+
+include::player/general.adoc[]
+
+=== Roleplay Characters
+
+include::player/roleplay-characters.adoc[]
+
+=== Armies
+
+include::player/armies.adoc[]
+
+=== Factions
+
+include::player/factions.adoc[]
+
+=== Claimbuilds
+
+include::player/claimbuilds.adoc[]
+
+== Staff Commands
+
+=== General
+
+include::staff/general.adoc[]
+
+=== Roleplay Characters
+
+include::staff/roleplay-characters.adoc[]
+
+=== Armies
+
+include::staff/armies.adoc[]
+
+=== Factions
+
+include::staff/factions.adoc[]
+
+=== Claimbuilds
+
+include::staff/claimbuilds.adoc[]

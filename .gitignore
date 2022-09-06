@@ -1,5 +1,19 @@
 # Custom
 Bot/configs/config.json
+Bot/package-lock.json
+Bot/configs/bot_token.json
+ALSpringBackend/package-lock.json
+
+#Documentation
+docs/*.html
+docs/*.pdf
+docs/*.docx
+docs/*/*.html
+docs/*/*.pdf
+docs/*/*.docx
+
+# Jpa buddy
+.jpb
 
 # Logs
 logs

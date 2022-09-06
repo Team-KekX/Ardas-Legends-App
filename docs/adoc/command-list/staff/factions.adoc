@@ -1,0 +1,11 @@
+- `/update faction-leader` +
+Sets the faction leader of the specified faction to the specified player, removes the previous leader of that faction from his position
+- `/stockpile add` +
+Adds stacks of food to the stockpile of a faction.
+
+WARNING: This command takes *stacks* of food as input, not the actual amount!
+
+- `/stockpile remove` +
+Removes stacks of food from the stockpile of a faction.
+
+WARNING: This command takes *stacks* of food as input, not the actual amount!

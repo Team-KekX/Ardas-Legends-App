@@ -1,0 +1,22 @@
+=== Creating a Roleplay Character
+Before you can actually engage in roleplay, you will need to create a character.
+
+This is done by writing a roleplay application on the discord server. Said application needs to be accepted by staff. As soon as that happened, one
+of the staff members will create a roleplay character for you with the command:
+
+[source]
+----
+    /create rpchar [name] [title] [gear] [pvp]
+----
+.Create RpChar Command
+====
+[source]
+----
+    /create rpchar Belegorn [title] [gear] [pvp]
+----
+====
+WARNING: The above command can be only done by staff members
+
+TIP: Your roleplay character will be created in the home region of your faction
+
+Congrats! Now you have full access to all the roleplay commands and start with your journey!

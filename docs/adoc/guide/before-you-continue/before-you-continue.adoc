@@ -1,0 +1,20 @@
+== Before you continue
+
+At first, we need to clarify some things about this guide.
+Most of the time the commands will be displayed in their actual syntax, for example:
+
+.Register Command
+====
+[source]
+----
+/register [ign] [faction-name]
+----
+====
+
+The words inside the ``[]`` brackets are **parameters**, so inputs you give the command. Do not input stuff **with** the brackets, they are only used here
+for explanation purposes!
+
+Most of the time the inputs are self-explanatory, but if you at some point do not know what to write, read the description of the input
+or ask the devs/staff.
+Most of the error messages the bot returns are very clear about what went wrong. However, if you have issues with commands
+or encounter an unexpected error message/disfunction of the bot, ***PLEASE CONTACT THE DEVS***!

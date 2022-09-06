@@ -1,0 +1,15 @@
+{
+  "serverIP": "localhost",
+  "serverPort": "8080",
+  "prefix": "$",
+  "clientId": "1015367754771083405",
+  "guildId": "926452447243825192",
+  "rpAppsChannelID": "926452448040734799",
+  "rpCommandsChannelID": "926452448040734799",
+  "staffRoles": [
+    "1010562764139409549"
+  ],
+  "upvoteEmoji": "👍",
+  "downvoteEmoji": "👎",
+  "staffMajorityCount": 2
+}

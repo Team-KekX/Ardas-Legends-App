@@ -1,0 +1,21 @@
+[#_map_movement]
+== Map Movement
+
+This chapter will tell you everything about moving around on the map.
+
+.Important!
+****
+This chapter will assume you are moving an army. The differences between army and character movements are discussed in the
+sub-chapter <<_moving_roleplay_characters>>.
+****
+
+include::sub/regions-and-terrain.adoc[]
+
+include::sub/pathfinding.adoc[]
+
+include::sub/updating-current-region.adoc[]
+
+[#_moving_roleplay_characters]
+include::sub/moving-roleplay-characters.adoc[]
+
+include::sub/the-map.adoc[]

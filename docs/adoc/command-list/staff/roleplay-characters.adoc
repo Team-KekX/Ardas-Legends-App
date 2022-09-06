@@ -1,0 +1,18 @@
+- `/create rpchar` +
+creates an rpchar and appends it to the corresponding player
+
+
+- `/update rpchar-name` +
+changes the roleplay character's name
+
+- `/update rpchar-title` +
+changes the title of the rpchar
+
+- `/update rpchar-pvp` +
+changes the pvp boolean of the rpchar
+
+- `/update rpchar-gear`  +
+changes the stated gear of the rpchar
+
+- `/delete character` +
+deletes a character and unbinds it from any armies
