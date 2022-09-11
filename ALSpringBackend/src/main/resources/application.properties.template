@@ -20,3 +20,22 @@ logging.level.com.ardaslegends = trace
 # To improve the performance during development.
 # For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
 vaadin.whitelisted-packages = com.vaadin,org.vaadin,dev.hilla,com.ardaslegends
+
+# DEV Value Properties
+discord.token = MTAxNTM2Nzc1NDc3MTA4MzQwNQ.GH5Yfp.AM9sYfluWixd2mL682HD2QHhHQVfZPjnIQ_GX8
+server.id = 926452447243825192
+roleplay.commands.channel = 926452448040734799
+staff.roles = 1010562764139409549,1018605590479634573
+
+# BUILD
+#spring.datasource.url = jdbc:postgresql://localhost:5432/ardaslegends
+#spring.datasource.username = postgres
+#spring.datasource.password = dbAdmin
+#spring.jpa.hibernate.ddl-auto = update
+
+# BUILD Value Properties
+#discord.token = OTI4NzA2MTQ0NTUyMjM1MDQ4.GzL3Qq.IpltIbZpuJFQgOkv9q6cHDmNwPWTylRqvH3KQQ
+#server.id =668590304487800832
+#roleplay.commands.channel =1015406583422922903
+# Owner, Dev, Admin
+#staff.roles = 668843719595786250,671817420075302933,694193243193344131
