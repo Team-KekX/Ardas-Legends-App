@@ -41,12 +41,15 @@ public class Commands implements DiscordUtils {
         create.init(executions);
 
         api.addSlashCommandCreateListener(event -> {
+
             SlashCommandInteraction interaction = event.getSlashCommandInteraction();
             String fullname = getFullCommandName(interaction);
             log.info("Incoming '/{}' command", fullname);
+
             interaction.respondLater().thenAccept(responseUpdater -> {
                 log.trace("Calling command execution function");
                 EmbedBuilder embed = null;
+
                 try {
                     embed = executions.get(fullname).execute(interaction);
                 }
@@ -59,6 +62,7 @@ public class Commands implements DiscordUtils {
                     String message = exception.getMessage() + "\nPlease contact the devs!";
                     embed = createErrorEmbed("An unexpected error occured", message);
                 }
+
                 log.debug("Updating response to new embed");
                 responseUpdater.addEmbed(embed).update();
                 log.info("Finished handling '/{}' command", fullname);
