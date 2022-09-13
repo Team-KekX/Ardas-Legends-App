@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -41,6 +42,7 @@ public class ScheduleService {
     private final Clock clock;
 
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleMovements() {
         LocalDateTime startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -63,6 +65,7 @@ public class ScheduleService {
     }
 
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleHealings() {
         LocalDateTime startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
