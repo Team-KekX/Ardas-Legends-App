@@ -1,0 +1,5 @@
+= v1.0.1 - Fixing RP-Char Movements
+
+== Bug fixes
+
+- Fixed a bug that did not take the x2 movement speed of Roleplay Character movements into account.
