@@ -237,6 +237,7 @@ public class ScheduleService {
                 log.trace("Calculating new hoursUntilNextRegion");
 
                 hoursUntilNextRegion = hoursUntilNextRegion + nextPathRegion.getActualCost();
+                movement.setHoursUntilNextRegion(hoursUntilNextRegion);
                 log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 
