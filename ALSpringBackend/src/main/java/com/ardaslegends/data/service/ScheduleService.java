@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -41,6 +42,7 @@ public class ScheduleService {
     private final Clock clock;
 
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleMovements() {
         LocalDateTime startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -63,6 +65,7 @@ public class ScheduleService {
     }
 
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleHealings() {
         LocalDateTime startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -112,6 +115,25 @@ public class ScheduleService {
         }
         log.debug("Hours left: [{}]", hoursLeft);
 
+        if(hoursLeft <= 0) {
+            log.debug("Movement has less than or 0 hours left - completing it");
+            PathElement destinationRegion = movement.getPath().get(movement.getPath().size()-1);
+            if(movement.getIsCharMovement()) {
+                log.trace("Movement is char movement, setting current region to [{}]", destinationRegion);
+                movement.getPlayer().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+            }
+            else {
+                log.trace("Movement is army movement, setting current region to [{}]", destinationRegion);
+                movement.getArmy().setCurrentRegion(destinationRegion.getRegion());
+                if(movement.getArmy().getBoundTo() != null) {
+                    log.trace("Army is bound to a character, setting the character's region to [{}]", destinationRegion);
+                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+                }
+            }
+            log.debug("Setting isCurrentlyActive to false");
+            movement.setIsCurrentlyActive(false);
+        }
+
         /*
         We get the hours moved since last time by subtracting the current hours left
         with the last hours left (the value that was last stored in the movement)
@@ -122,7 +144,7 @@ public class ScheduleService {
 
         //If we didn't move an hour since last time, exit function
 
-        if(hoursMovedSinceLastTime == 0) {
+        if(hoursMovedSinceLastTime == 0 && hoursLeft != 0) {
             log.debug("No hour has passed for this movement - exiting function");
             return;
         }
@@ -166,6 +188,10 @@ public class ScheduleService {
         Region finalCurrentRegion = currentRegion;
         int currentRegionIndex = path.indexOf(path.stream().filter(pe -> pe.hasRegion(finalCurrentRegion)).findFirst().get());
         PathElement nextPathRegion = null;
+
+        if(currentRegionIndex == path.size()-1)
+            nextPathRegion = path.get(currentRegionIndex);
+
         while(hoursUntilNextRegion <= 0) {
             log.trace("Hours until next region: [{}]", hoursUntilNextRegion);
 
@@ -237,6 +263,7 @@ public class ScheduleService {
                 log.trace("Calculating new hoursUntilNextRegion");
 
                 hoursUntilNextRegion = hoursUntilNextRegion + nextPathRegion.getActualCost();
+                movement.setHoursUntilNextRegion(hoursUntilNextRegion);
                 log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 
@@ -264,6 +291,13 @@ public class ScheduleService {
         }
         log.debug("Hours left: [{}]", hoursLeft);
 
+        if(hoursLeft <= 0) {
+            log.debug("Healing has less than or 0 hours left - completing it");
+            log.debug("Healing all the units");
+            army.getUnits().parallelStream().forEach(unit -> unit.setAmountAlive(unit.getCount()));
+            log.info("Army [{}] has finished its healing process!", army.getName());
+            army.resetHealingStats();
+        }
 
         /*
         We get the hours healed since last time by subtracting the current hours left
@@ -275,7 +309,7 @@ public class ScheduleService {
 
         //If we didn't move an hour since last time, exit function
 
-        if(hoursHealedSinceLastTime == 0) {
+        if(hoursHealedSinceLastTime == 0 && hoursLeft != 0) {
             log.debug("No hour has passed for this healing - exiting function");
             return;
         }

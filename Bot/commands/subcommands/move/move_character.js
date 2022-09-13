@@ -25,7 +25,7 @@ module.exports = {
                 const path = createPathString(response.data.path);
                 const cost = createCostString(response.data.cost);
 
-                const startMsg = `${name} started his movement to region ${destination}.`;
+                const startMsg = `${name} started their movement to region ${destination}.`;
 
                 const replyEmbed = new MessageEmbed()
                     .setTitle(`Move character`)

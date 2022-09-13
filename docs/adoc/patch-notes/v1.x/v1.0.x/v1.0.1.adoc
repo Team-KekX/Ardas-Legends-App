@@ -1,0 +1,9 @@
+= v1.0.1 - Fixing RP-Char Movements
+
+== Bug fixes
+
+- Fixed a bug that did not take the x2 movement speed of Roleplay Character movements into account.
+
+== User Interface
+
+- Changed the bot message when creating a roleplay character to be more gender inclusive.

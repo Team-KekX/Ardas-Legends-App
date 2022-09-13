@@ -2,4 +2,7 @@
 :toc: left
 :toclevels: 3
 
+
+include::v1.x/v1.0.x/v1.0.1.adoc[leveloffset=+1]
+
 include::v1.x/v1.0.x/v1.0.adoc[leveloffset=+1]
