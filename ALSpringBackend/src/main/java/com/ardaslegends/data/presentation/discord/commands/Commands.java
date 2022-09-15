@@ -47,11 +47,15 @@ public class Commands implements DiscordUtils {
             log.info("Incoming '/{}' command", fullname);
 
             interaction.respondLater().thenAccept(responseUpdater -> {
-                log.trace("Calling command execution function");
                 EmbedBuilder embed = null;
 
                 try {
+                    log.trace("Calling command execution function");
                     embed = executions.get(fullname).execute(interaction);
+
+                    log.debug("Updating response to new embed");
+                    responseUpdater.addEmbed(embed).update();
+                    log.info("Finished handling '/{}' command", fullname);
                 }
                 catch (BotException exception) {
                     log.warn("Encountered ServiceException while executing, msg: {}", exception.getMessage());
@@ -63,9 +67,6 @@ public class Commands implements DiscordUtils {
                     embed = createErrorEmbed("An unexpected error occured", message);
                 }
 
-                log.debug("Updating response to new embed");
-                responseUpdater.addEmbed(embed).update();
-                log.info("Finished handling '/{}' command", fullname);
             });
         });
     }
