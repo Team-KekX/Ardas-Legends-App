@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+// TODO: Add Logging
 public interface DiscordUtils {
 
     default String getFullCommandName(SlashCommandInteraction commandInteraction) {
@@ -66,14 +67,19 @@ public interface DiscordUtils {
         return foundOption.get();
     }
 
-    default <T> T getOption(String optionName, Function<String, Optional<T>> optionFunction) {
+    default <T> T getRequiredOption(String optionName, Function<String, Optional<T>> optionFunction) {
         Optional<T> foundOption = optionFunction.apply(optionName);
 
         if(foundOption.isEmpty()) {
-            throw new RuntimeException("No option with name '%s' found!".formatted(optionName));
+            throw new RuntimeException("No value in option with name '%s' found!".formatted(optionName));
         }
 
         return foundOption.get();
+
+    }
+    default <T> Optional<T> getOptionalOption(String optionName, Function<String, Optional<T>> optionFunction) {
+        Optional<T> foundOption = optionFunction.apply(optionName);
+        return foundOption;
     }
     default <T, R> R discordServiceExecution(T argument, Function<T, R> function, String errorTitle) {
         if(function == null) {
