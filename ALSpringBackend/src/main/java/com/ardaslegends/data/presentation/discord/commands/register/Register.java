@@ -33,7 +33,7 @@ public class Register implements ALCommand, ALCommandExecutor, DiscordUtils {
     public void init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /register command");
 
-        SlashCommand register = SlashCommand.with("register", "Register in the roleplay system", Arrays.asList(
+        SlashCommand register = SlashCommand.with("register", "JAVACORDDDDD Register in the roleplay system", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.STRING)
                         .setName("ign")
