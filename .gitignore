@@ -33,7 +33,7 @@ target/
 !**/src/test/**/target/
 
 # Spring while Dev
-ALSpringBackend/src/main/resources/application.properties
+ALSpringBackend/src/main/resources/application-*.properties
 
 ### STS ###
 .apt_generated
