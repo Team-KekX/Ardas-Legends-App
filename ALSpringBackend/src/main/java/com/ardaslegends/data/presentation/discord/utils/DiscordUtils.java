@@ -66,6 +66,15 @@ public interface DiscordUtils {
         return foundOption.get();
     }
 
+    default <T> T getOption(String optionName, Function<String, Optional<T>> optionFunction) {
+        Optional<T> foundOption = optionFunction.apply(optionName);
+
+        if(foundOption.isEmpty()) {
+            throw new RuntimeException("No option with name '%s' found!".formatted(optionName));
+        }
+
+        return foundOption.get();
+    }
     default <T, R> R discordServiceExecution(T argument, Function<T, R> function, String errorTitle) {
         if(function == null) {
             throw new InternalServerException("Passed Null SupplierFunction in discordServiceExecution", null);
