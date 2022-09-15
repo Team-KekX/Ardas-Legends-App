@@ -77,7 +77,7 @@ public class Register implements ALCommand, ALCommandExecutor, DiscordUtils {
                 .setDescription("You were successfully registered in the Bot's system!")
                 .addField("Ign", player.getIgn(), true)
                 .addField("Faction", player.getFaction().getName(), true)
-                .setColor(ALColor.GREEN)
+                .setColor(Color.GREEN)
                 .setTimestampToNow();
     }
 }
