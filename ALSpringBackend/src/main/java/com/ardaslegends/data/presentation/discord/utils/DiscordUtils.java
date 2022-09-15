@@ -4,6 +4,7 @@ import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -43,7 +44,8 @@ public interface DiscordUtils {
             throw new RuntimeException("No String option with name '%s' found!");
         }
 
-        return foundOption.get();
+        String option = foundOption.get().trim();
+        return option;
     }
 
     default User getUserOption(String name, SlashCommandInteraction interaction) {
