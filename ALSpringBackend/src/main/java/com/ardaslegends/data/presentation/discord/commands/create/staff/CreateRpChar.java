@@ -14,6 +14,7 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import java.awt.*;
 import java.util.List;
@@ -22,12 +23,6 @@ import java.util.List;
 
 @Slf4j
 public class CreateRpChar implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
-
-    @Value("${ardaslegends.bot.server}")
-    private String serverId;
-
-    @Value("${ardaslegends.bot.staff-roles}")
-    private List<String> staffRoles;
 
     private final PlayerService playerService;
 
@@ -38,7 +33,7 @@ public class CreateRpChar implements ALCommandExecutor, ALStaffCommand, DiscordU
         User user = interaction.getUser();
         Server server = interaction.getServer().get();
 
-        checkStaff(user, server, staffRoles);
+        checkStaff(user, server);
 
         String discordId = getUserOption("target-player", interaction).getIdAsString();
         String name = getStringOption("name", interaction);

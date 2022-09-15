@@ -1,18 +1,28 @@
 package com.ardaslegends.data.presentation.discord.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@Getter
-@Setter
 
 @ConfigurationProperties("ardaslegends.bot")
 public class BotProperties {
 
-    private String token = "";
-    private String server = "";
-    private List<String> staffRoles = List.of();
+    public static String token;
+    public static String server;
+    public static List<String> staffRoles;
+
+    @Value("${ardaslegends.bot.token}")
+    private void setToken(String token) {
+        BotProperties.token = token;
+    }
+    @Value("${ardaslegends.bot.server}")
+    private void setServer(String server) {
+        BotProperties.server = server;
+    }
+    @Value("${ardaslegends.bot.staff-roles}")
+    private void setStaffRoles(List<String> staffRoles) {
+        BotProperties.staffRoles= staffRoles;
+    }
 }
