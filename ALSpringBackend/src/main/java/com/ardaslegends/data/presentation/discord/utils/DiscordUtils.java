@@ -1,5 +1,6 @@
 package com.ardaslegends.data.presentation.discord.utils;
 
+import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
@@ -68,6 +69,15 @@ public interface DiscordUtils {
         return foundOption.get();
     }
 
+    default Long getLongOption(String name, SlashCommandInteraction interaction) {
+        Optional<Long> foundOption = interaction.getOptionLongValueByName(name);
+        if(foundOption.isEmpty()) {
+            throw new RuntimeException("No Long option with name '%s' found!");
+        }
+
+        return foundOption.get();
+    }
+
     default <T> T getRequiredOption(String optionName, Function<String, Optional<T>> optionFunction) {
         Optional<T> foundOption = optionFunction.apply(optionName);
 
@@ -101,5 +111,16 @@ public interface DiscordUtils {
         } catch (ServiceException e) {
             throw new BotException(errorTitle, e);
         }
+    }
+
+    default String createArmyUnitListString(Army army) {
+        StringBuilder unitString = new StringBuilder();
+        army.getUnits().stream().forEach(unit -> {
+            String unitsAlive = "%d/%d".formatted(unit.getAmountAlive(), unit.getCount());
+            String unitName = unit.getUnitType().getUnitName();
+            unitString.append(unitsAlive).append(unitName).append("\n");
+        });
+
+        return unitString.toString();
     }
 }
