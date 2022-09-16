@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface ALStaffCommand {
 
-    default void checkStaff(User user, Server server) {
+    default void checkStaff(User user, Server server, List<String> staffRoles) {
 
         boolean isStaff = user.getRoles(server).stream()
                 .map(Role::getIdAsString)
-                .anyMatch(BotProperties.staffRoles::contains);
+                .anyMatch(staffRoles::contains);
 
         if(!isStaff) {
             String message = "You are not a staff member and do not have the permission to execute this command!";

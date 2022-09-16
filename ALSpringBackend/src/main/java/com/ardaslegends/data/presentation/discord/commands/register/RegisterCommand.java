@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands.register;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.service.PlayerService;
@@ -56,7 +57,7 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor, DiscordUti
 
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction) {
+    public EmbedBuilder execute(SlashCommandInteraction interaction, BotProperties properties) {
         log.debug("Incoming /register request");
 
         String ign = getStringOption("ign", interaction);

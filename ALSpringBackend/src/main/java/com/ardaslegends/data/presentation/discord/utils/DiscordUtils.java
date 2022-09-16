@@ -53,7 +53,7 @@ public interface DiscordUtils {
     default User getUserOption(String name, SlashCommandInteraction interaction) {
         Optional<User> foundOption = interaction.getOptionUserValueByName(name);
         if(foundOption.isEmpty()) {
-            throw new RuntimeException("No User option with name '%s' found!");
+            throw new RuntimeException("No User option with name '%s' found!".formatted(name));
         }
 
         return foundOption.get();

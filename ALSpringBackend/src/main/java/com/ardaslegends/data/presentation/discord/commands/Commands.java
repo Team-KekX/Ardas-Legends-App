@@ -12,12 +12,12 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 
 @Slf4j
 @Component
@@ -27,14 +27,15 @@ public class Commands implements DiscordUtils {
     private final Bind bind;
     private final RegisterCommand register;
     private final CreateCommand create;
-
     private final Map<String, ALCommandExecutor> executions;
 
-    public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create) {
+    private final BotProperties properties;
+    public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create, BotProperties properties) {
         this.api = api;
         this.bind = bind;
         this.register = register;
         this.create = create;
+        this.properties = properties;
 
         executions = new HashMap<>();
         bind.init(executions);
@@ -42,7 +43,7 @@ public class Commands implements DiscordUtils {
         create.init(executions);
 
         log.debug("Fetching roleplay-commands channel with ID in Property file");
-        Channel rpCommandsChannel = api.getChannelById(BotProperties.rpCommandsChannel).orElseThrow();
+        Channel rpCommandsChannel = api.getChannelById(properties.getRpCommandsChannel()).orElseThrow();
 
         api.addSlashCommandCreateListener(event -> {
 
@@ -59,7 +60,7 @@ public class Commands implements DiscordUtils {
                 EmbedBuilder embed;
                 try {
                     log.trace("Calling command execution function");
-                    embed = executions.get(fullname).execute(interaction);
+                    embed = executions.get(fullname).execute(interaction, properties);
 
                     log.info("Finished handling '/{}' command", fullname);
                 } catch (BotException exception) {

@@ -3,7 +3,9 @@ package com.ardaslegends.data.presentation.discord.commands.create;
 import com.ardaslegends.data.domain.ClaimBuildType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateClaimbuildCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateRpCharCommand;
+import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class CreateCommand implements ALCommand {
     private final DiscordApi api;
     private final PlayerService playerService;
 
+    private final ClaimBuildService claimBuildService;
     @Override
     public void init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /create command");
@@ -35,7 +38,7 @@ public class CreateCommand implements ALCommand {
                         new SlashCommandOptionBuilder()
                                 .setType(SlashCommandOptionType.SUB_COMMAND)
                                 .setName("rpchar")
-                                .setDescription("Creates a Roleplay Character")
+                                .setDescription("JAVACOORD Creates a Roleplay Character")
                                 .setOptions(Arrays.asList(
                                         new SlashCommandOptionBuilder()
                                                 .setType(SlashCommandOptionType.USER)
@@ -166,6 +169,7 @@ public class CreateCommand implements ALCommand {
                 .join();
 
         commands.put("create rpchar", new CreateRpCharCommand(playerService)::execute);
+        commands.put("create claimbuild", new CreateClaimbuildCommand(claimBuildService)::execute);
         log.info("Finished initializing /create command");
     }
 }

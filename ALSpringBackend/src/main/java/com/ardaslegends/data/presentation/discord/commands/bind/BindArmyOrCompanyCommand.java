@@ -1,6 +1,7 @@
 package com.ardaslegends.data.presentation.discord.commands.bind;
 
 
+import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -9,7 +10,7 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 
 public class BindArmyOrCompanyCommand implements ALCommandExecutor {
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction) {
+    public EmbedBuilder execute(SlashCommandInteraction interaction, BotProperties properties) {
 
         try {
             throw new NullPointerException("Value was null");

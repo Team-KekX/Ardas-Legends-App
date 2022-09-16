@@ -2,34 +2,35 @@ package com.ardaslegends.data.presentation.discord.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-
 
 @ConfigurationProperties("ardaslegends.bot")
 public class BotProperties {
 
-    public static String token;
-    public static String server;
-    public static String rpCommandsChannel;
-    public static List<String> staffRoles;
-
     @Value("${ardaslegends.bot.token}")
-    private void setToken(String token) {
-        BotProperties.token = token;
-    }
+    public String token;
     @Value("${ardaslegends.bot.server}")
-    private void setServer(String server) {
-        BotProperties.server = server;
-    }
-
+    static String server;
     @Value("${ardaslegends.roleplay.commands.channel}")
-    private void setRpCommandsChannel(String channel) {
-        BotProperties.rpCommandsChannel = channel;
+    private String rpCommandsChannel;
+    @Value("${ardaslegends.bot.staff-roles}")
+    private List<String> staffRoles;
+
+    public String getToken() {
+        return token;
     }
 
-    @Value("${ardaslegends.bot.staff-roles}")
-    private void setStaffRoles(List<String> staffRoles) {
-        BotProperties.staffRoles= staffRoles;
+    public static String getServer() {
+        return server;
+    }
+
+    public String getRpCommandsChannel() {
+        return rpCommandsChannel;
+    }
+
+    public List<String> getStaffRoles() {
+        return staffRoles;
     }
 }
