@@ -12,6 +12,7 @@ import org.javacord.api.interaction.SlashCommandInteractionOption;
 
 import java.awt.*;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -91,5 +92,14 @@ public interface DiscordUtils {
             throw new BotException(errorTitle, e);
         }
     }
-
+    default <T, R, E> R discordServiceExecution(T argument1, E argument2, BiFunction<T,E, R> function, String errorTitle) {
+        if(function == null) {
+            throw new InternalServerException("Passed Null SupplierFunction in discordServiceExecution", null);
+        }
+        try {
+            return function.apply(argument1, argument2);
+        } catch (ServiceException e) {
+            throw new BotException(errorTitle, e);
+        }
+    }
 }
