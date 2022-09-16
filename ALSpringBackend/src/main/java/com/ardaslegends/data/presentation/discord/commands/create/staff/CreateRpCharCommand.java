@@ -13,16 +13,13 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 
 import java.awt.*;
-import java.util.List;
 
 @RequiredArgsConstructor
 
 @Slf4j
-public class CreateRpChar implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class CreateRpCharCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
 
     private final PlayerService playerService;
 
@@ -51,7 +48,7 @@ public class CreateRpChar implements ALCommandExecutor, ALStaffCommand, DiscordU
         return new EmbedBuilder()
                 .setTitle("Created Roleplay Character")
                 .setDescription("Successfully created Roleplay Character '%s - %s'!".formatted(rpChar.getName(), rpChar.getTitle()))
-                .setColor(Color.GREEN)
+                .setColor(ALColor.GREEN)
                 .addField("Name", rpChar.getName(), true)
                 .addField("Title", rpChar.getTitle(), true)
                 .addField("Gear", rpChar.getGear(), true)

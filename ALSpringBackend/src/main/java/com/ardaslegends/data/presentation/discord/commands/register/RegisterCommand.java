@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class Register implements ALCommand, ALCommandExecutor, DiscordUtils {
+public class RegisterCommand implements ALCommand, ALCommandExecutor, DiscordUtils {
 
     private final DiscordApi api;
     private final PlayerService playerService;
@@ -77,7 +77,7 @@ public class Register implements ALCommand, ALCommandExecutor, DiscordUtils {
                 .setDescription("You were successfully registered in the Bot's system!")
                 .addField("Ign", player.getIgn(), true)
                 .addField("Faction", player.getFaction().getName(), true)
-                .setColor(Color.GREEN)
+                .setColor(ALColor.GREEN)
                 .setTimestampToNow();
     }
 }

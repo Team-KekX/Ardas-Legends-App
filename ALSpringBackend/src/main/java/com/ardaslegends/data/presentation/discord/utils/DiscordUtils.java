@@ -36,7 +36,7 @@ public interface DiscordUtils {
         return new EmbedBuilder()
                 .setTitle(title)
                 .setDescription(description)
-                .setColor(Color.RED)
+                .setColor(ALColor.RED)
                 .setTimestampToNow();
     }
 

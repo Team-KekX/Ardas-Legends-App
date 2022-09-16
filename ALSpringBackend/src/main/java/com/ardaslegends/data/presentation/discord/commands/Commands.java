@@ -1,8 +1,8 @@
 package com.ardaslegends.data.presentation.discord.commands;
 
 import com.ardaslegends.data.presentation.discord.commands.bind.Bind;
-import com.ardaslegends.data.presentation.discord.commands.create.Create;
-import com.ardaslegends.data.presentation.discord.commands.register.Register;
+import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
+import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
@@ -12,12 +12,10 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
 
@@ -27,12 +25,12 @@ public class Commands implements DiscordUtils {
 
     private final DiscordApi api;
     private final Bind bind;
-    private final Register register;
-    private final Create create;
+    private final RegisterCommand register;
+    private final CreateCommand create;
 
     private final Map<String, ALCommandExecutor> executions;
 
-    public Commands(DiscordApi api, Bind bind, Register register, Create create) {
+    public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create) {
         this.api = api;
         this.bind = bind;
         this.register = register;

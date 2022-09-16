@@ -3,7 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands.create;
 import com.ardaslegends.data.domain.ClaimBuildType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateRpChar;
+import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateRpCharCommand;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class Create implements ALCommand {
+public class CreateCommand implements ALCommand {
 
     private final DiscordApi api;
     private final PlayerService playerService;
@@ -165,7 +165,7 @@ public class Create implements ALCommand {
                 .createGlobal(api)
                 .join();
 
-        commands.put("create rpchar", new CreateRpChar(playerService)::execute);
+        commands.put("create rpchar", new CreateRpCharCommand(playerService)::execute);
         log.info("Finished initializing /create command");
     }
 }
