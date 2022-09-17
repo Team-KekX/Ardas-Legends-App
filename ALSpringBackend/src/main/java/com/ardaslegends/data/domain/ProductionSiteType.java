@@ -1,18 +1,28 @@
 package com.ardaslegends.data.domain;
 
 public enum ProductionSiteType {
-    FARM,
-    FISHING_LODGE,
-    MINE,
-    QUARRY,
-    MAN_FLESH_PIT,
-    SLAUGHTERHOUSE,
-    HUNTING_LODGE,
-    ORCHARD,
-    LUMBER_CAMP,
-    WORKSHOP,
-    INCOME,
-    PEARL_FISHER,
-    HOUSE_OF_LORE,
-    DYE_HOUSE
+    FARM("Farm"),
+    FISHING_LODGE("Fishing Lodge"),
+    MINE("Mine"),
+    QUARRY("Quarry"),
+    MAN_FLESH_PIT("Manflesh Pit"),
+    SLAUGHTERHOUSE("Slaughterhouse"),
+    HUNTING_LODGE("Hunting Lodge"),
+    ORCHARD("Orchard"),
+    LUMBER_CAMP("Lumber Camp"),
+    WORKSHOP("Workshop"),
+    INCOME("Income"),
+    PEARL_FISHER("Pearl Fisher"),
+    HOUSE_OF_LORE("House of Lore"),
+    DYE_HOUSE("Dye House");
+
+    private String name;
+
+    private ProductionSiteType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 }
