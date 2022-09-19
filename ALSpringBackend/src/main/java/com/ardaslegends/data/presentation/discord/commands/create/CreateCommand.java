@@ -42,7 +42,7 @@ public class CreateCommand implements ALCommand {
                                 .setOptions(Arrays.asList(
                                         new SlashCommandOptionBuilder()
                                                 .setType(SlashCommandOptionType.USER)
-                                                .setName("target-player")
+                                                .setName("target")
                                                 .setDescription("The player who the char should be created for")
                                                 .setRequired(true)
                                                 .build(),
@@ -79,7 +79,7 @@ public class CreateCommand implements ALCommand {
                         .setOptions(Arrays.asList(
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.STRING)
-                                        .setName("name")
+                                        .setName("cbname")
                                         .setDescription("Name of the Claimbuild")
                                         .setRequired(true)
                                         .build(),

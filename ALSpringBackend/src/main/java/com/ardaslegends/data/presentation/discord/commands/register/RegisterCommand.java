@@ -12,14 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandOptionBuilder;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -57,11 +55,11 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor, DiscordUti
 
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, BotProperties properties) {
+    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /register request");
 
-        String ign = getStringOption("ign", interaction);
-        String factionName = getStringOption("faction-name", interaction);
+        String ign = getStringOption("ign", options);
+        String factionName = getStringOption("faction-name", options);
         String discordId = interaction.getUser().getIdAsString();
 
 

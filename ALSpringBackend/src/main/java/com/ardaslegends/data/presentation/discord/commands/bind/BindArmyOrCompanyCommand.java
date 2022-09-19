@@ -7,10 +7,13 @@ import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
+
+import java.util.List;
 
 public class BindArmyOrCompanyCommand implements ALCommandExecutor {
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, BotProperties properties) {
+    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
 
         try {
             throw new NullPointerException("Value was null");

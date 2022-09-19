@@ -4,6 +4,7 @@ import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.ArmyType;
 import com.ardaslegends.data.domain.UnitType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.service.ArmyService;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 
@@ -24,17 +28,18 @@ public class CreateArmyCommand implements ALCommandExecutor, DiscordUtils {
 
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction) {
+    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /create army request");
 
         User user = interaction.getUser();
 
+
         log.trace("Getting input data");
-        String armyName = getStringOption("army-name", interaction);
+        String armyName = getStringOption("army-name", options);
         log.debug("armyName: [{}]", armyName);
-        String cbName = getStringOption("claimbuild-name", interaction);
+        String cbName = getStringOption("claimbuild-name", options);
         log.debug("cbName: [{}]", cbName);
-        String units = getStringOption("units", interaction);
+        String units = getStringOption("units", options);
         log.debug("units: [{}]", units);
 
         log.trace("Building unitTypeDtos");

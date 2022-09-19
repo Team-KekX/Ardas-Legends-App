@@ -14,9 +14,11 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.List;
 
 @RequiredArgsConstructor
 
@@ -26,19 +28,19 @@ public class CreateRpCharCommand implements ALCommandExecutor, ALStaffCommand, D
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, BotProperties properties) {
-        log.debug("Incoming /create rp char request");
+    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+        log.debug("Executing /create rpchar request");
 
         User user = interaction.getUser();
         Server server = interaction.getServer().get();
 
         checkStaff(user, server, properties.getStaffRoles());
 
-        String discordId = getUserOption("target-player", interaction).getIdAsString();
-        String name = getStringOption("name", interaction);
-        String title = getStringOption("title", interaction);
-        String gear = getStringOption("gear", interaction);
-        Boolean pvp = getBooleanOption("pvp", interaction);
+        String discordId = getUserOption("target", options).getIdAsString();
+        String name = getStringOption("name", options);
+        String title = getStringOption("title", options);
+        String gear = getStringOption("gear", options);
+        Boolean pvp = getBooleanOption("pvp", options);
 
         log.trace("Building dto");
         CreateRPCharDto dto = new CreateRPCharDto(discordId, name, title, gear, pvp);

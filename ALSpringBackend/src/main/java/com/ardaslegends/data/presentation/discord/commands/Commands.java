@@ -12,11 +12,14 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -48,19 +51,23 @@ public class Commands implements DiscordUtils {
         api.addSlashCommandCreateListener(event -> {
 
             SlashCommandInteraction interaction = event.getSlashCommandInteraction();
-            String fullname = getFullCommandName(interaction);
-
-
-            log.info("Incoming '/{}' command", fullname);
-
             try {
 
                 var responseUpdater = interaction.respondLater().join();
 
                 EmbedBuilder embed;
                 try {
+                    String fullname = getFullCommandName(interaction);
+                    log.trace("Full CommandName: [{}]", fullname);
+                    List<SlashCommandInteractionOption> options = getOptions(interaction);
+
+                    log.trace("List of available options: {}", options.stream()
+                            .map(interactionOption -> interactionOption.getName())
+                            .collect(Collectors.joining(", ")));
+
+                    log.info("Incoming '/{}' command", fullname);
                     log.trace("Calling command execution function");
-                    embed = executions.get(fullname).execute(interaction, properties);
+                    embed = executions.get(fullname).execute(interaction, options, properties);
 
                     log.info("Finished handling '/{}' command", fullname);
                 } catch (BotException exception) {

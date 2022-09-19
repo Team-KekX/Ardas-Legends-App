@@ -24,7 +24,7 @@ public class DiscordConfig {
     public DiscordApi api() {
         var api = new DiscordApiBuilder()
                 .setToken(token)
-                .setIntents(Intent.GUILDS, Intent.GUILD_MESSAGES, Intent.GUILD_MESSAGE_REACTIONS)
+                .setIntents(Intent.GUILDS, Intent.GUILD_MESSAGES, Intent.GUILD_MESSAGE_REACTIONS, Intent.GUILD_MEMBERS)
                 .login().join();
         log.info("Logged in as {}", api.getClientId());
         return api;
