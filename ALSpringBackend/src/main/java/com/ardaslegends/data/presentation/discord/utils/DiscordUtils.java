@@ -237,4 +237,11 @@ public interface DiscordUtils {
         return specialString.toString();
     }
 
+    default String getFactionBanner(String factionName) {
+        Objects.requireNonNull(factionName, "DiscordUtils.getFactionBanner: name must not be null");
+        String url = FactionBanners.getBannerUrl(factionName);
+
+        log.trace("DiscordUtils.getFactionBanner: Faction name [{}], result [{}]", factionName, url);
+        return url;
+    }
 }
