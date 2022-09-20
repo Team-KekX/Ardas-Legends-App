@@ -34,20 +34,8 @@ public class CreateClaimbuildCommand implements ALCommandExecutor, ALStaffComman
 
         User user = interaction.getUser();
         Server server = interaction.getServer().get();
-        var foundSubcommand = interaction.getOptionByName("claimbuild");
 
-        if(foundSubcommand.isEmpty()) {
-            throw new Error("Slashcommand subcommand does not exist");
-        }
-
-        var subcommand = foundSubcommand.get();
-        var cbName = subcommand.getOptionStringValueByName("cbname");
-
-        if(cbName.isEmpty()) {
-            throw new RuntimeException("Empty cbName");
-        }
-
-        log.debug("cbname: " + cbName.get());
+        checkStaff(user, server, properties.getStaffRoles());
 
         log.debug("Checking if User [{}] is staff member ", user.getName());
         checkStaff(user, server, properties.getStaffRoles());
