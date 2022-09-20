@@ -56,6 +56,7 @@ public class CreateRpCharCommand implements ALCommandExecutor, ALStaffCommand, D
                 .addField("Name", rpChar.getName(), true)
                 .addField("Title", rpChar.getTitle(), true)
                 .addField("Gear", rpChar.getGear(), true)
-                .addField("PvP", pvp ? "Yes" : "No", true);
+                .addField("PvP", pvp ? "Yes" : "No", true)
+                .setTimestampToNow();
     }
 }

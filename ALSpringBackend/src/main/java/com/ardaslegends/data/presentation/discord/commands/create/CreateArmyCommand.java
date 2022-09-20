@@ -67,6 +67,7 @@ public class CreateArmyCommand implements ALCommandExecutor, DiscordUtils {
                 .addInlineField("Free Tokens", army.getFreeTokens().toString())
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .addInlineField("Units", unitString)
+                .setThumbnail(getFactionBanner(army.getFaction().getName()))
                 .addField("Payment", paymentString, false);
 
         log.debug("Successfully built response embed - exiting execute function");

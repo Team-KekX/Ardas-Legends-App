@@ -123,6 +123,7 @@ public class CreateClaimbuildCommand implements ALCommandExecutor, ALStaffComman
                 .addInlineField("Houses", claimbuild.getNumberOfHouses())
                 .addInlineField("Coordinates", claimbuild.getCoordinates().toString())
                 .addInlineField("Built by", builtByString)
+                .setThumbnail(getFactionBanner(claimbuild.getOwnedBy().getName()))
                 .setTimestampToNow();
     }
 }
