@@ -7,6 +7,8 @@ import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.message.mention.AllowedMentions;
+import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.slf4j.Logger;
@@ -243,5 +245,11 @@ public interface DiscordUtils {
 
         log.trace("DiscordUtils.getFactionBanner: Faction name [{}], result [{}]", factionName, url);
         return url;
+    }
+
+    default AllowedMentions createSingleUserAllowedMention(User user) {
+        return new AllowedMentionsBuilder()
+                .addUser(user.getId())
+                .build();
     }
 }
