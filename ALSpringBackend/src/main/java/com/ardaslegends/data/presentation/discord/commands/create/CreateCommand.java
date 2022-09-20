@@ -5,6 +5,7 @@ import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateClaimbuildCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.staff.CreateRpCharCommand;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,14 @@ public class CreateCommand implements ALCommand {
 
     private final DiscordApi api;
     private final PlayerService playerService;
+    private final ArmyService armyService;
 
     private final ClaimBuildService claimBuildService;
     @Override
     public void init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /create command");
 
-        SlashCommand register = SlashCommand.with("create", "Creates an entity (RpChar, army, trader etc.)", Arrays.asList(
+        SlashCommand create = SlashCommand.with("create", "Creates an entity (RpChar, army, trader etc.)", Arrays.asList(
                         new SlashCommandOptionBuilder()
                                 .setType(SlashCommandOptionType.SUB_COMMAND)
                                 .setName("rpchar")
@@ -72,6 +74,30 @@ public class CreateCommand implements ALCommand {
                                                 .build()
                                 ))
                                 .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                        .setName("army")
+                        .setDescription("Creates an army")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setName("army-name")
+                                        .setDescription("The namy of the army")
+                                        .setRequired(true)
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setName("claimbuild-name")
+                                        .setDescription("The name of the originating claimbuild")
+                                        .setRequired(true)
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setName("units")
+                                        .setDescription("The list of units in the army - example syntax = Gondor Archer:5-Mordor Orc:3")
+                                        .setRequired(true)
+                                        .build()
+                        )).build(),
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND)
                         .setName("claimbuild")
@@ -169,6 +195,7 @@ public class CreateCommand implements ALCommand {
                 .join();
 
         commands.put("create rpchar", new CreateRpCharCommand(playerService)::execute);
+        commands.put("create army", new CreateArmyCommand(armyService)::execute);
         commands.put("create claimbuild", new CreateClaimbuildCommand(claimBuildService)::execute);
         log.info("Finished initializing /create command");
     }

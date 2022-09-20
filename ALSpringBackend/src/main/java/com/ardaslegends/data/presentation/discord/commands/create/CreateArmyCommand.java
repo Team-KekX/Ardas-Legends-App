@@ -60,7 +60,7 @@ public class CreateArmyCommand implements ALCommandExecutor, DiscordUtils {
         log.debug("Building Response Embed");
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("Army '%s' created".formatted(army.getName()))
-                .setDescription("JAVACORD A new army '%s' has been raised by %s!".formatted(army.getName(), army.getFaction().getName()))
+                .setDescription("A new army '%s' has been raised by %s!".formatted(army.getName(), army.getFaction().getName()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Name", army.getName())
                 .addInlineField("Faction", army.getFaction().getName())

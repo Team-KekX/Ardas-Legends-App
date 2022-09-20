@@ -4,6 +4,6 @@ import java.awt.*;
 
 public class ALColor {
 
-    public static final Color GREEN = new Color(34, 94, 53);
-    public static final Color RED = new Color(92, 25, 27);
+    public static final Color GREEN = new Color(0x57, 0xf2, 0x88);
+    public static final Color RED = new Color(0xed, 0x42, 0x45);
 }
