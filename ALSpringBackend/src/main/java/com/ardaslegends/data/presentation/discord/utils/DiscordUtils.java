@@ -237,20 +237,4 @@ public interface DiscordUtils {
         return specialString.toString();
     }
 
-    default Object getFieldValue(String fieldName, Object objectToField) {
-        Objects.requireNonNull(fieldName);
-        Objects.requireNonNull(objectToField);
-
-        try {
-            Field field = objectToField.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            Object value = field.get(objectToField);
-            log.trace("GetFieldValue: Fieldname [{}], value [{}]", fieldName, value.toString());
-            return value;
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
 }
