@@ -73,7 +73,7 @@ public enum FactionBanners {
             case "Rhúdel" -> RHUDEL.getUrl();
             case "Rivendell" -> RIVENDELL.getUrl();
             case "Rohan" -> ROHAN.getUrl();
-            case "Southron Coast" -> NOMADS.getUrl();
+            case "Southron Coast" -> HARNENNOR.getUrl();
             case "Taurethrim" -> TAURETHRIM.getUrl();
             case "Umbar" -> UMBAR.getUrl();
             case "Wanderer" -> WANDERER.getUrl();
