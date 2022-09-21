@@ -99,7 +99,7 @@ public class CreateClaimbuildCommand implements ALCommandExecutor, ALStaffComman
 
         return new EmbedBuilder()
                 .setTitle("Claimbuild %s was successfully created!".formatted(claimbuild.getName()))
-                .setColor(ALColor.GREEN)
+                .setColor(ALColor.YELLOW)
                 .addInlineField("Name", claimbuild.getName())
                 .addInlineField("Faction", claimbuild.getOwnedBy().getName())
                 .addInlineField("Region", claimbuild.getRegion().getId())

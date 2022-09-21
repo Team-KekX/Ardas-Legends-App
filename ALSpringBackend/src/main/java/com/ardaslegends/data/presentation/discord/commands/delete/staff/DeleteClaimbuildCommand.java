@@ -53,11 +53,10 @@ public class DeleteClaimbuildCommand implements ALCommandExecutor, ALStaffComman
 
         return new EmbedBuilder()
                 .setTitle("Staff-Deleted Claimbuild")
-                .setColor(ALColor.GREEN)
-                .setDescription("Claimbuild %s has been deleted".formatted(claimbuildName))
+                .setColor(ALColor.YELLOW)
+                .setDescription("Claimbuild %s of faction %s has been deleted".formatted(claimbuildName, claimbuild.getOwnedBy().getName()))
                 .addField("Unstationed Armies/Companies", unstationedArmies.isEmpty() ? "None":unstationedArmies)
                 .addField("Deleted Armies/Companies", deletedArmies.isEmpty() ? "None":deletedArmies)
-                .setThumbnail(getFactionBanner(claimbuild.getOwnedBy().getName()))
                 .setTimestampToNow();
     }
 }

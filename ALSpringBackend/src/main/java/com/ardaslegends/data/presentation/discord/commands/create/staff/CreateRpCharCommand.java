@@ -52,7 +52,7 @@ public class CreateRpCharCommand implements ALCommandExecutor, ALStaffCommand, D
         return new EmbedBuilder()
                 .setTitle("Created Roleplay Character")
                 .setDescription("Successfully created Roleplay Character '%s - %s'!".formatted(rpChar.getName(), rpChar.getTitle()))
-                .setColor(ALColor.GREEN)
+                .setColor(ALColor.YELLOW)
                 .addField("Name", rpChar.getName(), true)
                 .addField("Title", rpChar.getTitle(), true)
                 .addField("Gear", rpChar.getGear(), true)
