@@ -31,10 +31,7 @@ public class CreateRpCharCommand implements ALCommandExecutor, ALStaffCommand, D
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /create rpchar request");
 
-        User user = interaction.getUser();
-        Server server = interaction.getServer().get();
-
-        checkStaff(user, server, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoles());
 
         String discordId = getUserOption("target", options).getIdAsString();
         String name = getStringOption("name", options);

@@ -32,18 +32,9 @@ public class CreateClaimbuildCommand implements ALCommandExecutor, ALStaffComman
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /create claimbuild request, getting option-data");
 
-        User user = interaction.getUser();
-        Server server = interaction.getServer().get();
-
-        checkStaff(user, server, properties.getStaffRoles());
-
-        log.debug("Checking if User [{}] is staff member ", user.getName());
-        checkStaff(user, server, properties.getStaffRoles());
-
-        log.debug("User [{}] is a staff member -> allowed", user.getName());
+        checkStaff(interaction, properties.getStaffRoles());
 
         log.debug("Fetching option-data");
-
         String name = getStringOption("cbname", options);
         log.trace("CreateClaimbuild: Name is [{}]", name);
 

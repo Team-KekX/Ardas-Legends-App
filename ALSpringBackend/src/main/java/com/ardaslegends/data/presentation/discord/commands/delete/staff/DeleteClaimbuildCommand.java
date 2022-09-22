@@ -33,13 +33,7 @@ public class DeleteClaimbuildCommand implements ALCommandExecutor, ALStaffComman
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /delete claimbuild request, getting option-data");
 
-        User user  = interaction.getUser();
-        Server server = interaction.getServer().get();
-
-        log.debug("Checking if User [{}] is staff member ", user.getName());
-        checkStaff(user, server, properties.getStaffRoles());
-
-        log.debug("User [{}] is a staff member -> allowed", user.getName());
+        checkStaff(interaction, properties.getStaffRoles());
 
         log.debug("Fetching option-data");
         String claimbuildName = getStringOption("claimbuild-name", options);
