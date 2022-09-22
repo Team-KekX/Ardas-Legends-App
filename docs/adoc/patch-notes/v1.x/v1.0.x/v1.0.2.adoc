@@ -22,6 +22,8 @@ We also used this update to implement some quality of life, as well as visual im
 == Commands
 
 - Changed following command names:
-** From `/update rpchar-faction` to `/update player faction`
+** From `/update faction` to `/update player faction`
+** From `/update ign` to `/update player ign`
 
-- The `/update player faction` command now take a User Ping as an input instead of the Discord-Id of the user.
+- The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.

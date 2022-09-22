@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands.update;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerFactionCommand;
+import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerIgnCommand;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,25 @@ public class UpdateCommand implements ALCommand {
                                                         .setRequired(true)
                                                         .build()
                                         ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("ign")
+                                        .setDescription("Update a player's Minecraft IGN")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.USER)
+                                                        .setName("player")
+                                                        .setDescription("Which player to change the ign of (Discord Ping)")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("ign")
+                                                        .setDescription("The player's new ign")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
                                         .build()
                         ))
                         .build()
@@ -58,6 +78,7 @@ public class UpdateCommand implements ALCommand {
                 .join();
 
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService)::execute);
+        commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
         log.info("Finished initializing /update command");
     }
 }

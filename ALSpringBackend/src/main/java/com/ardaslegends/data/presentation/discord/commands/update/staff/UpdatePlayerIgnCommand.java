@@ -8,10 +8,12 @@ import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.UpdatePlayerFactionDto;
+import com.ardaslegends.data.service.dto.player.UpdatePlayerIgnDto;
+import com.ardaslegends.data.service.exceptions.units.UnitServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
@@ -21,38 +23,39 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class UpdatePlayerFactionCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class UpdatePlayerIgnCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+
 
     private final PlayerService playerService;
 
     @Override
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
-        log.debug("Executing /update player faction request");
+        log.debug("Executing /update player ign request");
 
         checkStaff(interaction, properties.getStaffRoles());
 
         log.debug("Getting options");
-        String factionName = getStringOption("faction-name", options);
-        log.debug("factionName: [{}]", factionName);
         User user = getUserOption("player", options);
         log.debug("User: discord name [{}] - id [{}]", user.getName(), user.getIdAsString());
 
+        String ign = getStringOption("ign", options);
+        log.debug("Ign: [{}]", ign);
+
         log.trace("Building dto");
-        UpdatePlayerFactionDto dto = new UpdatePlayerFactionDto(user.getIdAsString(), factionName);
+        UpdatePlayerIgnDto dto = new UpdatePlayerIgnDto(ign, user.getIdAsString());
         log.debug("Built dto with data [{}]", dto);
 
         log.trace("Calling playerService");
-        Player player = discordServiceExecution(dto, playerService::updatePlayerFaction, "Error while updating Player Faction");
+        Player player = discordServiceExecution(dto, playerService::updateIgn, "Error while updating Player Ign");
 
         log.debug("Building response Embed");
         return new EmbedBuilder()
-                .setTitle("Updated Player Faction")
-                .setDescription("Player %s successfully changed to Faction %s!".formatted(player.getIgn(), player.getFaction().getName()))
-                .setColor(ALColor.YELLOW)
+                .setTitle("Updated Player Ign")
+                .setDescription("Successfully changed ign of Discord User %s to %s".formatted(user.getMentionTag(), player.getIgn()))
                 .addInlineField("User", "%s".formatted(user.getMentionTag()))
-                .addInlineField("Ign", player.getIgn())
-                .addInlineField("Faction", player.getFaction().getName())
-                .setThumbnail(getFactionBanner(player.getFaction().getName()))
+                .addInlineField("New Ign", player.getIgn())
+                .setColor(ALColor.YELLOW)
                 .setTimestampToNow();
     }
+
 }
