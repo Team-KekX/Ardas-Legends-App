@@ -1,0 +1,27 @@
+= v1.0.2 - Javacord
+
+In this patch, the Bot got migrated from the JavaScript Discord library (discordjs) to *Javacord*, which is a Java library for Discord.
+
+This means that the Bot will run a lot more stable and errors should occur less often. This update should also decrease the development time of future features, since we save some steps when implementing new features.
+
+We also used this update to implement some quality of life, as well as visual improvements to messages sent by the Bot.
+
+== Bug fixes
+
+- The Bot runs more stable and a bit faster now
+
+== User Interface
+
+- Messages of Staff commands now have the color yellow so they stand out more
+- Some commands now show the banner of the faction that got updated by the command. The following commands now show the faction banner:
+** `/create claimbuild`
+** `/update player faction`
+** `/register`
+** `/create army`
+
+== Commands
+
+- Changed following command names:
+** From `/update rpchar-faction` to `/update player faction`
+
+- The `/update player faction` command now take a User Ping as an input instead of the Discord-Id of the user.
