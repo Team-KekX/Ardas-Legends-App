@@ -1,10 +1,10 @@
-- `/update ign` +
+- `/update player ign` +
 changes the ign of a player
 
-- `/update faction` +
+- `/update player faction` +
 changes the faction of a player
 
-- `/update discordId` +
+- `/update player discord-id` +
 changes discordId of a player
 
 - `/delete player` +

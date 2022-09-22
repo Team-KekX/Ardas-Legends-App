@@ -2,6 +2,7 @@ package com.ardaslegends.data.presentation.discord.commands.update;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerDiscordIdCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerFactionCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerIgnCommand;
 import com.ardaslegends.data.service.PlayerService;
@@ -70,6 +71,25 @@ public class UpdateCommand implements ALCommand {
                                                         .setRequired(true)
                                                         .build()
                                         ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("discord-id")
+                                        .setDescription("Update a player's Discord-ID")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("old-discord-id")
+                                                        .setDescription("The player's old Discord ID")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("new-discord-id")
+                                                        .setDescription("The player's new Discord ID")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
                                         .build()
                         ))
                         .build()
@@ -79,6 +99,7 @@ public class UpdateCommand implements ALCommand {
 
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService)::execute);
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
+        commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService)::execute);
         log.info("Finished initializing /update command");
     }
 }
