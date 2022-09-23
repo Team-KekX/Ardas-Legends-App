@@ -2,7 +2,7 @@ package com.ardaslegends.data.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.ALStaffCommand;
+import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class UpdateRpcharNameCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class UpdateRpcharNameCommand implements ALStaffCommandExecutor {
 
 
     private final PlayerService playerService;

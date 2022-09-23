@@ -1,31 +1,25 @@
 package com.ardaslegends.data.presentation.discord.commands.create.staff;
 
-import com.ardaslegends.data.domain.ClaimBuildType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.ALStaffCommand;
+import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.dto.claimbuild.CreateClaimBuildDto;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
 @Slf4j
-public class CreateClaimbuildCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
 
     private final ClaimBuildService claimBuildService;
     @Override

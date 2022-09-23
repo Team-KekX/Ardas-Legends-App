@@ -1,7 +1,7 @@
 package com.ardaslegends.data.presentation.discord.commands.delete.staff;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.ALStaffCommand;
+import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Component
-public class DeletePlayerCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class DeletePlayerCommand implements ALStaffCommandExecutor {
 
     private final PlayerService playerService;
 

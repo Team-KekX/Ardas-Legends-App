@@ -1,6 +1,5 @@
 package com.ardaslegends.data.presentation.discord.commands;
 
-import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import org.javacord.api.entity.permission.Role;
@@ -10,10 +9,9 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 
-public interface ALStaffCommand {
+public interface ALStaffCommandExecutor extends ALCommandExecutor{
 
     Logger log = LoggerFactory.getLogger(DiscordUtils.class);
 

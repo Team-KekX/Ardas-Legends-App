@@ -2,7 +2,7 @@ package com.ardaslegends.data.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.ALStaffCommand;
+import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
@@ -11,7 +11,6 @@ import com.ardaslegends.data.service.dto.player.UpdatePlayerFactionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
@@ -21,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class UpdatePlayerFactionCommand implements ALCommandExecutor, ALStaffCommand, DiscordUtils {
+public class UpdatePlayerFactionCommand implements ALStaffCommandExecutor {
 
     private final PlayerService playerService;
 

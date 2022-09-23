@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 
 @Component
-public class DeleteCommand implements ALCommand, DiscordUtils {
+public class DeleteCommand implements ALCommand {
 
     private final DiscordApi api;
     private final ClaimBuildService claimBuildService;

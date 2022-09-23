@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class CreateArmyCommand implements ALCommandExecutor, DiscordUtils {
+public class CreateArmyCommand implements ALCommandExecutor {
 
     private final ArmyService armyService;
 

@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class RegisterCommand implements ALCommand, ALCommandExecutor, DiscordUtils {
+public class RegisterCommand implements ALCommand, ALCommandExecutor {
 
     private final DiscordApi api;
     private final PlayerService playerService;
