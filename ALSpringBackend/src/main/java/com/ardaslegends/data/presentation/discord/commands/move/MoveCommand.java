@@ -29,7 +29,7 @@ public class MoveCommand implements ALCommand {
     public void init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /move command");
 
-        SlashCommand update = SlashCommand.with("move", "JAVACORD Starts a movement on the map", Arrays.asList(
+        SlashCommand move = SlashCommand.with("move", "JAVACORD Starts a movement on the map", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND)
                         .setName("rpchar")

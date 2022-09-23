@@ -35,7 +35,10 @@ public interface DiscordUtils {
 
         while (option.isSubcommandOrGroup()) {
             commandName.append(" %s".formatted(option.getName()));
-            option = option.getOptions().get(0);
+            if(option.getOptions().size() > 0)
+                option = option.getOptions().get(0);
+            else
+                break;
         }
 
         return commandName.toString();
@@ -52,7 +55,10 @@ public interface DiscordUtils {
         while (option.isSubcommandOrGroup()) {
             log.debug("GetOptions: Option [{}] is subcommand [{}]", option.getName(), option.isSubcommandOrGroup());
             optionList = option.getOptions();
-            option = option.getOptions().get(0);
+            if(option.getOptions().size() > 0)
+                option = option.getOptions().get(0);
+            else
+                break;
             log.debug("GetOptions: New Option [{}]", option.getName());
         }
 

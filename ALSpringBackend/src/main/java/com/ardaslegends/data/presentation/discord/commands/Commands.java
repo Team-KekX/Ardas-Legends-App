@@ -1,6 +1,7 @@
 package com.ardaslegends.data.presentation.discord.commands;
 
 import com.ardaslegends.data.presentation.discord.commands.bind.Bind;
+import com.ardaslegends.data.presentation.discord.commands.cancel.CancelCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
@@ -38,7 +39,7 @@ public class Commands implements DiscordUtils {
 
     private final BotProperties properties;
     public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
-        UpdateCommand update, MoveCommand move
+        UpdateCommand update, MoveCommand move, CancelCommand cancel
     ) {
         this.api = api;
         this.bind = bind;
@@ -54,6 +55,7 @@ public class Commands implements DiscordUtils {
         delete.init(executions);
         update.init(executions);
         move.init(executions);
+        cancel.init(executions);
 
         log.debug("Fetching roleplay-commands channel with ID in Property file");
         Channel rpCommandsChannel = api.getChannelById(properties.getRpCommandsChannel()).orElseThrow();
@@ -85,6 +87,7 @@ public class Commands implements DiscordUtils {
                     embed = createErrorEmbed(exception.getTitle(), exception.getMessage());
                 } catch (Exception exception) {
                     log.error("ENCOUNTERED UNEXPECTED ERROR OF TYPE {} - MSG: {}", exception.getClass(), exception.getMessage());
+                    exception.printStackTrace();
                     String message = exception.getMessage() + "\nPlease contact the devs!";
                     embed = createErrorEmbed("An unexpected error occured", message);
                 }

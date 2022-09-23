@@ -3,7 +3,7 @@ moves the roleplay character of the player that executed the command to the desi
 The Bot takes the **shortest path** possible and displays the required days for the movement. +
 It also updates the position of the character automatically.
 
-* `/cancel-move character` +
+* `/cancel move rpchar` +
 This cancels the movement of the character. The character stops moving and stays at the current region.
 
 * `/injure character` +
