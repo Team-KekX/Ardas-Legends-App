@@ -2,10 +2,12 @@ package com.ardaslegends.data.presentation.discord.commands.delete;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteArmyCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteCharacterCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteClaimbuildCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeletePlayerCommand;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class DeleteCommand implements ALCommand {
     private final DiscordApi api;
     private final ClaimBuildService claimBuildService;
     private final PlayerService playerService;
+    private final ArmyService armyService;
 
     @Override
     public void init(Map<String, ALCommandExecutor> commands) {
@@ -47,19 +50,19 @@ public class DeleteCommand implements ALCommand {
                                                 .build()
                                 ))
                                 .build(),
-                new SlashCommandOptionBuilder()
-                        .setType(SlashCommandOptionType.SUB_COMMAND)
-                        .setName("player")
-                        .setDescription("Deletes a player entity, including their rpchar. Removes players from 'built by' in claimbuilds")
-                        .setOptions(Arrays.asList(
-                                new SlashCommandOptionBuilder()
-                                        .setType(SlashCommandOptionType.STRING)
-                                        .setName("target-player-id")
-                                        .setDescription("The discordId of the player that is to be deleted")
-                                        .setRequired(true)
-                                        .build()
-                        ))
-                        .build(),
+                        new SlashCommandOptionBuilder()
+                                .setType(SlashCommandOptionType.SUB_COMMAND)
+                                .setName("player")
+                                .setDescription("Deletes a player entity, including their rpchar. Removes players from 'built by' in claimbuilds")
+                                .setOptions(Arrays.asList(
+                                        new SlashCommandOptionBuilder()
+                                                .setType(SlashCommandOptionType.STRING)
+                                                .setName("target-player-id")
+                                                .setDescription("The discordId of the player that is to be deleted")
+                                                .setRequired(true)
+                                                .build()
+                                ))
+                                .build(),
                         new SlashCommandOptionBuilder()
                                 .setType(SlashCommandOptionType.SUB_COMMAND)
                                 .setName("character")
@@ -72,6 +75,19 @@ public class DeleteCommand implements ALCommand {
                                                 .setRequired(true)
                                                 .build()
                                 ))
+                                .build(),
+                        new SlashCommandOptionBuilder()
+                                .setType(SlashCommandOptionType.SUB_COMMAND)
+                                .setName("army-or-company")
+                                .setDescription("Javacord Deletes an army or company from the game")
+                                .setOptions(Arrays.asList(
+                                        new SlashCommandOptionBuilder()
+                                                .setType(SlashCommandOptionType.STRING)
+                                                .setName("army")
+                                                .setDescription("The name of the army")
+                                                .setRequired(true)
+                                                .build()
+                                ))
                                 .build()
                 ))
                 .createGlobal(api)
@@ -80,5 +96,6 @@ public class DeleteCommand implements ALCommand {
         commands.put("delete claimbuild", new DeleteClaimbuildCommand(claimBuildService)::execute);
         commands.put("delete player", new DeletePlayerCommand(playerService)::execute);
         commands.put("delete character", new DeleteCharacterCommand(playerService)::execute);
+        commands.put("delete army-or-company", new DeleteArmyCommand(armyService)::execute);
     }
 }
