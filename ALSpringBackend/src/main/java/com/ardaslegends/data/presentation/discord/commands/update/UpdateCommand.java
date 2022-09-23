@@ -100,7 +100,23 @@ public class UpdateCommand implements ALCommand {
                         .setDescription("Updates Roleplay Character Values")
                         .setOptions(Arrays.asList(
                                 new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("gear")
+                                        .setDescription("Updates the gear of a Roleplay Character")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.USER)
+                                                        .setName("player")
+                                                        .setDescription("The player whose RpChar to update (Discord Ping)")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("new-gear")
+                                                        .setDescription("The new gear of the RpChar")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
                                         .build()
                         ))
                         .build()
