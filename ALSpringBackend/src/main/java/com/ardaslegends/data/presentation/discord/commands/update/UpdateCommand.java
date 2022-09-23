@@ -181,7 +181,33 @@ public class UpdateCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
-                        .build()
+                        .build(),
+                        new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
+                        .setName("army")
+                        .setDescription("Updates Army Values")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("paid")
+                                        .setDescription("Updates the value that represents if an army creation has been paid for!")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("army")
+                                                        .setDescription("The name of the army that is to be updated")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.BOOLEAN)
+                                                        .setName("paid")
+                                                        .setDescription("True or False Value for the army")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
+                                        .build()
+                        ))
+                        .build(),
                 ))
                 .createGlobal(api)
                 .join();
