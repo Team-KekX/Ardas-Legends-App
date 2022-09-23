@@ -25,6 +25,8 @@ We also used this update to implement some quality of life, as well as visual im
 ** From `/update faction` to `/update player faction`
 ** From `/update ign` to `/update player ign`
 ** From `/update discord-id` to `/update player discord-id`
+** From `/update rpchar-gear` to `/update rpchar gear`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update rpchar gear` command now takes a User Ping as an input instead of the Discord-Id of the user.
