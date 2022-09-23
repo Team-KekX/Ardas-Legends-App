@@ -23,11 +23,10 @@ public class Bind implements ALCommand {
 
     private final ArmyService armyService;
 
-    public SlashCommand bind;
 
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /bind command");
-        this.bind = SlashCommand.with("bind", "Binds an entity (army/company) to a player", Arrays.asList(
+        var command = SlashCommand.with("bind", "Binds an entity (army/company) to a player", Arrays.asList(
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("army-or-company")
@@ -36,11 +35,10 @@ public class Bind implements ALCommand {
                                         .addOption(SlashCommandOption.createUserOption("target-player", "Player that gets bound to the army, PING that discord account!", true))
                                         .build()
                         )
-                )
-                .createGlobal(api)
-                .join();
+                );
         commands.put("bind army-or-company", new BindArmyOrCompanyCommand());
         log.info("Finished initializing /bind command");
+        return command;
     }
 
 }

@@ -29,10 +29,10 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor {
     private final DiscordApi api;
     private final PlayerService playerService;
     @Override
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /register command");
 
-        SlashCommand register = SlashCommand.with("register", "JAVACORDDDDD Register in the roleplay system", Arrays.asList(
+        var command = SlashCommand.with("register", "JAVACORDDDDD Register in the roleplay system", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.STRING)
                         .setName("ign")
@@ -45,12 +45,11 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor {
                         .setDescription("The faction you want to join")
                         .setRequired(true)
                         .build()
-        ))
-        .createGlobal(api)
-        .join();
+        ));
 
         commands.put("register", this::execute);
         log.info("Finished initializing /register command");
+        return command;
     }
 
 

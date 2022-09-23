@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandOptionBuilder;
-import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -33,10 +30,10 @@ public class CreateCommand implements ALCommand {
 
     private final ClaimBuildService claimBuildService;
     @Override
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /create command");
 
-        SlashCommand create = SlashCommand.with("create", "Creates an entity (RpChar, army, trader etc.)", Arrays.asList(
+        var command = SlashCommand.with("create", "Creates an entity (RpChar, army, trader etc.)", Arrays.asList(
                         new SlashCommandOptionBuilder()
                                 .setType(SlashCommandOptionType.SUB_COMMAND)
                                 .setName("rpchar")
@@ -190,13 +187,12 @@ public class CreateCommand implements ALCommand {
                                         .build()
                                 ))
                         .build()    
-                ))
-                .createGlobal(api)
-                .join();
+                ));
 
         commands.put("create rpchar", new CreateRpCharCommand(playerService)::execute);
         commands.put("create army", new CreateArmyCommand(armyService)::execute);
         commands.put("create claimbuild", new CreateClaimbuildCommand(claimBuildService)::execute);
         log.info("Finished initializing /create command");
+        return command;
     }
 }

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommand;
+import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 import org.springframework.stereotype.Component;
@@ -33,10 +34,10 @@ public class DeleteCommand implements ALCommand {
     private final ArmyService armyService;
 
     @Override
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /delete commands");
 
-        SlashCommand delete = SlashCommand.with("delete", "Deletes an Entity (RpChar, Player, Army, Claimbuild, etc)", Arrays.asList(
+        var command = SlashCommand.with("delete", "Deletes an Entity (RpChar, Player, Army, Claimbuild, etc)", Arrays.asList(
                         new SlashCommandOptionBuilder()
                                 .setType(SlashCommandOptionType.SUB_COMMAND)
                                 .setName("claimbuild")
@@ -89,13 +90,13 @@ public class DeleteCommand implements ALCommand {
                                                 .build()
                                 ))
                                 .build()
-                ))
-                .createGlobal(api)
-                .join();
+                ));
 
         commands.put("delete claimbuild", new DeleteClaimbuildCommand(claimBuildService)::execute);
         commands.put("delete player", new DeletePlayerCommand(playerService)::execute);
         commands.put("delete character", new DeleteCharacterCommand(playerService)::execute);
         commands.put("delete army-or-company", new DeleteArmyCommand(armyService)::execute);
+        log.info("Finished initializing /delete command");
+        return command;
     }
 }

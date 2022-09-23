@@ -4,6 +4,7 @@ import com.ardaslegends.data.presentation.discord.commands.bind.Bind;
 import com.ardaslegends.data.presentation.discord.commands.cancel.CancelCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
+import com.ardaslegends.data.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.UpdateCommand;
@@ -15,11 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.interaction.SlashCommand;
+import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +43,7 @@ public class Commands implements DiscordUtils {
 
     private final BotProperties properties;
     public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
-        UpdateCommand update, MoveCommand move, CancelCommand cancel
+        UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure
     ) {
         this.api = api;
         this.bind = bind;
@@ -49,13 +53,18 @@ public class Commands implements DiscordUtils {
         this.properties = properties;
 
         executions = new HashMap<>();
-        bind.init(executions);
-        register.init(executions);
-        create.init(executions);
-        delete.init(executions);
-        update.init(executions);
-        move.init(executions);
-        cancel.init(executions);
+        List<SlashCommandBuilder> commands = new ArrayList<>();
+        commands.add(bind.init(executions));
+        commands.add(register.init(executions));
+        commands.add(create.init(executions));
+        commands.add(delete.init(executions));
+        commands.add(update.init(executions));
+        commands.add(move.init(executions));
+        commands.add(cancel.init(executions));
+        commands.add(injure.init(executions));
+
+        api.bulkOverwriteGlobalApplicationCommands(commands).join();
+        log.info("Updated [{}] global commands", commands.size());
 
         log.debug("Fetching roleplay-commands channel with ID in Property file");
         Channel rpCommandsChannel = api.getChannelById(properties.getRpCommandsChannel()).orElseThrow();

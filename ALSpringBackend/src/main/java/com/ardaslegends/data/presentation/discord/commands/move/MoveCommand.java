@@ -7,10 +7,7 @@ import com.ardaslegends.data.service.MovementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionBuilder;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -26,10 +23,10 @@ public class MoveCommand implements ALCommand {
     private final DiscordApi api;
 
     @Override
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /move command");
 
-        SlashCommand move = SlashCommand.with("move", "JAVACORD Starts a movement on the map", Arrays.asList(
+        var command = SlashCommand.with("move", "JAVACORD Starts a movement on the map", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND)
                         .setName("rpchar")
@@ -38,12 +35,11 @@ public class MoveCommand implements ALCommand {
                                 SlashCommandOption.createStringOption("end-region", "The destination of the movement", true)
                         ))
                         .build()
-                ))
-                .createGlobal(api)
-                .join();
+                ));
 
 
         commands.put("move rpchar", new MoveRpcharCommand(movementService));
         log.info("Finished initializing /move command");
+        return command;
     }
 }

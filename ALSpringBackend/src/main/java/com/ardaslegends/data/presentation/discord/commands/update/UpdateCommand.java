@@ -24,10 +24,10 @@ public class UpdateCommand implements ALCommand {
     private final PlayerService playerService;
     private final ClaimBuildService claimBuildService;
     @Override
-    public void init(Map<String, ALCommandExecutor> commands) {
+    public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /update command");
 
-        SlashCommand update = SlashCommand.with("update", "JAVACORD Updates information about an entity", Arrays.asList(
+        var command = SlashCommand.with("update", "JAVACORD Updates information about an entity", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
                         .setName("player")
@@ -227,9 +227,7 @@ public class UpdateCommand implements ALCommand {
                                         .build()
                         ))
                         .build()
-                ))
-                .createGlobal(api)
-                .join();
+                ));
 
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService));
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService));
@@ -242,5 +240,6 @@ public class UpdateCommand implements ALCommand {
 
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
         log.info("Finished initializing /update command");
+        return command;
     }
 }
