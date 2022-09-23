@@ -2,7 +2,7 @@
 creates an rpchar and appends it to the corresponding player
 
 
-- `/update rpchar-name` +
+- `/update rpchar name` +
 changes the roleplay character's name
 
 - `/update rpchar-title` +

@@ -2,10 +2,7 @@ package com.ardaslegends.data.presentation.discord.commands.update;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerDiscordIdCommand;
-import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerFactionCommand;
-import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerIgnCommand;
-import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdateRpcharGearCommand;
+import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
