@@ -2,6 +2,7 @@ package com.ardaslegends.data.presentation.discord.commands.delete;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteCharacterCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteClaimbuildCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeletePlayerCommand;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
@@ -58,12 +59,26 @@ public class DeleteCommand implements ALCommand {
                                         .setRequired(true)
                                         .build()
                         ))
-                        .build()
+                        .build(),
+                        new SlashCommandOptionBuilder()
+                                .setType(SlashCommandOptionType.SUB_COMMAND)
+                                .setName("character")
+                                .setDescription("Javacord Deletes a roleplay character")
+                                .setOptions(Arrays.asList(
+                                        new SlashCommandOptionBuilder()
+                                                .setType(SlashCommandOptionType.USER)
+                                                .setName("target")
+                                                .setDescription("The player who's character is to be deleted")
+                                                .setRequired(true)
+                                                .build()
+                                ))
+                                .build()
                 ))
                 .createGlobal(api)
                 .join();
 
         commands.put("delete claimbuild", new DeleteClaimbuildCommand(claimBuildService)::execute);
         commands.put("delete player", new DeletePlayerCommand(playerService)::execute);
+        commands.put("delete character", new DeleteCharacterCommand(playerService)::execute);
     }
 }
