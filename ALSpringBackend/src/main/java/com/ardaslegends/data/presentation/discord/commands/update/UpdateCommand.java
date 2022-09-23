@@ -207,7 +207,7 @@ public class UpdateCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
-                        .build(),
+                        .build()
                 ))
                 .createGlobal(api)
                 .join();

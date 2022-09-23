@@ -1,7 +1,6 @@
 package com.ardaslegends.data.presentation.discord.commands.delete.staff;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.ALStaffCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
@@ -45,8 +44,8 @@ public class DeleteCharacterCommand implements ALStaffCommandExecutor {
 
         return new EmbedBuilder()
                 .setTitle("Deleted Roleplay Character")
-                .setColor(ALColor.GREEN)
-                .setDescription("Deleted the character %s from player %s".formatted(character.getName(),user.getMentionTag()))
+                .setColor(ALColor.YELLOW)
+                .setDescription("Deleted the character %s".formatted(character.getName()))
                 .setTimestampToNow();
     }
 }
