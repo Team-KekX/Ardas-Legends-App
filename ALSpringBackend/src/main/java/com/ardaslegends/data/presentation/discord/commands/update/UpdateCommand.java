@@ -163,6 +163,8 @@ public class UpdateCommand implements ALCommand {
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
         commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService)::execute);
         commands.put("update rpchar gear", new UpdateRpcharGearCommand(playerService));
+        commands.put("update rpchar pvp", new UpdateRpcharPvpCommand(playerService));
+        commands.put("update rpchar name", new UpdateRpcharNameCommand(playerService));
         log.info("Finished initializing /update command");
     }
 }
