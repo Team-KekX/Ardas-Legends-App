@@ -8,7 +8,7 @@ changes the roleplay character's name
 - `/update rpchar-title` +
 changes the title of the rpchar
 
-- `/update rpchar-pvp` +
+- `/update rpchar pvp` +
 changes the pvp boolean of the rpchar
 
 - `/update rpchar gear`  +
