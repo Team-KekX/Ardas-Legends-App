@@ -32,6 +32,7 @@ We also used this update to implement some quality of life, as well as visual im
 ** From `/move character` to `/move rpchar`
 ** From `/cancel-move character` to `/cancel move rpchar`
 ** From `/injure character` to `/injure rpchar`
+** From `/heal-start character` to `/heal rpchar`
 
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.

@@ -1,6 +1,5 @@
-package com.ardaslegends.data.presentation.discord.commands.injure;
+package com.ardaslegends.data.presentation.discord.commands.heal;
 
-import com.ardaslegends.data.domain.Movement;
 import com.ardaslegends.data.domain.RPChar;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
@@ -8,7 +7,6 @@ import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.dto.player.DiscordIdDto;
-import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -21,13 +19,13 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class InjureRpcharCommand implements ALCommandExecutor {
+public class HealRpcharCommand implements ALCommandExecutor {
 
     private final PlayerService playerService;
 
     @Override
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
-        log.debug("Executing /injure rpchar request");
+        log.debug("Executing /heal rpchar request");
 
         User user = interaction.getUser();
         log.debug("User: discord name [{}] - id [{}]", user.getName(), user.getIdAsString());
@@ -37,16 +35,18 @@ public class InjureRpcharCommand implements ALCommandExecutor {
         log.debug("Built dto with data [{}]", dto);
 
         log.trace("Calling movementService");
-        RPChar rpChar = discordServiceExecution(dto, playerService::injureChar, "Error while injuring RpChar");
+        RPChar rpChar = discordServiceExecution(dto, playerService::healStart, "Error while starting RpChar Healing");
 
         log.debug("Building response Embed");
         return new EmbedBuilder()
-                .setTitle("Injured RpChar")
-                .setDescription("The character %s - %s has been injured.\nThey cannot bind to armies anymore and have possibly been unbound from their last bound army.".formatted(rpChar.getName(), rpChar.getTitle()))
+                .setTitle("Started healing RpChar")
+                .setDescription("The character %s - %s has started healing.\nThe healing takes 2 days.".formatted(rpChar.getName(), rpChar.getTitle()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Character", rpChar.getName())
                 .addInlineField("User", user.getMentionTag())
-                .setThumbnail(Thumbnails.INJURE_CHARACTER.getUrl())
+                .addInlineField("Region", rpChar.getCurrentRegion().getId())
+                .addInlineField("Duration", "2 days")
+                .setThumbnail(Thumbnails.HEAL.getUrl())
                 .setTimestampToNow();
     }
 }

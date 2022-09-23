@@ -3,7 +3,8 @@ package com.ardaslegends.data.presentation.discord.utils;
 public enum Thumbnails {
 
     MOVE_CHARACTER("https://cdn.discordapp.com/attachments/993179687956258867/993202523475292290/move_character.jpg"),
-    INJURE_CHARACTER("https://cdn.discordapp.com/attachments/1022950091214041108/1022951678598721597/unknown.png");
+    INJURE_CHARACTER("https://cdn.discordapp.com/attachments/1022950091214041108/1022951678598721597/unknown.png"),
+    HEAL("https://cdn.discordapp.com/attachments/993179687956258867/993202461743517766/heal.jpg");
 
     private final String url;
 
