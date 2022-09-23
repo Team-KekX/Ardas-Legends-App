@@ -31,7 +31,7 @@ public class Bind implements ALCommand {
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("army-or-company")
-                                        .setDescription("JAVACORD Binds a character to an army or trading/armed company")
+                                        .setDescription("Binds a character to an army or trading/armed company")
                                         .addOption(SlashCommandOption.createStringOption("army-or-company-name", "The name of the army/company", true))
                                         .addOption(SlashCommandOption.createUserOption("target-player", "Player that gets bound to the army, PING that discord account!", true))
                                         .build()
@@ -39,7 +39,7 @@ public class Bind implements ALCommand {
                 )
                 .createGlobal(api)
                 .join();
-        commands.put("bind army-or-company", new BindArmyOrCompanyCommand()::execute);
+        commands.put("bind army-or-company", new BindArmyOrCompanyCommand());
         log.info("Finished initializing /bind command");
     }
 

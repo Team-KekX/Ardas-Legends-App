@@ -5,7 +5,7 @@ creates an rpchar and appends it to the corresponding player
 - `/update rpchar name` +
 changes the roleplay character's name
 
-- `/update rpchar-title` +
+- `/update rpchar title` +
 changes the title of the rpchar
 
 - `/update rpchar pvp` +

@@ -138,7 +138,7 @@ public class UpdateCommand implements ALCommand {
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("pvp")
-                                        .setDescription("Updates the PvP attribute of a Player")
+                                        .setDescription("Updates the PvP attribute of a Roleplay Character")
                                         .setOptions(Arrays.asList(
                                                 new SlashCommandOptionBuilder()
                                                         .setType(SlashCommandOptionType.USER)
@@ -150,6 +150,25 @@ public class UpdateCommand implements ALCommand {
                                                         .setType(SlashCommandOptionType.BOOLEAN)
                                                         .setName("new-pvp")
                                                         .setDescription("New PvP Value")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("title")
+                                        .setDescription("Updates the Title of a Roleplay Character")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.USER)
+                                                        .setName("player")
+                                                        .setDescription("The player whose RpChar to update (Discord Ping)")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("new-title")
+                                                        .setDescription("The character's new title")
                                                         .setRequired(true)
                                                         .build()
                                         ))
@@ -212,15 +231,16 @@ public class UpdateCommand implements ALCommand {
                 .createGlobal(api)
                 .join();
 
-        commands.put("update player faction", new UpdatePlayerFactionCommand(playerService)::execute);
-        commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
-        commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService)::execute);
+        commands.put("update player faction", new UpdatePlayerFactionCommand(playerService));
+        commands.put("update player ign", new UpdatePlayerIgnCommand(playerService));
+        commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService));
 
         commands.put("update rpchar gear", new UpdateRpcharGearCommand(playerService));
         commands.put("update rpchar pvp", new UpdateRpcharPvpCommand(playerService));
         commands.put("update rpchar name", new UpdateRpcharNameCommand(playerService));
+        commands.put("update rpchar title", new UpdateRpcharTitleCommand(playerService));
 
-        commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService)::execute);
+        commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
         log.info("Finished initializing /update command");
     }
 }
