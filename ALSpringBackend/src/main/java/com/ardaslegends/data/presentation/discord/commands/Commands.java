@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands;
 import com.ardaslegends.data.presentation.discord.commands.bind.Bind;
 import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
+import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.UpdateCommand;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
@@ -37,7 +38,7 @@ public class Commands implements DiscordUtils {
 
     private final BotProperties properties;
     public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
-        UpdateCommand update
+        UpdateCommand update, MoveCommand move
     ) {
         this.api = api;
         this.bind = bind;
@@ -52,6 +53,7 @@ public class Commands implements DiscordUtils {
         create.init(executions);
         delete.init(executions);
         update.init(executions);
+        move.init(executions);
 
         log.debug("Fetching roleplay-commands channel with ID in Property file");
         Channel rpCommandsChannel = api.getChannelById(properties.getRpCommandsChannel()).orElseThrow();

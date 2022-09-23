@@ -1,11 +1,13 @@
 package com.ardaslegends.data.presentation.discord.utils;
 
 import com.ardaslegends.data.domain.Army;
+import com.ardaslegends.data.domain.PathElement;
 import com.ardaslegends.data.domain.ProductionClaimbuild;
 import com.ardaslegends.data.domain.SpecialBuilding;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.utils.ServiceUtils;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
@@ -237,6 +239,27 @@ public interface DiscordUtils {
         countedSpecialBuildings.forEach((specialBuilding, aLong) -> specialString.append(aLong + " " + specialBuilding.getName() + ", "));
 
         return specialString.toString();
+    }
+
+    default String createPathString(List<PathElement> path) {
+        return ServiceUtils.buildPathString(path);
+    }
+
+    default String createDurationString(int costInHours) {
+        log.debug("Building Duration String from cost in hours: [{}]", costInHours);
+        int days =  (int) Math.floor(costInHours / 24.0);
+        log.trace("Days: [{}]", days);
+        int hours = costInHours % 24;
+        log.trace("Hours: [{}]", hours);
+
+        StringBuilder costStr = new StringBuilder("%d day(s)".formatted(days));
+
+        if(hours > 0) {
+            costStr.append(" and %d hours".formatted(hours));
+        }
+
+        log.debug("Duration: [{}]", costStr.toString());
+        return costStr.toString();
     }
 
     default String getFactionBanner(String factionName) {

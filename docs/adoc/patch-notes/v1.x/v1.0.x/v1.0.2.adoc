@@ -29,6 +29,7 @@ We also used this update to implement some quality of life, as well as visual im
 ** From `/update rpchar-name` to `/update rpchar name`
 ** From `/update rpchar-pvp` to `/update rpchar pvp`
 ** From `/update rpchar-title` to `/update rpchar title`
+** From `/move character` to `/move rpchar`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
