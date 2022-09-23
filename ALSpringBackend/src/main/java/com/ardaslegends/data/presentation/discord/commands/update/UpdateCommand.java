@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands.update;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
+import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class UpdateCommand implements ALCommand {
 
     private final DiscordApi api;
     private final PlayerService playerService;
-
+    private final ClaimBuildService claimBuildService;
     @Override
     public void init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /update command");
@@ -154,6 +155,32 @@ public class UpdateCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
+                        .setName("claimbuild")
+                        .setDescription("Updates Claimbuild Values")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("faction")
+                                        .setDescription("Updates the controlling faction of a claimbuild")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("claimbuild")
+                                                        .setDescription("The claimbuild who's controlling faction is to be updated")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("Faction")
+                                                        .setDescription("The faction that now controlls the claimbuild")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
+                                        .build()
+                        ))
                         .build()
                 ))
                 .createGlobal(api)
@@ -162,9 +189,12 @@ public class UpdateCommand implements ALCommand {
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService)::execute);
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
         commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService)::execute);
+
         commands.put("update rpchar gear", new UpdateRpcharGearCommand(playerService));
         commands.put("update rpchar pvp", new UpdateRpcharPvpCommand(playerService));
         commands.put("update rpchar name", new UpdateRpcharNameCommand(playerService));
+
+        commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService)::execute);
         log.info("Finished initializing /update command");
     }
 }
