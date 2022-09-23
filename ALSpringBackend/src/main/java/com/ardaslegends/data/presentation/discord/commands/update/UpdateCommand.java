@@ -5,6 +5,7 @@ import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerDiscordIdCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerFactionCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdatePlayerIgnCommand;
+import com.ardaslegends.data.presentation.discord.commands.update.staff.UpdateRpcharGearCommand;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +93,16 @@ public class UpdateCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
+                        .setName("rpchar")
+                        .setDescription("Updates Roleplay Character Values")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setName("gear")
+                                        .build()
+                        ))
                         .build()
                 ))
                 .createGlobal(api)
@@ -100,6 +111,7 @@ public class UpdateCommand implements ALCommand {
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService)::execute);
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService)::execute);
         commands.put("update player discord-id", new UpdatePlayerDiscordIdCommand(playerService)::execute);
+        commands.put("update rpchar gear", new UpdateRpcharGearCommand(playerService));
         log.info("Finished initializing /update command");
     }
 }
