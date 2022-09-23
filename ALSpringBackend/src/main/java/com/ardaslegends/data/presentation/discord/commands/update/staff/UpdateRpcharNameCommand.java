@@ -37,7 +37,7 @@ public class UpdateRpcharNameCommand implements ALStaffCommandExecutor {
         User user = getUserOption("player", options);
         log.debug("User: discord name [{}] - id [{}]", user.getName(), user.getIdAsString());
 
-        String name = getStringOption("name", options);
+        String name = getStringOption("new-name", options);
         log.debug("Name: [{}]", name);
 
         log.trace("Building dto");
