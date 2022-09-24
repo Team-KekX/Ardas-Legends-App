@@ -218,7 +218,7 @@ public interface DiscordUtils {
         army.getUnits().stream().forEach(unit -> {
             String unitsAlive = "%d/%d".formatted(unit.getAmountAlive(), unit.getCount());
             String unitName = unit.getUnitType().getUnitName();
-            unitString.append(unitsAlive).append(unitName).append("\n");
+            unitString.append(unitsAlive).append(" ").append(unitName).append("\n");
         });
 
         return unitString.toString();
@@ -230,7 +230,7 @@ public interface DiscordUtils {
             String resource = productionSite.getProductionSite().getProducedResource();
             String type = productionSite.getProductionSite().getType().getName();
             int count = productionSite.getCount().intValue();
-            prodString.append(count + " " + resource + " " + type + "\n");
+            prodString.append(count).append(" ").append(resource).append(" ").append(type).append("\n");
         });
 
         return prodString.toString();

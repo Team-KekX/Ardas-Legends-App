@@ -6,7 +6,6 @@ import com.ardaslegends.data.service.ArmyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class Bind implements ALCommand {
+public class BindCommand implements ALCommand {
 
     private final DiscordApi api;
 
@@ -36,7 +35,7 @@ public class Bind implements ALCommand {
                                         .build()
                         )
                 );
-        commands.put("bind army-or-company", new BindArmyOrCompanyCommand());
+        commands.put("bind army-or-company", new BindArmyOrCompanyCommand(armyService));
         log.info("Finished initializing /bind command");
         return command;
     }

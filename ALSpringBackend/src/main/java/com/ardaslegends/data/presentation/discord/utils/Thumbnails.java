@@ -4,7 +4,9 @@ public enum Thumbnails {
 
     MOVE_CHARACTER("https://cdn.discordapp.com/attachments/993179687956258867/993202523475292290/move_character.jpg"),
     INJURE_CHARACTER("https://cdn.discordapp.com/attachments/1022950091214041108/1022951678598721597/unknown.png"),
-    HEAL("https://cdn.discordapp.com/attachments/993179687956258867/993202461743517766/heal.jpg");
+    HEAL("https://cdn.discordapp.com/attachments/993179687956258867/993202461743517766/heal.jpg"),
+    BIND_TRADER("https://cdn.discordapp.com/attachments/993179687956258867/993202395913916416/create_trader.jpeg"),
+    REGISTER("https://cdn.discordapp.com/attachments/993179687956258867/993202653700034702/register.jpeg");
 
     private final String url;
 

@@ -18,6 +18,7 @@ We also used this update to implement some quality of life, as well as visual im
 ** `/update player faction`
 ** `/register`
 ** `/create army`
+** `/bind army-or-company`
 
 == Commands
 
@@ -34,7 +35,6 @@ We also used this update to implement some quality of life, as well as visual im
 ** From `/injure character` to `/injure rpchar`
 ** From `/heal-start character` to `/heal rpchar`
 ** From `/heal-stop character` to `/cancel heal rpchar`
-
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.

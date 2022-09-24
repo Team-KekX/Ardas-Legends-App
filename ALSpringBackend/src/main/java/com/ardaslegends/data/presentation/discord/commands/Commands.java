@@ -1,6 +1,6 @@
 package com.ardaslegends.data.presentation.discord.commands;
 
-import com.ardaslegends.data.presentation.discord.commands.bind.Bind;
+import com.ardaslegends.data.presentation.discord.commands.bind.BindCommand;
 import com.ardaslegends.data.presentation.discord.commands.cancel.CancelCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
@@ -12,16 +12,13 @@ import com.ardaslegends.data.presentation.discord.commands.update.UpdateCommand;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -36,15 +33,15 @@ import java.util.stream.Collectors;
 public class Commands implements DiscordUtils {
 
     private final DiscordApi api;
-    private final Bind bind;
+    private final BindCommand bind;
     private final RegisterCommand register;
     private final CreateCommand create;
     private final DeleteCommand delete;
     private final Map<String, ALCommandExecutor> executions;
 
     private final BotProperties properties;
-    public Commands(DiscordApi api, Bind bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
-        UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal
+    public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
+                    UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal
     ) {
         this.api = api;
         this.bind = bind;
