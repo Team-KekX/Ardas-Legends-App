@@ -19,6 +19,7 @@ We also used this update to implement some quality of life, as well as visual im
 ** `/register`
 ** `/create army`
 ** `/bind army-or-company`
+** `/unbind army-or-company`
 
 == Commands
 

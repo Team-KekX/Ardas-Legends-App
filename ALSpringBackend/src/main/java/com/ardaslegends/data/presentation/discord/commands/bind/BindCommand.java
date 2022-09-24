@@ -18,14 +18,11 @@ import java.util.Map;
 @Component
 public class BindCommand implements ALCommand {
 
-    private final DiscordApi api;
-
     private final ArmyService armyService;
-
 
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /bind command");
-        var command = SlashCommand.with("bind", "Binds an entity (army/company) to a player", Arrays.asList(
+        var command = SlashCommand.with("bind", "Binds an army/company to a player", Arrays.asList(
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("army-or-company")
