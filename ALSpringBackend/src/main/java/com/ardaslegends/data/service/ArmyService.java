@@ -337,7 +337,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
-            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),army.getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),targetPlayer.getRpChar().getName(), destinationRegion);
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
@@ -396,6 +396,18 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 log.warn("Executor player [{}] is not faction leader or lord of [{}] and therefore cannot unbind other players!", executor, executor.getFaction());
                 throw ArmyServiceException.notFactionLeader(executor.getFaction().getName());
             }
+        }
+
+        /*
+        Checking if army is in a movement atm
+        If yes, throw error to cancel movement first
+         */
+
+        Optional<Movement> activeMovement = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army);
+        if(activeMovement.isPresent()) {
+            String path = ServiceUtils.buildPathString(activeMovement.get().getPath());
+            log.warn("Army [{}] is currently in a movement (Path: [{}]) - cannot unbind from player [{}]", army, path, boundPlayer);
+            throw ArmyServiceException.cannotUnbindMovingArmy(army.getArmyType(), army.getName());
         }
 
         /*

@@ -820,6 +820,32 @@ public class ArmyServiceTest {
     }
 
     @Test
+    void ensureUnbindThrowsSEWhenArmyMoving() {
+        log.debug("Testing if unbinding throws ArmyServiceException when the army is currently moving!");
+
+        log.trace("Initializing data");
+        BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
+        Faction gondor = Faction.builder().name("Gondor").build();
+        Player luk = Player.builder().ign("Luk").discordID(dto.executorDiscordId()).faction(gondor).build();
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(null).build();
+        gondor.setLeader(luk);
+        PathElement pathElement1 = PathElement.builder().region(Region.builder().id("90").build()).build();
+        PathElement pathElement2 = PathElement.builder().region(Region.builder().id("91").build()).build();
+        Movement movement = Movement.builder().army(army).path(List.of(pathElement1, pathElement2)).isCurrentlyActive(true).build();
+
+        when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
+        when(mockArmyRepository.save(army)).thenReturn(army);
+        when(mockPlayerService.getPlayerByDiscordId(luk.getDiscordID())).thenReturn(luk);
+        when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
+
+        log.debug("Calling unbind()");
+        var exception = assertThrows(ArmyServiceException.class, () -> armyService.unbind(dto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noPlayerBoundToArmy(army.getArmyType(), army.getName()).getMessage());
+        log.info("Test passed: unbind() throws ArmyServiceException when no player is bound to the army!");
+    }
+
+    @Test
     void ensureGetArmyByNameThrowsServiceExceptionWhenArmyNotFound() {
         log.debug("Testing if ASE is thrown when target army does not exist");
 

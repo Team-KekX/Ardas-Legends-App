@@ -1,4 +1,4 @@
-* `/move rpchar [end-region]` +
+* `/move rpchar [destination-region]` +
 moves the roleplay character of the player that executed the command to the desired **region**. +
 The Bot takes the **shortest path** possible and displays the required days for the movement. +
 It also updates the position of the character automatically.

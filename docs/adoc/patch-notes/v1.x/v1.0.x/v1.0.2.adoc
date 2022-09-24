@@ -10,6 +10,11 @@ We also used this update to implement some quality of life, as well as visual im
 
 - The Bot runs more stable and a bit faster now
 
+== Gameplay
+
+- Unbinding players from armies that are currently moving now requires
+to cancel the movement first.
+
 == User Interface
 
 - Messages of Staff commands now have the color yellow so they stand out more
@@ -20,6 +25,7 @@ We also used this update to implement some quality of life, as well as visual im
 ** `/create army`
 ** `/bind army-or-company`
 ** `/unbind army-or-company`
+** `/move army-or-company`
 
 == Commands
 

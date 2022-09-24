@@ -32,13 +32,33 @@ public class MoveCommand implements ALCommand {
                         .setName("rpchar")
                         .setDescription("Starts a map movement of a roleplay character")
                         .setOptions(Arrays.asList(
-                                SlashCommandOption.createStringOption("end-region", "The destination of the movement", true)
+                                SlashCommandOption.createStringOption("destination-region", "The destination region of the movement", true)
+                        ))
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                        .setName("army-or-company")
+                        .setDescription("Starts a map movement of an army/company")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setName("army-or-company-name")
+                                        .setDescription("The army's/company's name")
+                                        .setRequired(true)
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setName("destination-region")
+                                        .setDescription("The destination region of the movement")
+                                        .setRequired(true)
+                                        .build()
                         ))
                         .build()
                 ));
 
 
         commands.put("move rpchar", new MoveRpcharCommand(movementService));
+        commands.put("move army-or-company", new MoveArmyOrCompanyCommand(movementService));
         log.info("Finished initializing /move command");
         return command;
     }

@@ -107,6 +107,10 @@ public class ServiceUtils {
         return fields;
     }
 
+    public static Integer getFoodCost(List<PathElement> path) {
+        return (int)Math.ceil(ServiceUtils.getTotalPathCost(path) / 24.0);
+    }
+
     public static void validateStringSyntax(String string, Character[] syntaxChars, ServiceException exceptionToThrow) {
         log.debug("Validating unitString [{}]", string);
 

@@ -97,7 +97,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         List<PathElement> path = pathfinder.findShortestWay(army.getCurrentRegion(),region,player, false);
 
         log.debug("Removing movement cost from faction stockpile");
-        army.getFaction().subtractFoodFromStockpile((int)Math.ceil(ServiceUtils.getTotalPathCost(path) / 24.0));
+        army.getFaction().subtractFoodFromStockpile(ServiceUtils.getFoodCost(path));
 
         var currentTime = LocalDateTime.now();
         log.debug("Creating movement object");

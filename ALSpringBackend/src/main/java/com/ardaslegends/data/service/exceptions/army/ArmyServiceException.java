@@ -19,6 +19,7 @@ public class ArmyServiceException extends ServiceException{
     private static final String CANNOT_BIND_CHAR_HEALING = "The character '%s' is currently healing and cannot be bound to army '%s'!\nStop healing the character first!";
     private static final String TRADING_COMPANIES_CANNOT_HEAL = "%s is a trading company. Trading companies cannot heal!";
     private static final String NO_PLAYER_BOUND_TO_ARMYTYPE = "There is no player bound to the %s '%s'!";
+    private static final String CANNOT_UNBIND_MOVING_ARMY = "The %s %s is currently moving - cancel movement before unbinding player!";
     private static final String TOO_HIGH_TOKEN_COUNT = "%s token count exceeds the maximum of 30, it currently is '%s";
     private static final String CANNOT_MOVE_ARMYTYPE_DUE_TO_ALREADY_MOVING = "Cannot move %s '%s' because it is already in a movement! Cancel its movement to submit a new one";
     private static final String MAX_ARMYTYPE_CREATED = "The claimbuild '%s' has already created the maximum amount of type %s: %s";
@@ -63,6 +64,7 @@ public class ArmyServiceException extends ServiceException{
     public static ArmyServiceException cannotBindCharInjured(String charName, String armyName) { return new ArmyServiceException(CANNOT_BIND_CHAR_INJURED.formatted(charName, armyName)); }
     public static ArmyServiceException cannotBindCharHealing(String charName, String armyName) { return new ArmyServiceException(CANNOT_BIND_CHAR_HEALING.formatted(charName, armyName)); }
     public static ArmyServiceException noPlayerBoundToArmy(ArmyType armyType, String armyName) { return new ArmyServiceException(NO_PLAYER_BOUND_TO_ARMYTYPE.formatted(armyType.getName(), armyName)); }
+    public static ArmyServiceException cannotUnbindMovingArmy(ArmyType armyType, String armyName) { return new ArmyServiceException(CANNOT_UNBIND_MOVING_ARMY.formatted(armyType.getName(), armyName)); }
     public static ArmyServiceException tooHighTokenCount(ArmyType armyType, double tokenCount) {return new ArmyServiceException(TOO_HIGH_TOKEN_COUNT.formatted(armyType.getName(), tokenCount)); };
     public static ArmyServiceException maxArmyOrCompany(ArmyType armyType, String claimbuild, String units) {return new ArmyServiceException(MAX_ARMYTYPE_CREATED.formatted(claimbuild,armyType.getName(), units)); }
     public static ArmyServiceException onlyLeaderCanBindWanderer(ArmyType armyType) {return new ArmyServiceException(ONLY_FACTION_LEADER_CAN_BIND_WANDERER.formatted(armyType.getName()));}
