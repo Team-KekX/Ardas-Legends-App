@@ -26,7 +26,7 @@ Creates a movement for an army or company. The shortest path to the destination 
 
 NOTE: The payment will automatically be taken from the **army's faction** food stockpile
 
-- `/cancel-move army [army-name]` +
+- `/cancel move army-or-company [army-or-company-name]` +
 Cancels an ongoing army/company movement. The army/company stays at the current location.
 
 - `/station army-or-company [army-or-company-name] [claimbuild-name]` +

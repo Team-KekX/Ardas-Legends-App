@@ -1,9 +1,6 @@
 package com.ardaslegends.data.presentation.discord.utils;
 
-import com.ardaslegends.data.domain.Army;
-import com.ardaslegends.data.domain.PathElement;
-import com.ardaslegends.data.domain.ProductionClaimbuild;
-import com.ardaslegends.data.domain.SpecialBuilding;
+import com.ardaslegends.data.domain.*;
 import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.exceptions.InternalServerException;
 import com.ardaslegends.data.service.exceptions.ServiceException;
@@ -249,6 +246,10 @@ public interface DiscordUtils {
 
     default String createPathString(List<PathElement> path) {
         return ServiceUtils.buildPathString(path);
+    }
+
+    default String createPathStringWithCurrentRegion(List<PathElement> path, Region region) {
+        return ServiceUtils.buildPathStringWithCurrentRegion(path, region);
     }
 
     default String createDurationString(int costInHours) {

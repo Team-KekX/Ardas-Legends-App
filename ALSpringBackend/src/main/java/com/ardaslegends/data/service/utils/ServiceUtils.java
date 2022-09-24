@@ -168,4 +168,8 @@ public class ServiceUtils {
         return path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> "));
     }
 
+    public static String buildPathStringWithCurrentRegion(List<PathElement> path, Region current) {
+        return buildPathString(path).replace(current.getId(), current.getId() + " (current)");
+    }
+
 }

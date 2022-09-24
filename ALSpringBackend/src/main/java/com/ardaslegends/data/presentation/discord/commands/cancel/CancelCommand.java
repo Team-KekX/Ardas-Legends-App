@@ -22,7 +22,6 @@ public class CancelCommand implements ALCommand {
 
     private final MovementService movementService;
     private final PlayerService playerService;
-    private final DiscordApi api;
 
     @Override
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
@@ -38,6 +37,19 @@ public class CancelCommand implements ALCommand {
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("rpchar")
                                         .setDescription("Cancel an ongoing movement of a Roleplay Character")
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("army-or-company")
+                                        .setDescription("Cancel an ongoing movement of an army/company")
+                                        .addOption(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("army-or-company-name")
+                                                        .setDescription("Name of the army/company")
+                                                        .setRequired(true)
+                                                        .build()
+                                        )
                                         .build()
                         ))
                         .build(),
@@ -58,6 +70,7 @@ public class CancelCommand implements ALCommand {
 
         commands.put("cancel move rpchar", new CancelMoveRpcharCommand(movementService));
         commands.put("cancel heal rpchar", new CancelHealRpcharCommand(playerService));
+        commands.put("cancel move army-or-company", new CancelMoveArmyOrCompany(movementService));
         log.info("Finished initializing /cancel command");
         return command;
     }
