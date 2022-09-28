@@ -1,4 +1,4 @@
-- `/delete army-or-company` +
+- `/delete army-or-company [army-or-company-name]` +
 Force-deletes an army or company without checks for faction leader permissions, etc.
 
 - `/update paid` + 

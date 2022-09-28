@@ -20,13 +20,18 @@ to cancel the movement first.
 - Messages of Staff commands now have the color yellow so they stand out more
 - Some commands now show the banner of the faction that got updated by the command. The following commands now show the faction banner:
 ** `/create claimbuild`
+** `/delete claimbuild`
+** `/delete army-or-company`
 ** `/update player faction`
 ** `/register`
 ** `/create army`
+** `/disband army-or-company`
 ** `/bind army-or-company`
 ** `/unbind army-or-company`
 ** `/move army-or-company`
 ** `/cancel move army-or-company`
+- The `/create army` command now displays from which Claimbuild the army
+was created from
 
 == Commands
 

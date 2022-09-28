@@ -48,6 +48,7 @@ public class DeleteClaimbuildCommand implements ALStaffCommandExecutor {
                 .setDescription("Claimbuild %s of faction %s has been deleted".formatted(claimbuildName, claimbuild.getOwnedBy().getName()))
                 .addField("Unstationed Armies/Companies", unstationedArmies.isEmpty() ? "None":unstationedArmies)
                 .addField("Deleted Armies/Companies", deletedArmies.isEmpty() ? "None":deletedArmies)
+                .setThumbnail(getFactionBanner(claimbuild.getOwnedBy().getName()))
                 .setTimestampToNow();
     }
 }

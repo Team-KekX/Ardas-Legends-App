@@ -1,19 +1,16 @@
-package com.ardaslegends.data.presentation.discord.commands.bind;
-
+package com.ardaslegends.data.presentation.discord.commands.disband;
 
 import com.ardaslegends.data.domain.Army;
 import com.ardaslegends.data.domain.ArmyType;
 import com.ardaslegends.data.domain.Player;
 import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.presentation.discord.config.BotProperties;
-import com.ardaslegends.data.presentation.discord.exception.BotException;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
 import com.ardaslegends.data.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.BindArmyDto;
-import com.ardaslegends.data.service.dto.player.DiscordIdDto;
-import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -26,13 +23,13 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Slf4j
-public class BindArmyOrCompanyCommand implements ALCommandExecutor {
+public class DisbandArmyOrcompanyCommand implements ALCommandExecutor {
 
     private final ArmyService armyService;
 
     @Override
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
-        log.debug("Executing /bind army-or-company request");
+        log.debug("Executing /disband army-or-company request");
 
         User user = interaction.getUser();
         log.debug("User: discord name [{}] - id [{}]", user.getName(), user.getIdAsString());
@@ -40,18 +37,13 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
         log.debug("Getting options");
         String armyName = getStringOption("army-or-company-name", options);
         log.debug("armyName: [{}]", armyName);
-        User target = getUserOption("target-player", options);
-        log.debug("target-player: [{}]", target.getDiscriminatedName());
 
         log.trace("Building dto");
-        BindArmyDto dto = new BindArmyDto(user.getIdAsString(), target.getIdAsString(), armyName);
+        DeleteArmyDto dto = new DeleteArmyDto(user.getIdAsString(), armyName);
         log.debug("Built dto with data [{}]", dto);
 
         log.trace("Calling armyService");
-        Army army = discordServiceExecution(dto, armyService::bind, "Error while binding to Army/Company");
-        Player player = army.getBoundTo();
-        RPChar rpChar = player.getRpChar();
-
+        Army army = discordServiceExecution(dto, false, armyService::disband, "Error while disbanding Army/Company");
         String armyType = army.getArmyType().getName();
 
         String thumbnail = "";
@@ -63,14 +55,13 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
 
         log.debug("Building response Embed");
         return new EmbedBuilder()
-                .setTitle("Bound to %s".formatted(armyType))
-                .setDescription("%s - %s has been bound to the %s %s".formatted(rpChar.getName(), rpChar.getTitle(), armyType, army.getName()))
+                .setTitle("Disbanded %s".formatted(armyType))
+                .setDescription("The %s %s has been disbanded".formatted(armyType, army.getName()))
                 .setColor(ALColor.GREEN)
-                .addInlineField("Character", rpChar.getName())
-                .addInlineField("User/Ign", target.getMentionTag() + " / " + player.getIgn())
                 .addInlineField("%s".formatted(armyType), army.getName())
                 .addInlineField("%s Faction".formatted(armyType), army.getFaction().getName())
-                .addInlineField("Current Region", army.getCurrentRegion().getId())
+                .addInlineField("Was in Region", army.getCurrentRegion().getId())
+                .addInlineField("Created from Claimbuild", army.getOriginalClaimbuild().getName())
                 .setThumbnail(thumbnail)
                 .setTimestampToNow();
     }

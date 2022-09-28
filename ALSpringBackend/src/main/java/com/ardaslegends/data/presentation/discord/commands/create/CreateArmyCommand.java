@@ -67,6 +67,7 @@ public class CreateArmyCommand implements ALCommandExecutor {
                 .addInlineField("Free Tokens", army.getFreeTokens().toString())
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .addInlineField("Units", unitString)
+                .addInlineField("Created from Claimbuild", army.getOriginalClaimbuild().getName())
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
                 .addField("Payment", paymentString, false);
 

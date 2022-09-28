@@ -4,6 +4,7 @@ import com.ardaslegends.data.presentation.discord.commands.bind.BindCommand;
 import com.ardaslegends.data.presentation.discord.commands.cancel.CancelCommand;
 import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
+import com.ardaslegends.data.presentation.discord.commands.disband.DisbandCommand;
 import com.ardaslegends.data.presentation.discord.commands.heal.HealCommand;
 import com.ardaslegends.data.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
@@ -42,7 +43,8 @@ public class Commands implements DiscordUtils {
 
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
-                    UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind
+                    UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
+                    DisbandCommand disband
     ) {
         this.api = api;
         this.bind = bind;
@@ -63,6 +65,7 @@ public class Commands implements DiscordUtils {
         commands.add(injure.init(executions));
         commands.add(heal.init(executions));
         commands.add(unbind.init(executions));
+        commands.add(disband.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());

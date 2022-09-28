@@ -2,11 +2,10 @@ package com.ardaslegends.data.presentation.discord.commands.delete;
 
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
-import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteArmyCommand;
+import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteArmyOrCompanyCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteCharacterCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeleteClaimbuildCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.staff.DeletePlayerCommand;
-import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
@@ -84,8 +83,8 @@ public class DeleteCommand implements ALCommand {
                                 .setOptions(Arrays.asList(
                                         new SlashCommandOptionBuilder()
                                                 .setType(SlashCommandOptionType.STRING)
-                                                .setName("army")
-                                                .setDescription("The name of the army")
+                                                .setName("army-or-company-name")
+                                                .setDescription("The name of the army/company")
                                                 .setRequired(true)
                                                 .build()
                                 ))
@@ -95,7 +94,7 @@ public class DeleteCommand implements ALCommand {
         commands.put("delete claimbuild", new DeleteClaimbuildCommand(claimBuildService)::execute);
         commands.put("delete player", new DeletePlayerCommand(playerService)::execute);
         commands.put("delete character", new DeleteCharacterCommand(playerService)::execute);
-        commands.put("delete army-or-company", new DeleteArmyCommand(armyService)::execute);
+        commands.put("delete army-or-company", new DeleteArmyOrCompanyCommand(armyService)::execute);
         log.info("Finished initializing /delete command");
         return command;
     }

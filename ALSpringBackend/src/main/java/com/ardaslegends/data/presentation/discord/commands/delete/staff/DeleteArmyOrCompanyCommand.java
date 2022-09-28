@@ -1,8 +1,10 @@
 package com.ardaslegends.data.presentation.discord.commands.delete.staff;
 
+import com.ardaslegends.data.domain.ArmyType;
 import com.ardaslegends.data.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.ALColor;
+import com.ardaslegends.data.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.dto.army.DeleteArmyDto;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +18,18 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @Component
-public class DeleteArmyCommand implements ALStaffCommandExecutor {
+public class DeleteArmyOrCompanyCommand implements ALStaffCommandExecutor {
 
     private final ArmyService armyService;
 
     @Override
     public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
-        log.debug("Handling /delete army request");
+        log.debug("Handling /delete army-or-company request");
 
         checkStaff(interaction, properties.getStaffRoles());
         log.trace("DeleteArmy: User is staff -> authorized");
 
-        String armyName = getStringOption("army", options);
+        String armyName = getStringOption("army-or-company-name", options);
         log.trace("DeleteArmy: armyName value is [{}]", armyName);
 
         log.trace("DeleteArmy: Building Dto");
@@ -36,11 +38,24 @@ public class DeleteArmyCommand implements ALStaffCommandExecutor {
         log.debug("DeleteArmy: Calling Service Execution");
         var army = discordServiceExecution(dto, true, armyService::disband, "Error while deleting army");
 
+        String armyType = army.getArmyType().getName();
+
+        String thumbnail = "";
+        if (army.getArmyType() == ArmyType.ARMY) {
+            thumbnail = getFactionBanner(army.getFaction().getName());
+        } else {
+            thumbnail = Thumbnails.BIND_TRADER.getUrl();
+        }
+
         return new EmbedBuilder()
-                .setTitle("Staff-Deleted Army / Company")
-                .setDescription("Deleted army / company '%s' from the game!".formatted(army.getName()))
-                .setThumbnail(getFactionBanner(army.getFaction().getName()))
+                .setTitle("Staff-Deleted %s".formatted(armyType))
+                .setDescription("Deleted %s '%s' from the game!".formatted(armyType, army.getName()))
                 .setColor(ALColor.YELLOW)
+                .addInlineField("%s".formatted(armyType), army.getName())
+                .addInlineField("%s Faction".formatted(armyType), army.getFaction().getName())
+                .addInlineField("Was in Region", army.getCurrentRegion().getId())
+                .addInlineField("Created from Claimbuild", army.getOriginalClaimbuild().getName())
+                .setThumbnail(thumbnail)
                 .setTimestampToNow();
     }
 }
