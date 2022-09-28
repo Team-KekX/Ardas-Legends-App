@@ -3,6 +3,7 @@ package com.ardaslegends.data.presentation.discord.commands.update;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
+import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class UpdateCommand implements ALCommand {
     private final DiscordApi api;
     private final PlayerService playerService;
     private final ClaimBuildService claimBuildService;
+    private final ArmyService armyService;
     @Override
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /update command");
@@ -239,6 +241,8 @@ public class UpdateCommand implements ALCommand {
         commands.put("update rpchar title", new UpdateRpcharTitleCommand(playerService));
 
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
+
+        commands.put("update army paid", new UpdateArmyPaidCommand(armyService));
         log.info("Finished initializing /update command");
         return command;
     }

@@ -40,9 +40,13 @@ public class UpdateArmyPaidCommand implements ALStaffCommandExecutor {
         log.debug("UpdateArmyPaid: Calling Service Execution");
         var army = discordServiceExecution(dto, armyService::setIsPaid, "Error while updating army paid attribute");
 
+        String description = army.getIsPaid()
+                ? "Setting isPaid of Army " + army.getName() + "to true. \nThis indicates that the army has been paid for!"
+                : "Setting isPaid of Army " + army.getName() + "to false.\nThis indicates that the creation of the army still needs to be paid for!";
+
         return new EmbedBuilder()
                 .setTitle("Payment received!")
-                .setDescription("'IsPaid' of army '%s' has been set to '%s'".formatted(army.getName(), army.getIsPaid()))
+                .setDescription(description)
                 .addInlineField("Army", army.getName())
                 .addInlineField("IsPaid", army.getIsPaid().toString())
                 .setColor(ALColor.YELLOW)
