@@ -6,7 +6,7 @@ NOTE: Please refer to the xref:../../guide/starters-guide.adoc[starter guide] re
 - `/update claimbuild faction` +
 updates the controlling faction of a claimbuild -> won't be used until 1.1 **War Update**
 
-- `/update claimbuild` +
+- `/update claimbuild values` +
 updates a claimbuild, happens when players re-apply a claimbuild so that they can upgrade their production sites
 
 - `/delete claimbuild` +
