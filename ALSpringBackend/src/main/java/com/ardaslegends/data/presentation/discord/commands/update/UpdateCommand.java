@@ -1,5 +1,6 @@
 package com.ardaslegends.data.presentation.discord.commands.update;
 
+import com.ardaslegends.data.domain.ClaimBuildType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
@@ -8,10 +9,12 @@ import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ public class UpdateCommand implements ALCommand {
     private final PlayerService playerService;
     private final ClaimBuildService claimBuildService;
     private final ArmyService armyService;
+
     @Override
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /update command");
@@ -184,6 +188,98 @@ public class UpdateCommand implements ALCommand {
                         .setOptions(Arrays.asList(
                                 new SlashCommandOptionBuilder()
                                         .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("values")
+                                        .setDescription("Completely redefines an existing claimbuild")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("cbname")
+                                                        .setDescription("Name of the Claimbuild")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("region")
+                                                        .setDescription("The id of the region the claimbuild is located in")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("type")
+                                                        .setDescription("The type of claimbuild")
+                                                        .setChoices(Arrays.stream(ClaimBuildType.values())
+                                                                .map(claimBuildType -> new SlashCommandOptionChoiceBuilder()
+                                                                        .setName(StringUtils.capitalize(claimBuildType.name()))
+                                                                        .setValue(claimBuildType.name())
+                                                                        .build())
+                                                                .toList()
+                                                        )
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("faction")
+                                                        .setDescription("The faction that owns this claimbuild")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.LONG)
+                                                        .setName("x")
+                                                        .setDescription("The x coordinate of the build")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.LONG)
+                                                        .setName("y")
+                                                        .setDescription("The y coordinate of the build")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.LONG)
+                                                        .setName("z")
+                                                        .setDescription("The z coordinate of the build")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("traders")
+                                                        .setDescription("The traders that the claimbuild has")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("sieges")
+                                                        .setDescription("Siege present at this build, Separate the sieges with ,")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("number-of-houses")
+                                                        .setDescription("Number of houses in the build, E.g. 14 small house, the bot does do anything with this input")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("built-by")
+                                                        .setDescription("Players who built the cb. Separate player with - Example: Luktronic-mirak441")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("production-sites")
+                                                        .setDescription("Production Sites in the cb. Example: Fishing Lodge:Salmon:2-Mine:Iron:5")
+                                                        .setRequired(false)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("special-buildings")
+                                                        .setDescription("Separate the buildings with - Example: House of Healing-Embassy")
+                                                        .setRequired(false)
+                                                        .build()
+                                        ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
                                         .setName("faction")
                                         .setDescription("Updates the controlling faction of a claimbuild")
                                         .setOptions(Arrays.asList(
@@ -203,7 +299,7 @@ public class UpdateCommand implements ALCommand {
                                         .build()
                         ))
                         .build(),
-                        new SlashCommandOptionBuilder()
+                new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
                         .setName("army")
                         .setDescription("Updates Army Values")
@@ -229,7 +325,7 @@ public class UpdateCommand implements ALCommand {
                                         .build()
                         ))
                         .build()
-                ));
+        ));
 
         commands.put("update player faction", new UpdatePlayerFactionCommand(playerService));
         commands.put("update player ign", new UpdatePlayerIgnCommand(playerService));
@@ -240,6 +336,7 @@ public class UpdateCommand implements ALCommand {
         commands.put("update rpchar name", new UpdateRpcharNameCommand(playerService));
         commands.put("update rpchar title", new UpdateRpcharTitleCommand(playerService));
 
+        commands.put("update claimbuild values", new UpdateClaimbuildValues(claimBuildService));
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
 
         commands.put("update army paid", new UpdateArmyPaidCommand(armyService));
