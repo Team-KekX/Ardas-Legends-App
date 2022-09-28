@@ -269,6 +269,17 @@ public interface DiscordUtils {
         return costStr.toString();
     }
 
+    default String createUnitsAliveString(List<Unit> units) {
+        Objects.requireNonNull(units, "CreateUnitAliveString: UnitList must not be null!");
+
+        String unitsAliveString = units.stream()
+                .map(unit -> unit.getAmountAlive() + "/" + unit.getCount() + " " + unit.getUnitType().getUnitName())
+                .collect(Collectors.joining("\n"));
+
+        log.trace("CreateUnitAliveString: \n {}", unitsAliveString);
+        return unitsAliveString;
+    }
+
     default String getFactionBanner(String factionName) {
         Objects.requireNonNull(factionName, "DiscordUtils.getFactionBanner: name must not be null");
         String url = FactionBanners.getBannerUrl(factionName);

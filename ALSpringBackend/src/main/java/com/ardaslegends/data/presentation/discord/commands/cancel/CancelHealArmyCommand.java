@@ -37,6 +37,7 @@ public class CancelHealArmyCommand implements ALCommandExecutor {
         return new EmbedBuilder()
                 .setTitle("Cancelled healing of army")
                 .setDescription("The healing of army '%s' has been stopped \nSome units may not be healed!".formatted(army.getName()))
+                .addField("Units", createUnitsAliveString(army.getUnits()))
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
                 .setTimestampToNow()
                 .setColor(ALColor.GREEN);
