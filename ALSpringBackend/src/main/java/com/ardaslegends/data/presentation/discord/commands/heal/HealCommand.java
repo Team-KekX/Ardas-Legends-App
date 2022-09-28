@@ -34,9 +34,24 @@ public class HealCommand implements ALCommand {
                         .setType(SlashCommandOptionType.SUB_COMMAND)
                         .setName("rpchar")
                         .setDescription("Starts healing your injured character")
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                        .setName("army")
+                        .setDescription("Starts healing of an army")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setName("army")
+                                        .setType(SlashCommandOptionType.STRING)
+                                        .setDescription("The name of the army that should start healing")
+                                        .setRequired(true)
+                                        .build()
+                        ))
                         .build()
         ));
         commands.put("heal rpchar", new HealRpcharCommand(playerService));
+
+        commands.put("heal army", new HealArmyCommand(armyService));
         log.info("Finished initializing /heal command");
         return command;
     }
