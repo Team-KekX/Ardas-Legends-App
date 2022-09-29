@@ -56,6 +56,7 @@ was created from
 ** From `/get upkeep` to `/info faction upkeep`
 ** From `/update paid` to `/update army paid`
 ** From `/update reset-region-ownership` to `/update claimmap`
+** From `/update faction-leader` to `/update faction leader`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
@@ -63,5 +64,5 @@ was created from
 - The `/update rpchar name` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update rpchar title` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update rpchar pvp` command now takes a User Ping as an input instead of the Discord-Id of the user.
-
+- The `/update faction leader` command now takes a User Ping as an input instead of the Discord-Id of the user.
 

@@ -4,10 +4,7 @@ import com.ardaslegends.data.domain.ClaimBuildType;
 import com.ardaslegends.data.presentation.discord.commands.ALCommand;
 import com.ardaslegends.data.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
-import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.ClaimBuildService;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.RegionService;
+import com.ardaslegends.data.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +27,7 @@ public class UpdateCommand implements ALCommand {
     private final ClaimBuildService claimBuildService;
     private final ArmyService armyService;
     private final RegionService regionService;
+    private final FactionService factionService;
 
     @Override
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
@@ -328,6 +326,32 @@ public class UpdateCommand implements ALCommand {
                         ))
                         .build(),
                 new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
+                        .setName("faction")
+                        .setDescription("Updates faction values")
+                        .setOptions(Arrays.asList(
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("leader")
+                                        .setDescription("Changes the leader a faction to the provided player")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.USER)
+                                                        .setName("new-leader")
+                                                        .setDescription("The player who should become the factions next leader!")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("faction-name")
+                                                        .setDescription("Thhe faction whose leader should be changed")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
+                                        .build()
+                        ))
+                        .build(),
+                new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND)
                         .setName("claimmap")
                         .setDescription("Staff Commmand - Resets the hasOwnershipChanged to false for all regions")
@@ -347,6 +371,8 @@ public class UpdateCommand implements ALCommand {
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
 
         commands.put("update army paid", new UpdateArmyPaidCommand(armyService));
+
+        commands.put("update faction leader", new UpdateFactionLeaderCommand(factionService));
 
         commands.put("update claimmap", new UpdateClaimmapCommand(regionService));
         log.info("Finished initializing /update command");
