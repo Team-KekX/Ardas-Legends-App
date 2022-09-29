@@ -6,6 +6,7 @@ import com.ardaslegends.data.presentation.discord.commands.create.CreateCommand;
 import com.ardaslegends.data.presentation.discord.commands.delete.DeleteCommand;
 import com.ardaslegends.data.presentation.discord.commands.disband.DisbandCommand;
 import com.ardaslegends.data.presentation.discord.commands.heal.HealCommand;
+import com.ardaslegends.data.presentation.discord.commands.info.InfoCommand;
 import com.ardaslegends.data.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
@@ -39,12 +40,13 @@ public class Commands implements DiscordUtils {
     private final RegisterCommand register;
     private final CreateCommand create;
     private final DeleteCommand delete;
+    private final InfoCommand info;
     private final Map<String, ALCommandExecutor> executions;
 
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
-                    DisbandCommand disband
+                    DisbandCommand disband, InfoCommand info
     ) {
         this.api = api;
         this.bind = bind;
@@ -52,6 +54,7 @@ public class Commands implements DiscordUtils {
         this.create = create;
         this.delete = delete;
         this.properties = properties;
+        this.info = info;
 
         executions = new HashMap<>();
         List<SlashCommandBuilder> commands = new ArrayList<>();
@@ -66,6 +69,7 @@ public class Commands implements DiscordUtils {
         commands.add(heal.init(executions));
         commands.add(unbind.init(executions));
         commands.add(disband.init(executions));
+        commands.add(info.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());

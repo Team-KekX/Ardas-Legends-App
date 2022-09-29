@@ -49,6 +49,10 @@ was created from
 ** From `/injure character` to `/injure rpchar`
 ** From `/heal-start character` to `/heal rpchar`
 ** From `/heal-stop character` to `/cancel heal rpchar`
+** From `/heal-start army` to `/heal army`
+** From `/heal-stop army` to `/cancel heal army`
+** From `/get upkeep` to `/info faction upkeep`
+** From `/update paid` to `/update army paid`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
@@ -56,3 +60,5 @@ was created from
 - The `/update rpchar name` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update rpchar title` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update rpchar pvp` command now takes a User Ping as an input instead of the Discord-Id of the user.
+
+
