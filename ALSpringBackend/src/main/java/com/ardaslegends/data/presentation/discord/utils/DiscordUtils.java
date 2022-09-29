@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 // TODO: Add Logging
@@ -205,6 +206,17 @@ public interface DiscordUtils {
         }
         try {
             return function.apply(argument1, argument2);
+        } catch (ServiceException e) {
+            throw new BotException(errorTitle, e);
+        }
+    }
+
+    default <T> T discordServiceExecution(Supplier<T> supplier, String errorTitle) {
+        if (supplier == null) {
+            throw new InternalServerException("Passed Null SupplierFunction in discordServiceExecution", null);
+        }
+        try {
+            return supplier.get();
         } catch (ServiceException e) {
             throw new BotException(errorTitle, e);
         }

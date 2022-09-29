@@ -7,6 +7,7 @@ import com.ardaslegends.data.presentation.discord.commands.update.staff.*;
 import com.ardaslegends.data.service.ArmyService;
 import com.ardaslegends.data.service.ClaimBuildService;
 import com.ardaslegends.data.service.PlayerService;
+import com.ardaslegends.data.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,7 @@ public class UpdateCommand implements ALCommand {
     private final PlayerService playerService;
     private final ClaimBuildService claimBuildService;
     private final ArmyService armyService;
+    private final RegionService regionService;
 
     @Override
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
@@ -324,6 +326,11 @@ public class UpdateCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                        .setName("claimmap")
+                        .setDescription("Staff Commmand - Resets the hasOwnershipChanged to false for all regions")
                         .build()
         ));
 
@@ -340,6 +347,8 @@ public class UpdateCommand implements ALCommand {
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
 
         commands.put("update army paid", new UpdateArmyPaidCommand(armyService));
+
+        commands.put("update claimmap", new UpdateClaimmapCommand(regionService));
         log.info("Finished initializing /update command");
         return command;
     }

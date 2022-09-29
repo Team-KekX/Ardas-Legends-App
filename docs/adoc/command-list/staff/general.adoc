@@ -9,3 +9,6 @@ changes discordId of a player
 
 - `/delete player` +
 deletes a player from the database,
+
+- `/update claimmap` +
+resets the **claimmap update** table in the roleplay data sheet!

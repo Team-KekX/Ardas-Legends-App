@@ -9,6 +9,7 @@ We also used this update to implement some quality of life, as well as visual im
 == Bug fixes
 
 - The Bot runs more stable and a bit faster now
+- The `/update claimmap` command has been fixed and is working correctly
 
 == Gameplay
 
@@ -32,6 +33,7 @@ to cancel the movement first.
 ** `/cancel move army-or-company`
 - The `/create army` command now displays from which Claimbuild the army
 was created from
+- The `/update claimmap` now displays which regions have been reset in the database table
 
 == Commands
 
@@ -53,6 +55,7 @@ was created from
 ** From `/heal-stop army` to `/cancel heal army`
 ** From `/get upkeep` to `/info faction upkeep`
 ** From `/update paid` to `/update army paid`
+** From `/update reset-region-ownership` to `/update claimmap`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
