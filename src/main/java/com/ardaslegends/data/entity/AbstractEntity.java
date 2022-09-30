@@ -1,10 +1,11 @@
 package com.ardaslegends.data.entity;
 
-import java.util.UUID;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import org.hibernate.annotations.Type;
+import java.util.UUID;
 
 @MappedSuperclass
 public abstract class AbstractEntity {

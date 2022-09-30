@@ -18,7 +18,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "experimentalDecorators": true,
-    "baseUrl": "frontend",
+    "baseUrl": "./frontend",
     "paths": {
       "Frontend/*": [
         "*"
@@ -26,8 +26,8 @@
     }
   },
   "include": [
-    "frontend/**/*.ts",
-    "frontend/index.js",
+    "../frontend/**/*.ts",
+    "../frontend/index.js",
     "types.d.ts"
   ],
   "exclude": []
