@@ -9,6 +9,7 @@ import com.ardaslegends.data.presentation.discord.commands.heal.HealCommand;
 import com.ardaslegends.data.presentation.discord.commands.info.InfoCommand;
 import com.ardaslegends.data.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
+import com.ardaslegends.data.presentation.discord.commands.pickSiege.PickSiegeCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.commands.station.StationCommand;
 import com.ardaslegends.data.presentation.discord.commands.stockpile.StockpileCommand;
@@ -51,7 +52,8 @@ public class Commands implements DiscordUtils {
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
-                    DisbandCommand disband, InfoCommand info, StationCommand station,UnstationCommand unstation, StockpileCommand stockpile
+                    DisbandCommand disband, InfoCommand info, StationCommand station,UnstationCommand unstation, StockpileCommand stockpile,
+                    PickSiegeCommand pickSiege
     ) {
         this.api = api;
         this.bind = bind;
@@ -79,6 +81,7 @@ public class Commands implements DiscordUtils {
         commands.add(station.init(executions));
         commands.add(unstation.init(executions));
         commands.add(stockpile.init(executions));
+        commands.add(pickSiege.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());

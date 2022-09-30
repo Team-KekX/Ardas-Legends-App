@@ -35,6 +35,7 @@ to cancel the movement first.
 ** `/unstation army-or-company`
 ** `/stockpile add`
 ** `/stockpile remove`
+** `/pick-siege`
 - The `/create army` command now displays from which Claimbuild the army
 was created from
 - The `/update claimmap` now displays which regions have been reset in the database table

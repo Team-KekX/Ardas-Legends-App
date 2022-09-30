@@ -51,11 +51,12 @@ public class PickSiegeCommand implements ALCommand, ALCommandExecutor {
                         .setType(SlashCommandOptionType.STRING)
                         .setName("siege")
                         .setDescription("The siege equipment to pick up")
+                        .setRequired(true)
                         .build()
                 )
         );
-        commands.put("register", this::execute);
-        log.info("Finished initializing /unstation command");
+        commands.put("pick-siege", this::execute);
+        log.info("Finished initializing /pick-siege command");
         return command;
     }
 
