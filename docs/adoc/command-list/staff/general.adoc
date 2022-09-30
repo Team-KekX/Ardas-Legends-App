@@ -1,11 +1,14 @@
-- `/update ign` +
+- `/update player ign` +
 changes the ign of a player
 
-- `/update faction` +
+- `/update player faction` +
 changes the faction of a player
 
-- `/update discordId` +
+- `/update player discord-id` +
 changes discordId of a player
 
 - `/delete player` +
 deletes a player from the database,
+
+- `/update claimmap` +
+Sets the flag which indicates if the region has changed ownership since the last Claimmap update to false. Should be used after all the regions have been painted in the Claimmap. Resets the *claimmap update* sheet in the roleplay data sheet.

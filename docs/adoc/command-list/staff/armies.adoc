@@ -1,5 +1,8 @@
-- `/delete army-or-company` +
+- `/delete army-or-company [army-or-company-name]` +
 Force-deletes an army or company without checks for faction leader permissions, etc.
 
 - `/update paid` + 
 Updates if an army is paid for or not.
+
+- `/update army free-tokens [army-name] [free-tokens]` +
+Sets how many *free* tokens an army has. The value cannot be above 30 (maximum token amount)!

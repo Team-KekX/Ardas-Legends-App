@@ -1,6 +1,9 @@
-* `/stockpile info` +
+* `/info faction stockpile` +
 Displays the amount of food stockpiled by the specified faction +
 Food is counted in stacks!
+
+* `/info faction upkeep [faction-name]`
+Prints out only the amount of 1 specified faction has to pay for their armies, monthly
 
 NOTE: To add food, go to **/warp payment_area** and throw in pouches of food into your factions hopper! +
 The food must fill at least 2.5 Food Bars to be eligible for movements

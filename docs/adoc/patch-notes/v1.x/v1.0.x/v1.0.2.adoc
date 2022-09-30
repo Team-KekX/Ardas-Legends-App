@@ -1,0 +1,77 @@
+= v1.0.2 - Javacord
+
+In this patch, the Bot got migrated from the JavaScript Discord library (discordjs) to *Javacord*, which is a Java library for Discord.
+
+This means that the Bot will run a lot more stable and errors should occur less often. This update should also decrease the development time of future features, since we save some steps when implementing new features.
+
+We also used this update to implement some quality of life, as well as visual improvements to messages sent by the Bot.
+
+== Bug fixes
+
+- The Bot runs more stable and a bit faster now
+- The `/update claimmap` command has been fixed and is working correctly
+
+== Gameplay
+
+- Unbinding players from armies that are currently moving now requires
+to cancel the movement first.
+
+== User Interface
+
+- Messages of Staff commands now have the color yellow so they stand out more
+- Some commands now show the banner of the faction that got updated by the command. The following commands now show the faction banner:
+** `/create claimbuild`
+** `/delete claimbuild`
+** `/delete army-or-company`
+** `/update player faction`
+** `/register`
+** `/create army`
+** `/disband army-or-company`
+** `/bind army-or-company`
+** `/unbind army-or-company`
+** `/move army-or-company`
+** `/cancel move army-or-company`
+** `/station army-or-company`
+** `/unstation army-or-company`
+** `/stockpile add`
+** `/stockpile remove`
+** `/pick-siege`
+- The `/create army` command now displays from which Claimbuild the army
+was created from
+- The `/update claimmap` now displays which regions have been reset in the database table
+- Messages from successful commands generally show way more information than before
+
+== Commands
+
+- Changed following command names:
+** From `/update faction` to `/update player faction`
+** From `/update ign` to `/update player ign`
+** From `/update discord-id` to `/update player discord-id`
+** From `/update rpchar-gear` to `/update rpchar gear`
+** From `/update rpchar-name` to `/update rpchar name`
+** From `/update rpchar-pvp` to `/update rpchar pvp`
+** From `/update rpchar-title` to `/update rpchar title`
+** From `/move character` to `/move rpchar`
+** From `/cancel-move character` to `/cancel move rpchar`
+** From `/cancel-move army` to `/cancel move army-or-company`
+** From `/injure character` to `/injure rpchar`
+** From `/heal-start character` to `/heal rpchar`
+** From `/heal-stop character` to `/cancel heal rpchar`
+** From `/heal-start army` to `/heal army`
+** From `/heal-stop army` to `/cancel heal army`
+** From `/get upkeep` to `/info faction upkeep`
+** From `/update paid` to `/update army paid`
+** From `/update reset-region-ownership` to `/update claimmap`
+** From `/update faction-leader` to `/update faction leader`
+** From `/update free-tokens` to `/update army free-tokens`
+** From `/get unpaid-armies-or-companies` to `/info unpaid-armies-or-companies`
+** From `/stockpile` to `/info faction stockpile`
+
+- The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update rpchar gear` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update rpchar name` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update rpchar title` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update rpchar pvp` command now takes a User Ping as an input instead of the Discord-Id of the user.
+- The `/update faction leader` command now takes a User Ping as an input instead of the Discord-Id of the user.
+
