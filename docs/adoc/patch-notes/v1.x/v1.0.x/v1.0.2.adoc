@@ -31,9 +31,11 @@ to cancel the movement first.
 ** `/unbind army-or-company`
 ** `/move army-or-company`
 ** `/cancel move army-or-company`
+** `/station army-or-company`
 - The `/create army` command now displays from which Claimbuild the army
 was created from
 - The `/update claimmap` now displays which regions have been reset in the database table
+- Messages from successful commands generally show way more information than before
 
 == Commands
 
