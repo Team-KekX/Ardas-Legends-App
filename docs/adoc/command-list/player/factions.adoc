@@ -1,4 +1,4 @@
-* `/stockpile info` +
+* `/info faction stockpile` +
 Displays the amount of food stockpiled by the specified faction +
 Food is counted in stacks!
 

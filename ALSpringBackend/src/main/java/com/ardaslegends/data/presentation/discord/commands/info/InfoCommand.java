@@ -8,10 +8,7 @@ import com.ardaslegends.data.service.PlayerService;
 import com.ardaslegends.data.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandBuilder;
-import org.javacord.api.interaction.SlashCommandOptionBuilder;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -50,6 +47,12 @@ public class InfoCommand implements ALCommand {
                                                         .setRequired(true)
                                                         .build()
                                         ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("stockpile")
+                                        .setDescription("Displays the faction's current food stockpile")
+                                        .addOption(SlashCommandOption.createStringOption("faction-name", "Name of the faction", true))
                                         .build()
                         ))
                         .build(),
@@ -62,6 +65,7 @@ public class InfoCommand implements ALCommand {
 
         commands.put("info faction upkeep", new InfoFactionUpkeepCommand(armyService));
         commands.put("info unpaid-armies-or-companies", new InfoUnpaidArmiesOrCompanies(armyService));
+        commands.put("info faction stockpile", new InfoFactionStockpile(factionService));
 
         log.info("Finished initializing /info command");
         return command;
