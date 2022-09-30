@@ -33,7 +33,7 @@ public class UpdateCommand implements ALCommand {
     public SlashCommandBuilder init(Map<String, ALCommandExecutor> commands) {
         log.debug("Initializing /update command");
 
-        var command = SlashCommand.with("update", "JAVACORD Updates information about an entity", Arrays.asList(
+        var command = SlashCommand.with("update", "Updates information about an entity", Arrays.asList(
                 new SlashCommandOptionBuilder()
                         .setType(SlashCommandOptionType.SUB_COMMAND_GROUP)
                         .setName("player")
@@ -322,6 +322,25 @@ public class UpdateCommand implements ALCommand {
                                                         .setRequired(true)
                                                         .build()
                                         ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("free-tokens")
+                                        .setDescription("Sets the amount of free (!) tokens an army has")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("army-name")
+                                                        .setDescription("The name of the army of which the free tokens will be changed")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.DECIMAL)
+                                                        .setName("free-tokens")
+                                                        .setDescription("The new amount of free tokens which will be set")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
                                         .build()
                         ))
                         .build(),
@@ -371,6 +390,7 @@ public class UpdateCommand implements ALCommand {
         commands.put("update claimbuild faction", new UpdateClaimbuildFactionCommand(claimBuildService));
 
         commands.put("update army paid", new UpdateArmyPaidCommand(armyService));
+        commands.put("update army free-tokens", new UpdateArmyFreeTokensCommand(armyService));
 
         commands.put("update faction leader", new UpdateFactionLeaderCommand(factionService));
 

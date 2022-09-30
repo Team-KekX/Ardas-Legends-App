@@ -89,6 +89,7 @@ public interface DiscordUtils {
             case "User" -> option.getUserValue();
             case "Long" -> option.getLongValue();
             case "Boolean" -> option.getBooleanValue();
+            case "Double" -> option.getDecimalValue();
             default ->
                     throw new IllegalArgumentException("GetOption: Class Type is not either [Long, String, User, Boolean]!");
         };
@@ -163,6 +164,12 @@ public interface DiscordUtils {
 
     default Long getLongOption(String name, List<SlashCommandInteractionOption> options) {
         Long optionValue = (Long) getRequiredValue(name, options, Long.class);
+        log.trace("GetOption: Returning value [{}]", optionValue);
+        return optionValue;
+    }
+
+    default Double getDecimalOption(String name, List<SlashCommandInteractionOption> options) {
+        Double optionValue = (Double) getRequiredValue(name, options, Double.class);
         log.trace("GetOption: Returning value [{}]", optionValue);
         return optionValue;
     }
