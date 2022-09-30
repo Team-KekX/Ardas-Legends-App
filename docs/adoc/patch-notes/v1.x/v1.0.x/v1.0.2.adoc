@@ -63,6 +63,7 @@ was created from
 ** From `/update reset-region-ownership` to `/update claimmap`
 ** From `/update faction-leader` to `/update faction leader`
 ** From `/update free-tokens` to `/update army free-tokens`
+** From `/get unpaid-armies-or-companies` to `/info unpaid-armies-or-companies`
 
 - The `/update player faction` command now takes a User Ping as an input instead of the Discord-Id of the user.
 - The `/update player ign` command now takes a User Ping as an input instead of the Discord-Id of the user.

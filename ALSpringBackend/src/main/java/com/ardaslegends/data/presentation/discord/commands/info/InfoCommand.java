@@ -52,10 +52,16 @@ public class InfoCommand implements ALCommand {
                                         ))
                                         .build()
                         ))
+                        .build(),
+                new SlashCommandOptionBuilder()
+                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                        .setName("unpaid-armies-or-companies")
+                        .setDescription("Displays the 10 oldest armies and companies which have NOT been payed for")
                         .build()
         ));
 
         commands.put("info faction upkeep", new InfoFactionUpkeepCommand(armyService));
+        commands.put("info unpaid-armies-or-companies", new InfoUnpaidArmiesOrCompanies(armyService));
 
         log.info("Finished initializing /info command");
         return command;
