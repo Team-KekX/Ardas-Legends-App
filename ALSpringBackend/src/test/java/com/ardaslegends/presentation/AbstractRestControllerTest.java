@@ -1,10 +1,9 @@
 package com.ardaslegends.presentation;
 
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.presentation.AbstractRestController;
-import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
-import com.ardaslegends.data.presentation.exceptions.InternalServerException;
-import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.presentation.exceptions.BadArgumentException;
+import com.ardaslegends.presentation.exceptions.InternalServerException;
+import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

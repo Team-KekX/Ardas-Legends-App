@@ -1,14 +1,13 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.data.domain.Movement;
-import com.ardaslegends.data.domain.PathElement;
-import com.ardaslegends.data.domain.Region;
-import com.ardaslegends.data.domain.RegionType;
-import com.ardaslegends.data.presentation.api.MovementRestController;
-import com.ardaslegends.data.service.MovementService;
-import com.ardaslegends.data.service.dto.army.MoveArmyDto;
-import com.ardaslegends.data.service.dto.player.DiscordIdDto;
-import com.ardaslegends.data.service.dto.player.rpchar.MoveRpCharDto;
+import com.ardaslegends.domain.Movement;
+import com.ardaslegends.domain.PathElement;
+import com.ardaslegends.domain.Region;
+import com.ardaslegends.domain.RegionType;
+import com.ardaslegends.service.MovementService;
+import com.ardaslegends.service.dto.army.MoveArmyDto;
+import com.ardaslegends.service.dto.player.DiscordIdDto;
+import com.ardaslegends.service.dto.player.rpchar.MoveRpCharDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,10 +22,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j

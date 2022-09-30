@@ -1,25 +1,20 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.ArmyRepository;
-import com.ardaslegends.data.repository.MovementRepository;
-import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.MovementService;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.ScheduleService;
-import com.ardaslegends.data.service.utils.ServiceUtils;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.repository.ArmyRepository;
+import com.ardaslegends.repository.MovementRepository;
+import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

@@ -1,9 +1,8 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.data.domain.Army;
-import com.ardaslegends.data.presentation.api.ArmyRestController;
-import com.ardaslegends.data.service.ArmyService;
-import com.ardaslegends.data.service.dto.army.*;
+import com.ardaslegends.domain.Army;
+import com.ardaslegends.service.ArmyService;
+import com.ardaslegends.service.dto.army.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,11 +16,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j

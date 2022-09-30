@@ -1,17 +1,15 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.repository.FactionRepository;
-import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
-import com.ardaslegends.data.service.dto.faction.UpdateStockpileDto;
-import com.ardaslegends.data.service.exceptions.FactionServiceException;
-import com.ardaslegends.data.service.exceptions.PlayerServiceException;
-import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.repository.FactionRepository;
+import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
+import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
+import com.ardaslegends.service.exceptions.FactionServiceException;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,19 +1,13 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.data.domain.Army;
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.presentation.api.PlayerRestController;
-import com.ardaslegends.data.presentation.exceptions.BadArgumentException;
-import com.ardaslegends.data.presentation.exceptions.InternalServerException;
-import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
-import com.ardaslegends.data.service.dto.player.*;
-import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
-import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
-import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.service.FactionService;
+import com.ardaslegends.service.PlayerService;
+import com.ardaslegends.service.dto.player.*;
+import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
+import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,14 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.persistence.PersistenceException;
-
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 

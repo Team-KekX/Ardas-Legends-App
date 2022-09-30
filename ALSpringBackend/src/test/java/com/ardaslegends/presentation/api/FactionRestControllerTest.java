@@ -1,12 +1,11 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.presentation.api.FactionRestController;
-import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.dto.UpdateFactionLeaderDto;
-import com.ardaslegends.data.service.dto.faction.UpdateFactionLeaderResponseDto;
-import com.ardaslegends.data.service.dto.faction.UpdateStockpileDto;
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.service.FactionService;
+import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
+import com.ardaslegends.service.dto.faction.UpdateFactionLeaderResponseDto;
+import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -18,14 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-
-import static org.assertj.core.api.InstanceOfAssertFactories.map;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j

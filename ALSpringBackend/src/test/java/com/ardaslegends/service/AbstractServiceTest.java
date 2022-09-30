@@ -1,11 +1,9 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.exceptions.ServiceException;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

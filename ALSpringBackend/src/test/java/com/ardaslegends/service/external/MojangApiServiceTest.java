@@ -1,10 +1,6 @@
 package com.ardaslegends.service.external;
 
-import com.ardaslegends.data.service.dto.player.UUIDConverterDto;
-import com.ardaslegends.data.service.exceptions.ServiceException;
-import com.ardaslegends.data.service.external.MojangApiService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

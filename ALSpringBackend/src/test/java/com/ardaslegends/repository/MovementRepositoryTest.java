@@ -1,17 +1,10 @@
 package com.ardaslegends.repository;
 
-import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.ArmyRepository;
-import com.ardaslegends.data.repository.MovementRepository;
+import com.ardaslegends.domain.*;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.Opt;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

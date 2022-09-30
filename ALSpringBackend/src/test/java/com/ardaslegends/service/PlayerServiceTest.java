@@ -1,15 +1,13 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.PlayerRepository;
-import com.ardaslegends.data.service.FactionService;
-import com.ardaslegends.data.service.PlayerService;
-import com.ardaslegends.data.service.dto.player.*;
-import com.ardaslegends.data.service.dto.player.rpchar.CreateRPCharDto;
-import com.ardaslegends.data.service.dto.player.rpchar.UpdateRpCharDto;
-import com.ardaslegends.data.service.exceptions.PlayerServiceException;
-import com.ardaslegends.data.service.exceptions.ServiceException;
-import com.ardaslegends.data.service.external.MojangApiService;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.service.dto.player.*;
+import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
+import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.external.MojangApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 @Slf4j
 public class PlayerServiceTest {
 

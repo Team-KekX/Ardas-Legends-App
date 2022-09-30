@@ -1,7 +1,6 @@
 package com.ardaslegends.domain;
 
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.service.exceptions.FactionServiceException;
+import com.ardaslegends.service.exceptions.FactionServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

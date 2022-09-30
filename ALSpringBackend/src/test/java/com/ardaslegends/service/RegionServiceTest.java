@@ -1,8 +1,7 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.Region;
-import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.service.RegionService;
+import com.ardaslegends.domain.Region;
+import com.ardaslegends.repository.RegionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 public class RegionServiceTest {

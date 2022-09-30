@@ -1,9 +1,8 @@
 package com.ardaslegends.repository;
 
-import com.ardaslegends.data.domain.Faction;
-import com.ardaslegends.data.domain.Player;
-import com.ardaslegends.data.domain.RPChar;
-import com.ardaslegends.data.repository.PlayerRepository;
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.Player;
+import com.ardaslegends.domain.RPChar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

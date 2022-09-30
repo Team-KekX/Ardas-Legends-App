@@ -1,11 +1,10 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.presentation.api.ClaimbuildRestController;
-import com.ardaslegends.data.service.ClaimBuildService;
-import com.ardaslegends.data.service.dto.claimbuild.CreateClaimBuildDto;
-import com.ardaslegends.data.service.dto.claimbuilds.DeleteClaimbuildDto;
-import com.ardaslegends.data.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.service.ClaimBuildService;
+import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
+import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
+import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,11 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j

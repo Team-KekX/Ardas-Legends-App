@@ -1,14 +1,11 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.data.domain.*;
-import com.ardaslegends.data.repository.RegionRepository;
-import com.ardaslegends.data.domain.PathElement;
-import com.ardaslegends.data.service.Pathfinder;
-import com.ardaslegends.data.service.exceptions.PathfinderServiceException;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.repository.RegionRepository;
+import com.ardaslegends.service.exceptions.PathfinderServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
