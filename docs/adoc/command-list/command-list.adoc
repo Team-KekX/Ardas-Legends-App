@@ -44,7 +44,3 @@ include::staff/factions.adoc[]
 === Claimbuilds
 
 include::staff/claimbuilds.adoc[]
-
-=== Regions
-
-include::staff/regions.adoc[]

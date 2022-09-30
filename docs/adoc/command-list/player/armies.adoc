@@ -46,7 +46,7 @@ NOTE: The **Stronghold's** House of Healing heals twice as fast, **12 Tokens per
 - `/cancel heal army [army-name]` +
 Stops the healing of an army that is currently healing.
 
-- `/get unpaid-armies-or-companies` +
+- `/info unpaid-armies-or-companies` +
 Prints out the **10 oldest** armies or companies that have no registered payment yet.
 
 WARNING: Staff can delete these armies whenever they feel like it! If you notice that one of your armies is still on this list even though you paid for it, **please contact staff**
