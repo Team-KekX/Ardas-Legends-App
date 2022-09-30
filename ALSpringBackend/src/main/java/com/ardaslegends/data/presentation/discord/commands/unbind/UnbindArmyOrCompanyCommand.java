@@ -58,7 +58,7 @@ public class UnbindArmyOrCompanyCommand implements ALCommandExecutor {
         log.debug("Building response Embed");
         return new EmbedBuilder()
                 .setTitle("Unbound from %s".formatted(armyType))
-                .setDescription("The army %s has been unbound from player %s".formatted(army.getName(), target.getMentionTag()))
+                .setDescription("The %s %s has been unbound from player %s".formatted(armyType, army.getName(), target.getMentionTag()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Unbound User", target.getMentionTag())
                 .addInlineField("Army", army.getName())

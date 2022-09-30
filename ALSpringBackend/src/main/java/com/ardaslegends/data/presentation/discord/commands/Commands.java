@@ -12,6 +12,7 @@ import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.commands.station.StationCommand;
 import com.ardaslegends.data.presentation.discord.commands.unbind.UnbindCommand;
+import com.ardaslegends.data.presentation.discord.commands.unstation.UnstationCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.UpdateCommand;
 import com.ardaslegends.data.presentation.discord.config.BotProperties;
 import com.ardaslegends.data.presentation.discord.utils.DiscordUtils;
@@ -47,7 +48,7 @@ public class Commands implements DiscordUtils {
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
-                    DisbandCommand disband, InfoCommand info, StationCommand station
+                    DisbandCommand disband, InfoCommand info, StationCommand station, UnstationCommand unstation
     ) {
         this.api = api;
         this.bind = bind;
@@ -72,6 +73,7 @@ public class Commands implements DiscordUtils {
         commands.add(disband.init(executions));
         commands.add(info.init(executions));
         commands.add(station.init(executions));
+        commands.add(unstation.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());
