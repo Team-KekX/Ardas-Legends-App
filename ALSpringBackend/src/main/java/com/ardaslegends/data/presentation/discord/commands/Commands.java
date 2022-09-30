@@ -11,6 +11,7 @@ import com.ardaslegends.data.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.data.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.data.presentation.discord.commands.register.RegisterCommand;
 import com.ardaslegends.data.presentation.discord.commands.station.StationCommand;
+import com.ardaslegends.data.presentation.discord.commands.stockpile.StockpileCommand;
 import com.ardaslegends.data.presentation.discord.commands.unbind.UnbindCommand;
 import com.ardaslegends.data.presentation.discord.commands.unstation.UnstationCommand;
 import com.ardaslegends.data.presentation.discord.commands.update.UpdateCommand;
@@ -43,12 +44,14 @@ public class Commands implements DiscordUtils {
     private final CreateCommand create;
     private final DeleteCommand delete;
     private final InfoCommand info;
+
+    private final StockpileCommand stockpile;
     private final Map<String, ALCommandExecutor> executions;
 
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
-                    DisbandCommand disband, InfoCommand info, StationCommand station, UnstationCommand unstation
+                    DisbandCommand disband, InfoCommand info, StationCommand station,UnstationCommand unstation, StockpileCommand stockpile
     ) {
         this.api = api;
         this.bind = bind;
@@ -57,6 +60,7 @@ public class Commands implements DiscordUtils {
         this.delete = delete;
         this.properties = properties;
         this.info = info;
+        this.stockpile = stockpile;
 
         executions = new HashMap<>();
         List<SlashCommandBuilder> commands = new ArrayList<>();
@@ -74,6 +78,7 @@ public class Commands implements DiscordUtils {
         commands.add(info.init(executions));
         commands.add(station.init(executions));
         commands.add(unstation.init(executions));
+        commands.add(stockpile.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());
