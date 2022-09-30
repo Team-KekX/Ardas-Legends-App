@@ -46,9 +46,6 @@ NOTE: The **Stronghold's** House of Healing heals twice as fast, **12 Tokens per
 - `/cancel heal army [army-name]` +
 Stops the healing of an army that is currently healing.
 
-- `/info faction upkeep [faction-name]` +
-Prints out only the amount of 1 specified faction has to pay for their armies, monthly
-
 - `/get unpaid-armies-or-companies` +
 Prints out the **10 oldest** armies or companies that have no registered payment yet.
 

@@ -1,0 +1,2 @@
+* `/update claimmap`
+Sets the flag which indicates if the region has changed ownership since the last Claimmap update to false. Should be used after all the regions have been painted in the Claimmap.
