@@ -11,6 +11,7 @@ import com.ardaslegends.presentation.discord.commands.injure.InjureCommand;
 import com.ardaslegends.presentation.discord.commands.move.MoveCommand;
 import com.ardaslegends.presentation.discord.commands.pickSiege.PickSiegeCommand;
 import com.ardaslegends.presentation.discord.commands.register.RegisterCommand;
+import com.ardaslegends.presentation.discord.commands.remove.RemoveCommand;
 import com.ardaslegends.presentation.discord.commands.station.StationCommand;
 import com.ardaslegends.presentation.discord.commands.stockpile.StockpileCommand;
 import com.ardaslegends.presentation.discord.commands.unbind.UnbindCommand;
@@ -45,7 +46,7 @@ public class Commands implements DiscordUtils {
     private final CreateCommand create;
     private final DeleteCommand delete;
     private final InfoCommand info;
-
+    private final RemoveCommand remove;
     private final StockpileCommand stockpile;
     private final Map<String, ALCommandExecutor> executions;
 
@@ -53,7 +54,7 @@ public class Commands implements DiscordUtils {
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
                     DisbandCommand disband, InfoCommand info, StationCommand station, UnstationCommand unstation, StockpileCommand stockpile,
-                    PickSiegeCommand pickSiege
+                    PickSiegeCommand pickSiege, RemoveCommand remove
     ) {
         this.api = api;
         this.bind = bind;
@@ -63,6 +64,7 @@ public class Commands implements DiscordUtils {
         this.properties = properties;
         this.info = info;
         this.stockpile = stockpile;
+        this.remove = remove;
 
         executions = new HashMap<>();
         List<SlashCommandBuilder> commands = new ArrayList<>();
@@ -82,6 +84,7 @@ public class Commands implements DiscordUtils {
         commands.add(unstation.init(executions));
         commands.add(stockpile.init(executions));
         commands.add(pickSiege.init(executions));
+        commands.add(remove.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());
