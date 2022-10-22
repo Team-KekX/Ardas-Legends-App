@@ -97,6 +97,29 @@ public class FactionServiceTest {
     }
 
     @Test
+    void ensureRemoveFactionLeaderWorksProperly() {
+        log.debug("Testing if removeFactionLeader works properly");
+
+        faction.setLeader(player);
+        var result = factionService.removeFactionLeader(faction.getName());
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(player);
+        log.info("Test passed: removeFactionLeader works properly");
+    }
+
+    @Test
+    void ensureRemoveFactionLeaderThrowsSeWhenFactionHasNoFactionLeader() {
+        log.debug("Testing if removeFactionLeader correctly throws Se when no faction leader present");
+
+        log.debug("Calling factionService.removeFactionLeader, expecting Se");
+        var result = assertThrows(FactionServiceException.class, () -> factionService.removeFactionLeader("Gondor"));
+
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionLeader("Gondor", "Therefore the command cannot be executed.").getMessage());
+        log.info("Test passed: removeFactionLeader correctly throws Se when faction has no leader");
+    }
+
+    @Test
     void ensureAddToStockpileWorksProperly() {
         log.debug("Testing if addToStockpile works properly with correct values");
 
