@@ -43,7 +43,7 @@ public class RemoveCommand  implements ALCommand {
                                         .setOptions(Arrays.asList(
                                                 new SlashCommandOptionBuilder()
                                                         .setType(SlashCommandOptionType.STRING)
-                                                        .setName("faction")
+                                                        .setName("faction-name")
                                                         .setDescription("The faction whose leader should be removed")
                                                         .setRequired(true)
                                                         .build()

@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.remove.staff;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
+import com.ardaslegends.presentation.discord.utils.FactionBanners;
 import com.ardaslegends.service.FactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class RemoveFactionLeaderCommand implements ALStaffCommandExecutor {
                 .setTitle("Removed Faction Leader")
                 .setDescription("Removed %s from faction leader position in the faction %s".formatted(result.getIgn(), factionName))
                 .setColor(ALColor.YELLOW)
+                .setThumbnail(FactionBanners.getBannerUrl(factionName))
                 .setTimestampToNow();
     }
 }
