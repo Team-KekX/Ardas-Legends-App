@@ -60,10 +60,10 @@ public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
         String builtBy = getStringOption("built-by", options);
         log.trace("CreateClaimbuild: built by is [{}]", builtBy);
 
-        String productionSites = getOptionalStringOption("production-sites", options).orElse("none");
+        String productionSites = getOptionalStringOption("production-sites", options).orElse("no");
         log.trace("CreateClaimbuild: Production Sites are  [{}]", productionSites);
 
-        String specialBuildings = getOptionalStringOption("special-buildings", options).orElse("none");
+        String specialBuildings = getOptionalStringOption("special-buildings", options).orElse("no");
         log.trace("CreateClaimbuild: Special Buildings are  [{}]", specialBuildings);
 
 
@@ -74,6 +74,7 @@ public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
         log.debug("CreateClaimbuild: Calling createClaimbuild Service");
         var claimbuild = discordServiceExecution(dto,true, claimBuildService::createClaimbuild, "Error during Claimbuild Creation");
         log.debug("CreateClaimbuild: Result [{}]", claimbuild);
+        log.debug(claimbuild.getProductionSites().toString());
 
 
         String prodString = createProductionSiteString(claimbuild.getProductionSites());

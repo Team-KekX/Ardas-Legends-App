@@ -42,6 +42,7 @@ public class ServiceUtils {
                 .collect(Collectors.toList());
         checkBlanks(obj, stringFields);
     }
+
     public static <T> void checkNulls(T obj, List<String> fieldNames) {
         List<Field> fields = null;
         fields = getFieldsFromNames(obj, fieldNames);
@@ -110,17 +111,19 @@ public class ServiceUtils {
         return (int)Math.ceil(ServiceUtils.getTotalPathCost(path) / 24.0);
     }
 
+    // TODO: This needs a rewrite ->
     public static void validateStringSyntax(String string, Character[] syntaxChars, ServiceException exceptionToThrow) {
         log.debug("Validating unitString [{}]", string);
 
         // Is also true at the start, from then every time a expectedChar is switched
-        boolean firstCharAfterExpected = true; //says if the current character is the first character after the last expected one
-        boolean possibleEnd = true;
-
-        log.trace("Starting validation, unitString length: [{}]", string.length());
-
         int currentExpectedCharIndex = 0; //index of the currently expected char
         char expectedChar = syntaxChars[0]; //Set the expectedChar to first in array
+
+        boolean firstCharAfterExpected = true; //says if the current character is the first character after the last expected one
+        boolean possibleEnd =
+                expectedChar == syntaxChars[syntaxChars.length -1];
+
+        log.trace("Starting validation, unitString length: [{}]", string.length());
 
         for(int i = 0; i < string.length(); i++) {
             log.trace("Index: [{}]", i);

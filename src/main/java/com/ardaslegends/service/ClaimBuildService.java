@@ -250,9 +250,14 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
     public List<ProductionClaimbuild> createProductionSitesFromString(String prodString, @NotNull ClaimBuild claimBuild) {
         log.debug("Creating production sites from string [{}]", prodString);
 
+        if(prodString.equals("no")) {
+            return Collections.emptyList();
+        }
+
         ServiceUtils.validateStringSyntax(prodString, new Character[]{':', ':', '-'}, ClaimBuildServiceException.invalidProductionSiteString(prodString));
 
         String[] prodSiteDataArr = prodString.split("-");
+        log.debug("CreateProductionSitesFromString: [Array:{}, Size: {}]", prodSiteDataArr, prodSiteDataArr.length);
 
         List<ProductionClaimbuild> productionSites = new ArrayList<>();
 
@@ -301,6 +306,10 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
     public List<SpecialBuilding> createSpecialBuildingsFromString(String specialBuildString) {
         log.debug("Creating special buildings from string [{}]", specialBuildString);
+
+        if(specialBuildString.equals("no")) {
+            return Collections.emptyList();
+        }
 
         ServiceUtils.validateStringSyntax(specialBuildString, new Character[]{'-'}, ClaimBuildServiceException.invalidProductionSiteString(specialBuildString));
 

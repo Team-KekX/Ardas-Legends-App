@@ -83,9 +83,33 @@ public interface DiscordUtils {
         return foundOption.get();
     }
 
-    default <T> Optional getOptionalValue(String name, List<SlashCommandInteractionOption> options, Class<T> clazz) {
+    default Optional<SlashCommandInteractionOption> getOptionalOption(String name, List<SlashCommandInteractionOption> options) {
+        Objects.requireNonNull(name, "GetOptionalOption: Name must not be null");
+        Objects.requireNonNull(options, "GetOptionalOption: Option List must not be null");
 
-        SlashCommandInteractionOption option = getOption(name, options);
+        var foundOption = options.stream()
+                .filter(interactionOption -> interactionOption.getName().equals(name))
+                .findFirst();
+
+        return foundOption;
+    }
+
+    default <T> Optional getOptionalValue(String name, List<SlashCommandInteractionOption> options, Class<T> clazz, boolean optional) {
+
+        SlashCommandInteractionOption option;
+
+        if(optional) {
+            var optionalOption = getOptionalOption(name, options);
+
+            if(optionalOption.isEmpty()) {
+                return Optional.empty();
+            }
+
+            option = optionalOption.get();
+        }
+        else {
+            option = getOption(name, options);
+        }
 
         return switch (clazz.getSimpleName()) {
             case "String" -> option.getStringValue();
@@ -101,7 +125,7 @@ public interface DiscordUtils {
     @NonNull
     default <T> T getRequiredValue(String optionName, List<SlashCommandInteractionOption> options, Class<T> clazz) {
 
-        Optional<T> optionalValue = getOptionalValue(optionName, options, clazz);
+        Optional<T> optionalValue = getOptionalValue(optionName, options, clazz, false);
 
         if (optionalValue.isEmpty()) {
             log.warn("GetOption: Option [name: {}, type {}] did not return a value!", optionName, clazz.getSimpleName());
@@ -129,7 +153,7 @@ public interface DiscordUtils {
     }
 
     default Optional<String> getOptionalStringOption(String name, List<SlashCommandInteractionOption> options) {
-        Optional<String> option = getOptionalValue(name, options, String.class);
+        Optional<String> option = getOptionalValue(name, options, String.class, true);
         log.trace("GetOptionalStringOption: [{}] Returning value [{}]", name, option);
         return option;
     }
@@ -148,7 +172,7 @@ public interface DiscordUtils {
     }
 
     default Optional<User> getOptionalUserOption(String name, List<SlashCommandInteractionOption> options) {
-        Optional<User> option = getOptionalValue(name, options, User.class);
+        Optional<User> option = getOptionalValue(name, options, User.class, true);
         log.trace("GetOptionalUserOption: [{}] Returning value [{}]", name, option);
         return option;
     }
@@ -160,7 +184,7 @@ public interface DiscordUtils {
     }
 
     default Optional<Boolean> getOptionalBooleanOption(String name, List<SlashCommandInteractionOption> options) {
-        Optional<Boolean> option = getOptionalValue(name, options, Boolean.class);
+        Optional<Boolean> option = getOptionalValue(name, options, Boolean.class, true);
         log.trace("GetOptionalBooleanOption: [{}] Returning value [{}]", name, option);
         return option;
     }
@@ -178,7 +202,7 @@ public interface DiscordUtils {
     }
 
     default Optional<Long> getOptionalLongOption(String name, List<SlashCommandInteractionOption> options) {
-        Optional<Long> option = getOptionalValue(name, options, Long.class);
+        Optional<Long> option = getOptionalValue(name, options, Long.class, true);
         log.trace("GetOptionalLongOption: [{}] Returning value [{}]", name, option);
         return option;
     }
@@ -244,6 +268,7 @@ public interface DiscordUtils {
     }
 
     default String createProductionSiteString(List<ProductionClaimbuild> productionSiteList) {
+        log.debug("ProductionSiteList Count: {}", productionSiteList.size());
         StringBuilder prodString = new StringBuilder();
         productionSiteList.forEach(productionSite -> {
             String resource = productionSite.getProductionSite().getProducedResource();
@@ -252,7 +277,10 @@ public interface DiscordUtils {
             prodString.append(count).append(" ").append(resource).append(" ").append(type).append("\n");
         });
 
-        return prodString.toString();
+        String returnProdString = prodString.toString();
+        log.debug("CreateProductionSiteString: {}", returnProdString);
+
+        return returnProdString.isBlank() ? "None" : returnProdString;
     }
 
     default String createSpecialBuildingsString(List<SpecialBuilding> specialBuildingList) {
@@ -263,7 +291,9 @@ public interface DiscordUtils {
 
         countedSpecialBuildings.forEach((specialBuilding, aLong) -> specialString.append(aLong + " " + specialBuilding.getName() + ", "));
 
-        return specialString.toString();
+        String returnSpecialString = specialString.toString();
+
+        return returnSpecialString.isBlank() ? "None" : returnSpecialString;
     }
 
     default String createPathString(List<PathElement> path) {

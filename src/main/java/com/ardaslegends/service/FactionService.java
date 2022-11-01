@@ -121,6 +121,30 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         return faction;
     }
 
+    @Transactional(readOnly = false)
+    public Player removeFactionLeader(String factionName) {
+        log.debug("RmFactionLeader: Removing leader of faction [{}]", factionName);
+        Objects.requireNonNull(factionName, "Faction name must not be null!");
+
+        log.trace("RmFactionLeader: Fetching faction with name [{}]", factionName);
+        Faction factionRm = getFactionByName(factionName);
+
+        if(factionRm.getLeader() == null) {
+            log.warn("RmFactionLeader: Faction [{}] does not have a leader!", factionName);
+            throw FactionServiceException.noFactionLeader(factionName, "Therefore the command cannot be executed.");
+        }
+
+        Player previousLeader = factionRm.getLeader();
+        log.trace("RmFactionLeader: Faction Leader to be removed is [{},{}]", previousLeader.getIgn(), previousLeader.getRpChar().getName());
+        factionRm.setLeader(null);
+
+        log.trace("RmFactionLeader: removed leader, saving faction");
+        secureSave(factionRm, factionRepository);
+
+        log.info("RmFactionLeader: Successfully removed {} from his leader position in {}", previousLeader.getIgn(), factionRm.getName());
+        return previousLeader;
+    }
+
     public Faction getFactionByName(String name) {
         log.debug("Fetching Faction with name [{}]", name);
         Objects.requireNonNull(name, "Faction name must not be nulL!");
