@@ -31,7 +31,6 @@ class ClaimBuild <<Entity>> {
     traders: String
     siege: String
     builtBy: List<Player>
-    aliases: List<String>
 }
 
 enum ClaimBuildType {
@@ -91,6 +90,8 @@ class Faction <<Entity>> {
     colorcode: String
     homeRegion: Region
     factionBuffDescr: String
+    aliases: List<String>
+
 }
 
 class Player <<Entity>> {
