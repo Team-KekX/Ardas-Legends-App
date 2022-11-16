@@ -97,7 +97,7 @@ public class ArmyServiceTest {
         Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
+        when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
         when(mockArmyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -116,7 +116,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         CreateArmyDto dto = new CreateArmyDto("Kek", "Kek", ArmyType.ARMY, "Kek", new UnitTypeDto[]{new UnitTypeDto("Kek", 10, false)});
 
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.of(new Army()));
+        when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.of(new Army()));
 
         log.debug("Expecting IAE on call");
         log.debug("Calling createArmy()");
@@ -137,7 +137,7 @@ public class ArmyServiceTest {
         Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
+        when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.empty());
 
@@ -154,7 +154,7 @@ public class ArmyServiceTest {
         log.debug("Testing if createArmy correctly throws ArmyServiceException when claimBuild is from another faction");
 
         log.trace("Initializing data");
-        CreateArmyDto dto = new CreateArmyDto(player.getDiscordID(), army.getName(), ArmyType.ARMY, claimBuild.getName(), new UnitTypeDto[]{new UnitTypeDto("Kek", 10, false)});
+        CreateArmyDto dto = new CreateArmyDto(player.getDiscordID(), "Kek2", ArmyType.ARMY, claimBuild.getName(), new UnitTypeDto[]{new UnitTypeDto("Kek", 10, false)});
         Faction otherFaction = Faction.builder().name("Dol Amroth").build();
         claimBuild.setOwnedBy(otherFaction);
 
@@ -180,7 +180,7 @@ public class ArmyServiceTest {
         Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
+        when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
         when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
@@ -205,7 +205,7 @@ public class ArmyServiceTest {
         Player player = Player.builder().discordID(dto.executorDiscordId()).faction(faction).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
-        when(mockArmyRepository.findById(dto.name())).thenReturn(Optional.empty());
+        when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0));
         when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 

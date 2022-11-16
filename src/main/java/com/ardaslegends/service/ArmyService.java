@@ -43,7 +43,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Fetching required Data");
 
         log.trace("Fetching if an army with name [{}] already exists.", dto.name());
-        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findById);
+        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findArmyByName);
 
         if(fetchedArmy.isPresent()) {
             log.warn("Army with name [{}] already exists", dto.name());
