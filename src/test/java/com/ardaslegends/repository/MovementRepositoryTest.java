@@ -35,6 +35,7 @@ public class MovementRepositoryTest {
                 .name("Kek")
                 .armyType(ArmyType.ARMY)
                 .faction(Faction.builder()
+                        .id(1L)
                         .name("KekFaction").build())
                 .currentRegion(region)
                 .freeTokens(20.0)

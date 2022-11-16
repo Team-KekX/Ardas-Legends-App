@@ -26,7 +26,12 @@ import java.util.Set;
 public final class Faction extends AbstractDomainEntity {
 
     @Id
+    private Long id;
+
+    @Column(unique = true)
     private String name; //unique, name of the faction
+
+    private InitialFaction initialFaction;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Player leader; //the player who leads this faction
@@ -56,6 +61,10 @@ public final class Faction extends AbstractDomainEntity {
 
     @Column(name = "food_stockpile")
     private Integer foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
+
+    @ElementCollection
+    @CollectionTable(name = "army_sieges")
+    private List<String> aliases;
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;

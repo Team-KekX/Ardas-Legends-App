@@ -1,6 +1,6 @@
 package com.ardaslegends.domain;
 
-public enum InitialFactions {
+public enum InitialFaction {
     ANGMAR,
     BLUE_MOUNTAINS,
     BREE,

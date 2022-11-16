@@ -153,7 +153,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             log.warn("Faction name is blank");
             throw new IllegalArgumentException("Faction name must not be blank!");
         }
-        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findById);
+        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findFactionByName);
         
         if (fetchedFaction.isEmpty()) {
             log.warn("No faction found with name {}", name);
