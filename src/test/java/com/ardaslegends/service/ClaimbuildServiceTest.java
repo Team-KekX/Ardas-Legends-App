@@ -93,7 +93,7 @@ public class ClaimbuildServiceTest {
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s-%s-%s".formatted(player.getIgn(), player2.getIgn(), player3.getIgn()));
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
         when(mockFactionService.getFactionByName(faction2.getName())).thenReturn(faction2);
         when(mockProductionSiteRepository.
@@ -153,7 +153,7 @@ public class ClaimbuildServiceTest {
         log.debug("Testing if getClaimbuildByName throws Se when passed name does not have a corresponding claimbuild in database");
 
         String name = "Kek";
-        when(mockClaimbuildRepository.findById(name)).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(name)).thenReturn(Optional.empty());
 
         log.debug("Calling getClaimbuildByName, expecting Se");
         var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.getClaimBuildByName(name));
@@ -168,7 +168,7 @@ public class ClaimbuildServiceTest {
     void ensureCreateClaimbuildWorks() {
         log.debug("Testing if createClaimbuild works properly");
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.empty());
         when(mockClaimbuildRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         log.debug("Calling createClaimbuild");
@@ -192,7 +192,7 @@ public class ClaimbuildServiceTest {
     void ensureCreateClaimbuildWorksWithUpdatedClaimbuild() {
         log.debug("Testing if createClaimbuild works properly when updating claimbuild");
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.of(claimbuild));
         when(mockClaimbuildRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), ClaimBuildType.CAPITAL.name().toLowerCase(), faction.getName(),
@@ -232,7 +232,7 @@ public class ClaimbuildServiceTest {
                 "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource(), productionClaimbuild2.getCount()),
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s".formatted(player.getIgn()));
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.empty());
         faction.setClaimBuilds(List.of(ClaimBuild.builder().type(ClaimBuildType.CAPITAL).build()));
 
         log.debug("Calling createClaimbuild");
@@ -246,7 +246,7 @@ public class ClaimbuildServiceTest {
     void ensureCreateClaimbuildThrowsSeWhenUpdatedCBDoesNotExists() {
         log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when updated claimbuild does not exist!");
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.empty());
 
         log.debug("Calling createClaimbuild");
         var result = assertThrows(ClaimBuildServiceException.class, () -> claimBuildService.createClaimbuild(createClaimBuildDto, false));
@@ -259,7 +259,7 @@ public class ClaimbuildServiceTest {
     void ensureCreateClaimbuildThrowsSeWhenRegionDoesNotExist() {
         log.debug("Testing if createClaimbuild throws ServiceException when region does not exists!");
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.empty());
         when(mockRegionRepository.findById(region.getId())).thenReturn(Optional.empty());
 
         log.debug("Calling createClaimbuild");
@@ -273,7 +273,7 @@ public class ClaimbuildServiceTest {
     void ensureCreateClaimbuildThrowsSeWhenCbTypeDoesNotExist() {
         log.debug("Testing if createClaimbuild throws ClaimBuildServiceException when ClaimBuildType does not exists!");
 
-        when(mockClaimbuildRepository.findById(claimbuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimbuildRepository.findClaimBuildByName(claimbuild.getName())).thenReturn(Optional.empty());
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), "ajhwdhjahd", faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),

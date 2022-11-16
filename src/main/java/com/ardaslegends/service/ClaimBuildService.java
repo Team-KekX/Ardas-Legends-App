@@ -65,7 +65,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.trace("Checking if claimbuild with name [{}] already exists", dto.name());
         log.trace("Fetching claimbuild with name [{}]", dto.name());
-        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
+        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findClaimBuildByName);
 
         log.trace("Checking if a claimbuild was found");
         if (existingClaimbuild.isPresent() && isNewlyCreated) {
@@ -136,7 +136,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
             }
 
-            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
+            claimBuild = new ClaimBuild(10L, dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
                     specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
 
             if(! (type.equals(ClaimBuildType.HAMLET) || type.equals(ClaimBuildType.KEEP))) {
@@ -213,7 +213,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         ServiceUtils.checkBlankString(name, "Name");
 
         log.debug("Fetching unit with name [{}]", name);
-        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findById);
+        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findClaimBuildByName);
 
         if(fetchedBuild.isEmpty()) {
             log.warn("No Claimbuild found with name [{}]", name);

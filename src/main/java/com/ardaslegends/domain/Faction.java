@@ -26,6 +26,7 @@ import java.util.Set;
 public final class Faction extends AbstractDomainEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)

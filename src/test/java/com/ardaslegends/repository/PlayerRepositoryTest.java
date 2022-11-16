@@ -20,12 +20,12 @@ public class PlayerRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Player p1 = Player.builder().ign("mirak").discordID("MiraksId").faction(Faction.builder().id(2L).name("Gondor").build()).uuid("MiraksUUID").build();
-        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().id(3L).name("Mordor").build()).uuid("vernonUUID").build();
-        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().id(1L).name("Arnor").build()).uuid("luksUUID").build();
-        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().id(5L).name("Rivendell").build()).uuid("anedsUUID").build();
+        Player p1 = Player.builder().ign("mirak").discordID("MiraksId").faction(Faction.builder().name("Gondor").build()).uuid("MiraksUUID").build();
+        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").build()).uuid("vernonUUID").build();
+        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").build()).uuid("luksUUID").build();
+        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").build()).uuid("anedsUUID").build();
         RPChar rpChar = new RPChar("Sauron", "s","s", true,null, null, false, false, null, null);
-        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().id(10L).name("SecretNewFac").build()).uuid("anotherOneUUID").rpChar(rpChar).build();;
+        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").build()).uuid("anotherOneUUID").rpChar(rpChar).build();;
 
 
         repository.saveAll(List.of(p1,p2,p3,p4,p5));

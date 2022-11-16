@@ -32,11 +32,9 @@ public class MovementRepositoryTest {
                 .id("KekRegion")
                 .build();
         Army kekArmy = Army.builder()
-                .id(10L)
                 .name("Kek")
                 .armyType(ArmyType.ARMY)
                 .faction(Faction.builder()
-                        .id(1L)
                         .name("KekFaction").build())
                 .currentRegion(region)
                 .freeTokens(20.0)
@@ -55,7 +53,7 @@ public class MovementRepositoryTest {
         repository.save(movement2);
 
         log.trace("Calling query, expecting that a result is empty");
-        result = repository.findMovementByArmyAndIsCurrentlyActiveTrue(Army.builder().id(10L).name("Kek").build());
+        result = repository.findMovementByArmyAndIsCurrentlyActiveTrue(Army.builder().id(1L).name("Kek").build());
         log.trace("Is Optional empty? [{}]", result.isEmpty());
         assertThat(result.isEmpty()).isTrue();
 
@@ -63,7 +61,7 @@ public class MovementRepositoryTest {
         repository.save(movement);
 
         log.trace("Calling query, expecting that a result is present");
-        result = repository.findMovementByArmyAndIsCurrentlyActiveTrue(Army.builder().id(10L).name("Kek").build());
+        result = repository.findMovementByArmyAndIsCurrentlyActiveTrue(Army.builder().id(1L).name("Kek").build());
         log.trace("Is Optional present? [{}]", result.isPresent());
         assertThat(result.isPresent()).isTrue();
     }

@@ -76,7 +76,7 @@ public class ArmyServiceTest {
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.of(movement));
-        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findClaimBuildByName(claimBuild.getName())).thenReturn(Optional.of(claimBuild));
     }
 
     // Create Army
@@ -99,7 +99,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
         when(mockArmyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         log.debug("Calling createArmy()");
@@ -139,7 +139,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.empty());
+        when(mockClaimBuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.empty());
 
         log.debug("Expecting IAE on call");
         log.debug("Calling createArmy()");
@@ -182,7 +182,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
-        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
         log.debug("Calling createArmy()");
@@ -207,7 +207,7 @@ public class ArmyServiceTest {
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
         when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0));
-        when(mockClaimBuildRepository.findById(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
+        when(mockClaimBuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
         log.debug("Calling createArmy()");
@@ -374,7 +374,7 @@ public class ArmyServiceTest {
         log.debug("Testing if station throws CB Se when no claimbuild exists with given name");
 
         log.trace("Initializing data");
-        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimBuildRepository.findClaimBuildByName(claimBuild.getName())).thenReturn(Optional.empty());
 
         StationDto dto = new StationDto(player.getDiscordID(),army.getName(),claimBuild.getName());
 
@@ -1070,7 +1070,7 @@ public class ArmyServiceTest {
         faction.setLeader(player);
         army.setCurrentRegion(claimBuild.getRegion());
 
-        when(mockClaimBuildRepository.findById(claimBuild.getName())).thenReturn(Optional.empty());
+        when(mockClaimBuildRepository.findClaimBuildByName(claimBuild.getName())).thenReturn(Optional.empty());
 
         log.debug("Calling pickSiege");
         var exception = assertThrows(ClaimBuildServiceException.class, () -> armyService.pickSiege(dto));
