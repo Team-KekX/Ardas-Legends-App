@@ -16,7 +16,8 @@ enum RegionType {
 }
 
 class ClaimBuild <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
     region: Region
     type: ClaimBuildType
     ownedBy: Faction
@@ -30,6 +31,7 @@ class ClaimBuild <<Entity>> {
     traders: String
     siege: String
     builtBy: List<Player>
+    aliases: List<String>
 }
 
 enum ClaimBuildType {
@@ -42,8 +44,44 @@ enum ClaimBuildType {
     STRONGHOLD
 }
 
+enum InitialFaction {
+    ANGMAR
+    BLUE_MOUNTAINS
+    BREE
+    DALE
+    DOL_AMROTH
+    DOL_GULDUR
+    DORWINION
+    DUNLAND
+    DURINS_FOLK
+    RHUDEL
+    LOTHLORIEN
+    GONDOR
+    GULF_OF_HARAD
+    GUNDABAD
+    HALF_TROLL
+    LINDON
+    HOBBIT
+    MORDOR
+    MORWAITH
+    HARNENNOR
+    DUNEDAIN
+    RIVENDELL
+    ROHAN
+    NOMADS
+    TAURETHRIM
+    UMBAR
+    ISENGARD
+    WANDERER
+    WOOD_ELVES
+    REBELLION
+    CUSTOM
+}
+
 class Faction <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
+    initialFaction: InitialFaction
     factionLeader: Player
     armies: List<Army> |By Army|
     players:  List<Player> |By Player|
@@ -56,6 +94,7 @@ class Faction <<Entity>> {
 }
 
 class Player <<Entity>> {
+    id_Key: Long
     ign: String
     uuid: String
     discordID: String
@@ -81,8 +120,26 @@ class Coordinate <<Value Object>> {
 class ProductionSite <<Entity>> {
     id_Key: Long
     type: ProductionSiteType
-    producedResource: String
+    producedResource: Resource
     amountProduced: Integer
+}
+
+class Resource <<Entity>> {
+    id_Key: Long
+    minecraftItemId: String
+    name: String
+    resourceType: ResourceType
+}
+
+enum ResourceType {
+    ORES
+    GEMS
+    STONE
+    WOOD
+    MINERALS
+    SIEGES
+    COIN
+    OTHER
 }
 
 class ProductionClaimbuild <<Entity>> {
@@ -120,7 +177,8 @@ enum SpecialBuilding {
 }
 
 class Army <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
     armyType: ArmyType
     faction: Faction
     currentRegion: Region
@@ -155,6 +213,7 @@ RegionType -up- Region
 
 Faction -down- Region
 Faction -right Player
+Faction -right- InitialFaction
 Faction -left Army
 Faction -up- ClaimBuild
 Faction - Faction
@@ -165,6 +224,8 @@ ClaimBuild -up- Coordinate
 ClaimBuild - Army
 
 ProductionSite - ProductionClaimbuild
+ProductionSite -down- Resource
+Resource -left- ResourceType
 ProductionClaimbuild - ClaimBuild
 SpecialBuilding - ClaimBuild
 
