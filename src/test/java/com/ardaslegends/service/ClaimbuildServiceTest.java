@@ -67,9 +67,12 @@ public class ClaimbuildServiceTest {
         player2 = Player.builder().ign("mirak441").discordID("567").faction(faction).build();
         player3 = Player.builder().ign("VernonRoche").discordID("8910").faction(faction).build();
 
+        Resource fish = Resource.builder().id(10L).name("Fish").build();
+        Resource salmon = Resource.builder().id(11L).name("Salmon").build();
+
         productionSiteType = ProductionSiteType.FISHING_LODGE;
-        productionSite = ProductionSite.builder().id(1L).producedResource("Fish").type(productionSiteType).build();
-        productionSite2 = ProductionSite.builder().id(2L).producedResource("Salmon").type(productionSiteType).build();
+        productionSite = ProductionSite.builder().id(1L).producedResource(fish).type(productionSiteType).build();
+        productionSite2 = ProductionSite.builder().id(2L).producedResource(salmon).type(productionSiteType).build();
         productionClaimbuild = ProductionClaimbuild.builder().id(ProductionClaimbuildId.builder().claimbuildId(claimbuildName).productionSiteId(productionSite.getId()).build()).claimbuild(claimbuild).productionSite(productionSite).count(1L).build();
         productionClaimbuild2 = ProductionClaimbuild.builder().claimbuild(claimbuild).id(ProductionClaimbuildId.builder().claimbuildId(claimbuildName).productionSiteId(productionSite2.getId()).build()).claimbuild(claimbuild).productionSite(productionSite2).count(3L).build();
         specialBuilding = SpecialBuilding.EMBASSY;
@@ -97,10 +100,10 @@ public class ClaimbuildServiceTest {
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
         when(mockFactionService.getFactionByName(faction2.getName())).thenReturn(faction2);
         when(mockProductionSiteRepository.
-                findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite.getProducedResource()))
+                findProductionSiteByTypeAndProducedResourceName(productionSiteType, productionSite.getProducedResource().getName()))
                 .thenReturn(Optional.of(productionSite));
         when(mockProductionSiteRepository.
-                findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite2.getProducedResource()))
+                findProductionSiteByTypeAndProducedResourceName(productionSiteType, productionSite2.getProducedResource().getName()))
                 .thenReturn(Optional.of(productionSite2));
         when(mockPlayerService.getPlayerByIgn(player.getIgn())).thenReturn(player);
         when(mockPlayerService.getPlayerByIgn(player2.getIgn())).thenReturn(player2);
