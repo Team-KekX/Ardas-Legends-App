@@ -100,10 +100,10 @@ public class ClaimbuildServiceTest {
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
         when(mockFactionService.getFactionByName(faction2.getName())).thenReturn(faction2);
         when(mockProductionSiteRepository.
-                findProductionSiteByTypeAndProducedResourceName(productionSiteType, productionSite.getProducedResource().getName()))
+                findByTypeAndProducedResourceName(productionSiteType, productionSite.getProducedResource().getName()))
                 .thenReturn(Optional.of(productionSite));
         when(mockProductionSiteRepository.
-                findProductionSiteByTypeAndProducedResourceName(productionSiteType, productionSite2.getProducedResource().getName()))
+                findByTypeAndProducedResourceName(productionSiteType, productionSite2.getProducedResource().getName()))
                 .thenReturn(Optional.of(productionSite2));
         when(mockPlayerService.getPlayerByIgn(player.getIgn())).thenReturn(player);
         when(mockPlayerService.getPlayerByIgn(player2.getIgn())).thenReturn(player2);
