@@ -92,7 +92,7 @@ public class ClaimbuildServiceTest {
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), claimBuildType.name().toLowerCase(), faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),
-                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource(), productionClaimbuild2.getCount()),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getName(), productionClaimbuild2.getCount()),
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s-%s-%s".formatted(player.getIgn(), player2.getIgn(), player3.getIgn()));
 
@@ -200,7 +200,7 @@ public class ClaimbuildServiceTest {
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), ClaimBuildType.CAPITAL.name().toLowerCase(), faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),
-                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource(), productionClaimbuild2.getCount()),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getName(), productionClaimbuild2.getCount()),
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s".formatted(player.getIgn()));
 
