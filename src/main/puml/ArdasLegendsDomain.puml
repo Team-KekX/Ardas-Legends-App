@@ -264,12 +264,18 @@ Faction -right- InitialFaction
 
 WarParticipant -up- War
 War -right- Battle
-Battle -right- BattleLocation
-Battle -up- BattleParticipant
+Battle -up- BattleLocation
+Battle -down- BattleParticipant
+BattleParticipant -left- Player
+BattleParticipant -left- Army
+
+
+
 ClaimBuild - Player
 ClaimBuild -right- ClaimBuildType
 ClaimBuild -up- Coordinate
 ClaimBuild - Army
+ClaimBuild -up- BattleLocation
 
 ProductionSite - ProductionClaimbuild
 ProductionSite -down- Resource
