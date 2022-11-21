@@ -1,4 +1,46 @@
 @startuml
+
+class War <<Entity>> {
+    id_Key: Long
+    name: String
+    aggressors: List<WarParticipants>
+    defenders: List<WarParticipants>
+    startDate: LocalDateTime
+    battles: List<Battle>
+}
+
+class WarParticipant <<Entity>> {
+    id_Key: Long
+    war_key: Long
+    warParticipant: Faction
+    initialParty: Boolean
+    joiningDate: LocalDateTime
+}
+
+class Battle <<Entity>> {
+    id_Key: Long
+    declaredDate: LocalDateTime
+    timeFrozenFrom: LocalDateTime
+    timeFrozenUntil: LocalDateTime
+    agreedBattleDate: LocalDateTime
+    attackers: List<BattleParticipant>
+    defenders: List<BattleParticipant>
+    battleLocation: BattleLocation
+}
+
+class BattleParticipant <<Entity>> {
+    id_Key: Long
+    battle_Key: Long
+    army: Army
+    boundTo: Player
+}
+
+class BattleLocation <<Value Object>> {
+    region: Region
+    fieldBattle: Boolean
+    claimbuild: ClaimBuild
+}
+
 class Region <<Entity>> {
     id_Key: String
     name: String
@@ -214,11 +256,16 @@ RegionType -up- Region
 
 Faction -down- Region
 Faction -right Player
-Faction -right- InitialFaction
 Faction -left Army
 Faction -up- ClaimBuild
 Faction - Faction
+Faction -right- WarParticipant
+Faction -right- InitialFaction
 
+WarParticipant -up- War
+War -right- Battle
+Battle -right- BattleLocation
+Battle -up- BattleParticipant
 ClaimBuild - Player
 ClaimBuild -right- ClaimBuildType
 ClaimBuild -up- Coordinate
