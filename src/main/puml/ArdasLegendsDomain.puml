@@ -130,6 +130,7 @@ class Faction <<Entity>> {
     claimbuilds: List<ClaimBuilds> |By Claimbuild|
     allies: List<Faction>
     colorcode: String
+    factionRoleId: Long
     homeRegion: Region
     factionBuffDescr: String
     aliases: List<String>

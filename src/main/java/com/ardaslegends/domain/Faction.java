@@ -54,6 +54,8 @@ public final class Faction extends AbstractDomainEntity {
     private List<Faction> allies; //allies of this faction
     private String colorcode; //the faction's colorcode, used for painting the map
 
+    private Long factionRoleId; // The roleId of the factionRole so that it can be pinged
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Region homeRegion; //Homeregion of the faction
 
