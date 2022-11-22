@@ -167,6 +167,22 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     }
 
+    public Faction setFactionRoleId(Long roleId) {
+        log.debug("SetFactionRole: Setting roleId to [{}]", roleId);
+        Objects.requireNonNull(roleId, "RoleId must not be null");
+
+        log.trace("Checkign if roleId [{}] is already used", roleId);
+        var fetchedFaction = secureFind(roleId, factionRepository::findFactionByFactionRoleId);
+
+        if(fetchedFaction.isPresent()) {
+            log.warn("RoleId [{}] is already used by Faction [{}]", roleId, fetchedFaction.get());
+            throw FactionServiceException.roleIdAlreadyUsed(roleId, fetchedFaction.get().getName());
+        }
+
+
+        return null;
+    }
+
     public Faction save(Faction faction) {
         log.debug("Saving Faction [{}]", faction);
 
