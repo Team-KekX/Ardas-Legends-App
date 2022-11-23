@@ -1,12 +1,13 @@
 package com.ardaslegends.domain;
 
 public enum ResourceType {
-    ORES,
-    GEMS,
+    ORE,
+    GEM,
     STONE,
+    SHOVELABLE,
     WOOD,
-    MINERALS,
-    SIEGES,
+    MINERAL,
+    SIEGE,
     COIN,
     OTHER
 }

@@ -176,12 +176,13 @@ class Resource <<Entity>> {
 }
 
 enum ResourceType {
-    ORES
-    GEMS
+    ORE
+    GEM
     STONE
+    SHOVELABLE
     WOOD
-    MINERALS
-    SIEGES
+    MINERAL
+    SIEGE
     COIN
     OTHER
 }
