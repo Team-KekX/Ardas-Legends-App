@@ -167,9 +167,10 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     }
 
-    public Faction setFactionRoleId(Long roleId) {
-        log.debug("SetFactionRole: Setting roleId to [{}]", roleId);
+    public Faction setFactionRoleId(String factionName, Long roleId) {
+        log.debug("SetFactionRole: Setting roleId of faction [{}] to [{}]", factionName, roleId);
         Objects.requireNonNull(roleId, "RoleId must not be null");
+        Objects.requireNonNull(factionName, "FactionName must not be null");
 
         log.trace("Checkign if roleId [{}] is already used", roleId);
         var fetchedFaction = secureFind(roleId, factionRepository::findFactionByFactionRoleId);
@@ -179,8 +180,25 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             throw FactionServiceException.roleIdAlreadyUsed(roleId, fetchedFaction.get().getName());
         }
 
+        log.trace("Fetching faction with name [{}]", factionName);
+        fetchedFaction = secureFind(factionName, factionRepository::findFactionByName);
 
-        return null;
+        if(fetchedFaction.isEmpty()) {
+            log.warn("Faction with name [{}] does not exist", factionName);
+            List<Faction> allFactions = factionRepository.findAll();
+            String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
+            throw FactionServiceException.noFactionWithNameFound(factionName, allFactionString);
+        }
+
+        Faction faction = fetchedFaction.get();
+        log.debug("Found faction [{}], changing roleId", faction.getName());
+
+        faction.setFactionRoleId(roleId);
+
+        log.debug("Persisting Faction [{}] with roleId [{}]", faction.getName(), faction.getFactionRoleId());
+        faction = secureSave(faction, factionRepository);
+
+        return faction;
     }
 
     public Faction save(Faction faction) {
