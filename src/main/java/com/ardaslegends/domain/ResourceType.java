@@ -9,5 +9,7 @@ public enum ResourceType {
     MINERAL,
     SIEGE,
     COIN,
+    MEAT,
+    CROP,
     OTHER
 }
