@@ -12,16 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 
-@Entity
-@Table(name = "war_participants")
+@Embeddable
 public class WarParticipant  {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private War war;
 
     @ManyToOne
     private Faction warParticipant;
