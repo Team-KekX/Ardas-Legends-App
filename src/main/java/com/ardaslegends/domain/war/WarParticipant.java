@@ -1,10 +1,15 @@
 package com.ardaslegends.domain.war;
 
-import com.ardaslegends.domain.AbstractDomainEntity;
 import com.ardaslegends.domain.Faction;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,6 +21,7 @@ import java.time.LocalDateTime;
 public class WarParticipant  {
 
     @ManyToOne
+    @JoinColumn(name = "participant_faction_id", foreignKey = @ForeignKey(name = "fk_faction_war_participant"))
     private Faction warParticipant;
 
     private boolean initalParty;
