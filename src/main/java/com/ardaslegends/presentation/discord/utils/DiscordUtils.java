@@ -8,6 +8,7 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
@@ -117,6 +118,7 @@ public interface DiscordUtils {
             case "Long" -> option.getLongValue();
             case "Boolean" -> option.getBooleanValue();
             case "Double" -> option.getDecimalValue();
+            case "Role" -> option.getRoleValue();
             default ->
                     throw new IllegalArgumentException("GetOption: Class Type is not either [Long, String, User, Boolean]!");
         };
@@ -199,6 +201,12 @@ public interface DiscordUtils {
         Double optionValue = (Double) getRequiredValue(name, options, Double.class);
         log.trace("GetOption: Returning value [{}]", optionValue);
         return optionValue;
+    }
+
+    default Role getRoleOption(String name, List<SlashCommandInteractionOption> options) {
+        Role role = (Role) getRequiredValue(name, options, Role.class);
+        log.trace("GetRoleOption: Returning value [{}]", role);
+        return role;
     }
 
     default Optional<Long> getOptionalLongOption(String name, List<SlashCommandInteractionOption> options) {
