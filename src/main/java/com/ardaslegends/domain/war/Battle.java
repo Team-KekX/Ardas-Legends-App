@@ -1,12 +1,14 @@
 package com.ardaslegends.domain.war;
 
 
+import com.ardaslegends.domain.AbstractDomainEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "battles")
-public class Battle {
+public class Battle extends AbstractDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.ardaslegends.domain.war;
 
+import com.ardaslegends.domain.AbstractDomainEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "wars")
-public class War {
+public class War extends AbstractDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
