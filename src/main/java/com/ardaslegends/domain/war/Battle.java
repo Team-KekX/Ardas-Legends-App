@@ -2,9 +2,12 @@ package com.ardaslegends.domain.war;
 
 
 import com.ardaslegends.domain.AbstractDomainEntity;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
+@Getter
 
 @Entity
 @Table(name = "battles")
@@ -15,6 +18,8 @@ public class Battle extends AbstractDomainEntity {
     private Long id;
     @ManyToOne
     private War war;
+
+    private String name;
 
     // TODO: Missing battle participants
 
