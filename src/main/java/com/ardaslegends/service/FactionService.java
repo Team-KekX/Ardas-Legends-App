@@ -157,6 +157,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         
         if (fetchedFaction.isEmpty()) {
             log.warn("No faction found with name {}", name);
+            // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = factionRepository.findAll();
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
             throw FactionServiceException.noFactionWithNameFound(name, allFactionString);
