@@ -26,6 +26,7 @@ public class Resource {
 
     private String minecraftItemId;
 
+    @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "producedResource")
