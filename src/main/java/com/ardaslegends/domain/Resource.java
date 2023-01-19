@@ -21,8 +21,8 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String name;
+    @Column(name = "resource_name", unique = true)
+    private String resourceName;
 
     private String minecraftItemId;
 

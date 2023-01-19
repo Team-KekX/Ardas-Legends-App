@@ -279,7 +279,7 @@ public interface DiscordUtils {
         log.debug("ProductionSiteList Count: {}", productionSiteList.size());
         StringBuilder prodString = new StringBuilder();
         productionSiteList.forEach(productionSite -> {
-            String resource = productionSite.getProductionSite().getProducedResource().getName();
+            String resource = productionSite.getProductionSite().getProducedResource().getResourceName();
             String type = productionSite.getProductionSite().getType().getName();
             int count = productionSite.getCount().intValue();
             prodString.append(count).append(" ").append(resource).append(" ").append(type).append("\n");

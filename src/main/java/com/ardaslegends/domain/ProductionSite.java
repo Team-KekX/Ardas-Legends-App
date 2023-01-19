@@ -23,7 +23,7 @@ public final class ProductionSite extends AbstractDomainEntity {
     private ProductionSiteType type; //unique, type of production site, e.g. FARM
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "name")
+    @JoinColumn(referencedColumnName = "resource_name", name = "produced_resource", foreignKey = @ForeignKey(name = "fk_resource_name"))
     private Resource producedResource; //the resource this production site produces
 
     @Column(name = "amount_produced")
