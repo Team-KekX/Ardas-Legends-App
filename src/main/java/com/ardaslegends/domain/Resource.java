@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 
 @Entity
+@Table(name = "resources")
 public class Resource {
 
     @Id
