@@ -26,7 +26,7 @@ public final class ProductionClaimbuildId extends AbstractDomainEntity implement
 
     private Long productionSiteId;
 
-    private String claimbuildId;
+    private Long claimbuildId;
 
     @Override
     public boolean equals(Object o) {

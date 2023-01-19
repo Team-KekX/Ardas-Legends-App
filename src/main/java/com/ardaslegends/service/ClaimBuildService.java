@@ -296,7 +296,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.invalidProductionSiteString(prodString);
             }
 
-            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getName());
+            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getId());
             ProductionClaimbuild productionClaimbuild = new ProductionClaimbuild(id, fetchedProdSite.get(), claimBuild, prodSiteAmount);
             productionSites.add(productionClaimbuild);
         }
