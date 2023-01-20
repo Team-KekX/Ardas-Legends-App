@@ -24,7 +24,7 @@ public class ProductionSiteRepositoryTest extends AbstractService<ProductionSite
     @BeforeEach
     void setup() {
 
-        Resource resource = Resource.builder().name("Oak").resourceType(ResourceType.MINERAL).minecraftItemId("3423").build();
+        Resource resource = Resource.builder().resourceName("Oak").resourceType(ResourceType.MINERAL).minecraftItemId("3423").build();
 
         resource = resourceRepository.save(resource);
 
@@ -37,10 +37,10 @@ public class ProductionSiteRepositoryTest extends AbstractService<ProductionSite
     void ensurefindProductionSiteByTypeAndProducedResourceNameWorksProperly() {
 
 
-        var prodSite = secureFind(ProductionSiteType.LUMBER_CAMP, "Oak", productionSiteRepository::findByTypeAndProducedResourceName);
+        var prodSite = secureFind(ProductionSiteType.LUMBER_CAMP, "Oak", productionSiteRepository::findProductionSiteByTypeAndProducedResource);
 
         assertThat(prodSite.isEmpty()).isFalse();
-        assertThat(prodSite.get().getProducedResource().getName()).isEqualTo("Oak");
+        assertThat(prodSite.get().getProducedResource().getResourceName()).isEqualTo("Oak");
         assertThat(prodSite.get().getProducedResource().getResourceType()).isEqualTo(ResourceType.MINERAL);
     }
 

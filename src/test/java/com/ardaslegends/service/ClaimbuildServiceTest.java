@@ -60,21 +60,23 @@ public class ClaimbuildServiceTest {
 
         claimBuildService = new ClaimBuildService(mockClaimbuildRepository, mockRegionRepository, mockProductionSiteRepository, mockFactionService, mockPlayerService);
 
-        claimbuildName = "Minas Tirith";
+        claimbuildName= "Minas Tirith";
+        var claimbuildId = 10L;
+
         faction = Faction.builder().name("Gondor").build();
         faction2 = Faction.builder().name("Mordor").build();
         player = Player.builder().ign("Luktronic").discordID("1234").faction(faction).build();
         player2 = Player.builder().ign("mirak441").discordID("567").faction(faction).build();
         player3 = Player.builder().ign("VernonRoche").discordID("8910").faction(faction).build();
 
-        Resource fish = Resource.builder().id(10L).name("Fish").build();
-        Resource salmon = Resource.builder().id(11L).name("Salmon").build();
+        Resource fish = Resource.builder().id(10L).resourceName("Fish").build();
+        Resource salmon = Resource.builder().id(11L).resourceName("Salmon").build();
 
         productionSiteType = ProductionSiteType.FISHING_LODGE;
         productionSite = ProductionSite.builder().id(1L).producedResource(fish).type(productionSiteType).build();
         productionSite2 = ProductionSite.builder().id(2L).producedResource(salmon).type(productionSiteType).build();
-        productionClaimbuild = ProductionClaimbuild.builder().id(ProductionClaimbuildId.builder().claimbuildId(claimbuildName).productionSiteId(productionSite.getId()).build()).claimbuild(claimbuild).productionSite(productionSite).count(1L).build();
-        productionClaimbuild2 = ProductionClaimbuild.builder().claimbuild(claimbuild).id(ProductionClaimbuildId.builder().claimbuildId(claimbuildName).productionSiteId(productionSite2.getId()).build()).claimbuild(claimbuild).productionSite(productionSite2).count(3L).build();
+        productionClaimbuild = ProductionClaimbuild.builder().id(ProductionClaimbuildId.builder().claimbuildId(claimbuildId).productionSiteId(productionSite.getId()).build()).claimbuild(claimbuild).productionSite(productionSite).count(1L).build();
+        productionClaimbuild2 = ProductionClaimbuild.builder().claimbuild(claimbuild).id(ProductionClaimbuildId.builder().claimbuildId(claimbuildId).productionSiteId(productionSite2.getId()).build()).claimbuild(claimbuild).productionSite(productionSite2).count(3L).build();
         specialBuilding = SpecialBuilding.EMBASSY;
         specialBuilding2 = SpecialBuilding.HOUSE_OF_HEALING;
         claimBuildType = ClaimBuildType.TOWN;
@@ -92,7 +94,7 @@ public class ClaimbuildServiceTest {
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), claimBuildType.name().toLowerCase(), faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),
-                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getName(), productionClaimbuild2.getCount()),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getResourceName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getResourceName(), productionClaimbuild2.getCount()),
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s-%s-%s".formatted(player.getIgn(), player2.getIgn(), player3.getIgn()));
 
@@ -100,10 +102,10 @@ public class ClaimbuildServiceTest {
         when(mockFactionService.getFactionByName(faction.getName())).thenReturn(faction);
         when(mockFactionService.getFactionByName(faction2.getName())).thenReturn(faction2);
         when(mockProductionSiteRepository.
-                findByTypeAndProducedResourceName(productionSiteType, productionSite.getProducedResource().getName()))
+                findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite.getProducedResource().getResourceName()))
                 .thenReturn(Optional.of(productionSite));
         when(mockProductionSiteRepository.
-                findByTypeAndProducedResourceName(productionSiteType, productionSite2.getProducedResource().getName()))
+                findProductionSiteByTypeAndProducedResource(productionSiteType, productionSite2.getProducedResource().getResourceName()))
                 .thenReturn(Optional.of(productionSite2));
         when(mockPlayerService.getPlayerByIgn(player.getIgn())).thenReturn(player);
         when(mockPlayerService.getPlayerByIgn(player2.getIgn())).thenReturn(player2);
@@ -200,7 +202,7 @@ public class ClaimbuildServiceTest {
 
         createClaimBuildDto = new CreateClaimBuildDto(claimbuild.getName(), region.getId(), ClaimBuildType.CAPITAL.name().toLowerCase(), faction.getName(),
                 coordinate.getX(), coordinate.getY(), coordinate.getZ(),
-                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getName(), productionClaimbuild2.getCount()),
+                "%s:%s:%d-%s:%s:%d".formatted(productionSite.getType(), productionSite.getProducedResource().getResourceName(), productionClaimbuild.getCount(), productionSite2.getType(), productionSite2.getProducedResource().getResourceName(), productionClaimbuild2.getCount()),
                 "%s-%s".formatted(specialBuilding.name(), specialBuilding2.name()), claimbuild.getTraders(), claimbuild.getSiege(), claimbuild.getNumberOfHouses(),
                 "%s".formatted(player.getIgn()));
 
