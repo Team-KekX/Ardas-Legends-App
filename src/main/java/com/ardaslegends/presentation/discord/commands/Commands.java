@@ -29,10 +29,7 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -67,7 +64,8 @@ public class Commands implements DiscordUtils {
         this.remove = remove;
 
         executions = new HashMap<>();
-        List<SlashCommandBuilder> commands = new ArrayList<>();
+
+        Set<SlashCommandBuilder> commands = new HashSet<>();
         commands.add(bind.init(executions));
         commands.add(register.init(executions));
         commands.add(create.init(executions));
