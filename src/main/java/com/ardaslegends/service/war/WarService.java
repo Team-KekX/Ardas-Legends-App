@@ -7,12 +7,10 @@ import com.ardaslegends.repository.FactionRepository;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.AbstractService;
-import com.ardaslegends.service.FactionService;
-import com.ardaslegends.service.PlayerService;
+import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.WarServiceException;
-import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,23 +26,27 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class WarService extends AbstractService<War, WarRepository> {
+    private final WarRepository warRepository;
 
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
 
     @Transactional(readOnly = false)
-    public War createWar(String defenderName, String executorDiscordId) {
-        log.debug("Creating war with data [defender: {}]", defenderName);
+    public War createWar(CreateWarDto createWarDto) {
+        log.debug("Creating war with data [defender: {}]", createWarDto);
 
-        Objects.requireNonNull(defenderName, "Defender Faction name must not be null");
-        Objects.requireNonNull(executorDiscordId, "Discord ID of user who executed the command must not be null");
+        Objects.requireNonNull(createWarDto, "CreateWarDto must not be null");
+        Objects.requireNonNull(createWarDto.execturDiscordId(), "ExecutorDiscordId must not be null");
+        Objects.requireNonNull(createWarDto.nameOfWar(), "Name of War must not be null");
+        Objects.requireNonNull(createWarDto.attackingFactionName(), "Attacking Faction Name must not be null");
+        Objects.requireNonNull(createWarDto.defendingFactionName(), "Defending Faction Name must not be null");
 
-        log.trace("Fetching player with discordId [{}]", executorDiscordId);
-        var fetchedPlayer = secureFind(executorDiscordId, playerRepository::findByDiscordID);
+        log.trace("Fetching player with discordId [{}]", createWarDto.execturDiscordId());
+        var fetchedPlayer = secureFind(createWarDto.execturDiscordId(), playerRepository::findByDiscordID);
 
         if(fetchedPlayer.isEmpty()) {
-            log.warn("Player with discordID [{}] does not exist", executorDiscordId);
-            throw PlayerServiceException.noPlayerFound(executorDiscordId);
+            log.warn("Player with discordID [{}] does not exist", createWarDto.execturDiscordId());
+            throw PlayerServiceException.noPlayerFound(createWarDto.execturDiscordId());
         }
 
         Player executorPlayer = fetchedPlayer.get();
@@ -58,22 +60,24 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.noWarDeclarationPermissions();
         }
 
-        log.trace("Fetching defending Faction with name [{}]", defenderName);
-        var fetchedDefendingFaction = secureFind(defenderName, factionRepository::findFactionByName);
+        log.trace("Fetching defending Faction with name [{}]", createWarDto.defendingFactionName());
+        var fetchedDefendingFaction = secureFind(createWarDto.defendingFactionName(), factionRepository::findFactionByName);
 
         if(fetchedDefendingFaction.isEmpty()) {
-            log.warn("No defending faction found with name [{}]", defenderName);
+            log.warn("No defending faction found with name [{}]", createWarDto.defendingFactionName());
             // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = secureFind(factionRepository::findAll);
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
-            throw FactionServiceException.noFactionWithNameFound(defenderName,allFactionString);
+            throw FactionServiceException.noFactionWithNameFound(createWarDto.defendingFactionName(),allFactionString);
         }
 
-        Faction defendingFaction = fetchedDefendingFaction.get();
+        War war = new War(createWarDto.nameOfWar(), attackingFaction, fetchedDefendingFaction.get());
 
-        War war = new War();
+        log.debug("Saving War Entity");
+        war = secureSave(war, warRepository);
 
-        return null;
+        log.info("Successfully executed and saved new war {}", war.getName());
+        return war;
     }
 
 }
