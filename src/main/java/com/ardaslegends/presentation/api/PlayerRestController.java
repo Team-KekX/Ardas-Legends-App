@@ -8,6 +8,10 @@ import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -22,33 +26,31 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@Tag(name = "Player Controller", description = "All REST endpoints regarding Players")
 @RequestMapping(PlayerRestController.BASE_URL)
 public class PlayerRestController extends AbstractRestController {
 
     public final static String BASE_URL = "/api/player";
 
-    public static final String PATH_CREATE_PLAYER = "/create";
-    public static final String PATH_CREATE_RPCHAR = "/create/rpchar";
+    public static final String PATH_RPCHAR = "/rpchar";
 
-    public static final String PATH_UPDATE_FACTION = "/update/faction";
-    public static final String PATH_UPDATE_IGN = "/update/ign";
-    public static final String PATH_UPDATE_DISCORDID = "/update/discordid";
-    public static final String PATH_UPDATE_RPCHAR_NAME = "/update/rpchar/name";
-    public static final String PATH_UPDATE_RPCHAR_TITLE = "/update/rpchar/title";
-    public static final String PATH_UPDATE_RPCHAR_GEAR = "/update/rpchar/gear";
-    public static final String PATH_UPDATE_RPCHAR_PVP = "/update/rpchar/pvp";
-    public static final String PATH_INJURE = "/injure-char";
-    public static final String PATH_HEAL_START = "/heal-start";
-    public static final String PATH_HEAL_STOP = "/heal-stop";
-    public static final String PATH_DELETE_PLAYER = "/delete";
-    public static final String PATH_DELETE_RPCHAR = "/delete/rpchar";
-
+    public static final String PATH_FACTION = "/faction";
+    public static final String PATH_IGN = "/ign";
+    public static final String PATH_DISCORDID = "/discordid";
+    public static final String PATH_RPCHAR_NAME = "/rpchar/name";
+    public static final String PATH_RPCHAR_TITLE = "/rpchar/title";
+    public static final String PATH_RPCHAR_GEAR = "/rpchar/gear";
+    public static final String PATH_RPCHAR_PVP = "/rpchar/pvp";
+    public static final String PATH_INJURE = "/rpchar/injure";
+    public static final String PATH_HEAL_START = "/rpchar/heal-start";
+    public static final String PATH_HEAL_STOP = "/rpchar/heal-stop";
     public static final String PATH_GET_BY_IGN = "/getByIgn/{ign}";
     public static final String PATH_GET_BY_DISCORD_ID = "/getByDiscId/{discId}";
 
     private final PlayerService playerService;
     private final FactionService factionService;
 
+    @Operation(summary = "Get by IGN", description = "Get a player by their minecraft IGN")
     @GetMapping(PATH_GET_BY_IGN)
     public HttpEntity<Player> getByIgn(@PathVariable String ign) {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
@@ -60,6 +62,7 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(playerFound);
     }
 
+    @Operation(summary = "Get by Discord ID", description = "Get a player by their Discord ID")
     @GetMapping(PATH_GET_BY_DISCORD_ID)
     public HttpEntity<Player> getByDiscordId(@PathVariable String discId) {
         log.debug("Incoming getByDiscordId Request. DiscordId: {}", discId);
@@ -71,7 +74,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(playerFound);
     }
 
-    @PostMapping(PATH_CREATE_PLAYER)
+    @Operation(summary = "Creates a player", description = "Create a new player in the database.")
+    @PostMapping("")
     public HttpEntity<Player> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
         log.debug("Incoming createPlayer Request. Data [{}]", createPlayerDto);
 
@@ -87,7 +91,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.created(self).body(createdPlayer);
     }
 
-    @PostMapping(PATH_CREATE_RPCHAR)
+    @Operation(summary = "Create RpChar", description = "Create a Roleplay Character")
+    @PostMapping(PATH_RPCHAR)
     public HttpEntity<RPChar> createRpChar(@RequestBody CreateRPCharDto createRPCharDto) {
         log.debug("Incoming createRpChar Request. Data [{}]", createRPCharDto);
 
@@ -99,7 +104,8 @@ public class PlayerRestController extends AbstractRestController {
     }
 
 
-    @PatchMapping(PATH_UPDATE_FACTION)
+    @Operation(summary = "Update Faction", description = "Update a Player's Faction")
+    @PatchMapping(PATH_FACTION)
     public HttpEntity<Player> updatePlayerFaction(@RequestBody UpdatePlayerFactionDto updatePlayerFactionDto) {
         log.debug("Incoming updatePlayerFaction Request. Data {}", updatePlayerFactionDto);
 
@@ -118,7 +124,9 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(player);
     }
 
-    @PatchMapping(PATH_UPDATE_IGN)
+
+    @Operation(summary = "Update IGN", description = "Update a Player's Minecraft IGN")
+    @PatchMapping(PATH_IGN)
     public HttpEntity<Player> updatePlayerIgn(@RequestBody UpdatePlayerIgnDto dto) {
 
         log.debug("Incoming updatePlayerIgn Request: Data [{}]", dto);
@@ -131,7 +139,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(player);
     }
 
-    @PatchMapping(PATH_UPDATE_DISCORDID)
+    @Operation(summary = "Update Discord ID", description = "Update a Player's Discord ID")
+    @PatchMapping(PATH_DISCORDID)
     public HttpEntity<Player> updatePlayerDiscordId(@RequestBody UpdateDiscordIdDto dto) {
         log.debug("Incoming updateDiscordId Request: Data [{}]", dto);
 
@@ -143,7 +152,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(player);
     }
 
-    @PatchMapping(PATH_UPDATE_RPCHAR_NAME)
+    @Operation(summary = "Update RpChar name", description = "Update the name of a Roleplay Character")
+    @PatchMapping(PATH_RPCHAR_NAME)
     public HttpEntity<RPChar> updateCharacterName(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterName Request: Data [{}]", dto);
@@ -156,7 +166,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
-    @PatchMapping(PATH_UPDATE_RPCHAR_TITLE)
+    @Operation(summary = "Update RpChar title", description = "Update the title of a Roleplay Character")
+    @PatchMapping(PATH_RPCHAR_TITLE)
     public HttpEntity<RPChar> updateCharacterTitle(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterTitle Request: Data [{}]", dto);
@@ -169,7 +180,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
-    @PatchMapping(PATH_UPDATE_RPCHAR_GEAR)
+    @Operation(summary = "Update RpChar gear", description = "Update the used gear of a Roleplay Character")
+    @PatchMapping(PATH_RPCHAR_GEAR)
     public HttpEntity<RPChar> updateCharacterGear(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterGear Request: Data [{}]", dto);
@@ -182,7 +194,9 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
-    @PatchMapping(PATH_UPDATE_RPCHAR_PVP)
+
+    @Operation(summary = "Update RpChar PvP", description = "Update if a Roleplay Character is participating in PvP")
+    @PatchMapping(PATH_RPCHAR_PVP)
     public HttpEntity<RPChar> updateCharacterPvP(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterPvP Request: Data [{}]", dto);
@@ -194,7 +208,9 @@ public class PlayerRestController extends AbstractRestController {
         log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
         return ResponseEntity.ok(rpChar);
     }
-    @DeleteMapping(PATH_DELETE_PLAYER)
+
+    @Operation(summary = "Delete Player", description = "Delete a Player")
+    @DeleteMapping("")
     public HttpEntity<Player> deletePlayer(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deletePlayer Request: Data [{}]", dto);
@@ -207,7 +223,8 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(player);
     }
 
-    @DeleteMapping(PATH_DELETE_RPCHAR)
+    @Operation(summary = "Delete RpChar", description = "Delete a Roleplay Character")
+    @DeleteMapping(PATH_RPCHAR)
     public HttpEntity<RPChar> deleteRpChar(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deleteRpChar Request: Data [{}]", dto);
@@ -220,6 +237,7 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
+    @Operation(summary = "Injure RpChar", description = "Injure a roleplay character")
     @PatchMapping(PATH_INJURE)
     public HttpEntity<RPChar> injureChar(@RequestBody DiscordIdDto dto) {
 
@@ -233,6 +251,7 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
+    @Operation(summary = "Heal start", description = "Start healing a Roleplay Character")
     @PatchMapping(PATH_HEAL_START)
     public HttpEntity<RPChar> healStart(@RequestBody DiscordIdDto dto) {
 
@@ -246,6 +265,7 @@ public class PlayerRestController extends AbstractRestController {
         return ResponseEntity.ok(rpChar);
     }
 
+    @Operation(summary = "Heal stop", description = "Cancel healing of a Roleplay Character")
     @PatchMapping(PATH_HEAL_STOP)
     public HttpEntity<RPChar> healStop(@RequestBody DiscordIdDto dto) {
 
