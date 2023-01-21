@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands;
 import com.ardaslegends.presentation.discord.commands.bind.BindCommand;
 import com.ardaslegends.presentation.discord.commands.cancel.CancelCommand;
 import com.ardaslegends.presentation.discord.commands.create.CreateCommand;
+import com.ardaslegends.presentation.discord.commands.declare.DeclareCommand;
 import com.ardaslegends.presentation.discord.commands.delete.DeleteCommand;
 import com.ardaslegends.presentation.discord.commands.disband.DisbandCommand;
 import com.ardaslegends.presentation.discord.commands.heal.HealCommand;
@@ -45,13 +46,14 @@ public class Commands implements DiscordUtils {
     private final InfoCommand info;
     private final RemoveCommand remove;
     private final StockpileCommand stockpile;
+    private final DeclareCommand declare;
     private final Map<String, ALCommandExecutor> executions;
 
     private final BotProperties properties;
     public Commands(DiscordApi api, BindCommand bind, RegisterCommand register, CreateCommand create, DeleteCommand delete, BotProperties properties,
                     UpdateCommand update, MoveCommand move, CancelCommand cancel, InjureCommand injure, HealCommand heal, UnbindCommand unbind,
                     DisbandCommand disband, InfoCommand info, StationCommand station, UnstationCommand unstation, StockpileCommand stockpile,
-                    PickSiegeCommand pickSiege, RemoveCommand remove
+                    PickSiegeCommand pickSiege, RemoveCommand remove, DeclareCommand declare
     ) {
         this.api = api;
         this.bind = bind;
@@ -62,6 +64,7 @@ public class Commands implements DiscordUtils {
         this.info = info;
         this.stockpile = stockpile;
         this.remove = remove;
+        this.declare = declare;
 
         executions = new HashMap<>();
 
@@ -83,6 +86,7 @@ public class Commands implements DiscordUtils {
         commands.add(stockpile.init(executions));
         commands.add(pickSiege.init(executions));
         commands.add(remove.init(executions));
+        commands.add(declare.init(executions));
 
         api.bulkOverwriteGlobalApplicationCommands(commands).join();
         log.info("Updated [{}] global commands", commands.size());
@@ -133,7 +137,6 @@ public class Commands implements DiscordUtils {
                     responseUpdater.delete();
 
                     response.message()
-                            .setEmbed(response.embed())
                             // TODO Change to war channel
                             .send(rpCommandsChannel);
                 }

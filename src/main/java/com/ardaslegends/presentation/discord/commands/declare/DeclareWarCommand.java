@@ -1,11 +1,21 @@
 package com.ardaslegends.presentation.discord.commands.declare;
 
 
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.war.War;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
+import com.ardaslegends.presentation.discord.utils.ALColor;
+import com.ardaslegends.service.dto.war.CreateWarDto;
+import com.ardaslegends.service.war.WarService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.message.mention.AllowedMentions;
+import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.stereotype.Component;
@@ -17,13 +27,62 @@ import java.util.List;
 
 @Component
 public class DeclareWarCommand implements ALCommandExecutor {
+
+    private final WarService warService;
+    private final DiscordApi api;
+
     @Override
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /declare war request");
 
         String executorDiscordId = interaction.getUser().getIdAsString();
 
-        
-        return null;
+        String warName = getStringOption("war-name", options);
+        log.trace("war-name is -> {}", warName);
+
+        String attackedFactionName = getStringOption("attacked-faction-name", options);
+        log.trace("attacked-faction-name is -> {}", attackedFactionName);
+
+        CreateWarDto warDto = new CreateWarDto(executorDiscordId, warName, attackedFactionName);
+
+        War result = discordServiceExecution(warDto, warService::createWar, "Error while declaring war");
+
+        Faction attacker = result.getAggressors().stream().findFirst().get().getWarParticipant();
+        Faction defender= result.getDefenders().stream().findFirst().get().getWarParticipant();
+
+        var attackerRoleOptional = api.getRoleById(attacker.getFactionRoleId());
+        var defenderRoleOptional = api.getRoleById(defender.getFactionRoleId());
+
+        if(attackerRoleOptional.isEmpty()) {
+            // TODO Throw exception
+        }
+        if(defenderRoleOptional.isEmpty()) {
+            // TODO Throw exception
+        }
+
+        var defenderRole = defenderRoleOptional.get();
+        var attackerRole = attackerRoleOptional.get();
+
+        AllowedMentions mentions = new AllowedMentionsBuilder()
+                .setMentionRoles(true)
+                .build();
+
+        MessageBuilder messageBuilder = new MessageBuilder()
+                .setAllowedMentions(mentions)
+                .append(attackerRole.getMentionTag())
+                .append(" declared a War against")
+                .append(defenderRole.getMentionTag())
+                .append("!");
+
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setTitle("War Declaration: %s".formatted(warName))
+                .addInlineField("Attacker", attacker.getName())
+                .addInlineField("Defender", defender.getName())
+                .setColor(ALColor.GREEN)
+                .setTimestampToNow();
+
+        messageBuilder.setEmbed(embedBuilder);
+
+        return new ALMessageResponse(messageBuilder, embedBuilder);
     }
 }

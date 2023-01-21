@@ -52,7 +52,7 @@ public class DeclareCommand implements ALCommand {
                         .build()
         ));
 
-        commands.put("declare war", new DeclareWarCommand()::execute);
-        return null;
+        commands.put("declare war", new DeclareWarCommand(warService, api)::execute);
+        return command;
     }
 }

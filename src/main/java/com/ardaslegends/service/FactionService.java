@@ -168,6 +168,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     }
 
+    @Transactional(readOnly = false)
     public Faction setFactionRoleId(String factionName, Long roleId) {
         log.debug("SetFactionRole: Setting roleId of faction [{}] to [{}]", factionName, roleId);
         Objects.requireNonNull(roleId, "RoleId must not be null");
@@ -199,6 +200,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         log.debug("Persisting Faction [{}] with roleId [{}]", faction.getName(), faction.getFactionRoleId());
         faction = secureSave(faction, factionRepository);
 
+        log.debug("New IDDDDD [{}]", faction.getFactionRoleId());
         return faction;
     }
 

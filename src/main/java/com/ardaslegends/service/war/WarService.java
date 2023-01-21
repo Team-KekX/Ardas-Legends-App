@@ -38,7 +38,6 @@ public class WarService extends AbstractService<War, WarRepository> {
         Objects.requireNonNull(createWarDto, "CreateWarDto must not be null");
         Objects.requireNonNull(createWarDto.execturDiscordId(), "ExecutorDiscordId must not be null");
         Objects.requireNonNull(createWarDto.nameOfWar(), "Name of War must not be null");
-        Objects.requireNonNull(createWarDto.attackingFactionName(), "Attacking Faction Name must not be null");
         Objects.requireNonNull(createWarDto.defendingFactionName(), "Defending Faction Name must not be null");
 
         log.trace("Fetching player with discordId [{}]", createWarDto.execturDiscordId());
