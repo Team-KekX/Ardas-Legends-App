@@ -36,16 +36,16 @@ public class WarService extends AbstractService<War, WarRepository> {
         log.debug("Creating war with data [defender: {}]", createWarDto);
 
         Objects.requireNonNull(createWarDto, "CreateWarDto must not be null");
-        Objects.requireNonNull(createWarDto.execturDiscordId(), "ExecutorDiscordId must not be null");
+        Objects.requireNonNull(createWarDto.executorDiscordId(), "ExecutorDiscordId must not be null");
         Objects.requireNonNull(createWarDto.nameOfWar(), "Name of War must not be null");
         Objects.requireNonNull(createWarDto.defendingFactionName(), "Defending Faction Name must not be null");
 
-        log.trace("Fetching player with discordId [{}]", createWarDto.execturDiscordId());
-        var fetchedPlayer = secureFind(createWarDto.execturDiscordId(), playerRepository::findByDiscordID);
+        log.trace("Fetching player with discordId [{}]", createWarDto.executorDiscordId());
+        var fetchedPlayer = secureFind(createWarDto.executorDiscordId(), playerRepository::findByDiscordID);
 
         if(fetchedPlayer.isEmpty()) {
-            log.warn("Player with discordID [{}] does not exist", createWarDto.execturDiscordId());
-            throw PlayerServiceException.noPlayerFound(createWarDto.execturDiscordId());
+            log.warn("Player with discordID [{}] does not exist", createWarDto.executorDiscordId());
+            throw PlayerServiceException.noPlayerFound(createWarDto.executorDiscordId());
         }
 
         Player executorPlayer = fetchedPlayer.get();
