@@ -13,6 +13,7 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.WarServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,8 @@ public class WarService extends AbstractService<War, WarRepository> {
 
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
+
+    private final DiscordApi discordApi;
 
     @Transactional(readOnly = false)
     public War createWar(CreateWarDto createWarDto) {
@@ -69,6 +72,8 @@ public class WarService extends AbstractService<War, WarRepository> {
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
             throw FactionServiceException.noFactionWithNameFound(createWarDto.defendingFactionName(),allFactionString);
         }
+
+
 
         War war = new War(createWarDto.nameOfWar(), attackingFaction, fetchedDefendingFaction.get());
 

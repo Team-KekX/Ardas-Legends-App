@@ -94,6 +94,9 @@ public class Commands implements DiscordUtils {
         log.debug("Fetching roleplay-commands channel with ID in Property file");
         TextChannel rpCommandsChannel = api.getTextChannelById(properties.getRpCommandsChannel()).orElseThrow();
 
+        // Sets up listeners on channels that delete all messages that do not come from the bot or are not slashcommands
+        setupListeners(Set.of(rpCommandsChannel));
+
         api.addSlashCommandCreateListener(event -> {
 
             SlashCommandInteraction interaction = event.getSlashCommandInteraction();
@@ -152,6 +155,21 @@ public class Commands implements DiscordUtils {
                 e.printStackTrace();
             }
         });
+    }
+
+
+    private void setupListeners(Set<TextChannel> channels) {
+        channels.stream()
+                .forEach(textChannel -> {
+                    textChannel.addMessageCreateListener(messageCreateEvent -> {
+                        var author = messageCreateEvent.getMessageAuthor();
+                        var message = messageCreateEvent.getMessage();
+
+                  //      if(!author.isYourself() && !message.getContent().startsWith("/")) {
+                    //        messageCreateEvent.deleteMessage();
+                      //  }
+                    });
+                });
     }
 
 }
