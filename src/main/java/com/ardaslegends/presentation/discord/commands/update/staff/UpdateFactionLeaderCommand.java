@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -18,7 +19,7 @@ public class UpdateFactionLeaderCommand implements ALStaffCommandExecutor {
     private final FactionService factionService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /update faction leader request");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -35,12 +36,12 @@ public class UpdateFactionLeaderCommand implements ALStaffCommandExecutor {
         log.trace("UpdateFactionLeader: Faction [{}] with leader [{}]", result.getName());
 
         log.debug("UpdateFactionLeader: Building Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Changed Faction Leader")
                 .setDescription("Staff changed the faction leader of %s".formatted(result.getName()))
                 .setColor(ALColor.YELLOW)
                 .setThumbnail(getFactionBanner(result.getName()))
                 .addInlineField("Faction", result.getName())
-                .addInlineField("New Leader", result.getLeader().getIgn() + " / " + user.getMentionTag());
+                .addInlineField("New Leader", result.getLeader().getIgn() + " / " + user.getMentionTag()));
     }
 }

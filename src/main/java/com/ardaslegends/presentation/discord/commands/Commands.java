@@ -18,11 +18,11 @@ import com.ardaslegends.presentation.discord.commands.unbind.UnbindCommand;
 import com.ardaslegends.presentation.discord.commands.unstation.UnstationCommand;
 import com.ardaslegends.presentation.discord.commands.update.UpdateCommand;
 import com.ardaslegends.presentation.discord.config.BotProperties;
-import com.ardaslegends.presentation.discord.utils.DiscordUtils;
 import com.ardaslegends.presentation.discord.exception.BotException;
+import com.ardaslegends.presentation.discord.utils.DiscordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.Channel;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -88,7 +88,7 @@ public class Commands implements DiscordUtils {
         log.info("Updated [{}] global commands", commands.size());
 
         log.debug("Fetching roleplay-commands channel with ID in Property file");
-        Channel rpCommandsChannel = api.getChannelById(properties.getRpCommandsChannel()).orElseThrow();
+        TextChannel rpCommandsChannel = api.getTextChannelById(properties.getRpCommandsChannel()).orElseThrow();
 
         api.addSlashCommandCreateListener(event -> {
 
@@ -98,6 +98,7 @@ public class Commands implements DiscordUtils {
                 var responseUpdater = interaction.respondLater().join();
 
                 EmbedBuilder embed;
+                ALMessageResponse response = null;
                 try {
                     String fullname = getFullCommandName(interaction);
                     log.trace("Full CommandName: [{}]", fullname);
@@ -109,22 +110,39 @@ public class Commands implements DiscordUtils {
 
                     log.info("Incoming '/{}' command", fullname);
                     log.trace("Calling command execution function");
-                    embed = executions.get(fullname).execute(interaction, options, properties);
+                    response = executions.get(fullname).execute(interaction, options, properties);
 
                     log.info("Finished handling '/{}' command", fullname);
                 } catch (BotException exception) {
                     log.warn("Encountered ServiceException while executing, msg: {}", exception.getMessage());
                     embed = createErrorEmbed(exception.getTitle(), exception.getMessage());
+                    responseUpdater.addEmbed(embed).update().join();
                 } catch (Exception exception) {
                     log.error("ENCOUNTERED UNEXPECTED ERROR OF TYPE {} - MSG: {}", exception.getClass(), exception.getMessage());
                     exception.printStackTrace();
                     String message = exception.getMessage() + "\nPlease contact the devs!";
                     embed = createErrorEmbed("An unexpected error occured", message);
+                    responseUpdater.addEmbed(embed).update().join();
+                }
+
+                if(response == null) {
+                    return;
+                }
+
+                if (response.hasMessage()) {
+                    responseUpdater.delete();
+
+                    response.message()
+                            .setEmbed(response.embed())
+                            // TODO Change to war channel
+                            .send(rpCommandsChannel);
+                }
+                else {
+                    responseUpdater.addEmbed(response.embed()).update().join();
                 }
 
                 log.debug("Updating response to new embed");
                 // The join() is important so that the exceptions go into the catch blocks
-                responseUpdater.addEmbed(embed).update().join();
             } catch (Exception e) {
                 // TODO: Create Error Report of Stacktrace and stuff, until then we're throwing this again
                 // TODO: This does not

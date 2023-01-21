@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.heal;
 
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -21,7 +22,7 @@ public class HealArmyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /heal army request");
 
 
@@ -38,7 +39,7 @@ public class HealArmyCommand implements ALCommandExecutor {
         var army = discordServiceExecution(dto, armyService::healStart, "Error while starting heal of army");
 
         log.trace("HealArmy: Building EmbedBuilder");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Healing of army started!")
                 .setColor(ALColor.GREEN)
                 .setThumbnail(Thumbnails.HEAL.getUrl())
@@ -48,7 +49,7 @@ public class HealArmyCommand implements ALCommandExecutor {
                 .addInlineField("Faction of Army", army.getFaction().getName())
                 .addField("Region", army.getStationedAt().getRegion().getId())
                 .addInlineField("Claimbuild", army.getStationedAt().getName())
-                .addInlineField("Faction of Claimbuild", army.getStationedAt().getOwnedBy().getName());
+                .addInlineField("Faction of Claimbuild", army.getStationedAt().getOwnedBy().getName()));
 
     }
 }

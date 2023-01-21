@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.discord.commands.heal;
 
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -24,7 +25,7 @@ public class HealRpcharCommand implements ALCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /heal rpchar request");
 
         User user = interaction.getUser();
@@ -38,7 +39,7 @@ public class HealRpcharCommand implements ALCommandExecutor {
         RPChar rpChar = discordServiceExecution(dto, playerService::healStart, "Error while starting RpChar Healing");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Started healing RpChar")
                 .setDescription("The character %s - %s has started healing.\nThe healing takes 2 days.".formatted(rpChar.getName(), rpChar.getTitle()))
                 .setColor(ALColor.GREEN)
@@ -47,6 +48,6 @@ public class HealRpcharCommand implements ALCommandExecutor {
                 .addInlineField("Region", rpChar.getCurrentRegion().getId())
                 .addInlineField("Duration", "2 days")
                 .setThumbnail(Thumbnails.HEAL.getUrl())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

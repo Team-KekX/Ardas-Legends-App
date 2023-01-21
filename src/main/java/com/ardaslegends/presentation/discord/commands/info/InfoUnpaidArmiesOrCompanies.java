@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.discord.commands.info;
 
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.ArmyService;
@@ -20,7 +21,7 @@ public class InfoUnpaidArmiesOrCompanies implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /info unpaid-armies-or-companies request");
 
         log.debug("UnpaidArmiesOrCompanies: Calling DiscordService");
@@ -37,13 +38,13 @@ public class InfoUnpaidArmiesOrCompanies implements ALCommandExecutor {
                                 .collect(Collectors.joining("\n"));
 
         log.debug("InfoUnpaidArmiesOrCompanies: Building Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Unpaid armies")
                 .setDescription("10 oldest armies that have not been paid for")
                 .setColor(ALColor.GREEN)
                 .setTimestampToNow()
                 .addInlineField("Names", armyNameString)
                 .addInlineField("Faction", faction)
-                .addInlineField("Creation Date", createdAt);
+                .addInlineField("Creation Date", createdAt));
     }
 }

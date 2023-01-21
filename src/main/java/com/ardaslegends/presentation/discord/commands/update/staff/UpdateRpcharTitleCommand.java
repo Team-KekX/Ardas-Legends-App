@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,7 +24,7 @@ public class UpdateRpcharTitleCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update rpchar title request");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -43,13 +44,13 @@ public class UpdateRpcharTitleCommand implements ALStaffCommandExecutor {
         RPChar rpChar = discordServiceExecution(dto, playerService::updateCharacterTitle, "Error while updating Rp Char Title");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated RpChar Title")
                 .setDescription("Successfully updated Title of Character %s".formatted(rpChar.getName()))
                 .setColor(ALColor.YELLOW)
                 .addInlineField("Character", rpChar.getName())
                 .addInlineField("New Title", rpChar.getTitle())
                 .addInlineField("User", user.getMentionTag())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

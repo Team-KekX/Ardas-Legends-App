@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.delete.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,7 +24,7 @@ public class DeletePlayerCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /delete player request, fetchign data");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -38,10 +39,10 @@ public class DeletePlayerCommand implements ALStaffCommandExecutor {
         log.trace("DeletePlayer: Calling ServiceExecution");
         var player = discordServiceExecution(dto, playerService::deletePlayer, "Error while deleting Player!");
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Staff-Deleted Player")
                 .setColor(ALColor.YELLOW)
                 .setDescription("Staff Deleted Player with ign '%s'".formatted(player.getIgn()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

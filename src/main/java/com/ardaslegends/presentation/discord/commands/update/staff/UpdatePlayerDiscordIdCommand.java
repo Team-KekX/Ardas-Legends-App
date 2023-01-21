@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -22,7 +23,7 @@ public class UpdatePlayerDiscordIdCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update player discord-id request");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -41,13 +42,13 @@ public class UpdatePlayerDiscordIdCommand implements ALStaffCommandExecutor {
         Player player = discordServiceExecution(dto, playerService::updateDiscordId, "Error while updating Discord Id");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated Discord ID")
                 .setDescription("Updated the Discord ID of player %s".formatted(player.getIgn()))
                 .setColor(ALColor.YELLOW)
                 .addInlineField("Player IGN", player.getIgn())
                 .addInlineField("Old Discord ID", oldDiscordId)
                 .addInlineField("New Discord ID", newDiscordId)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

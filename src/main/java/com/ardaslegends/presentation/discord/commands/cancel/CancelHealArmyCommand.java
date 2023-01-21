@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.cancel;
 
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.ArmyService;
@@ -18,7 +19,7 @@ public class CancelHealArmyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("CancelHealArmy: Incoming /cancel heal army request");
 
         String discordId = interaction.getUser().getIdAsString();
@@ -33,12 +34,12 @@ public class CancelHealArmyCommand implements ALCommandExecutor {
         var army = discordServiceExecution(dto, armyService::healStop, "Error while stopping heal");
 
         log.debug("CancelHealArmy: Building EmbedBuilder");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Cancelled healing of army")
                 .setDescription("The healing of army '%s' has been stopped \nSome units may not be healed!".formatted(army.getName()))
                 .addField("Units", createUnitsAliveString(army.getUnits()))
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
                 .setTimestampToNow()
-                .setColor(ALColor.GREEN);
+                .setColor(ALColor.GREEN));
     }
 }

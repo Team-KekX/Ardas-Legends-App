@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.move;
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -25,7 +26,7 @@ public class MoveRpcharCommand implements ALCommandExecutor {
     private final MovementService movementService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /move rpchar request");
 
         User user = interaction.getUser();
@@ -46,7 +47,7 @@ public class MoveRpcharCommand implements ALCommandExecutor {
         RPChar rpChar = movement.getPlayer().getRpChar();
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Started RpChar Movement")
                 .setDescription("The character %s - %s has started their movement towards region %s".formatted(rpChar.getName(), rpChar.getTitle(), movement.getDestinationRegionId()))
                 .setColor(ALColor.GREEN)
@@ -56,6 +57,6 @@ public class MoveRpcharCommand implements ALCommandExecutor {
                 .addField("Route", createPathString(movement.getPath()), false)
                 .addField("Duration", createDurationString(movement.getCost()), false)
                 .setThumbnail(Thumbnails.MOVE_CHARACTER.getUrl())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.stockpile.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -19,7 +20,7 @@ public class StockpileAddCommand implements ALStaffCommandExecutor {
     private final FactionService factionService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /stockpile add request");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -38,13 +39,13 @@ public class StockpileAddCommand implements ALStaffCommandExecutor {
         var result = discordServiceExecution(dto, factionService::addToStockpile, "Error while updating stockpile");
 
         log.debug("StockpileAdd: Building Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Added to food stockpile")
                 .setThumbnail(getFactionBanner(factionName))
                 .setTimestampToNow()
                 .setDescription("Added %s stacks of food to %s's stockpile".formatted(amount, factionName))
                 .addInlineField("Faction", result.getName())
                 .addInlineField("Stockpile in Stacks", result.getFoodStockpile().toString())
-                .setColor(ALColor.YELLOW);
+                .setColor(ALColor.YELLOW));
     }
 }

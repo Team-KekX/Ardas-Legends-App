@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -18,7 +19,7 @@ public class UpdateClaimmapCommand implements ALStaffCommandExecutor {
     private final RegionService regionService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /update claimmap");
 
         checkStaff(interaction, properties.getStaffRoles());
@@ -32,10 +33,10 @@ public class UpdateClaimmapCommand implements ALStaffCommandExecutor {
                 .collect(Collectors.joining(", "));
 
         log.debug("UpdateClaimmap: Building Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Reset regions in claimmap update")
                 .setDescription("Regions that have changed ownership since last update: \n" + regionString)
                 .setColor(ALColor.YELLOW)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }
