@@ -4,7 +4,10 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
+import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
+import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
+import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
@@ -31,6 +34,7 @@ import java.util.Map;
 @Tag(name = "Player Controller", description = "All REST endpoints regarding Players")
 @RequestMapping(PlayerRestController.BASE_URL)
 public class PlayerRestController extends AbstractRestController {
+    private final PlayerRepository playerRepository;
     private final ResourceRepository resourceRepository;
 
     public final static String BASE_URL = "/api/player";
@@ -47,8 +51,8 @@ public class PlayerRestController extends AbstractRestController {
     public static final String PATH_INJURE = "/rpchar/injure";
     public static final String PATH_HEAL_START = "/rpchar/heal-start";
     public static final String PATH_HEAL_STOP = "/rpchar/heal-stop";
-    public static final String PATH_GET_BY_IGN = "/getByIgn/{ign}";
-    public static final String PATH_GET_BY_DISCORD_ID = "/getByDiscId/{discId}";
+    public static final String PATH_GET_BY_IGN =  PATH_IGN + "/{ign}";
+    public static final String PATH_GET_BY_DISCORD_ID = PATH_DISCORDID + "/{discId}";
 
     private final PlayerService playerService;
     private final FactionService factionService;
@@ -56,26 +60,28 @@ public class PlayerRestController extends AbstractRestController {
     @Operation(summary = "Get by IGN", description = "Get a player by their minecraft IGN")
     @Parameter(name = "ign", description = "Minecraft IGN of the player", example = "Luktronic")
     @GetMapping(PATH_GET_BY_IGN)
-    public HttpEntity<Player> getByIgn(@PathVariable String ign) {
+    public HttpEntity<PlayerRpCharResponse> getByIgn(@PathVariable String ign) {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
 
         log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
         Player playerFound = wrappedServiceExecution(ign, playerService::getPlayerByIgn);
+        var response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by ign ({})", playerFound, playerFound.getIgn());
-        return ResponseEntity.ok(playerFound);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Get by Discord ID", description = "Get a player by their Discord ID")
     @GetMapping(PATH_GET_BY_DISCORD_ID)
-    public HttpEntity<Player> getByDiscordId(@PathVariable String discId) {
+    public HttpEntity<PlayerRpCharResponse> getByDiscordId(@PathVariable String discId) {
         log.debug("Incoming getByDiscordId Request. DiscordId: {}", discId);
 
         log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
         Player playerFound = wrappedServiceExecution(discId, playerService::getPlayerByDiscordId);
+        var response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by DiscordId ({})", playerFound, playerFound.getDiscordID());
-        return ResponseEntity.ok(playerFound);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Creates a player", description = "Create a new player in the database.")
@@ -147,15 +153,16 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Update Discord ID", description = "Update a Player's Discord ID")
     @PatchMapping(PATH_DISCORDID)
-    public HttpEntity<Player> updatePlayerDiscordId(@RequestBody UpdateDiscordIdDto dto) {
+    public HttpEntity<PlayerUpdateDiscordIdResponse> updatePlayerDiscordId(@RequestBody UpdateDiscordIdDto dto) {
         log.debug("Incoming updateDiscordId Request: Data [{}]", dto);
 
         log.trace("Trying to update the player's executorDiscordId");
         Player player = wrappedServiceExecution(dto, playerService::updateDiscordId);
         log.debug("Successfully updated executorDiscordId without encountering any errors");
+        var response = new PlayerUpdateDiscordIdResponse(player, dto.oldDiscordId());
 
         log.info("Sending HttpResponse with successfully updated Player {}", player);
-        return ResponseEntity.ok(player);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update RpChar name", description = "Update the name of a Roleplay Character")
@@ -281,15 +288,16 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Heal stop", description = "Cancel healing of a Roleplay Character")
     @PatchMapping(PATH_HEAL_STOP)
-    public HttpEntity<RPChar> healStop(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<RpCharResponse> healStop(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming healStop Request: Data [{}]", dto);
 
         log.trace("Executing playerService.healStop");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::healStop);
+        var response = new RpCharResponse(rpChar);
         log.debug("Successfully started healing of character without encountering any errors");
 
         log.info("Sending HttpResponse with successful stop of healing of RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 }
