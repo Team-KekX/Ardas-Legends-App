@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -78,6 +79,17 @@ public class WarService extends AbstractService<War, WarRepository> {
         if(attackingFaction.equals(defendingFaction)) {
             log.warn("Player [{}] tried to declare war on his faction", executorPlayer.getIgn());
             throw WarServiceException.cannotDeclareWarOnYourFaction();
+        }
+
+        Set<War> allWarsOfAttacker = secureFind(attackingFaction , warRepository::findAllWarsWithFaction);
+        
+        boolean alreadyAtWar = allWarsOfAttacker.stream()
+                .anyMatch(war -> (war.getAggressors().contains(attackingFaction) && war.getDefenders().contains(defendingFaction))
+                        || (war.getAggressors().contains(defendingFaction) && war.getDefenders().contains(attackingFaction)));
+
+        if(alreadyAtWar) {
+            log.warn("The factions '{}' and '{}' are already at war!", attackingFaction.getName(), defendingFaction.getName());
+            throw WarServiceException.alreadyAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
 
         War war = new War(createWarDto.nameOfWar(), attackingFaction, defendingFaction);

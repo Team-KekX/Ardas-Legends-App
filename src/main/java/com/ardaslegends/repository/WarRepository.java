@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface WarRepository extends JpaRepository<War, Long> {
@@ -17,6 +18,7 @@ public interface WarRepository extends JpaRepository<War, Long> {
     @Query("""
         FROM War 
         where War.aggressors.warParticipant = :aggressor 
+        or War.defenders.warParticipant = :aggressor
         """)
-    public List<War> findAllWarsWithAggressor(@Param("aggressor") Faction aggressor);
+    public Set<War> findAllWarsWithFaction(@Param("aggressor") Faction aggressor);
 }
