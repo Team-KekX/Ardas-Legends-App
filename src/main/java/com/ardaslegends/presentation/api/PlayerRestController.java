@@ -3,16 +3,14 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
-import com.ardaslegends.presentation.api.response.player.CreatePlayerResponse;
+import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,12 +77,12 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Creates a player", description = "Create a new player in the database.")
     @PostMapping("")
-    public HttpEntity<CreatePlayerResponse> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
+    public HttpEntity<PlayerResponse> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
         log.debug("Incoming createPlayer Request. Data [{}]", createPlayerDto);
 
         log.debug("Calling PlayerService.createPlayer. Data {}" ,createPlayerDto);
         Player createdPlayer = wrappedServiceExecution(createPlayerDto, playerService::createPlayer);
-        var response = new CreatePlayerResponse(createdPlayer);
+        var response = new PlayerResponse(createdPlayer);
 
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
                 .uriVariables(Map.of("ign", response.ign()))
