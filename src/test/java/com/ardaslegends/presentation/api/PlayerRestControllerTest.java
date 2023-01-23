@@ -3,39 +3,28 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.presentation.ControllerTest;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @Slf4j
-public class PlayerRestControllerTest {
+public class PlayerRestControllerTest extends ControllerTest {
 
-    MockMvc mockMvc;
 
     private PlayerService mockPlayerService;
     private FactionService mockFactionService;
 
     private PlayerRestController playerRestController;
-    private ObjectMapper mapper;
-    private ObjectWriter ow;
-    private String url;
 
 
     @BeforeEach
@@ -43,11 +32,8 @@ public class PlayerRestControllerTest {
         mockPlayerService = mock(PlayerService.class);
         mockFactionService = mock(FactionService.class);
         playerRestController = new PlayerRestController(mockPlayerService, mockFactionService);
-        mockMvc = MockMvcBuilders.standaloneSetup(playerRestController).build();
-        mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ow = mapper.writer().withDefaultPrettyPrinter();
-        url = "http://localhost:8080" + PlayerRestController.BASE_URL;
+        baseSetup(playerRestController, PlayerRestController.BASE_URL);
+
     }
 
     // Create Method Tests
@@ -74,15 +60,8 @@ public class PlayerRestControllerTest {
         when(mockPlayerService.createRoleplayCharacter(any())).thenReturn(new RPChar());
 
         CreateRPCharDto dto = new CreateRPCharDto("MiraksID", "Rando", "Rando King", "Gondolin", true);
-        url += PlayerRestController.PATH_RPCHAR;
 
-        String requestJson = ow.writeValueAsString(dto);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        post(PlayerRestController.PATH_RPCHAR, dto);
     }
 
     // Read Methods Test
@@ -135,29 +114,16 @@ public class PlayerRestControllerTest {
         Player updatedPlayer = Player.builder().ign("mirak441").discordID("123456789").faction(mordor).build();
 
         log.trace("Initializing UpdatePlayerDto");
-        UpdatePlayerFactionDto updatePlayerFactionDto = new UpdatePlayerFactionDto(player.getDiscordID(), mordor.getName());
+        UpdatePlayerFactionDto dto = new UpdatePlayerFactionDto(player.getDiscordID(), mordor.getName());
 
         log.trace("Initializing mocked methods");
         when(mockFactionService.getFactionByName("Gondor")).thenReturn(gondor);
         when(mockFactionService.getFactionByName("Mordor")).thenReturn(mordor);
         when(mockPlayerService.getPlayerByIgn(player.getIgn())).thenReturn(player);
-        when(mockPlayerService.updatePlayerFaction(updatePlayerFactionDto)).thenReturn(updatedPlayer);
-
-        log.trace("Building JSON for UpdatePlayerDto");
-        String requestJson = ow.writeValueAsString(updatePlayerFactionDto);
+        when(mockPlayerService.updatePlayerFaction(dto)).thenReturn(updatedPlayer);
 
         //Act
-
-        url += PlayerRestController.PATH_FACTION;
-
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
-        log.debug("Post Request returned status OK");
-
+        patch(PlayerRestController.PATH_FACTION, dto);
         log.info("Test passed: updatePlayerFaction works properly when using correct values!");
     }
 
@@ -178,22 +144,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mocked method");
         when(mockPlayerService.updateIgn(dto)).thenReturn(returnedPlayer);
 
-        log.trace("Building JSON from UpdatePlayerIgnDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-
         // Act
-
-        url += PlayerRestController.PATH_IGN;
-
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                .patch(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isOk());
-
-        log.debug("Patch Request returned status OK");
+        patch(PlayerRestController.PATH_IGN, dto);
 
         log.info("Test passed: updateIgn works properly when using correct values!");
     }
@@ -217,20 +169,8 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdatePlayerDiscordIdDto");
 
-        String requestJson = ow.writeValueAsString(dto);
-
         // Act
-
-        url += PlayerRestController.PATH_DISCORDID;
-
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
-
-        log.debug("Patch Request returned status OK");
+        patch(PlayerRestController.PATH_DISCORDID, dto);
 
         log.info("Test passed: updateDiscordId works properly when using correct values!");
     }
@@ -251,18 +191,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.updateCharacterName(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from UpdateRpCharDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_RPCHAR_NAME;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                .patch(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isOk());
+        patch(PlayerRestController.PATH_RPCHAR_NAME, dto);
     }
 
     // Update title
@@ -281,18 +211,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.updateCharacterTitle(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from UpdateRpCharDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_RPCHAR_TITLE;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        patch(PlayerRestController.PATH_RPCHAR_TITLE, dto);
     }
 
     // Update Gear
@@ -310,18 +230,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.updateCharacterGear(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from UpdateRpCharDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_RPCHAR_GEAR;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        patch(PlayerRestController.PATH_RPCHAR_GEAR, dto);
     }
 
     // Update PvP
@@ -340,18 +250,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.updateCharacterGear(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from UpdateRpCharDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_RPCHAR_PVP;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        patch(PlayerRestController.PATH_RPCHAR_PVP, dto);
     }
     // ------------------------------------------- Delete Methods
 
@@ -372,17 +272,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.deletePlayer(dto)).thenReturn(player);
 
-        log.trace("Building JSON from DiscordIdDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-
         // Act
-        log.debug("Performing Delete request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .delete(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        delete("", dto);
     }
 
     // Delete RpChar
@@ -392,7 +283,6 @@ public class PlayerRestControllerTest {
         log.debug("Testing if RpChar works properly");
 
         // Assign
-
         log.trace("Initializing Dto");
         DiscordIdDto dto = new DiscordIdDto("RandomId");
 
@@ -402,19 +292,8 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.deleteRpChar(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from DeletePlayerOrRpcharDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_RPCHAR;
-
         // Act
-
-        log.debug("Performing Delete request to {}", url);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .delete(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+        delete(PlayerRestController.PATH_RPCHAR, dto);
     }
 
 
@@ -432,25 +311,10 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.injureChar(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from DiscordIdDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_INJURE;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        var result = mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = patch(PlayerRestController.PATH_INJURE, dto);
 
-        var request = result.getResponse();
-        request.setCharacterEncoding("UTF-8");
-
-        RPChar response = mapper.readValue(request.getContentAsString()
-                ,RPChar.class);
+        RPChar response = deserialize(result.getResponse(), RPChar.class);
 
         assertThat(response.getName()).isEqualTo(rpChar.getName());
         assertThat(response.getInjured()).isEqualTo(rpChar.getInjured());
@@ -471,25 +335,10 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.healStart(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from DiscordIdDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_HEAL_START;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        var result = mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = patch(PlayerRestController.PATH_HEAL_START, dto);
 
-        var request = result.getResponse();
-        request.setCharacterEncoding("UTF-8");
-
-        RPChar response = mapper.readValue(request.getContentAsString()
-                ,RPChar.class);
+        RPChar response = deserialize(result.getResponse(), RPChar.class);
 
         assertThat(response.getName()).isEqualTo(rpChar.getName());
         assertThat(response.getIsHealing()).isEqualTo(rpChar.getIsHealing());
@@ -510,25 +359,10 @@ public class PlayerRestControllerTest {
         log.trace("Initializing mock methods");
         when(mockPlayerService.healStop(dto)).thenReturn(rpChar);
 
-        log.trace("Building JSON from DiscordIdDto");
-
-        String requestJson = ow.writeValueAsString(dto);
-        url += PlayerRestController.PATH_HEAL_STOP;
-
         // Act
-        log.debug("Performing Patch request to {}", url);
-        var result = mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = patch(PlayerRestController.PATH_HEAL_STOP, dto);
 
-        var request = result.getResponse();
-        request.setCharacterEncoding("UTF-8");
-
-        RPChar response = mapper.readValue(request.getContentAsString()
-                ,RPChar.class);
+        RPChar response = deserialize(result.getResponse(), RPChar.class);
 
         assertThat(response.getName()).isEqualTo(rpChar.getName());
         assertThat(response.getIsHealing()).isEqualTo(rpChar.getIsHealing());
