@@ -213,16 +213,17 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Delete Player", description = "Delete a Player")
     @DeleteMapping("")
-    public HttpEntity<Player> deletePlayer(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<PlayerResponse> deletePlayer(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deletePlayer Request: Data [{}]", dto);
 
         log.trace("Executing playerService.deletePlayer");
         Player player = wrappedServiceExecution(dto, playerService::deletePlayer);
+        var response = new PlayerResponse(player);
         log.debug("Successfully deleted player, [{}]", player);
 
         log.info("Sending HttpResponse with successfully deleted Player [{}]", player);
-        return ResponseEntity.ok(player);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Delete RpChar", description = "Delete a Roleplay Character")
