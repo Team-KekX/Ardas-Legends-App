@@ -3,6 +3,8 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.player.CreatePlayerResponse;
+import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
@@ -29,6 +31,7 @@ import java.util.Map;
 @Tag(name = "Player Controller", description = "All REST endpoints regarding Players")
 @RequestMapping(PlayerRestController.BASE_URL)
 public class PlayerRestController extends AbstractRestController {
+    private final ResourceRepository resourceRepository;
 
     public final static String BASE_URL = "/api/player";
 
@@ -76,19 +79,20 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Creates a player", description = "Create a new player in the database.")
     @PostMapping("")
-    public HttpEntity<Player> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
+    public HttpEntity<CreatePlayerResponse> createPlayer(@RequestBody CreatePlayerDto createPlayerDto) {
         log.debug("Incoming createPlayer Request. Data [{}]", createPlayerDto);
 
         log.debug("Calling PlayerService.createPlayer. Data {}" ,createPlayerDto);
         Player createdPlayer = wrappedServiceExecution(createPlayerDto, playerService::createPlayer);
+        var response = new CreatePlayerResponse(createdPlayer);
 
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
-                .uriVariables(Map.of("ign", createdPlayer.getIgn()))
+                .uriVariables(Map.of("ign", response.ign()))
                 .build().toUri();
-        log.debug("URI built. Data {}, URI {}", createPlayerDto, self.toString());
+        log.debug("URI built. Data {}, URI {}", response, self);
 
         log.info("Sending HttpResponse with successfully created Player {}", createdPlayer);
-        return ResponseEntity.created(self).body(createdPlayer);
+        return ResponseEntity.created(self).body(response);
     }
 
     @Operation(summary = "Create RpChar", description = "Create a Roleplay Character")
