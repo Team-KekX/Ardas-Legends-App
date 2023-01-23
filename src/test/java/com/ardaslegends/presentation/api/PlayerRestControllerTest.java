@@ -34,7 +34,8 @@ public class PlayerRestControllerTest {
 
     private PlayerRestController playerRestController;
     private ObjectMapper mapper;
-    ObjectWriter ow;
+    private ObjectWriter ow;
+    private String url;
 
 
     @BeforeEach
@@ -46,6 +47,7 @@ public class PlayerRestControllerTest {
         mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ow = mapper.writer().withDefaultPrettyPrinter();
+        url = "http://localhost:8080" + PlayerRestController.BASE_URL;
     }
 
     // Create Method Tests
@@ -72,11 +74,12 @@ public class PlayerRestControllerTest {
         when(mockPlayerService.createRoleplayCharacter(any())).thenReturn(new RPChar());
 
         CreateRPCharDto dto = new CreateRPCharDto("MiraksID", "Rando", "Rando King", "Gondolin", true);
+        url += PlayerRestController.PATH_RPCHAR;
 
         String requestJson = ow.writeValueAsString(dto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .post("http://localhost:8080/api/player/create/rpchar")
+                .post(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
@@ -145,7 +148,7 @@ public class PlayerRestControllerTest {
 
         //Act
 
-        String url = "http://localhost:8080/api/player/update/faction";
+        url += PlayerRestController.PATH_FACTION;
 
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
@@ -181,7 +184,7 @@ public class PlayerRestControllerTest {
 
         // Act
 
-        String url = "http://localhost:8080/api/player/update/ign";
+        url += PlayerRestController.PATH_IGN;
 
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
@@ -218,7 +221,7 @@ public class PlayerRestControllerTest {
 
         // Act
 
-        String url = "http://localhost:8080/api/player/update/discordid";
+        url += PlayerRestController.PATH_DISCORDID;
 
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
@@ -251,9 +254,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from UpdateRpCharDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_RPCHAR_NAME;
 
         // Act
-        String url = "http://localhost:8080/api/player/update/rpchar/name";
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
                 .patch(url)
@@ -281,9 +284,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from UpdateRpCharDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_RPCHAR_TITLE;
 
         // Act
-        String url = "http://localhost:8080/api/player/update/rpchar/title";
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
@@ -310,9 +313,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from UpdateRpCharDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_RPCHAR_GEAR;
 
         // Act
-        String url = "http://localhost:8080/api/player/update/rpchar/gear";
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
@@ -340,9 +343,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from UpdateRpCharDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_RPCHAR_PVP;
 
         // Act
-        String url = "http://localhost:8080/api/player/update/rpchar/pvp";
         log.debug("Performing Patch request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
@@ -374,9 +377,6 @@ public class PlayerRestControllerTest {
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
-
-        String url = "http://localhost:8080/api/player/delete";
-
         log.debug("Performing Delete request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
                         .delete(url)
@@ -405,10 +405,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from DeletePlayerOrRpcharDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_RPCHAR;
 
         // Act
-
-        String url = "http://localhost:8080/api/player/delete/rpchar";
 
         log.debug("Performing Delete request to {}", url);
         mockMvc.perform(MockMvcRequestBuilders
@@ -436,9 +435,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from DiscordIdDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_INJURE;
 
         // Act
-        String url = "http://localhost:8080/api/player/injure-char";
         log.debug("Performing Patch request to {}", url);
         var result = mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
@@ -475,9 +474,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from DiscordIdDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_HEAL_START;
 
         // Act
-        String url = "http://localhost:8080/api/player/heal-start";
         log.debug("Performing Patch request to {}", url);
         var result = mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
@@ -514,9 +513,9 @@ public class PlayerRestControllerTest {
         log.trace("Building JSON from DiscordIdDto");
 
         String requestJson = ow.writeValueAsString(dto);
+        url += PlayerRestController.PATH_HEAL_STOP;
 
         // Act
-        String url = "http://localhost:8080/api/player/heal-stop";
         log.debug("Performing Patch request to {}", url);
         var result = mockMvc.perform(MockMvcRequestBuilders
                         .patch(url)
