@@ -2,10 +2,16 @@ package com.ardaslegends.domain.war;
 
 
 import com.ardaslegends.domain.AbstractDomainEntity;
+import com.ardaslegends.domain.Army;
+import com.ardaslegends.domain.Unit;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 
@@ -21,7 +27,17 @@ public class Battle extends AbstractDomainEntity {
 
     private String name;
 
-    // TODO: Missing battle participants
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "battle_attackingArmies",
+            joinColumns = { @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_battle"))},
+            inverseJoinColumns = { @JoinColumn(name = "atackingArmy_id", foreignKey = @ForeignKey(name = "fk_attackingArmy")) })
+    private Set<Army> attackingArmies = new HashSet<>(1);
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "battle_defendingArmies",
+            joinColumns = { @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_battle"))},
+            inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_defendingArmy")) })
+    private Set<Army> defendingArmies = new HashSet<>();
 
     private LocalDateTime declaredDate;
 

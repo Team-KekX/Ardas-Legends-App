@@ -24,7 +24,7 @@ public class WarParticipant  {
     @JoinColumn(name = "participant_faction_id", foreignKey = @ForeignKey(name = "fk_faction_war_participant"))
     private Faction warParticipant;
 
-    private boolean initalParty;
+    private boolean initialParty;
 
     private LocalDateTime joiningDate;
 
