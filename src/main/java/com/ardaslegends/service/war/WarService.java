@@ -73,9 +73,14 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw FactionServiceException.noFactionWithNameFound(createWarDto.defendingFactionName(),allFactionString);
         }
 
+        var defendingFaction = fetchedDefendingFaction.get();
 
+        if(attackingFaction.equals(defendingFaction)) {
+            log.warn("Player [{}] tried to declare war on his faction", executorPlayer.getIgn());
+            throw WarServiceException.cannotDeclareWarOnYourFaction();
+        }
 
-        War war = new War(createWarDto.nameOfWar(), attackingFaction, fetchedDefendingFaction.get());
+        War war = new War(createWarDto.nameOfWar(), attackingFaction, defendingFaction);
 
         log.debug("Saving War Entity");
         war = secureSave(war, warRepository);
