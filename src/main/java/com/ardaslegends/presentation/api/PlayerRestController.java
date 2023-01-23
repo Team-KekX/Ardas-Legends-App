@@ -4,7 +4,6 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
-import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
 import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
@@ -252,30 +251,32 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Injure RpChar", description = "Injure a roleplay character")
     @PatchMapping(PATH_INJURE)
-    public HttpEntity<RPChar> injureChar(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<RpCharResponse> injureChar(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming injureChar Request: Data [{}]", dto);
 
         log.trace("Executing playerService.injureChar");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::injureChar);
         log.debug("Successfully injured character without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully injured RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Heal start", description = "Start healing a Roleplay Character")
     @PatchMapping(PATH_HEAL_START)
-    public HttpEntity<RPChar> healStart(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<RpCharResponse> healStart(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming healStart Request: Data [{}]", dto);
 
         log.trace("Executing playerService.healStart");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::healStart);
         log.debug("Successfully started healing of character without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successful start of healing of RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Heal stop", description = "Cancel healing of a Roleplay Character")
