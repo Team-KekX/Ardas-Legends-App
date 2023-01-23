@@ -118,37 +118,39 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Update Faction", description = "Update a Player's Faction")
     @PatchMapping(PATH_FACTION)
-    public HttpEntity<Player> updatePlayerFaction(@RequestBody UpdatePlayerFactionDto updatePlayerFactionDto) {
+    public HttpEntity<PlayerResponse> updatePlayerFaction(@RequestBody UpdatePlayerFactionDto updatePlayerFactionDto) {
         log.debug("Incoming updatePlayerFaction Request. Data {}", updatePlayerFactionDto);
 
         log.trace("Trying to update the player's faction");
         Player player = wrappedServiceExecution(updatePlayerFactionDto, playerService::updatePlayerFaction);
         log.debug("Successfully updated faction without encountering any errors");
+        var response = new PlayerResponse(player);
 
         log.trace("Building URI for player...");
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
-                .uriVariables(Map.of("ign", player.getIgn()))
+                .uriVariables(Map.of("ign", response.ign()))
                 .build().toUri();
         log.debug("URI built. Data {}, URI {}", updatePlayerFactionDto, self.toString());
 
         log.debug("Updating player done!");
         log.info("Sending HttpResponse with successfully updated Player {}", player);
-        return ResponseEntity.ok(player);
+        return ResponseEntity.ok(response);
     }
 
 
     @Operation(summary = "Update IGN", description = "Update a Player's Minecraft IGN")
     @PatchMapping(PATH_IGN)
-    public HttpEntity<Player> updatePlayerIgn(@RequestBody UpdatePlayerIgnDto dto) {
+    public HttpEntity<PlayerResponse> updatePlayerIgn(@RequestBody UpdatePlayerIgnDto dto) {
 
         log.debug("Incoming updatePlayerIgn Request: Data [{}]", dto);
 
         log.trace("Trying to update the player's ingame name");
         Player player = wrappedServiceExecution(dto, playerService::updateIgn);
         log.debug("Successfully updated faction without encountering any errors");
+        var response = new PlayerResponse(player);
 
         log.info("Sending HttpResponse with successfully updated Player {}", player);
-        return ResponseEntity.ok(player);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update Discord ID", description = "Update a Player's Discord ID")
