@@ -33,6 +33,9 @@ public class PlayerRestControllerTest {
     private FactionService mockFactionService;
 
     private PlayerRestController playerRestController;
+    private ObjectMapper mapper;
+    ObjectWriter ow;
+
 
     @BeforeEach
     void setup() {
@@ -40,6 +43,9 @@ public class PlayerRestControllerTest {
         mockFactionService = mock(FactionService.class);
         playerRestController = new PlayerRestController(mockPlayerService, mockFactionService);
         mockMvc = MockMvcBuilders.standaloneSetup(playerRestController).build();
+        mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ow = mapper.writer().withDefaultPrettyPrinter();
     }
 
     // Create Method Tests
@@ -66,10 +72,6 @@ public class PlayerRestControllerTest {
         when(mockPlayerService.createRoleplayCharacter(any())).thenReturn(new RPChar());
 
         CreateRPCharDto dto = new CreateRPCharDto("MiraksID", "Rando", "Rando King", "Gondolin", true);
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 
         String requestJson = ow.writeValueAsString(dto);
 
@@ -139,9 +141,6 @@ public class PlayerRestControllerTest {
         when(mockPlayerService.updatePlayerFaction(updatePlayerFactionDto)).thenReturn(updatedPlayer);
 
         log.trace("Building JSON for UpdatePlayerDto");
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(updatePlayerFactionDto);
 
         //Act
@@ -178,9 +177,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdatePlayerIgnDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -218,9 +214,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdatePlayerDiscordIdDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -257,9 +250,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdateRpCharDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -290,9 +280,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdateRpCharDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -322,9 +309,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdateRpCharDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -355,9 +339,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from UpdateRpCharDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -390,9 +371,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from DiscordIdDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -426,9 +404,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from DeletePlayerOrRpcharDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -460,9 +435,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from DiscordIdDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -502,9 +474,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from DiscordIdDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
@@ -544,9 +513,6 @@ public class PlayerRestControllerTest {
 
         log.trace("Building JSON from DiscordIdDto");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(dto);
 
         // Act
