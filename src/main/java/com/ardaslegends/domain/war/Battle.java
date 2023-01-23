@@ -4,7 +4,9 @@ package com.ardaslegends.domain.war;
 import com.ardaslegends.domain.AbstractDomainEntity;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Unit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Entity
 @Table(name = "battles")
@@ -50,4 +54,15 @@ public class Battle extends AbstractDomainEntity {
     @Embedded
     private BattleLocation battleLocation;
 
+    public Battle(War war, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, LocalDateTime declaredDate, LocalDateTime timeFrozenFrom, LocalDateTime timeFrozenUntil, LocalDateTime agreedBattleDate, BattleLocation battleLocation) {
+        this.war = war;
+        this.name = name;
+        this.attackingArmies = attackingArmies;
+        this.defendingArmies = defendingArmies;
+        this.declaredDate = declaredDate;
+        this.timeFrozenFrom = timeFrozenFrom;
+        this.timeFrozenUntil = timeFrozenUntil;
+        this.agreedBattleDate = agreedBattleDate;
+        this.battleLocation = battleLocation;
+    }
 }
