@@ -4,6 +4,8 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
+import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
+import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
 import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
@@ -11,6 +13,7 @@ import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +55,7 @@ public class PlayerRestController extends AbstractRestController {
     private final FactionService factionService;
 
     @Operation(summary = "Get by IGN", description = "Get a player by their minecraft IGN")
+    @Parameter(name = "ign", description = "Minecraft IGN of the player", example = "Luktronic")
     @GetMapping(PATH_GET_BY_IGN)
     public HttpEntity<Player> getByIgn(@PathVariable String ign) {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
@@ -95,14 +99,15 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Create RpChar", description = "Create a Roleplay Character")
     @PostMapping(PATH_RPCHAR)
-    public HttpEntity<RPChar> createRpChar(@RequestBody CreateRPCharDto createRPCharDto) {
+    public HttpEntity<RpCharResponse> createRpChar(@RequestBody CreateRPCharDto createRPCharDto) {
         log.debug("Incoming createRpChar Request. Data [{}]", createRPCharDto);
 
         log.debug("Calling PlayerService.createRoleplayCharacter. Data [{}]", createRPCharDto);
         RPChar createdRpChar = wrappedServiceExecution(createRPCharDto, playerService::createRoleplayCharacter);
+        var response = new RpCharResponse(createdRpChar);
 
         log.info("Sending HttpResponse with successfully created Player {}", createdRpChar);
-        return ResponseEntity.ok(createdRpChar);
+        return ResponseEntity.ok(response);
     }
 
 
@@ -156,59 +161,63 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Update RpChar name", description = "Update the name of a Roleplay Character")
     @PatchMapping(PATH_RPCHAR_NAME)
-    public HttpEntity<RPChar> updateCharacterName(@RequestBody UpdateRpCharDto dto) {
+    public HttpEntity<RpCharResponse> updateCharacterName(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterName Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterName");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterName);
         log.debug("Successfully updated character name without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update RpChar title", description = "Update the title of a Roleplay Character")
     @PatchMapping(PATH_RPCHAR_TITLE)
-    public HttpEntity<RPChar> updateCharacterTitle(@RequestBody UpdateRpCharDto dto) {
+    public HttpEntity<RpCharResponse> updateCharacterTitle(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterTitle Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterTitle");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterTitle);
         log.debug("Successfully updated character title without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update RpChar gear", description = "Update the used gear of a Roleplay Character")
     @PatchMapping(PATH_RPCHAR_GEAR)
-    public HttpEntity<RPChar> updateCharacterGear(@RequestBody UpdateRpCharDto dto) {
+    public HttpEntity<RpCharResponse> updateCharacterGear(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterGear Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterGear");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterGear);
         log.debug("Successfully updated character Gear without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
 
     @Operation(summary = "Update RpChar PvP", description = "Update if a Roleplay Character is participating in PvP")
     @PatchMapping(PATH_RPCHAR_PVP)
-    public HttpEntity<RPChar> updateCharacterPvP(@RequestBody UpdateRpCharDto dto) {
+    public HttpEntity<RpCharResponse> updateCharacterPvP(@RequestBody UpdateRpCharDto dto) {
 
         log.debug("Incoming updateCharacterPvP Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterPvP");
         RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterPvp);
         log.debug("Successfully updated character PvP without encountering any errors");
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully updated RPChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Delete Player", description = "Delete a Player")
@@ -228,16 +237,17 @@ public class PlayerRestController extends AbstractRestController {
 
     @Operation(summary = "Delete RpChar", description = "Delete a Roleplay Character")
     @DeleteMapping(PATH_RPCHAR)
-    public HttpEntity<RPChar> deleteRpChar(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<RpCharResponse> deleteRpChar(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming deleteRpChar Request: Data [{}]", dto);
 
         log.trace("Executing playerService.deleteRpChar");
         RPChar rpChar = wrappedServiceExecution(dto,playerService::deleteRpChar);
         log.debug("Successfully deleted rpchar, [{}]", rpChar);
+        var response = new RpCharResponse(rpChar);
 
         log.info("Sending HttpResponse with successfully deleted RpChar [{}]", rpChar);
-        return ResponseEntity.ok(rpChar);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Injure RpChar", description = "Injure a roleplay character")
