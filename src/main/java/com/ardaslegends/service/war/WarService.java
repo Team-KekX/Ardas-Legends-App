@@ -3,6 +3,7 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.War;
+import com.ardaslegends.presentation.api.response.war.CreateWarResponse;
 import com.ardaslegends.repository.FactionRepository;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
@@ -29,11 +30,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class WarService extends AbstractService<War, WarRepository> {
     private final WarRepository warRepository;
-
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
-
-    private final DiscordApi discordApi;
 
     @Transactional(readOnly = false)
     public War createWar(CreateWarDto createWarDto) {
@@ -81,11 +79,7 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.cannotDeclareWarOnYourFaction();
         }
 
-        var allWarsOfAttacker = secureFind(attackingFaction , warRepository::findAllWarsWithFaction);
-        
-        boolean alreadyAtWar = allWarsOfAttacker.stream()
-                .anyMatch(war -> (war.getAggressors().contains(attackingFaction) && war.getDefenders().contains(defendingFaction))
-                        || (war.getAggressors().contains(defendingFaction) && war.getDefenders().contains(attackingFaction)));
+        boolean alreadyAtWar = secureFind(attackingFaction, defendingFaction, warRepository::isFactionAtWarWithOtherFaction);
 
         if(alreadyAtWar) {
             log.warn("The factions '{}' and '{}' are already at war!", attackingFaction.getName(), defendingFaction.getName());
