@@ -1,5 +1,7 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.domain.war.War;
+import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -68,7 +71,7 @@ public final class Faction extends AbstractDomainEntity {
 
     @ElementCollection
     @CollectionTable(name = "army_sieges")
-    private List<String> aliases;
+    private Set<String> aliases = new LinkedHashSet<>();
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;

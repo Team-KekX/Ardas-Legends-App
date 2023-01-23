@@ -81,7 +81,7 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.cannotDeclareWarOnYourFaction();
         }
 
-        Set<War> allWarsOfAttacker = secureFind(attackingFaction , warRepository::findAllWarsWithFaction);
+        var allWarsOfAttacker = secureFind(attackingFaction , warRepository::findAllWarsWithFaction);
         
         boolean alreadyAtWar = allWarsOfAttacker.stream()
                 .anyMatch(war -> (war.getAggressors().contains(attackingFaction) && war.getDefenders().contains(defendingFaction))
