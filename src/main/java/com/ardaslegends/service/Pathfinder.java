@@ -22,11 +22,11 @@ public class Pathfinder {
     private final RegionRepository _regionRepository;
 
     public static final int UNREACHABLE_COST = 999999;
+
     /**
      * Find the shortest path
      * Return an object which contains the path and sum of weights
      */
-
     public List<PathElement> findShortestWay(Region startRegion, Region endRegion, Player player, boolean isCharacterMove) {
         log.info("Finding Path for player '{}': from '{}' to '{}' isRpChar: {}", player.getIgn(), startRegion.getId(), endRegion.getId(), isCharacterMove);
         log.debug("Movement is army move: {}", (!isCharacterMove));
@@ -54,7 +54,6 @@ public class Pathfinder {
         visitedRegions.add(startRegion.getId());
 
         Region currentRegion = startRegion;
-        //loop through nodes
         log.debug("Starting the loop...");
         while (currentRegion != endRegion) {
             //get the shortest path so far from start to currentNode
@@ -68,7 +67,6 @@ public class Pathfinder {
             for (Region neighbourRegion : neighbourRegions) {
 
                 log.trace("Checking if neighbor has been visited yet...");
-                //add node to queue if not already visited
                 if (!visitedRegions.contains(neighbourRegion.getId()) && !regionsToVisit.contains(neighbourRegion)) {
                     log.debug("Region {} hasn't been visited yet - adding to queue", neighbourRegion.getId());
                     regionsToVisit.add(neighbourRegion);
@@ -87,27 +85,22 @@ public class Pathfinder {
                 log.debug("Calculated Cost for this Region -> {}", currentRegionCost);
 
                 log.debug("Checking if there is a shorter path already");
-                //if we already have a distance to neighbourRegion, compare with this distance
                 if (previousRegions.containsKey(neighbourRegion)) {
                     log.trace("Found another path - checking which is shorter...");
-                    //get the recorded smallest distance
                     final int lowestPreviousCost = smallestWeights.get(neighbourRegion);
 
-                    //if this distance is better, update the smallest distance + prev node
                     if (currentRegionCost < lowestPreviousCost) {
                         log.debug("Current path is shorter, setting as new shortest Path (old: {} - new: {})", lowestPreviousCost, currentRegionCost);
                         previousRegions.put(neighbourRegion, currentRegion);
                         smallestWeights.put(neighbourRegion, currentRegionCost);
                     }
                 } else {
-                    //if there is no distance recoded yet, add now
                     log.debug("No path found - setting as new shortest Path (cost: {})", currentRegionCost);
                     previousRegions.put(neighbourRegion, currentRegion);
                     smallestWeights.put(neighbourRegion, currentRegionCost);
                 }
             }
 
-            //mark that we've visited this node
             log.trace("Setting current node as visited");
             visitedRegions.add(currentRegion.getId());
 
@@ -123,8 +116,7 @@ public class Pathfinder {
                     });
         }
 
-        //get the shortest path into an array
-        ArrayList<PathElement> path = buildShortestPath(startRegion, endRegion, isCharacterMove, smallestWeights, previousRegions);
+        var path = buildShortestPath(startRegion, endRegion, isCharacterMove, smallestWeights, previousRegions);
         log.trace("Final path is now: {}", ServiceUtils.buildPathString(path));
 
         int summedCost = ServiceUtils.getTotalPathCost(path);
