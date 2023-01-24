@@ -48,81 +48,83 @@ public class Pathfinder {
         smallestWeights.put(startRegion, 0);
 
         //implicit graph of all nodes and previous node in ideal paths
-        Map<Region, Region> prevNodes = new HashMap<>();
+        Map<Region, Region> previousRegions = new HashMap<>();
 
         //use queue for breadth first search
         //for convenience, we'll use an array, but linked list would be preferred
-        ArrayList<Region> nodesToVisitQueue = new ArrayList<>();
+        ArrayList<Region> regionsToVisit = new ArrayList<>();
 
         //record visited nodes with a set. The string is the toString of a HexID
-        Set<String> visitedNodes = new HashSet<>();
-        visitedNodes.add(startRegion.getId());
+        Set<String> visitedRegions = new HashSet<>();
+        visitedRegions.add(startRegion.getId());
 
-        Region currentNode = startRegion;
+        Region currentRegion = startRegion;
         //loop through nodes
         log.debug("Starting the loop...");
-        while (currentNode != endRegion) {
+        while (currentRegion != endRegion) {
             //get the shortest path so far from start to currentNode
-            final int dist = smallestWeights.get(currentNode);
+            final int dist = smallestWeights.get(currentRegion);
 
-            log.debug("Checking region {}", currentNode.getId());
+            log.debug("Checking region {}", currentRegion.getId());
 
             //iterate over current child's nodes and process
-            Set<Region> neighbourRegions = currentNode.getNeighboringRegions();
-            log.trace("Iterating over Region {}'s neighbours", currentNode.getId());
+            Set<Region> neighbourRegions = currentRegion.getNeighboringRegions();
+            log.trace("Iterating over Region {}'s neighbours", currentRegion.getId());
             for (Region neighbourRegion : neighbourRegions) {
 
                 log.trace("Checking if neighbor has been visited yet...");
                 //add node to queue if not already visited
-                if (!visitedNodes.contains(neighbourRegion.getId()) && !nodesToVisitQueue.contains(neighbourRegion)) {
+                if (!visitedRegions.contains(neighbourRegion.getId()) && !regionsToVisit.contains(neighbourRegion)) {
                     log.debug("Region {} hasn't been visited yet - adding to queue", neighbourRegion.getId());
-                    nodesToVisitQueue.add(neighbourRegion);
+                    regionsToVisit.add(neighbourRegion);
                 }
 
                 log.debug("Calculating the cost for Region {}", neighbourRegion.getId());
 
                 int currentRegionCost = 0;
 
-                currentRegionCost += calculateCostDependingOnRegionType(currentNode, dist, neighbourRegion, currentRegionCost);
+                currentRegionCost += calculateCostDependingOnRegionType(currentRegion, dist, neighbourRegion, currentRegionCost);
 
-                if(!isCharacterMove) {
+                if(!isCharacterMove)
                     currentRegionCost += applyArmyMovementRules(player, neighbourRegion, currentRegionCost);
-                }
+
 
                 log.debug("Calculated Cost for this Region -> {}", currentRegionCost);
 
                 log.debug("Checking if there is a shorter path already");
                 //if we already have a distance to neighbourRegion, compare with this distance
-                if (prevNodes.containsKey(neighbourRegion)) {
+                if (previousRegions.containsKey(neighbourRegion)) {
                     log.trace("Found another path - checking which is shorter...");
                     //get the recorded smallest distance
-                    final int altDist = smallestWeights.get(neighbourRegion);
+                    final int lowestPreviousCost = smallestWeights.get(neighbourRegion);
 
                     //if this distance is better, update the smallest distance + prev node
-                    if (currentRegionCost < altDist) {
-                        log.debug("Current path is shorter, setting as new shortest Path (old: {} - new: {})", altDist, currentRegionCost);
-                        prevNodes.put(neighbourRegion, currentNode);
+                    if (currentRegionCost < lowestPreviousCost) {
+                        log.debug("Current path is shorter, setting as new shortest Path (old: {} - new: {})", lowestPreviousCost, currentRegionCost);
+                        previousRegions.put(neighbourRegion, currentRegion);
                         smallestWeights.put(neighbourRegion, currentRegionCost);
                     }
                 } else {
                     //if there is no distance recoded yet, add now
                     log.debug("No path found - setting as new shortest Path (cost: {})", currentRegionCost);
-                    prevNodes.put(neighbourRegion, currentNode);
+                    previousRegions.put(neighbourRegion, currentRegion);
                     smallestWeights.put(neighbourRegion, currentRegionCost);
                 }
             }
 
             //mark that we've visited this node
             log.trace("Setting current node as visited");
-            visitedNodes.add(currentNode.getId());
+            visitedRegions.add(currentRegion.getId());
 
             //exit if done
             //pull the next node to visit, if any
             log.trace("Getting the next node to visit and removing current one from queue");
-            nodesToVisitQueue.remove(currentNode);
-            currentNode = nodesToVisitQueue.stream().min(Comparator.comparingInt(smallestWeights::get)).get();
+            regionsToVisit.remove(currentRegion);
+            currentRegion = regionsToVisit.stream()
+                    .min(Comparator.comparingInt(smallestWeights::get))
+                    .get();
 
-            if (currentNode == null) {
+            if (currentRegion == null) {
                 log.warn("No Region to visit!");
                 throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
             }
@@ -132,21 +134,21 @@ public class Pathfinder {
         ArrayList<PathElement> path = new ArrayList<>();
 
         log.trace("Building the Path");
-        currentNode = endRegion;
-        while (!Objects.equals(currentNode.getId(), startRegion.getId())) {
+        currentRegion = endRegion;
+        while (!Objects.equals(currentRegion.getId(), startRegion.getId())) {
             log.trace("Getting the cost of the path");
-            if (smallestWeights.get(currentNode) >= UNREACHABLE_COST) {
+            if (smallestWeights.get(currentRegion) >= UNREACHABLE_COST) {
                 log.warn("Could not find a valid path from region [{}] to region [{}]", startRegion, endRegion);
                 throw PathfinderServiceException.noPathFound(startRegion.getId(), endRegion.getId());
             }
-            int baseCost = currentNode.getCost();
+            int baseCost = currentRegion.getCost();
             int actualCost = baseCost;
             if (isCharacterMove) {
                 log.trace("Halving the cost since the movement is a RpChar move");
                 actualCost = (int) (baseCost / 2.0);
             }
-            PathElement pathElement = new PathElement(actualCost, baseCost, currentNode);
-            currentNode = prevNodes.get(currentNode);
+            PathElement pathElement = new PathElement(actualCost, baseCost, currentRegion);
+            currentRegion = previousRegions.get(currentRegion);
             path.add(pathElement);
         }
         PathElement pathElement = new PathElement(0, startRegion.getCost(), startRegion);
