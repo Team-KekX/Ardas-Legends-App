@@ -2,6 +2,7 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.RegionRepository;
+import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.exceptions.PathfinderServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 public class PathfinderTest {
 
     private RegionRepository mockRepository;
+    private WarRepository mockWarRepository;
     private Pathfinder pathfinder;
     private Player player;
 
@@ -94,12 +96,13 @@ public class PathfinderTest {
         List<Region> regionList = List.of(r1, r2, r3, r4, r5, r6, rs1, rs2);
 
         mockRepository = mock(RegionRepository.class);
+        mockWarRepository = mock(WarRepository.class);
 
         for (Region region : regionList) {
             when(mockRepository.findById(region.getId())).thenReturn(Optional.of(region));
         }
 
-        pathfinder = new Pathfinder(mockRepository);
+        pathfinder = new Pathfinder(mockRepository, mockWarRepository);
     }
 
     @Test
