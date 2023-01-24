@@ -18,6 +18,7 @@ import org.javacord.api.DiscordApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -93,6 +94,16 @@ public class WarService extends AbstractService<War, WarRepository> {
 
         log.info("Successfully executed and saved new war {}", war.getName());
         return war;
+    }
+
+    public Set<War> getWarsOfFaction(String factionName) {
+        // TODO, not yet implemented
+        return null;
+    }
+
+    public Set<War> getWarsOfFaction(Faction faction) {
+        Set<War> wars = secureFind(faction, warRepository::findAllWarsWithFaction);
+        return wars;
     }
 
 }
