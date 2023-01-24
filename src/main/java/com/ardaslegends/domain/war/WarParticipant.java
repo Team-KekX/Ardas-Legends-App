@@ -11,6 +11,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -28,4 +29,16 @@ public class WarParticipant  {
 
     private LocalDateTime joiningDate;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WarParticipant that = (WarParticipant) o;
+        return Objects.equals(warParticipant, that.warParticipant);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(warParticipant);
+    }
 }
