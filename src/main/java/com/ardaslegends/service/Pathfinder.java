@@ -1,11 +1,13 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.domain.war.War;
 import com.ardaslegends.repository.RegionRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.exceptions.PathfinderServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import com.ardaslegends.service.war.WarService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Pathfinder {
     private final RegionRepository regionRepository;
-    private final WarRepository warRepository;
+    private final WarService warService;
 
     public static final int UNREACHABLE_COST = 999999;
 
@@ -37,6 +39,8 @@ public class Pathfinder {
             log.warn("StartRegion [{}] is the same as endRegion [{}]", startRegion, endRegion);
             throw PathfinderServiceException.alreadyInRegion();
         }
+
+        var wars = warService.getWarsOfFaction(player.getFaction());
 
         log.debug("Initializing data for Pathfinding...");
         //smallest weights between startRegion and all the other nodes
@@ -81,7 +85,7 @@ public class Pathfinder {
                 currentRegionCost += calculateCostDependingOnRegionType(currentRegion, dist, neighbourRegion, currentRegionCost);
 
                 if(!isCharacterMove)
-                    currentRegionCost += applyArmyMovementRules(player, neighbourRegion, currentRegionCost);
+                    currentRegionCost += applyArmyMovementRules(player, neighbourRegion, currentRegionCost, wars);
 
 
                 log.debug("Calculated Cost for this Region -> {}", currentRegionCost);
@@ -179,7 +183,7 @@ public class Pathfinder {
 
             if(hasHarbor) {
                 log.debug("Found Harbour in current Region ({}) - can embark", neighbourRegion.getId());
-                currentRegionCost += dist + 1;
+                currentRegionCost += 1;
             }
             else {
                 log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
@@ -195,21 +199,29 @@ public class Pathfinder {
         return currentRegionCost;
     }
 
-    private int applyArmyMovementRules(Player player, Region neighbourRegion, int currentRegionCost) {
+    private int applyArmyMovementRules(Player player, Region neighbourRegion, int currentRegionCost, Set<War> wars) {
         log.debug("Checking if army can move through Region {}", neighbourRegion.getId());
 
-        boolean isNotClaimedByFaction = !neighbourRegion.getClaimedBy().contains(player.getFaction());
-        log.trace("Region {} is claimed by Faction: {}", neighbourRegion.getId(), !isNotClaimedByFaction);
+        boolean isClaimedByPlayersFaction = neighbourRegion.getClaimedBy().contains(player.getFaction());
+        log.trace("Region {} is claimed by Faction: {}", neighbourRegion.getId(), isClaimedByPlayersFaction);
 
-        boolean isNotClaimedByAlly = player.getFaction().getAllies().stream()
-                .noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction));
-        log.trace("Region {} is claimed by ally: {}", neighbourRegion.getId(), !isNotClaimedByAlly);
+        boolean isClaimedByAlly = player.getFaction().getAllies().stream()
+                .anyMatch(faction -> neighbourRegion.getClaimedBy().contains(faction));
+        log.trace("Region {} is claimed by ally: {}", neighbourRegion.getId(), isClaimedByAlly);
 
-        boolean isNotUnclaimed = !neighbourRegion.getClaimedBy().isEmpty();
-        log.trace("Region {} is unclaimed: {}", neighbourRegion.getId(), !isNotUnclaimed);
+        boolean isUnclaimed = neighbourRegion.getClaimedBy().isEmpty();
+        log.trace("Region {} is unclaimed: {}", neighbourRegion.getId(), isUnclaimed);
 
-        if (isNotClaimedByAlly && isNotClaimedByFaction && isNotUnclaimed) {
-            log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies!", neighbourRegion.getId());
+        boolean isAtWarWithFactionInRegion = wars.parallelStream()
+                .map(war -> war.getEnemies(player.getFaction()))
+                .flatMap(Collection::stream)
+                .distinct()
+                .map(participant -> participant.getWarParticipant())
+                .anyMatch(enemyFaction -> neighbourRegion.getClaimedBy().contains(enemyFaction));
+        log.trace("Region {} isAtWarWithFactionInRegion: {}", neighbourRegion.getId(), isAtWarWithFactionInRegion);
+
+        if (!isClaimedByAlly && !isClaimedByPlayersFaction && !isUnclaimed && !isAtWarWithFactionInRegion) {
+            log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies or at war with another faction in the region!", neighbourRegion.getId());
             currentRegionCost = UNREACHABLE_COST;
         }
         return currentRegionCost;
