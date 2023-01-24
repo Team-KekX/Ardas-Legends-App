@@ -27,12 +27,7 @@ public class Pathfinder {
      * Return an object which contains the path and sum of weights
      */
 
-    public List<PathElement> findShortestWay(
-            Region startRegion,
-            Region endRegion,
-            Player player,
-            boolean isCharacterMove
-    ) {
+    public List<PathElement> findShortestWay(Region startRegion, Region endRegion, Player player, boolean isCharacterMove) {
         log.info("Finding Path for player '{}': from '{}' to '{}' isRpChar: {}", player.getIgn(), startRegion.getId(), endRegion.getId(), isCharacterMove);
         log.debug("Movement is army move: {}", (!isCharacterMove));
 
