@@ -93,8 +93,8 @@ public class Pathfinder {
                     boolean isNotClaimedByFaction = !neighbourRegion.getClaimedBy().contains(player.getFaction());
                     log.trace("Region {} is claimed by Faction: {}", neighbourRegion.getId(), !isNotClaimedByFaction);
 
-                    boolean isNotClaimedByAlly = player.getFaction().getAllies().stream().noneMatch(faction ->
-                            neighbourRegion.getClaimedBy().contains(faction));
+                    boolean isNotClaimedByAlly = player.getFaction().getAllies().stream()
+                            .noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction));
                     log.trace("Region {} is claimed by ally: {}", neighbourRegion.getId(), !isNotClaimedByAlly);
 
                     boolean isNotUnclaimed = !neighbourRegion.getClaimedBy().isEmpty();
@@ -112,22 +112,19 @@ public class Pathfinder {
                 if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) { //Checks if the current Region is land and has a Sea Region as neighbor
                     log.trace("Current region is Land and neighbors a Sea region - continue check for harbour");
 
-                    boolean canEmbark = false;
                     log.trace("Checking Region's claimbuilds for harbour");
-                    for (ClaimBuild claimbuild : currentNode.getClaimBuilds()) {
-                        if (claimbuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR)) {
-                            log.debug("Found Harbour in current Region ({}) - can embark", neighbourRegion.getId());
-                            thisDist += dist + 1;
-                            canEmbark = true;
-                            break;
-                        }
+                    boolean hasHarbor = currentNode.getClaimBuilds().stream()
+                            .anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR));
+
+                    if(hasHarbor) {
+                        log.debug("Found Harbour in current Region ({}) - can embark", neighbourRegion.getId());
+                        thisDist += dist + 1;
                     }
-                    // It's a code smell I know. Had to find a quick fix.
-                    // Should be part of the next code review.
-                    if (!canEmbark) {
+                    else {
                         log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
                         thisDist = 99999999;
                     }
+
                 } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) { //Checks if current region is Sea and neighbor is land
                     log.debug("Current region is Sea region and neighbors land region - can disembark");
                     thisDist += dist + neighbourRegion.getCost() + 1;
