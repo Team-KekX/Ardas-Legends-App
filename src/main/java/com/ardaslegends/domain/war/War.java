@@ -3,13 +3,11 @@ package com.ardaslegends.domain.war;
 import com.ardaslegends.domain.AbstractDomainEntity;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.service.exceptions.WarServiceException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -64,6 +62,25 @@ public class War extends AbstractDomainEntity {
         this.defenders.add(defenderWarParticipant);
 
         this.startDate = warDeclarationDate;
+    }
+
+    @NotNull
+    public Set<WarParticipant> getEnemies(Faction faction) {
+        var containsAggressor = this.aggressors.stream()
+                .map(participant -> participant.getWarParticipant())
+                .anyMatch(aggressor -> aggressor.equals(faction));
+
+        if (containsAggressor)
+            return this.aggressors;
+
+        var containsDefenders = this.defenders.stream()
+                .map(participant -> participant.getWarParticipant())
+                .anyMatch(defender -> defender.equals(faction));
+
+        if(containsDefenders)
+            return this.defenders;
+
+        return new HashSet<WarParticipant>();
     }
 
     private <T> void addToSet(Set<T> set, T object, WarServiceException exception) {
