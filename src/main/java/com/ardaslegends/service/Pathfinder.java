@@ -122,15 +122,27 @@ public class Pathfinder {
             regionsToVisit.remove(currentRegion);
             currentRegion = regionsToVisit.stream()
                     .min(Comparator.comparingInt(smallestWeights::get))
-                    .get();
-
-            if (currentRegion == null) {
-                log.warn("No Region to visit!");
-                throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
-            }
+                    .orElseThrow(() -> {
+                        log.warn("No Region to visit!");
+                        throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
+                    });
         }
 
         //get the shortest path into an array
+        ArrayList<PathElement> path = buildShortestPath(startRegion, endRegion, isCharacterMove, smallestWeights, previousRegions);
+        log.trace("Final path is now: {}", ServiceUtils.buildPathString(path));
+
+        int summedCost = ServiceUtils.getTotalPathCost(path);
+        log.debug("Final cost is {}", summedCost);
+
+        log.info("Finished finding shortest path from {} to {}", startRegion.getId(), endRegion.getId());
+        log.info("Cost: {}h - Path: {}", summedCost, path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> ")));
+
+        return path;
+    }
+
+    private ArrayList<PathElement> buildShortestPath(Region startRegion, Region endRegion, boolean isCharacterMove, Map<Region, Integer> smallestWeights, Map<Region, Region> previousRegions) {
+        Region currentRegion;
         ArrayList<PathElement> path = new ArrayList<>();
 
         log.trace("Building the Path");
@@ -141,12 +153,15 @@ public class Pathfinder {
                 log.warn("Could not find a valid path from region [{}] to region [{}]", startRegion, endRegion);
                 throw PathfinderServiceException.noPathFound(startRegion.getId(), endRegion.getId());
             }
+
             int baseCost = currentRegion.getCost();
             int actualCost = baseCost;
+
             if (isCharacterMove) {
                 log.trace("Halving the cost since the movement is a RpChar move");
                 actualCost = (int) (baseCost / 2.0);
             }
+
             PathElement pathElement = new PathElement(actualCost, baseCost, currentRegion);
             currentRegion = previousRegions.get(currentRegion);
             path.add(pathElement);
@@ -155,17 +170,8 @@ public class Pathfinder {
         path.add(pathElement);
 
         log.trace("Reversing the path so it starts with the start region");
-        //reverse the path so it starts with startRegion
         Collections.reverse(path);
 
-        log.trace("Final path is now: {}", ServiceUtils.buildPathString(path));
-
-        int summedCost = ServiceUtils.getTotalPathCost(path);
-
-        log.debug("Final cost is {}", summedCost);
-
-        log.info("Finished finding shortest path from {} to {}", startRegion.getId(), endRegion.getId());
-        log.info("Cost: {}h - Path: {}", summedCost, path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> ")));
         return path;
     }
 
