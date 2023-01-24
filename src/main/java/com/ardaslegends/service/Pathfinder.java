@@ -73,67 +73,16 @@ public class Pathfinder {
 
                 log.trace("Checking if neighbor has been visited yet...");
                 //add node to queue if not already visited
-                if (
-                        !visitedNodes.contains(neighbourRegion.getId()) &&
-                                !nodesToVisitQueue.contains(neighbourRegion)
-                ) {
+                if (!visitedNodes.contains(neighbourRegion.getId()) && !nodesToVisitQueue.contains(neighbourRegion)) {
                     log.debug("Region {} hasn't been visited yet - adding to queue", neighbourRegion.getId());
                     nodesToVisitQueue.add(neighbourRegion);
                 }
 
                 log.debug("Calculating the cost for Region {}", neighbourRegion.getId());
 
-                // CALCULATE COST
-                int thisDist = 0;
+                int currentRegionCost = calculateCurrentRegionCost(player, isCharacterMove, currentNode, dist, neighbourRegion);
 
-                // Check if we can move to that region as an army
-                if (!isCharacterMove) {
-                    log.debug("Checking if army can move through Region {}", neighbourRegion.getId());
-
-                    boolean isNotClaimedByFaction = !neighbourRegion.getClaimedBy().contains(player.getFaction());
-                    log.trace("Region {} is claimed by Faction: {}", neighbourRegion.getId(), !isNotClaimedByFaction);
-
-                    boolean isNotClaimedByAlly = player.getFaction().getAllies().stream()
-                            .noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction));
-                    log.trace("Region {} is claimed by ally: {}", neighbourRegion.getId(), !isNotClaimedByAlly);
-
-                    boolean isNotUnclaimed = !neighbourRegion.getClaimedBy().isEmpty();
-                    log.trace("Region {} is unclaimed: {}", neighbourRegion.getId(), !isNotUnclaimed);
-
-                    if (isNotClaimedByAlly && isNotClaimedByFaction && isNotUnclaimed) {
-                        log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies!", neighbourRegion.getId());
-                        thisDist = 99999999;
-                    }
-                }
-
-                log.debug("Checking if dis-/embarking...");
-
-                // Check if we are embarking or disembarking
-                if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) { //Checks if the current Region is land and has a Sea Region as neighbor
-                    log.trace("Current region is Land and neighbors a Sea region - continue check for harbour");
-
-                    log.trace("Checking Region's claimbuilds for harbour");
-                    boolean hasHarbor = currentNode.getClaimBuilds().stream()
-                            .anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR));
-
-                    if(hasHarbor) {
-                        log.debug("Found Harbour in current Region ({}) - can embark", neighbourRegion.getId());
-                        thisDist += dist + 1;
-                    }
-                    else {
-                        log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
-                        thisDist = 99999999;
-                    }
-
-                } else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) { //Checks if current region is Sea and neighbor is land
-                    log.debug("Current region is Sea region and neighbors land region - can disembark");
-                    thisDist += dist + neighbourRegion.getCost() + 1;
-                } else {
-                    log.debug("Current region is land region of type {}", currentNode.getRegionType().name());
-                    thisDist += dist + neighbourRegion.getCost();
-                }
-
-                log.debug("Calculated Cost for this Region -> {}", thisDist);
+                log.debug("Calculated Cost for this Region -> {}", currentRegionCost);
 
                 log.debug("Checking if there is a shorter path already");
                 //if we already have a distance to neighbourRegion, compare with this distance
@@ -143,16 +92,16 @@ public class Pathfinder {
                     final int altDist = smallestWeights.get(neighbourRegion);
 
                     //if this distance is better, update the smallest distance + prev node
-                    if (thisDist < altDist) {
-                        log.debug("Current path is shorter, setting as new shortest Path (old: {} - new: {})", altDist, thisDist);
+                    if (currentRegionCost < altDist) {
+                        log.debug("Current path is shorter, setting as new shortest Path (old: {} - new: {})", altDist, currentRegionCost);
                         prevNodes.put(neighbourRegion, currentNode);
-                        smallestWeights.put(neighbourRegion, thisDist);
+                        smallestWeights.put(neighbourRegion, currentRegionCost);
                     }
                 } else {
                     //if there is no distance recoded yet, add now
-                    log.debug("No path found - setting as new shortest Path (cost: {})", thisDist);
+                    log.debug("No path found - setting as new shortest Path (cost: {})", currentRegionCost);
                     prevNodes.put(neighbourRegion, currentNode);
-                    smallestWeights.put(neighbourRegion, thisDist);
+                    smallestWeights.put(neighbourRegion, currentRegionCost);
                 }
             }
 
@@ -209,5 +158,58 @@ public class Pathfinder {
         log.info("Finished finding shortest path from {} to {}", startRegion.getId(), endRegion.getId());
         log.info("Cost: {}h - Path: {}", summedCost, path.stream().map(PathElement::getRegion).map(Region::getId).collect(Collectors.joining(" -> ")));
         return path;
+    }
+
+    private int calculateCurrentRegionCost(Player player, boolean isCharacterMove, Region currentNode, int dist, Region neighbourRegion) {
+        int currentRegionCost = 0;
+
+        if (!isCharacterMove) {
+            log.debug("Checking if army can move through Region {}", neighbourRegion.getId());
+
+            boolean isNotClaimedByFaction = !neighbourRegion.getClaimedBy().contains(player.getFaction());
+            log.trace("Region {} is claimed by Faction: {}", neighbourRegion.getId(), !isNotClaimedByFaction);
+
+            boolean isNotClaimedByAlly = player.getFaction().getAllies().stream()
+                    .noneMatch(faction -> neighbourRegion.getClaimedBy().contains(faction));
+            log.trace("Region {} is claimed by ally: {}", neighbourRegion.getId(), !isNotClaimedByAlly);
+
+            boolean isNotUnclaimed = !neighbourRegion.getClaimedBy().isEmpty();
+            log.trace("Region {} is unclaimed: {}", neighbourRegion.getId(), !isNotUnclaimed);
+
+            if (isNotClaimedByAlly && isNotClaimedByFaction && isNotUnclaimed) {
+                log.debug("Army cannot move through Region {} - it is not unclaimed or claimed by the player's faction or its allies!", neighbourRegion.getId());
+                currentRegionCost = 99999999;
+            }
+        }
+
+        log.debug("Checking if dis-/embarking...");
+
+        // Check if we are embarking or disembarking
+        if (currentNode.getRegionType() != RegionType.SEA && neighbourRegion.getRegionType() == RegionType.SEA) { //Checks if the current Region is land and has a Sea Region as neighbor
+            log.trace("Current region is Land and neighbors a Sea region - continue check for harbour");
+
+            log.trace("Checking Region's claimbuilds for harbour");
+            boolean hasHarbor = currentNode.getClaimBuilds().stream()
+                    .anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HARBOUR));
+
+            if(hasHarbor) {
+                log.debug("Found Harbour in current Region ({}) - can embark", neighbourRegion.getId());
+                currentRegionCost += dist + 1;
+            }
+            else {
+                log.debug("No Harbour found in current Region ({}) - cannot embark", neighbourRegion.getId());
+                currentRegionCost = 99999999;
+            }
+
+        }
+        else if (currentNode.getRegionType() == RegionType.SEA && neighbourRegion.getRegionType() != RegionType.SEA) { //Checks if current region is Sea and neighbor is land
+            log.debug("Current region is Sea region and neighbors land region - can disembark");
+            currentRegionCost += dist + neighbourRegion.getCost() + 1;
+        }
+        else {
+            log.debug("Current region is land region of type {}", currentNode.getRegionType().name());
+            currentRegionCost += dist + neighbourRegion.getCost();
+        }
+        return currentRegionCost;
     }
 }
