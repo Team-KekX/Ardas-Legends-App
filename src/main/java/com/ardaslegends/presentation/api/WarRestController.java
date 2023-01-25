@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.api;
 
+import com.ardaslegends.domain.war.War;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.war.ActiveWarResponse;
 import com.ardaslegends.service.dto.war.CreateWarDto;
@@ -24,7 +25,14 @@ public class WarRestController extends AbstractRestController {
     @PostMapping(CREATE_WAR)
     public ResponseEntity<ActiveWarResponse> createWar(@RequestBody CreateWarDto dto) {
         log.debug("Incoming declareWar Request: Data [{}]", dto);
-        return null;
+
+        War createWarResult = wrappedServiceExecution(dto, warService::createWar);
+        ActiveWarResponse response = new ActiveWarResponse(createWarResult);
+
+        log.debug("Result from service is [{}]", response);
+
+        log.info("Sending successful createWar Request for [{}]", dto.nameOfWar());
+        return ResponseEntity.ok(response);
     }
 
 }
