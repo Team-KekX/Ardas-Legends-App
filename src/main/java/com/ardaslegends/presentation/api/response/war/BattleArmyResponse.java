@@ -1,8 +1,17 @@
 package com.ardaslegends.presentation.api.response.war;
 
+import com.ardaslegends.domain.Army;
+
 public record BattleArmyResponse(
-        String name,
-        String faction,
-        String boundPlayer
+        String nameOfArmy,
+        String nameOfFaction,
+        String boundPlayerIgn
 ) {
+    public BattleArmyResponse(Army army) {
+        this(
+                army.getName(),
+                army.getFaction().getName(),
+                army.getBoundTo().getIgn()
+        );
+    }
 }
