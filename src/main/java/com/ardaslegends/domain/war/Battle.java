@@ -57,8 +57,8 @@ public class Battle extends AbstractDomainEntity {
     public Battle(War war, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, LocalDateTime declaredDate, LocalDateTime timeFrozenFrom, LocalDateTime timeFrozenUntil, LocalDateTime agreedBattleDate, BattleLocation battleLocation) {
         this.war = war;
         this.name = name;
-        this.attackingArmies = attackingArmies;
-        this.defendingArmies = defendingArmies;
+        this.attackingArmies = new HashSet<>(attackingArmies);
+        this.defendingArmies = new HashSet<>(defendingArmies);
         this.declaredDate = declaredDate;
         this.timeFrozenFrom = timeFrozenFrom;
         this.timeFrozenUntil = timeFrozenUntil;
