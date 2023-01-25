@@ -1,7 +1,7 @@
 package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.presentation.AbstractRestController;
-import com.ardaslegends.presentation.api.response.war.CreateWarResponse;
+import com.ardaslegends.presentation.api.response.war.ActiveWarResponse;
 import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.war.WarService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ public class WarRestController extends AbstractRestController {
     private final WarService warService;
 
     @PostMapping(CREATE_WAR)
-    public ResponseEntity<CreateWarResponse> createWar(@RequestBody CreateWarDto dto) {
-        // TODO Implement ig
+    public ResponseEntity<ActiveWarResponse> createWar(@RequestBody CreateWarDto dto) {
+        log.debug("Incoming declareWar Request: Data [{}]", dto);
         return null;
     }
 
