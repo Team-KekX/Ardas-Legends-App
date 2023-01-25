@@ -1,11 +1,16 @@
 package com.ardaslegends.presentation.api.response.war;
 
-import com.ardaslegends.domain.Faction;
-import org.javacord.api.entity.permission.Role;
+import java.time.LocalDateTime;
 
-public record FullWarResponse (
+public record ActiveWarResponse(
         String warName,
 
-        
+        WarParticipantResponse[] aggressors,
+
+        WarParticipantResponse[] defenders,
+
+        LocalDateTime startDate
+
+
 ) {
 }
