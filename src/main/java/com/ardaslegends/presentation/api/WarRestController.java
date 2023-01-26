@@ -25,12 +25,11 @@ import java.util.stream.Collectors;
 @RequestMapping(WarRestController.BASE_URL)
 public class WarRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/wars";
-    public static final String GET_WARS = BASE_URL;
     public static final String CREATE_WAR = "/declare";
 
     private final WarService warService;
 
-    @GetMapping(GET_WARS)
+    @GetMapping(BASE_URL)
     public ResponseEntity<Page<PaginatedWarsResponse>> getWarsPaginated(Pageable pageable) {
         log.debug("Incoming getWarsPaginated Request, paginated data [{}]", pageable);
 
