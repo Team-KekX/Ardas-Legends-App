@@ -13,6 +13,8 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.WarServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,12 @@ public class WarService extends AbstractService<War, WarRepository> {
     private final WarRepository warRepository;
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
+
+    public Page<War> getWars(Pageable pageable) {
+        Objects.requireNonNull(pageable, "Pageable getWarsBody must not be null");
+        var page = secureFind(pageable, warRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public War createWar(CreateWarDto createWarDto) {
