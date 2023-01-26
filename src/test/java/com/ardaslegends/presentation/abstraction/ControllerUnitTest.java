@@ -21,8 +21,24 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
-    @Override
     protected MvcResult post(String path, Object data) throws Exception{
+        return post(path, data, null);
+    }
+
+    protected MvcResult patch(String path, Object data) throws Exception{
+        return patch(path, data, null);
+    }
+
+    protected MvcResult delete(String path, Object data) throws Exception{
+        return delete(path, data, null);
+    }
+
+    protected MvcResult get(String path, Object data) throws Exception{
+        return get(path, data, null);
+    }
+
+    @Override
+    <T> MvcResult post(String path, Object data, Class<T> responseType) throws Exception{
         log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
@@ -36,7 +52,7 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
     }
 
     @Override
-    protected MvcResult patch(String path, Object data) throws Exception{
+    <T> MvcResult patch(String path, Object data, Class<T> responseType) throws Exception{
         log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
@@ -50,7 +66,7 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
     }
 
     @Override
-    protected MvcResult delete(String path, Object data) throws Exception{
+    <T> MvcResult delete(String path, Object data, Class<T> responseType) throws Exception{
         log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
@@ -64,7 +80,7 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
     }
 
     @Override
-    protected MvcResult get(String path, Object data) throws Exception{
+    <T> MvcResult get(String path, Object data, Class<T> responseType) throws Exception{
         log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 

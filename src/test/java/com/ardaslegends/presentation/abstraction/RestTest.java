@@ -28,17 +28,17 @@ public abstract class RestTest<T> {
         url = "http://localhost:8080" + baseUrl;
     }
 
-    abstract protected T post(String path, Object data) throws Exception;
+    abstract <G> T post(String path, Object data, Class<G> responseType) throws Exception;
 
-    abstract protected T patch(String path, Object data) throws Exception;
+    abstract <G> T patch(String path, Object data, Class<G> responseType) throws Exception;
 
-    abstract protected T delete(String path, Object data) throws Exception;
+    abstract <G> T delete(String path, Object data, Class<G> responseType) throws Exception;
 
-    abstract protected T get(String path, Object data) throws Exception;
+    abstract <G> T get(String path, Object data, Class<G> responseType) throws Exception;
 
-    protected <T> T deserialize(MockHttpServletResponse request, Class<T> clazz) throws Exception {
+    protected <G> G deserialize(MockHttpServletResponse request, Class<G> responseType) throws Exception {
         request.setCharacterEncoding("UTF-8");
-        return mapper.readValue(request.getContentAsString(), clazz);
+        return mapper.readValue(request.getContentAsString(), responseType);
     }
 
     protected String serialize(Object data) throws Exception {
