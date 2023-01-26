@@ -85,7 +85,7 @@ public class Pathfinder {
                 currentRegionCost += calculateCostDependingOnRegionType(currentRegion, dist, neighbourRegion, currentRegionCost);
 
                 if(!isCharacterMove)
-                    currentRegionCost += applyArmyMovementRules(player, neighbourRegion, currentRegionCost, wars);
+                    currentRegionCost = applyArmyMovementRules(player, neighbourRegion, currentRegionCost, wars);
 
 
                 log.debug("Calculated Cost for this Region -> {}", currentRegionCost);
@@ -114,12 +114,14 @@ public class Pathfinder {
             //pull the next node to visit, if any
             log.trace("Getting the next node to visit and removing current one from queue");
             regionsToVisit.remove(currentRegion);
-            currentRegion = regionsToVisit.stream()
-                    .min(Comparator.comparingInt(smallestWeights::get))
-                    .orElseThrow(() -> {
-                        log.warn("No Region to visit!");
-                        throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
-                    });
+            currentRegion = regionsToVisit.contains(endRegion) ?
+                    endRegion :
+                    regionsToVisit.stream()
+                            .min(Comparator.comparingInt(smallestWeights::get))
+                            .orElseThrow(() -> {
+                                log.warn("No Region to visit!");
+                                throw ServiceException.pathfinderNoRegions(startRegion, endRegion);
+                            });
         }
 
         var path = buildShortestPath(startRegion, endRegion, isCharacterMove, smallestWeights, previousRegions);

@@ -68,19 +68,21 @@ public class War extends AbstractDomainEntity {
 
     @NotNull
     public Set<WarParticipant> getEnemies(Faction faction) {
+        // If the faction is in the aggressors -> return defenders
         var containsAggressor = this.aggressors.stream()
                 .map(participant -> participant.getWarParticipant())
                 .anyMatch(aggressor -> aggressor.equals(faction));
 
         if (containsAggressor)
-            return this.aggressors;
+            return this.defenders;
 
         var containsDefenders = this.defenders.stream()
                 .map(participant -> participant.getWarParticipant())
                 .anyMatch(defender -> defender.equals(faction));
 
+        // If the faction is in defenders -> return aggressors
         if(containsDefenders)
-            return this.defenders;
+            return this.aggressors;
 
         return new HashSet<WarParticipant>();
     }
