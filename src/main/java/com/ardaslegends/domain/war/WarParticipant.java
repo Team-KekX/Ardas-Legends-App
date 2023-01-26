@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -23,10 +24,13 @@ public class WarParticipant  {
 
     @ManyToOne
     @JoinColumn(name = "participant_faction_id", foreignKey = @ForeignKey(name = "fk_faction_war_participant"))
+    @NotNull
     private Faction warParticipant;
 
-    private boolean initialParty;
+    @NotNull
+    private Boolean initialParty;
 
+    @NotNull
     private LocalDateTime joiningDate;
 
     @Override

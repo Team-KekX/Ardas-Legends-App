@@ -28,6 +28,7 @@ public class War extends AbstractDomainEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String name;
 
     @ElementCollection
@@ -36,6 +37,7 @@ public class War extends AbstractDomainEntity {
     @ElementCollection
     private Set<WarParticipant> defenders = new HashSet<>(2);
 
+    @NotNull
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
@@ -93,7 +95,7 @@ public class War extends AbstractDomainEntity {
 
     private WarParticipant getInitialParty(Set<WarParticipant> participants) {
         return participants.stream()
-                .filter(warParticipant -> warParticipant.isInitialParty())
+                .filter(warParticipant -> warParticipant.getInitialParty())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Found no initialParty in War '%s'".formatted(this.name)));
     }

@@ -13,7 +13,7 @@ public record WarParticipantResponse(
     public WarParticipantResponse(WarParticipant participant) {
         this(
                 participant.getWarParticipant().getName(),
-                participant.isInitialParty(),
+                participant.getInitialParty(),
                 participant.getJoiningDate()
         );
     }
