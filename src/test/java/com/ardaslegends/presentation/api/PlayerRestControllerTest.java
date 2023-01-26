@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
-import com.ardaslegends.presentation.ControllerTest;
+import com.ardaslegends.presentation.abstraction.ControllerUnitTest;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 
 
 @Slf4j
-public class PlayerRestControllerTest extends ControllerTest {
+public class PlayerRestControllerTest extends ControllerUnitTest {
 
 
     private PlayerService mockPlayerService;
