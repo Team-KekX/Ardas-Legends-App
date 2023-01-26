@@ -83,6 +83,21 @@ public class War extends AbstractDomainEntity {
         return new HashSet<WarParticipant>();
     }
 
+    public WarParticipant getInitialAttacker() {
+        return getInitialParty(this.aggressors);
+    }
+
+    public WarParticipant getInitialDefender() {
+        return getInitialParty(this.defenders);
+    }
+
+    private WarParticipant getInitialParty(Set<WarParticipant> participants) {
+        return participants.stream()
+                .filter(warParticipant -> warParticipant.isInitialParty())
+                .findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no initialParty in War '%s'".formatted(this.name)));
+    }
+
     private <T> void addToSet(Set<T> set, T object, WarServiceException exception) {
         var successfullyAdded = set.add(object);
 
