@@ -32,7 +32,7 @@ public class ControllerTest {
     }
 
     protected MvcResult post(String path, Object data) throws Exception{
-        log.trace("Building JSON from DiscordIdDto");
+        log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
         log.debug("Performing Post request to {}", url + path);
@@ -40,12 +40,12 @@ public class ControllerTest {
                         .post(url + path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andReturn();
     }
 
     protected MvcResult patch(String path, Object data) throws Exception{
-        log.trace("Building JSON from DiscordIdDto");
+        log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
         log.debug("Performing Patch request to {}", url + path);
@@ -53,12 +53,12 @@ public class ControllerTest {
                         .patch(url + path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andReturn();
     }
 
     protected MvcResult delete(String path, Object data) throws Exception{
-        log.trace("Building JSON from DiscordIdDto");
+        log.trace("Building JSON from data");
         String requestJson = ow.writeValueAsString(data);
 
         log.debug("Performing Delete request to {}", url + path);
@@ -66,7 +66,20 @@ public class ControllerTest {
                         .delete(url + path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+    }
+
+    protected MvcResult get(String path, Object data) throws Exception{
+        log.trace("Building JSON from data");
+        String requestJson = ow.writeValueAsString(data);
+
+        log.debug("Performing Get request to {}", url + path);
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .get(url + path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn();
     }
 
