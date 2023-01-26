@@ -34,8 +34,6 @@ import java.util.Map;
 @Tag(name = "Player Controller", description = "All REST endpoints regarding Players")
 @RequestMapping(PlayerRestController.BASE_URL)
 public class PlayerRestController extends AbstractRestController {
-    private final PlayerRepository playerRepository;
-    private final ResourceRepository resourceRepository;
 
     public final static String BASE_URL = "/api/player";
 
