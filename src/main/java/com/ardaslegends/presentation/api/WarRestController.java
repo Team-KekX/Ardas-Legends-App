@@ -6,6 +6,8 @@ import com.ardaslegends.presentation.api.response.war.ActiveWarResponse;
 import com.ardaslegends.presentation.api.response.war.PaginatedWarsResponse;
 import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.war.WarService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
+@Tag(name = "War Controller", description = "REST Endpoints concerning Wars")
 @RequestMapping(WarRestController.BASE_URL)
 public class WarRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/wars";
@@ -29,6 +32,7 @@ public class WarRestController extends AbstractRestController {
 
     private final WarService warService;
 
+    @Operation(summary = "Get Wars Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
     @GetMapping(BASE_URL)
     public ResponseEntity<Page<PaginatedWarsResponse>> getWarsPaginated(Pageable pageable) {
         log.debug("Incoming getWarsPaginated Request, paginated data [{}]", pageable);
