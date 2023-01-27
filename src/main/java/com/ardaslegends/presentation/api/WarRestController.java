@@ -33,7 +33,7 @@ public class WarRestController extends AbstractRestController {
     private final WarService warService;
 
     @Operation(summary = "Get Wars Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
-    @GetMapping(BASE_URL)
+    @GetMapping()
     public ResponseEntity<Page<PaginatedWarsResponse>> getWarsPaginated(Pageable pageable) {
         log.debug("Incoming getWarsPaginated Request, paginated data [{}]", pageable);
 
