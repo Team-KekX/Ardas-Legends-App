@@ -21,11 +21,11 @@ public abstract class RestTest<T> {
     protected ObjectWriter ow;
     protected String url;
 
-    protected void baseSetup(AbstractRestController controller, String baseUrl) {
+    void baseSetup(AbstractRestController controller, String baseUrl, Integer port) {
         mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ow = mapper.writer().withDefaultPrettyPrinter();
-        url = "http://localhost:8080" + baseUrl;
+        url = "http://localhost:" + port + baseUrl;
     }
 
     abstract <G> T post(String path, Object data, Class<G> responseType) throws Exception;

@@ -4,6 +4,7 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
+import com.ardaslegends.presentation.abstraction.AbstractIntegrationTest;
 import com.ardaslegends.presentation.abstraction.ControllerUnitTest;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
@@ -17,19 +18,17 @@ import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 
 @Slf4j
-public class PlayerRestControllerTest extends ControllerUnitTest {
+public class PlayerRestControllerTest extends AbstractIntegrationTest {
 
-
-    private PlayerService mockPlayerService;
-    private FactionService mockFactionService;
-
-    private PlayerRestController playerRestController;
+    @Autowired
+    PlayerRestController playerRestController;
 
     String ign = "Luktronic";
     String discordId = "1234";
@@ -52,9 +51,6 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
 
     @BeforeEach
     void setup() {
-        mockPlayerService = mock(PlayerService.class);
-        mockFactionService = mock(FactionService.class);
-        playerRestController = new PlayerRestController(mockPlayerService, mockFactionService);
         baseSetup(playerRestController, PlayerRestController.BASE_URL);
 
         gondor = Faction.builder().name("Gondor").build();
@@ -67,15 +63,6 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         expectedPlayerRpCharResponse = new PlayerRpCharResponse(player);
         createPlayerDto = new CreatePlayerDto(ign, discordId, gondor.getName());
         createRPCharDto = new CreateRPCharDto(discordId, rpChar.getName(), rpChar.getTitle(), rpChar.getGear(), rpChar.getPvp());
-
-        when(mockPlayerService.getPlayerByIgn(ign)).thenReturn(player);
-        when(mockPlayerService.getPlayerByDiscordId(discordId)).thenReturn(player);
-        when(mockPlayerService.createPlayer(createPlayerDto)).thenReturn(player);
-        when(mockPlayerService.createRoleplayCharacter(createRPCharDto)).thenReturn(rpChar);
-        when(mockFactionService.getFactionByName(gondor.getName())).thenReturn(gondor);
-        when(mockFactionService.getFactionByName(mordor.getName())).thenReturn(mordor);
-
-
     }
 
     // Create Method Tests
@@ -83,18 +70,18 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
     @Test
     void ensureCreatePlayerWorksProperly() throws Exception {
         // Act
-        var result = deserialize(post("", createPlayerDto).getResponse(), PlayerResponse.class);
+        var result = post("", createPlayerDto, PlayerResponse.class);
         // Assert
-        assertThat(result).isEqualTo(expectedPlayerResponse);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
     }
 
     // ---------------------------------------------------    Create RPChar Test
 
     @Test
     void ensureCreateRpCharWorksProperly() throws Exception {
-        var result = deserialize(post(PlayerRestController.PATH_RPCHAR, createRPCharDto).getResponse(), RpCharResponse.class);
+        var result = post(PlayerRestController.PATH_RPCHAR, createRPCharDto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
 
     // Read Methods Test
@@ -103,10 +90,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
     @Test
     void ensureGetByIgnWorksProperly() throws Exception{
         // Act
-        var result = deserialize(get(PlayerRestController.PATH_GET_BY_IGN.replace("{ign}", player.getIgn()), null).getResponse(), PlayerRpCharResponse.class);
+        var result = get(PlayerRestController.PATH_GET_BY_IGN.replace("{ign}", player.getIgn()), null, PlayerRpCharResponse.class);
 
         // Assert
-        assertThat(result).isEqualTo(expectedPlayerRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerRpCharResponse);
     }
 
     // by DiscordId
@@ -114,10 +101,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
     @Test
     void ensureGetByDiscordIdWorksProperly() throws Exception{
         // Act
-        var result = deserialize(get(PlayerRestController.PATH_GET_BY_DISCORD_ID.replace("{discId}", player.getDiscordID()), null).getResponse(), PlayerRpCharResponse.class);
+        var result = get(PlayerRestController.PATH_GET_BY_DISCORD_ID.replace("{discId}", player.getDiscordID()), null, PlayerRpCharResponse.class);
 
         // Assert
-        assertThat(result).isEqualTo(expectedPlayerRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerRpCharResponse);
     }
 
     @Test
@@ -129,12 +116,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         player.setFaction(mordor);
         expectedPlayerResponse = new PlayerResponse(player);
 
-        when(mockPlayerService.updatePlayerFaction(dto)).thenReturn(player);
-
         //Act
-        var result = deserialize(patch(PlayerRestController.PATH_FACTION, dto).getResponse(), PlayerResponse.class);
+        var result = patch(PlayerRestController.PATH_FACTION, dto, PlayerResponse.class);
 
-        assertThat(result).isEqualTo(expectedPlayerResponse);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
         log.info("Test passed: updatePlayerFaction works properly when using correct values!");
     }
 
@@ -150,12 +135,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         player.setIgn(dto.ign());
         expectedPlayerResponse = new PlayerResponse(player);
 
-        when(mockPlayerService.updateIgn(dto)).thenReturn(player);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_IGN, dto).getResponse(), PlayerResponse.class);
+        var result = patch(PlayerRestController.PATH_IGN, dto, PlayerResponse.class);
 
-        assertThat(result).isEqualTo(expectedPlayerResponse);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
         log.info("Test passed: updateIgn works properly when using correct values!");
     }
 
@@ -169,12 +152,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         player.setDiscordID(dto.newDiscordId());
         PlayerUpdateDiscordIdResponse expectedResponse = new PlayerUpdateDiscordIdResponse(player, dto.oldDiscordId());
 
-        when(mockPlayerService.updateDiscordId(dto)).thenReturn(player);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_DISCORDID, dto).getResponse(), PlayerUpdateDiscordIdResponse.class);
+        var result = patch(PlayerRestController.PATH_DISCORDID, dto, PlayerUpdateDiscordIdResponse.class);
 
-        assertThat(result).isEqualTo(expectedResponse);
+        assertThat(result.getBody()).isEqualTo(expectedResponse);
         log.info("Test passed: updateDiscordId works properly when using correct values!");
     }
 
@@ -190,12 +171,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         rpChar.setName(dto.charName());
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        when(mockPlayerService.updateCharacterName(dto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_RPCHAR_NAME, dto).getResponse(), RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_RPCHAR_NAME, dto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
 
     // Update title
@@ -209,12 +188,10 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         rpChar.setTitle(dto.title());
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        when(mockPlayerService.updateCharacterTitle(dto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_RPCHAR_TITLE, dto).getResponse(), RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_RPCHAR_TITLE, dto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
 
     // Update Gear
@@ -228,11 +205,9 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         rpChar.setGear(dto.gear());
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        when(mockPlayerService.updateCharacterGear(dto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_RPCHAR_GEAR, dto).getResponse(), RpCharResponse.class);
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        var result = patch(PlayerRestController.PATH_RPCHAR_GEAR, dto, RpCharResponse.class);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
 
     // Update PvP
@@ -247,11 +222,9 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         rpChar.setPvp(dto.pvp());
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        when(mockPlayerService.updateCharacterPvp(dto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_RPCHAR_PVP, dto).getResponse(), RpCharResponse.class);
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        var result = patch(PlayerRestController.PATH_RPCHAR_PVP, dto, RpCharResponse.class);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
     // ------------------------------------------- Delete Methods
 
@@ -261,12 +234,9 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
     void ensureDeletePlayerWorksProperly() throws Exception {
         log.debug("Testing if deletePlayer works properly");
 
-        // Assign
-        when(mockPlayerService.deletePlayer(discordIdDto)).thenReturn(player);
-
         // Act
-        var result = deserialize(delete("", discordIdDto).getResponse(), PlayerResponse.class);
-        assertThat(result).isEqualTo(expectedPlayerResponse);
+        var result = delete("", discordIdDto, PlayerResponse.class);
+        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
     }
 
     // Delete RpChar
@@ -275,12 +245,9 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
     void ensureDeleteRpCharWorksProperly() throws Exception {
         log.debug("Testing if RpChar works properly");
 
-        // Assign
-        when(mockPlayerService.deleteRpChar(discordIdDto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(delete(PlayerRestController.PATH_RPCHAR, discordIdDto).getResponse(), RpCharResponse.class);
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        var result = delete(PlayerRestController.PATH_RPCHAR, discordIdDto, RpCharResponse.class);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
     }
 
 
@@ -292,39 +259,31 @@ public class PlayerRestControllerTest extends ControllerUnitTest {
         rpChar.setInjured(true);
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        when(mockPlayerService.injureChar(discordIdDto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_INJURE, discordIdDto).getResponse(), RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_INJURE, discordIdDto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
         log.info("Test passed: injure RPChar builds the correct response");
     }
 
     @Test
     void ensureStartHealWorksProperly() throws Exception {
         log.debug("Testing if startHeal works properly with correct values");
-
-        // Assign
-        when(mockPlayerService.healStart(discordIdDto)).thenReturn(rpChar);
-
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_HEAL_START, discordIdDto).getResponse(), RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_HEAL_START, discordIdDto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
         log.info("Test passed: startHeal builds the correct response");
     }
 
     @Test
     void ensureStopHealWorksProperly() throws Exception {
         log.debug("Testing if stopHeal works properly with correct values");
-        // Assign
-        when(mockPlayerService.healStop(discordIdDto)).thenReturn(rpChar);
 
         // Act
-        var result = deserialize(patch(PlayerRestController.PATH_HEAL_STOP, discordIdDto).getResponse(), RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_HEAL_STOP, discordIdDto, RpCharResponse.class);
 
-        assertThat(result).isEqualTo(expectedRpCharResponse);
+        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
         log.info("Test passed: stopHeal builds the correct response");
     }
 }

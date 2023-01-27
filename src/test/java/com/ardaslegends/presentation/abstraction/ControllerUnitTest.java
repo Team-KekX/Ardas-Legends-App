@@ -15,9 +15,8 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
 
     private MockMvc mockMvc;
 
-    @Override
     protected void baseSetup(AbstractRestController controller, String baseUrl) {
-        super.baseSetup(controller, baseUrl);
+        super.baseSetup(controller, baseUrl, 8080);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
