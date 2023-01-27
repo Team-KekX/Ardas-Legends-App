@@ -50,18 +50,10 @@ public class DeclareWarCommand implements ALCommandExecutor {
         Faction attacker = result.getAggressors().stream().findFirst().get().getWarParticipant();
         Faction defender= result.getDefenders().stream().findFirst().get().getWarParticipant();
 
-        var attackerRoleOptional = api.getRoleById(attacker.getFactionRoleId());
-        var defenderRoleOptional = api.getRoleById(defender.getFactionRoleId());
-
-        if(attackerRoleOptional.isEmpty()) {
-            // TODO Throw exception
-        }
-        if(defenderRoleOptional.isEmpty()) {
-            // TODO Throw exception
-        }
-
-        var defenderRole = defenderRoleOptional.get();
-        var attackerRole = attackerRoleOptional.get();
+        var attackerRole = attacker.getFactionRole();
+        log.debug("Attacker role [{}]", attackerRole);
+        var defenderRole = defender.getFactionRole();
+        log.debug("Defender role [{}]", defenderRole);
 
         AllowedMentions mentions = new AllowedMentionsBuilder()
                 .setMentionRoles(true)
@@ -74,11 +66,17 @@ public class DeclareWarCommand implements ALCommandExecutor {
                 .append(defenderRole.getMentionTag())
                 .append("!");
 
+
+        log.debug("Title: [{}]", warName);
+        log.debug("Attacker Name: [{}]", attacker.getName());
+
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setTitle("War Declaration: %s".formatted(warName))
+                .setTitle(warName)
+                .setDescription(messageBuilder.getStringBuilder().toString())
                 .addInlineField("Attacker", attacker.getName())
                 .addInlineField("Defender", defender.getName())
                 .setColor(ALColor.GREEN)
+                .setThumbnail(getFactionBanner(attacker.getName()))
                 .setTimestampToNow();
 
         messageBuilder.setEmbed(embedBuilder);

@@ -237,7 +237,7 @@ public interface DiscordUtils {
         }
         try {
             return function.apply(argument);
-        } catch (ServiceException e) {
+        } catch (ServiceException | IllegalArgumentException | NullPointerException e) {
             throw new BotException(errorTitle, e);
         }
     }

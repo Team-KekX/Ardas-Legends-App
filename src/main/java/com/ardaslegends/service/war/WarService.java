@@ -13,6 +13,8 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.WarServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.permission.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class WarService extends AbstractService<War, WarRepository> {
     private final WarRepository warRepository;
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
+    private final DiscordApi discordApi;
 
     public Page<War> getWars(Pageable pageable) {
         Objects.requireNonNull(pageable, "Pageable getWarsBody must not be null");
@@ -92,6 +95,14 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.alreadyAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
 
+        // Get Roles
+        if(attackingFaction.getFactionRole() == null) {
+            attackingFaction.setFactionRole(fetchFactionRole(attackingFaction));
+        }
+        if(defendingFaction.getFactionRole() == null) {
+            defendingFaction.setFactionRole(fetchFactionRole(defendingFaction));
+        }
+
         War war = new War(createWarDto.nameOfWar(), attackingFaction, defendingFaction);
 
         log.debug("Saving War Entity");
@@ -109,6 +120,18 @@ public class WarService extends AbstractService<War, WarRepository> {
     public Set<War> getWarsOfFaction(Faction faction) {
         Set<War> wars = secureFind(faction, warRepository::findAllWarsWithFaction);
         return wars;
+    }
+
+    private Role fetchFactionRole(Faction faction) {
+        Long roleId = faction.getFactionRoleId();
+
+        if(roleId == null) {
+            throw new IllegalArgumentException("CONTACT STAFF -> Faction '%s' does not have a faction role set!".formatted(faction.getName()));
+        }
+
+        return discordApi.getRoleById(roleId)
+                .orElseThrow(() -> new IllegalArgumentException("CONTACT STAFF -> Faction '%s' has a broken roleId! [%s]"
+                                .formatted(faction.getName(), faction.getFactionRoleId())));
     }
 
 }
