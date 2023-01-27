@@ -13,6 +13,8 @@ import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final FactionRepository factionRepository;
     private final UnitTypeService unitTypeService;
     private final ClaimBuildRepository claimBuildRepository;
+
+    public Page<Army> getArmiesPaginated(Pageable pageable) {
+        log.info("Getting page of armies with data [size:{},page:{}]", pageable.getPageSize(), pageable.getPageNumber());
+        Page<Army> page = secureFind(pageable, armyRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public Army createArmy(CreateArmyDto dto) {
