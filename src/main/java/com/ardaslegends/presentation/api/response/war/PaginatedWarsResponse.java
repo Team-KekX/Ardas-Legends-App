@@ -5,6 +5,7 @@ import com.ardaslegends.domain.war.War;
 import java.time.LocalDateTime;
 
 public record PaginatedWarsResponse(
+        long id,
         String nameOfWar,
         String nameOfAttacker,
         String nameOfDefender,
@@ -12,6 +13,7 @@ public record PaginatedWarsResponse(
 ) {
     public PaginatedWarsResponse(War war) {
         this(
+                war.getId(),
                 war.getName(),
                 war.getInitialAttacker().getWarParticipant().getName(),
                 war.getInitialDefender().getWarParticipant().getName(),
