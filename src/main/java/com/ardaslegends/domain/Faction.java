@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
+import org.javacord.api.entity.permission.Role;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -59,6 +60,9 @@ public final class Faction extends AbstractDomainEntity {
 
     @Column(name = "role_id", unique = true)
     private Long factionRoleId; // The roleId of the factionRole so that it can be pinged
+
+    @Transient // Not persisted into DB, only for runtime
+    private Role factionRole;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Region homeRegion; //Homeregion of the faction
