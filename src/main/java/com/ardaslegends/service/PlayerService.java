@@ -11,6 +11,8 @@ import com.ardaslegends.service.external.MojangApiService;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
     private final FactionService factionService;
     private final MojangApiService mojangApiService;
+
+    public Page<Player> getPlayersPaginated(Pageable pageable) {
+        var page = secureFind(pageable, playerRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public Player createPlayer(CreatePlayerDto dto) {

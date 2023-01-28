@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.PaginatedPlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
@@ -19,6 +20,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +57,17 @@ public class PlayerRestController extends AbstractRestController {
 
     private final PlayerService playerService;
     private final FactionService factionService;
+
+
+    @GetMapping
+    public HttpEntity<Page<PaginatedPlayerResponse>> getPlayersPaginated(Pageable pageable) {
+        log.debug("Incoming getPlayersPaginated Request");
+
+        Page<Player> pageDomain = wrappedServiceExecution(pageable, playerService::getPlayersPaginated);
+        var pageResponse = pageDomain.map(PaginatedPlayerResponse::new);
+
+        return ResponseEntity.ok(pageResponse);
+    }
 
     @Operation(summary = "Get by IGN", description = "Get a player by their minecraft IGN")
     @Parameter(name = "ign", description = "Minecraft IGN of the player", example = "Luktronic")
