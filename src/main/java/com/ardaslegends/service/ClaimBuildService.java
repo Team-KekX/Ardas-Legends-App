@@ -12,6 +12,8 @@ import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,11 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
     private final FactionService factionService;
     private final PlayerService playerService;
+
+    public Page<ClaimBuild> getClaimbuildsPaginated(Pageable pageable) {
+        var page = secureFind(pageable, claimbuildRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
