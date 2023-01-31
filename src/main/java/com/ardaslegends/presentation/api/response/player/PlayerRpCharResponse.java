@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Schema(name = "Player", description = "Player response including RpChar information")
+@Schema(name = "Player with RpChar", description = "Player response including RpChar information")
 public record PlayerRpCharResponse (
 
     @Schema(description = "Player's Discord ID", example = "1015367754771083405")
