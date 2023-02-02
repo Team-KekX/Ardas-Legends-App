@@ -711,7 +711,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         List<UpkeepDto> upkeepDtoList = new ArrayList<>();
 
         log.debug("Iterating through factions:");
-        factions.parallelStream().
+        factions.stream().
                 forEach(faction -> {
                     int armyCount = (int) faction.getArmies().stream()
                             .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))

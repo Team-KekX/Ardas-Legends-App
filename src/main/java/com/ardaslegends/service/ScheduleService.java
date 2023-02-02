@@ -47,7 +47,7 @@ public class ScheduleService {
         log.debug("Found [{}] active movements - continuing with handling", allActiveMoves.size());
 
         log.debug("Calling parallelStream handleSingleMovement");
-        allActiveMoves.parallelStream().forEach(movement -> handleSingleMovement(movement, startDateTime));
+        allActiveMoves.stream().forEach(movement -> handleSingleMovement(movement, startDateTime));
 
         log.debug("Saving all movements");
         allActiveMoves = movementService.saveMovements(allActiveMoves);
@@ -74,10 +74,10 @@ public class ScheduleService {
         log.debug("Found [{}] healing chars - continuing with handling", healingPlayers.size());
 
         log.debug("Calling parallelStream handleHealingArmy");
-        healingArmies.parallelStream().forEach(army -> handleHealingArmy(army, startDateTime));
+        healingArmies.stream().forEach(army -> handleHealingArmy(army, startDateTime));
 
         log.debug("Calling parallelStream handleHealingPlayer");
-        healingPlayers.parallelStream().forEach(player -> handleHealingPlayer(player, startDateTime));
+        healingPlayers.stream().forEach(player -> handleHealingPlayer(player, startDateTime));
 
         log.trace("Persisting data");
         healingArmies = armyService.saveArmies(healingArmies);
@@ -288,7 +288,7 @@ public class ScheduleService {
         if(hoursLeft <= 0) {
             log.debug("Healing has less than or 0 hours left - completing it");
             log.debug("Healing all the units");
-            army.getUnits().parallelStream().forEach(unit -> unit.setAmountAlive(unit.getCount()));
+            army.getUnits().stream().forEach(unit -> unit.setAmountAlive(unit.getCount()));
             log.info("Army [{}] has finished its healing process!", army.getName());
             army.resetHealingStats();
         }
