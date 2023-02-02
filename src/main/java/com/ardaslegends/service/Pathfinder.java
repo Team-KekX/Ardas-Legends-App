@@ -214,7 +214,7 @@ public class Pathfinder {
         boolean isUnclaimed = neighbourRegion.getClaimedBy().isEmpty();
         log.trace("Region {} is unclaimed: {}", neighbourRegion.getId(), isUnclaimed);
 
-        boolean isAtWarWithFactionInRegion = wars.parallelStream()
+        boolean isAtWarWithFactionInRegion = wars.stream()
                 .map(war -> war.getEnemies(player.getFaction()))
                 .flatMap(Collection::stream)
                 .distinct()
