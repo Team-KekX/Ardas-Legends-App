@@ -1,9 +1,11 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +23,15 @@ public class AbstractServiceTest {
 
     PlayerService service;
     PlayerRepository mockRepository;
+    private DiscordApi mockDiscordApi;
+    private BotProperties mockProperties;
 
     @BeforeEach
     void setup() {
         mockRepository = mock(PlayerRepository.class);
-        service = new PlayerService(mockRepository, null, null);
+        mockProperties = mock(BotProperties.class);
+        mockDiscordApi = mock(DiscordApi.class);
+        service = new PlayerService(mockRepository, null, null, mockDiscordApi, mockProperties);
     }
 
     @Test

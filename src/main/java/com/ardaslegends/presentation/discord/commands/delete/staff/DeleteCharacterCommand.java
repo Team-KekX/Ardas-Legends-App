@@ -28,7 +28,7 @@ public class DeleteCharacterCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /delete character request, getting option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.debug("User is a staff member -> allowed");
 
         User userId = getUserOption("target", options);

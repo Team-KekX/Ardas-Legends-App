@@ -23,7 +23,7 @@ public class StockpileAddCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /stockpile add request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("StockpileAdd: User is staff -> allowed");
 
         var factionName = getStringOption("faction", options);

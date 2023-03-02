@@ -16,11 +16,13 @@ public record PlayerRpCharResponse (
     @Schema(description = "Faction name of new player", example = "Gondor")
     String faction,
     @Schema(description = "Player's Roleplay Character")
-    RpCharResponse rpChar
+    RpCharResponse rpChar,
+    @Schema(description = "Is the player a staff member", example = "false")
+    Boolean isStaff
 ) {
 
-    public PlayerRpCharResponse(Player player) {
-        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getRpChar() == null ? null : new RpCharResponse(player.getRpChar())));
+    public PlayerRpCharResponse(Player player, boolean isStaff) {
+        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getRpChar() == null ? null : new RpCharResponse(player.getRpChar())), isStaff);
         log.debug("Created PlayerResponse: '{}'", this);
     }
 }

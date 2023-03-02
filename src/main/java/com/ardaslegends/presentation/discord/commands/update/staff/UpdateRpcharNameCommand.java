@@ -28,7 +28,7 @@ public class UpdateRpcharNameCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update rpchar name request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         User user = getUserOption("player", options);

@@ -26,7 +26,7 @@ public class CreateRpCharCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /create rpchar request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         String discordId = getUserOption("target", options).getIdAsString();
         String name = getStringOption("name", options);

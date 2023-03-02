@@ -27,7 +27,7 @@ public class UpdateArmyPaidCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update army paid command, fetching option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         String armyName = getStringOption("army", options);
         log.trace("UpdateArmyPaid: Army name is [{}]", armyName);

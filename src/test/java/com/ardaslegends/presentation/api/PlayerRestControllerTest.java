@@ -60,7 +60,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         player = Player.builder().ign(ign).faction(gondor).discordID(discordId).rpChar(rpChar).build();
         expectedPlayerResponse = new PlayerResponse(player);
         expectedRpCharResponse = new RpCharResponse(rpChar);
-        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player);
+        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player, false);
         createPlayerDto = new CreatePlayerDto(ign, discordId, gondor.getName());
         createRPCharDto = new CreateRPCharDto(discordId, rpChar.getName(), rpChar.getTitle(), rpChar.getGear(), rpChar.getPvp());
     }

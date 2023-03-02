@@ -26,7 +26,7 @@ public class UpdateClaimbuildValues implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /update claimbuild request, getting option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Fetching option-data");
         String name = getStringOption("cbname", options);

@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -76,8 +77,9 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
 
         log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
-        Player playerFound = wrappedServiceExecution(ign, playerService::getPlayerByIgn);
-        var response = new PlayerRpCharResponse(playerFound);
+        val playerFound = wrappedServiceExecution(ign, playerService::getPlayerByIgn);
+        val isStaff = wrappedServiceExecution(playerFound.getDiscordID(), playerService::checkIsStaff);
+        val response = new PlayerRpCharResponse(playerFound, isStaff);
 
         log.info("Successfully fetched player ({}) by ign ({})", playerFound, playerFound.getIgn());
         return ResponseEntity.ok(response);
@@ -89,8 +91,9 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming getByDiscordId Request. DiscordId: {}", discId);
 
         log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
-        Player playerFound = wrappedServiceExecution(discId, playerService::getPlayerByDiscordId);
-        var response = new PlayerRpCharResponse(playerFound);
+        val playerFound = wrappedServiceExecution(discId, playerService::getPlayerByDiscordId);
+        val isStaff = wrappedServiceExecution(discId, playerService::checkIsStaff);
+        val response = new PlayerRpCharResponse(playerFound, isStaff);
 
         log.info("Successfully fetched player ({}) by DiscordId ({})", playerFound, playerFound.getDiscordID());
         return ResponseEntity.ok(response);

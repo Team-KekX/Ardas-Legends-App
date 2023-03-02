@@ -29,7 +29,7 @@ public class UpdateArmyFreeTokensCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update army free-tokens command, fetching option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         String armyName = getStringOption("army-name", options);
         log.trace("UpdateArmyPaid: army-name is [{}]", armyName);

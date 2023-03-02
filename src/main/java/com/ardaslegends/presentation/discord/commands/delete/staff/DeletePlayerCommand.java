@@ -27,7 +27,7 @@ public class DeletePlayerCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /delete player request, fetchign data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.debug("DeletePlayer: Is Staff");
 
         String userId = getStringOption("target-player-id", options);

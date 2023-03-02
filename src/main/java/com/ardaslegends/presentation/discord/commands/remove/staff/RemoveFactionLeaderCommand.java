@@ -25,7 +25,7 @@ public class RemoveFactionLeaderCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /remove faction leader request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         String factionName = getStringOption("faction-name", options);

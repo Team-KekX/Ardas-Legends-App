@@ -22,7 +22,7 @@ public class UpdateClaimmapCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /update claimmap");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("UpdateClaimmap: User is staff");
 
         var result = discordServiceExecution(regionService::resetHasOwnership, "Error while resetting claimmap");

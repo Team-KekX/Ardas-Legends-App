@@ -26,7 +26,7 @@ public class UpdatePlayerDiscordIdCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update player discord-id request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         String oldDiscordId = getStringOption("old-discord-id", options);

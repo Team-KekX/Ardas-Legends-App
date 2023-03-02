@@ -22,7 +22,7 @@ public class UpdateFactionLeaderCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /update faction leader request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("UpdateFactionLeader: User is staff -> allowed");
 
         var user = getUserOption("new-leader", options);

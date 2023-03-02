@@ -27,7 +27,7 @@ public class UpdateClaimbuildFactionCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update claimbuild faction");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("UpdateClaimbuildFaction: Player is staff -> Allowed to execute");
 
         String claimbuildName = getStringOption("claimbuild",options);

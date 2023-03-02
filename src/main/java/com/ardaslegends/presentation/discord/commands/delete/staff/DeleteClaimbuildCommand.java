@@ -29,7 +29,7 @@ public class DeleteClaimbuildCommand implements ALStaffCommandExecutor {
     public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /delete claimbuild request, getting option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Fetching option-data");
         String claimbuildName = getStringOption("claimbuild-name", options);

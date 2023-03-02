@@ -1,6 +1,7 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
@@ -9,6 +10,7 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.external.MojangApiService;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,13 +36,17 @@ public class PlayerServiceTest {
     private Region region;
     private ClaimBuild claimBuild;
     private DiscordIdDto discordIdDto;
+    private DiscordApi mockDiscordApi;
+    private BotProperties mockProperties;
 
     @BeforeEach
     void setup() {
         mockPlayerRepository = mock(PlayerRepository.class);
         mockFactionService = mock(FactionService.class);
         mockMojangApiService = mock(MojangApiService.class);
-        playerService = new PlayerService(mockPlayerRepository, mockFactionService ,mockMojangApiService);
+        mockProperties = mock(BotProperties.class);
+        mockDiscordApi = mock(DiscordApi.class);
+        playerService = new PlayerService(mockPlayerRepository, mockFactionService ,mockMojangApiService, mockDiscordApi, mockProperties);
 
         faction = Faction.builder().name("Gondor").build();
         region = Region.builder().id("91").build();
