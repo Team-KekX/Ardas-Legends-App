@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ArmyRepository extends JpaRepository<Army, String> {
+public interface ArmyRepository extends JpaRepository<Army, Long> {
 
     public Optional<Army> findArmyByName(String name);
     public List<Army> findAllByArmyType(ArmyType armyType);

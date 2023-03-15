@@ -3,12 +3,16 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.claimbuild.PaginatedClaimbuildResponse;
 import com.ardaslegends.service.ClaimBuildService;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +32,17 @@ public class ClaimbuildRestController extends AbstractRestController {
     private static final String DELETE_CLAIMBUILD = "/delete";
 
     private final ClaimBuildService claimBuildService;
+
+    @Operation(summary = "Get Claimbuilds Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
+    @GetMapping
+    public ResponseEntity<Page<PaginatedClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
+        log.debug("Incoming getClaimbuildsPaginated Request, paginated data [{}]", pageable);
+
+        Page<ClaimBuild> pageDomain = wrappedServiceExecution(pageable, claimBuildService::getClaimbuildsPaginated);
+        var pageResponse = pageDomain.map(PaginatedClaimbuildResponse::new);
+
+        return ResponseEntity.ok(pageResponse);
+    }
 
     @PostMapping(PATH_CREATE_CLAIMBUILD)
     public HttpEntity<ClaimBuild> createClaimbuild(@RequestBody CreateClaimBuildDto dto) {

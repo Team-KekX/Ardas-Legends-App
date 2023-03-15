@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -24,10 +25,10 @@ public class UpdatePlayerIgnCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update player ign request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         User user = getUserOption("player", options);
@@ -44,13 +45,13 @@ public class UpdatePlayerIgnCommand implements ALStaffCommandExecutor {
         Player player = discordServiceExecution(dto, playerService::updateIgn, "Error while updating Player Ign");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated Player Ign")
                 .setDescription("Successfully changed ign of Discord User %s to %s".formatted(user.getMentionTag(), player.getIgn()))
                 .addInlineField("User", "%s".formatted(user.getMentionTag()))
                 .addInlineField("New Ign", player.getIgn())
                 .setColor(ALColor.YELLOW)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 
 }

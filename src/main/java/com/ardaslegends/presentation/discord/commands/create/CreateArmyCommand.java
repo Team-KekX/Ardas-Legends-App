@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.create;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.ArmyService;
@@ -26,7 +27,7 @@ public class CreateArmyCommand implements ALCommandExecutor {
 
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /create army request");
 
         User user = interaction.getUser();
@@ -70,6 +71,6 @@ public class CreateArmyCommand implements ALCommandExecutor {
                 .addField("Payment", paymentString, false);
 
         log.debug("Successfully built response embed - exiting execute function");
-        return embed;
+        return new ALMessageResponse(null, embed);
     }
 }

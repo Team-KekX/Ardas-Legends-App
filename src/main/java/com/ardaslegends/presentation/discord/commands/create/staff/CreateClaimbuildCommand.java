@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.create.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -21,10 +22,10 @@ public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
 
     private final ClaimBuildService claimBuildService;
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /create claimbuild request, getting option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Fetching option-data");
         String name = getStringOption("cbname", options);
@@ -81,7 +82,7 @@ public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
         String specialBuildingsString = createSpecialBuildingsString(claimbuild.getSpecialBuildings());
         String builtByString = claimbuild.getBuiltBy().stream().map(player -> player.getIgn()).collect(Collectors.joining(", "));
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Claimbuild %s was successfully created!".formatted(claimbuild.getName()))
                 .setColor(ALColor.YELLOW)
                 .addInlineField("Name", claimbuild.getName())
@@ -96,6 +97,6 @@ public class CreateClaimbuildCommand implements ALStaffCommandExecutor {
                 .addInlineField("Coordinates", claimbuild.getCoordinates().toString())
                 .addInlineField("Built by", builtByString)
                 .setThumbnail(getFactionBanner(claimbuild.getOwnedBy().getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

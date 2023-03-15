@@ -1,12 +1,16 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.domain.war.War;
+import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
+import org.javacord.api.entity.permission.Role;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +30,13 @@ import java.util.Set;
 public final class Faction extends AbstractDomainEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
     private String name; //unique, name of the faction
+
+    private InitialFaction initialFaction;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Player leader; //the player who leads this faction
@@ -48,6 +58,12 @@ public final class Faction extends AbstractDomainEntity {
     private List<Faction> allies; //allies of this faction
     private String colorcode; //the faction's colorcode, used for painting the map
 
+    @Column(name = "role_id", unique = true)
+    private Long factionRoleId; // The roleId of the factionRole so that it can be pinged
+
+    @Transient // Not persisted into DB, only for runtime
+    private Role factionRole;
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Region homeRegion; //Homeregion of the faction
 
@@ -56,6 +72,10 @@ public final class Faction extends AbstractDomainEntity {
 
     @Column(name = "food_stockpile")
     private Integer foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
+
+    @ElementCollection
+    @CollectionTable(name = "army_sieges")
+    private Set<String> aliases = new LinkedHashSet<>();
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;

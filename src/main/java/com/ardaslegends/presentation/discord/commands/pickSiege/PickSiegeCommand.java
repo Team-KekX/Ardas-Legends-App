@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.pickSiege;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.presentation.discord.commands.ALCommand;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.ArmyService;
@@ -56,7 +57,7 @@ public class PickSiegeCommand implements ALCommand, ALCommandExecutor {
     }
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /pick-siege request");
 
         User user = interaction.getUser();
@@ -78,7 +79,7 @@ public class PickSiegeCommand implements ALCommand, ALCommandExecutor {
         Army army = discordServiceExecution(dto, armyService::pickSiege, "Error while picking siege");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Army picked up siege")
                 .setDescription("The army %s has has picked up following siege from Claimbuild %s: %s".formatted(army.getName(), cbName, siege))
                 .setColor(ALColor.GREEN)
@@ -88,6 +89,6 @@ public class PickSiegeCommand implements ALCommand, ALCommandExecutor {
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .addInlineField("Siege", String.join(", ", army.getSieges()))
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

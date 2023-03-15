@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.ArmyType;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -25,10 +26,10 @@ public class UpdateArmyFreeTokensCommand implements ALStaffCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update army free-tokens command, fetching option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         String armyName = getStringOption("army-name", options);
         log.trace("UpdateArmyPaid: army-name is [{}]", armyName);
@@ -54,7 +55,7 @@ public class UpdateArmyFreeTokensCommand implements ALStaffCommandExecutor {
         DecimalFormat df = new DecimalFormat("0.##");
         df.setRoundingMode(RoundingMode.DOWN);
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated %s's Tokens".formatted(armyType))
                 .setDescription("Updated the free tokens of %s %s".formatted(armyType, army.getName()))
                 .addInlineField("%s".formatted(armyType), army.getName())
@@ -63,6 +64,6 @@ public class UpdateArmyFreeTokensCommand implements ALStaffCommandExecutor {
                 .addField("Units", createArmyUnitListString(army), false)
                 .setColor(ALColor.YELLOW)
                 .setThumbnail(thumbnail)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

@@ -1,6 +1,7 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
@@ -11,6 +12,10 @@ import com.ardaslegends.service.external.MojangApiService;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.javacord.api.DiscordApi;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +38,15 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
     private final FactionService factionService;
     private final MojangApiService mojangApiService;
+
+    private final DiscordApi api;
+
+    private final BotProperties properties;
+
+    public Page<Player> getPlayersPaginated(Pageable pageable) {
+        var page = secureFind(pageable, playerRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public Player createPlayer(CreatePlayerDto dto) {
@@ -615,5 +629,16 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
     public List<Player> savePlayers(List<Player> players) {
         log.debug("Saving players [{}]", players);
         return secureSaveAll(players, playerRepository);
+    }
+
+    public boolean checkIsStaff(String discordId) {
+        Objects.requireNonNull(discordId);
+
+        val user = api.getUserById(discordId).join();
+        val staffRoles = properties.getDiscordStaffRoles();
+
+        return user.getRoles(properties.getDiscordServer())
+                .stream()
+                .anyMatch(role -> staffRoles.contains(role));
     }
 }

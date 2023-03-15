@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.stockpile.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -18,10 +19,10 @@ public class StockpileRemoveCommand implements ALStaffCommandExecutor {
     private final FactionService factionService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /stockpile remove request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("StockpileRemove: User is staff -> allowed");
 
 
@@ -38,14 +39,14 @@ public class StockpileRemoveCommand implements ALStaffCommandExecutor {
         var result = discordServiceExecution(dto, factionService::removeFromStockpile, "Error while updating stockpile");
 
         log.debug("StockpileRemove: Building Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Removed from food stockpile")
                 .setThumbnail(getFactionBanner(factionName))
                 .setTimestampToNow()
                 .setDescription("Removed %s stacks of food to %s's stockpile".formatted(amount, factionName))
                 .addInlineField("Faction", result.getName())
                 .addInlineField("Stockpile in Stacks", result.getFoodStockpile().toString())
-                .setColor(ALColor.YELLOW);
+                .setColor(ALColor.YELLOW));
     }
 
 }

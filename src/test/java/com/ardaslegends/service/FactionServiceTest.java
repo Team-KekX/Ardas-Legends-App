@@ -44,7 +44,7 @@ public class FactionServiceTest {
         dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
 
         when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
-        when(mockFactionRepository.findById(faction.getName())).thenReturn(Optional.of(faction));
+        when(mockFactionRepository.findFactionByName(faction.getName())).thenReturn(Optional.of(faction));
         when(mockFactionRepository.save(faction)).thenReturn(faction);
     }
 
@@ -151,7 +151,7 @@ public class FactionServiceTest {
         // Assign
         String name = "Mordor";
 
-        when(mockFactionRepository.findById(name)).thenReturn(Optional.of(Faction.builder().name(name).build()));
+        when(mockFactionRepository.findFactionByName(name)).thenReturn(Optional.of(Faction.builder().name(name).build()));
 
         // Act
         var result = factionService.getFactionByName(name);
@@ -180,7 +180,7 @@ public class FactionServiceTest {
 
         PersistenceException pEx = new PersistenceException("Database down");
 
-        when(mockFactionRepository.findById(name)).thenThrow(pEx);
+        when(mockFactionRepository.findFactionByName(name)).thenThrow(pEx);
 
         // Assert
         var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
@@ -194,7 +194,7 @@ public class FactionServiceTest {
 
         String name = "Mordor";
 
-        when(mockFactionRepository.findById(name)).thenReturn(Optional.empty());
+        when(mockFactionRepository.findFactionByName(name)).thenReturn(Optional.empty());
         when(mockFactionRepository.findAll()).thenReturn(List.of());
         // Assert
         var result = assertThrows(FactionServiceException.class, () -> factionService.getFactionByName(name));

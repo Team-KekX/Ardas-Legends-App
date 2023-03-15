@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.discord.commands.cancel;
 
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -24,7 +25,7 @@ public class CancelHealRpcharCommand implements ALCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /cancel heal rpchar request");
 
         User user = interaction.getUser();
@@ -38,7 +39,7 @@ public class CancelHealRpcharCommand implements ALCommandExecutor {
         RPChar rpChar = discordServiceExecution(dto, playerService::healStop, "Error while cancelling RpChar Heal");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Cancelled RpChar Heal")
                 .setDescription("The character %s - %s stopped their healing.\nThe healing progress has been lost.".formatted(rpChar.getName(), rpChar.getTitle()))
                 .setColor(ALColor.GREEN)
@@ -46,6 +47,6 @@ public class CancelHealRpcharCommand implements ALCommandExecutor {
                 .addInlineField("User", user.getMentionTag())
                 .addInlineField("Current Region", rpChar.getCurrentRegion().getId())
                 .setThumbnail(Thumbnails.HEAL.getUrl())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

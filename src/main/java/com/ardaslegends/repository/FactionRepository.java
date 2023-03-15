@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FactionRepository extends JpaRepository<Faction, String> {
+public interface FactionRepository extends JpaRepository<Faction, Long> {
     Optional<Faction> findFactionByName(String name);
+    Optional<Faction> findFactionByFactionRoleId(Long factionRoleId);
 }

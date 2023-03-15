@@ -4,6 +4,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.MovementService;
@@ -25,7 +26,7 @@ public class CancelMoveArmyOrCompany implements ALCommandExecutor {
     private final MovementService movementService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /cancel move army-or-company request");
 
         User user = interaction.getUser();
@@ -46,7 +47,7 @@ public class CancelMoveArmyOrCompany implements ALCommandExecutor {
         Player boundPlayer = army.getBoundTo();
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Cancelled %s Movement".formatted(army.getArmyType().getName()))
                 .setDescription("The %s %s stopped its movement towards region %s."
                         .formatted(army.getArmyType().getName(), army.getName(), movement.getDestinationRegionId()))
@@ -57,6 +58,6 @@ public class CancelMoveArmyOrCompany implements ALCommandExecutor {
                 .addField("Route", createPathStringWithCurrentRegion(movement.getPath(), army.getCurrentRegion()), false)
                 .addField("Current Region", army.getCurrentRegion().getId(), false)
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.unbind;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -25,7 +26,7 @@ public class UnbindArmyOrCompanyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /unbind army-or-company request");
 
         User user = interaction.getUser();
@@ -54,7 +55,7 @@ public class UnbindArmyOrCompanyCommand implements ALCommandExecutor {
         }
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Unbound from %s".formatted(armyType))
                 .setDescription("The %s %s has been unbound from player %s".formatted(armyType, army.getName(), target.getMentionTag()))
                 .setColor(ALColor.GREEN)
@@ -63,6 +64,6 @@ public class UnbindArmyOrCompanyCommand implements ALCommandExecutor {
                 .addInlineField("Army Faction", army.getFaction().getName())
                 .addInlineField("Army's current Region", army.getCurrentRegion().getId())
                 .setThumbnail(thumbnail)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

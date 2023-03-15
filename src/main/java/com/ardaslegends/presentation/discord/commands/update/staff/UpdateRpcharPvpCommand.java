@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,10 +24,10 @@ public class UpdateRpcharPvpCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update rpchar pvp request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         User user = getUserOption("player", options);
@@ -43,13 +44,13 @@ public class UpdateRpcharPvpCommand implements ALStaffCommandExecutor {
         RPChar rpChar = discordServiceExecution(dto, playerService::updateCharacterPvp, "Error while updating Rp Char PvP");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated RpChar PvP")
                 .setDescription("Successfully updated PvP status of Character %s".formatted(rpChar.getName()))
                 .setColor(ALColor.YELLOW)
                 .addInlineField("Character", rpChar.getName())
                 .addInlineField("New PvP", rpChar.getPvp().toString())
                 .addInlineField("User", user.getMentionTag())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

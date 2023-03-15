@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,10 +24,10 @@ public class UpdateClaimbuildFactionCommand implements ALStaffCommandExecutor {
     private final ClaimBuildService claimBuildService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update claimbuild faction");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.trace("UpdateClaimbuildFaction: Player is staff -> Allowed to execute");
 
         String claimbuildName = getStringOption("claimbuild",options);
@@ -42,11 +43,11 @@ public class UpdateClaimbuildFactionCommand implements ALStaffCommandExecutor {
         var claimbuild = discordServiceExecution(dto, claimBuildService::setOwnerFaction, "Error while updating owning Faction of Claimbuild");
 
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated Claimbuild controlling Faction!")
                 .setColor(ALColor.YELLOW)
                 .setDescription("New controlling Faction of Claimbuild '%s' is Faction '%s'".formatted(claimbuild.getName(), claimbuild.getOwnedBy().getName()))
                 .setThumbnail(getFactionBanner(claimbuild.getOwnedBy().getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

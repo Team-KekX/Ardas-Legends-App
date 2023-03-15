@@ -13,6 +13,8 @@ import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final UnitTypeService unitTypeService;
     private final ClaimBuildRepository claimBuildRepository;
 
+    public Page<Army> getArmiesPaginated(Pageable pageable) {
+        log.info("Getting page of armies with data [size:{},page:{}]", pageable.getPageSize(), pageable.getPageNumber());
+        Page<Army> page = secureFind(pageable, armyRepository::findAll);
+        return page;
+    }
+
     @Transactional(readOnly = false)
     public Army createArmy(CreateArmyDto dto) {
         log.debug("Creating army with data [{}]", dto);
@@ -43,7 +51,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Fetching required Data");
 
         log.trace("Fetching if an army with name [{}] already exists.", dto.name());
-        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findById);
+        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findArmyByName);
 
         if(fetchedArmy.isPresent()) {
             log.warn("Army with name [{}] already exists", dto.name());
@@ -56,7 +64,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Assembling Units Map, fetching units");
 
         log.trace("Fetching Claimbuild with name [{}]", dto.claimBuildName());
-        Optional<ClaimBuild> fetchedClaimbuild = secureFind(dto.claimBuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> fetchedClaimbuild = secureFind(dto.claimBuildName(), claimBuildRepository::findClaimBuildByName);
 
         if(fetchedClaimbuild.isEmpty()) {
             log.warn("No ClaimBuild found with name [{}]", dto.claimBuildName());
@@ -442,7 +450,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.trace("Fetching claimbuild)");
-        Optional<ClaimBuild> optionalClaimBuild = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> optionalClaimBuild = secureFind(dto.claimbuildName(), claimBuildRepository::findClaimBuildByName);
 
         if(optionalClaimBuild.isEmpty()) {
             log.warn("Claimbuild with name [{}] does not exist in database", dto.claimbuildName());
@@ -632,7 +640,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Fetching claimbuild [{}]", dto.claimbuildName());
-        Optional<ClaimBuild> foundCb = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> foundCb = secureFind(dto.claimbuildName(), claimBuildRepository::findClaimBuildByName);
         if(foundCb.isEmpty()) {
             log.warn("Found no claimbuild with name [{}]", dto.claimbuildName());
             throw ClaimBuildServiceException.noCbWithName(dto.claimbuildName());
@@ -703,7 +711,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         List<UpkeepDto> upkeepDtoList = new ArrayList<>();
 
         log.debug("Iterating through factions:");
-        factions.parallelStream().
+        factions.stream().
                 forEach(faction -> {
                     int armyCount = (int) faction.getArmies().stream()
                             .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))

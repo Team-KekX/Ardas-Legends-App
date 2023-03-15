@@ -5,5 +5,6 @@ package com.ardaslegends.domain;
  * so that we can restrict certain codeblocks to using only DomainEntities.
  * Should only be used for @Entity Classes and NOT @Embeddables
  */
-public abstract sealed class AbstractDomainEntity permits Army, ClaimBuild, Faction, Player, ProductionClaimbuild, ProductionClaimbuildId, ProductionSite, Region, Unit, UnitType, RPChar, Movement {
+public abstract class AbstractDomainEntity {
+
 }

@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.register;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.discord.commands.ALCommand;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.PlayerService;
@@ -52,7 +53,7 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor {
 
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /register request");
 
         String ign = getStringOption("ign", options);
@@ -68,13 +69,13 @@ public class RegisterCommand implements ALCommand, ALCommandExecutor {
         Player player = discordServiceExecution(dto, playerService::createPlayer, "Error while registering!");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Registered")
                 .setDescription("You were successfully registered in the Bot's system!")
                 .addField("Ign", player.getIgn(), true)
                 .addField("Faction", player.getFaction().getName(), true)
                 .setThumbnail(getFactionBanner(factionName))
                 .setColor(ALColor.GREEN)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

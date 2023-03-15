@@ -8,6 +8,7 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
@@ -117,6 +118,7 @@ public interface DiscordUtils {
             case "Long" -> option.getLongValue();
             case "Boolean" -> option.getBooleanValue();
             case "Double" -> option.getDecimalValue();
+            case "Role" -> option.getRoleValue();
             default ->
                     throw new IllegalArgumentException("GetOption: Class Type is not either [Long, String, User, Boolean]!");
         };
@@ -201,6 +203,12 @@ public interface DiscordUtils {
         return optionValue;
     }
 
+    default Role getRoleOption(String name, List<SlashCommandInteractionOption> options) {
+        Role role = (Role) getRequiredValue(name, options, Role.class);
+        log.trace("GetRoleOption: Returning value [{}]", role);
+        return role;
+    }
+
     default Optional<Long> getOptionalLongOption(String name, List<SlashCommandInteractionOption> options) {
         Optional<Long> option = getOptionalValue(name, options, Long.class, true);
         log.trace("GetOptionalLongOption: [{}] Returning value [{}]", name, option);
@@ -229,7 +237,7 @@ public interface DiscordUtils {
         }
         try {
             return function.apply(argument);
-        } catch (ServiceException e) {
+        } catch (ServiceException | IllegalArgumentException | NullPointerException e) {
             throw new BotException(errorTitle, e);
         }
     }
@@ -271,7 +279,7 @@ public interface DiscordUtils {
         log.debug("ProductionSiteList Count: {}", productionSiteList.size());
         StringBuilder prodString = new StringBuilder();
         productionSiteList.forEach(productionSite -> {
-            String resource = productionSite.getProductionSite().getProducedResource();
+            String resource = productionSite.getProductionSite().getProducedResource().getResourceName();
             String type = productionSite.getProductionSite().getType().getName();
             int count = productionSite.getCount().intValue();
             prodString.append(count).append(" ").append(resource).append(" ").append(type).append("\n");

@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.unstation;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -25,7 +26,7 @@ public class UnstationArmyOrCompanyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /unstation army-or-company request");
 
         User user = interaction.getUser();
@@ -52,7 +53,7 @@ public class UnstationArmyOrCompanyCommand implements ALCommandExecutor {
         }
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Unstationed %s".formatted(armyType))
                 .setDescription("The %s %s has been unstationed and is now in Region %s again.".formatted(armyType, army.getName(), army.getCurrentRegion().getId()))
                 .setColor(ALColor.GREEN)
@@ -61,6 +62,6 @@ public class UnstationArmyOrCompanyCommand implements ALCommandExecutor {
                 .addInlineField("Bound Player", army.getBoundTo() == null ? "None" : army.getBoundTo().getIgn())
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .setThumbnail(thumbnail)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

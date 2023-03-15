@@ -12,6 +12,8 @@ import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,11 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
     private final FactionService factionService;
     private final PlayerService playerService;
+
+    public Page<ClaimBuild> getClaimbuildsPaginated(Pageable pageable) {
+        var page = secureFind(pageable, claimbuildRepository::findAll);
+        return page;
+    }
 
     @Transactional(readOnly = false)
     public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
@@ -65,7 +72,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.trace("Checking if claimbuild with name [{}] already exists", dto.name());
         log.trace("Fetching claimbuild with name [{}]", dto.name());
-        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
+        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findClaimBuildByName);
 
         log.trace("Checking if a claimbuild was found");
         if (existingClaimbuild.isPresent() && isNewlyCreated) {
@@ -136,7 +143,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
             }
 
-            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
+            claimBuild = new ClaimBuild(10L, dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
                     specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
 
             if(! (type.equals(ClaimBuildType.HAMLET) || type.equals(ClaimBuildType.KEEP))) {
@@ -213,7 +220,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         ServiceUtils.checkBlankString(name, "Name");
 
         log.debug("Fetching unit with name [{}]", name);
-        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findById);
+        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findClaimBuildByName);
 
         if(fetchedBuild.isEmpty()) {
             log.warn("No Claimbuild found with name [{}]", name);
@@ -296,7 +303,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.invalidProductionSiteString(prodString);
             }
 
-            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getName());
+            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getId());
             ProductionClaimbuild productionClaimbuild = new ProductionClaimbuild(id, fetchedProdSite.get(), claimBuild, prodSiteAmount);
             productionSites.add(productionClaimbuild);
         }

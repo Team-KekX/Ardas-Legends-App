@@ -11,6 +11,8 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,10 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     private final PlayerRepository playerRepository;
 
+    public Page<Faction> getFactionsPaginated(Pageable pageable) {
+        var page = secureFind(pageable, factionRepository::findAll);
+        return page;
+    }
     @Transactional(readOnly = false)
     public Faction addToStockpile(UpdateStockpileDto dto) {
         log.debug("Updating stockpile of faction with data [{}]",dto);
@@ -153,10 +159,11 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             log.warn("Faction name is blank");
             throw new IllegalArgumentException("Faction name must not be blank!");
         }
-        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findById);
+        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findFactionByName);
         
         if (fetchedFaction.isEmpty()) {
             log.warn("No faction found with name {}", name);
+            // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = factionRepository.findAll();
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
             throw FactionServiceException.noFactionWithNameFound(name, allFactionString);
@@ -165,6 +172,42 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
         return fetchedFaction.get();
 
+    }
+
+    @Transactional(readOnly = false)
+    public Faction setFactionRoleId(String factionName, Long roleId) {
+        log.debug("SetFactionRole: Setting roleId of faction [{}] to [{}]", factionName, roleId);
+        Objects.requireNonNull(roleId, "RoleId must not be null");
+        Objects.requireNonNull(factionName, "FactionName must not be null");
+
+        log.trace("Checkign if roleId [{}] is already used", roleId);
+        var fetchedFaction = secureFind(roleId, factionRepository::findFactionByFactionRoleId);
+
+        if(fetchedFaction.isPresent()) {
+            log.warn("RoleId [{}] is already used by Faction [{}]", roleId, fetchedFaction.get());
+            throw FactionServiceException.roleIdAlreadyUsed(roleId, fetchedFaction.get().getName());
+        }
+
+        log.trace("Fetching faction with name [{}]", factionName);
+        fetchedFaction = secureFind(factionName, factionRepository::findFactionByName);
+
+        if(fetchedFaction.isEmpty()) {
+            log.warn("Faction with name [{}] does not exist", factionName);
+            List<Faction> allFactions = factionRepository.findAll();
+            String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
+            throw FactionServiceException.noFactionWithNameFound(factionName, allFactionString);
+        }
+
+        Faction faction = fetchedFaction.get();
+        log.debug("Found faction [{}], changing roleId", faction.getName());
+
+        faction.setFactionRoleId(roleId);
+
+        log.debug("Persisting Faction [{}] with roleId [{}]", faction.getName(), faction.getFactionRoleId());
+        faction = secureSave(faction, factionRepository);
+
+        log.debug("New IDDDDD [{}]", faction.getFactionRoleId());
+        return faction;
     }
 
     public Faction save(Faction faction) {
