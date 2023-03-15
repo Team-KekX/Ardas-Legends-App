@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "unitName")
-public final class UnitType extends AbstractDomainEntity {
+public final class UnitType extends AbstractDomainObject {
 
     @Id
     private String unitName; //unique, the name of this Unit

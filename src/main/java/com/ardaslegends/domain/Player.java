@@ -24,7 +24,7 @@ import java.util.List;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "ign")
-public final class Player extends AbstractDomainEntity {
+public final class Player extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

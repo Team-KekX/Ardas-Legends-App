@@ -1,6 +1,6 @@
 package com.ardaslegends.domain.war;
 
-import com.ardaslegends.domain.AbstractDomainEntity;
+import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.service.exceptions.WarServiceException;
 import lombok.*;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "wars")
-public class War extends AbstractDomainEntity {
+public class War extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

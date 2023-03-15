@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "production_sites")
-public final class ProductionSite extends AbstractDomainEntity {
+public final class ProductionSite extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

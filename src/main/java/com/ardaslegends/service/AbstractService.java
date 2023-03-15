@@ -1,6 +1,6 @@
 package com.ardaslegends.service;
 
-import com.ardaslegends.domain.AbstractDomainEntity;
+import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Slf4j
-public abstract class AbstractService<T extends AbstractDomainEntity, R extends JpaRepository<T, ?>>{
+public abstract class AbstractService<T extends AbstractDomainObject, R extends JpaRepository<T, ?>>{
 
 
     /***

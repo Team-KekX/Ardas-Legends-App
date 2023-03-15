@@ -21,7 +21,7 @@ import java.util.Objects;
         property = "id")
 @Entity
 @Table(name = "movements")
-public final class Movement extends AbstractDomainEntity{
+public final class Movement extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -21,7 +21,7 @@ import java.util.Objects;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class Army extends AbstractDomainEntity {
+public final class Army extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

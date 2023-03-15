@@ -20,7 +20,7 @@ import java.util.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class ClaimBuild extends AbstractDomainEntity {
+public final class ClaimBuild extends AbstractDomainObject {
 
 
     @Id

@@ -20,7 +20,7 @@ import java.util.Objects;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class RPChar extends AbstractDomainEntity {
+public final class RPChar extends AbstractDomainObject {
 
     @Column(unique = true)
     private String name;

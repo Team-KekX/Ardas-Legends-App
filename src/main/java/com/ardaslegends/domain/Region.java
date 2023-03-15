@@ -20,7 +20,7 @@ import java.util.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-public final class Region extends AbstractDomainEntity {
+public final class Region extends AbstractDomainObject {
 
     @Id
     private String id; //unique, the region id

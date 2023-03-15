@@ -1,6 +1,6 @@
 package com.ardaslegends.presentation;
 
-import com.ardaslegends.domain.AbstractDomainEntity;
+import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.presentation.exceptions.BadArgumentException;
 import com.ardaslegends.presentation.exceptions.InternalServerException;
 import com.ardaslegends.service.exceptions.ServiceException;
@@ -45,7 +45,7 @@ public abstract class AbstractRestController {
         }
     }
 
-    public <T extends AbstractDomainEntity, G, X> T wrappedServiceExecution(G dto, X otherParam, BiFunction<G, X, T> func) {
+    public <T extends AbstractDomainObject, G, X> T wrappedServiceExecution(G dto, X otherParam, BiFunction<G, X, T> func) {
         if(func == null)
             throw new InternalServerException("Passed Null Function in wrappedServiceExecution", null);
 
