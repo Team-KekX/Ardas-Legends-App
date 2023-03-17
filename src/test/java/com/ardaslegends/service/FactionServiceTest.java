@@ -199,7 +199,7 @@ public class FactionServiceTest {
         // Assert
         var result = assertThrows(FactionServiceException.class, () -> factionService.getFactionByName(name));
 
-        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionWithNameFound(name, "").getMessage());
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionWithNameFoundAndAll(name, "").getMessage());
         log.info("Test passed: getFactionByName throws Se when no faction found in database");
     }
 

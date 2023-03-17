@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.PersistenceException;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -70,7 +71,7 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
        }
     }
 
-    public List<T> secureSaveAll(List<T> entities, R repository) {
+    public List<T> secureSaveAll(Collection<T> entities, R repository) {
         try {
             return repository.saveAll(entities);
         } catch (PersistenceException pEx) {

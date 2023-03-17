@@ -52,11 +52,13 @@ public final class Player extends AbstractDomainObject {
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
-    public List<Movement> movements = new ArrayList<>();
+    private List<Movement> movements = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    public List<ClaimBuild> builtClaimbuilds;
+    private List<ClaimBuild> builtClaimbuilds;
+
+    private Boolean isStaff;
 
     public Player(String ign, String uuid, String discordID, Faction faction, RPChar rpChar) {
         this.ign = ign;
@@ -66,6 +68,7 @@ public final class Player extends AbstractDomainObject {
         this.rpChar = rpChar;
         this.movements = new ArrayList<>(1);
         this.builtClaimbuilds = new ArrayList<>(1);
+        this.isStaff = false;
     }
 
     @JsonIgnore

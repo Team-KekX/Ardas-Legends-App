@@ -2,9 +2,7 @@ package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -15,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
+@ToString
 
 @Entity
 @Table(name = "roleplay_apps")
@@ -26,7 +25,6 @@ public class RoleplayApplication extends AbstractApplication {
     @NotNull
     @ManyToOne
     private Faction faction;
-
     @NotBlank
     private String characterName;
     @NotBlank
@@ -37,4 +35,9 @@ public class RoleplayApplication extends AbstractApplication {
     private String gear;
     @NotBlank
     private String linkToLore;
+
+    public RoleplayApplication accept() {
+        setAccepted();
+        return this;
+    }
 }

@@ -689,7 +689,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(fetchedFaction.isEmpty()) {
             log.warn("No faction found with name [{}] in database", factionName);
-            throw FactionServiceException.noFactionWithNameFound(factionName, factionName);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(factionName, factionName);
         }
 
         log.debug("Calculating upkeep of faction [{}]", factionName);

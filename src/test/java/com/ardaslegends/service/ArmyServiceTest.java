@@ -1208,7 +1208,7 @@ public class ArmyServiceTest {
         log.debug("Calling armyService.upkeepPerFaction(), expecting Se");
         var result = assertThrows(FactionServiceException.class, () -> armyService.getUpkeepOfFaction(factionName));
 
-        assertThat(result.getMessage()).isEqualTo(FactionServiceException.NO_FACTION_WITH_NAME_FOUND.formatted(factionName, factionName));
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.NO_FACTION_WITH_NAME_FOUND_AND_ALL.formatted(factionName, factionName));
         log.info("UpkeepPerFaction correctly throws Se, with correct message, when provided factionName does not exist in database");
     }
 
