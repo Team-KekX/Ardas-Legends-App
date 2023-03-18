@@ -6,9 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 
-@ToString
-@EqualsAndHashCode
 public record RoleplayApplicationResponse(
         long id,
         String playerIgn,
@@ -36,5 +36,36 @@ public record RoleplayApplicationResponse(
                 application.getAcceptedBy().stream().map(PlayerResponse::new).toArray(PlayerResponse[]::new),
                 application.getVoteCount()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoleplayApplicationResponse that = (RoleplayApplicationResponse) o;
+        return id == that.id && voteCount == that.voteCount && Objects.equals(playerIgn, that.playerIgn) && Objects.equals(factionName, that.factionName) && Objects.equals(characterName, that.characterName) && Objects.equals(characterTitle, that.characterTitle) && Objects.equals(characterReason, that.characterReason) && Objects.equals(gear, that.gear) && Objects.equals(linkToLore, that.linkToLore) && Objects.equals(appliedAt, that.appliedAt) && Arrays.equals(acceptedBy, that.acceptedBy);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, playerIgn, factionName, characterName, characterTitle, characterReason, gear, linkToLore, appliedAt, voteCount);
+        result = 31 * result + Arrays.hashCode(acceptedBy);
+        return result;
+    }
+    @Override
+    public String toString() {
+        return "RoleplayApplicationResponse{" +
+                "id=" + id +
+                ", playerIgn='" + playerIgn + '\'' +
+                ", factionName='" + factionName + '\'' +
+                ", characterName='" + characterName + '\'' +
+                ", characterTitle='" + characterTitle + '\'' +
+                ", characterReason='" + characterReason + '\'' +
+                ", gear='" + gear + '\'' +
+                ", linkToLore='" + linkToLore + '\'' +
+                ", appliedAt=" + appliedAt +
+                ", acceptedBy=" + Arrays.toString(acceptedBy) +
+                ", voteCount=" + voteCount +
+                '}';
     }
 }

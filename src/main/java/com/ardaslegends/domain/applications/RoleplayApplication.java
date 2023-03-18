@@ -37,6 +37,7 @@ public class RoleplayApplication extends AbstractApplication {
     private String linkToLore;
 
     public RoleplayApplication accept() {
+        log.debug("Accepting application [{}]", toString());
         setAccepted();
         return this;
     }
