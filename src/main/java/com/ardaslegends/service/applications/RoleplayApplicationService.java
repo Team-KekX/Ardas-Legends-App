@@ -2,6 +2,7 @@ package com.ardaslegends.service.applications;
 
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.applications.RoleplayApplication;
+import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.FactionRepository;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.repository.applications.RoleplayApplicationRepository;
@@ -10,13 +11,13 @@ import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
 import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.javacord.api.DiscordApi;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.scheduling.annotation.Async;
@@ -27,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     private final RoleplayApplicationRepository rpRepository;
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
-    private final DiscordApi api;
+    private final BotProperties botProperties;
     private final UrlValidator urlValidator;
     private final Clock clock;
 
@@ -95,10 +97,17 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
        val player = optionalPlayer.get();
 
        var application = new RoleplayApplication(player, faction, dto.characterName(), dto.characterTitle(), dto.characterReason(), dto.gear(), dto.linkToLore());
+       val applicationMessage = application.sendApplicationMessage(botProperties.getRpAppsChannel());
 
-       application = secureSave(application, rpRepository);
+       try {
+           application = secureSave(application, rpRepository);
+       }
+       catch (Exception e) {
+           applicationMessage.delete("Failed to save application into Database therefore deleting application message in discord").join();
+           throw e;
+       }
+
        log.info("Successfully created rpApplication [{}]", application);
-
        return application;
     }
 
@@ -145,8 +154,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
             log.warn("No player found with discordId [{}]", dto.discordId());
             throw PlayerServiceException.noPlayerFound(dto.discordId());
         }
-        val player = optionalPlayer.get();
-        return player;
+        return optionalPlayer.get();
     }
 
     private RoleplayApplication getRoleplayApplication(RpApplicationVoteDto dto) {
@@ -156,25 +164,37 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
             log.warn("No rp application found with id [{}]", dto.applicationId());
             throw RoleplayApplicationServiceException.noApplicationFoundWithId(dto.applicationId());
         }
-        var application = optionalApplication.get();
-        return application;
+        return optionalApplication.get();
     }
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
-    protected void handleOpenRoleplayApplications() {
+    public void handleOpenRoleplayApplications() {
         val startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
-        log.info("Starting scheduled handling of open roleplay applications - System time: [{}]", startDateTime);
+        log.debug("Starting scheduled handling of open roleplay applications - System time: [{}]", startDateTime);
 
-        log.debug("Fetching all open applications");
-        val approvedApplications = secureFind(rpRepository::findAllByAcceptedFalse).stream()
+        log.debug("Fetching all open roleplay-applications");
+        AtomicInteger count = new AtomicInteger();
+        secureFind(rpRepository::findAllByAcceptedFalse).stream()
                 .filter(RoleplayApplication::acceptable)
                 .map(RoleplayApplication::accept)
-                .collect(Collectors.toSet());
+                .forEach(application -> {
+                    val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
 
-        secureSaveAll(approvedApplications, rpRepository);
+                    try {
+                        secureSave(application, rpRepository);
+                    }
+                    catch (ServiceException serviceException) {
+                        message.delete("Failed to update application to accepted in database therefore deleting message");
+                        throw serviceException;
+                    }
+                    count.getAndIncrement();
+                });
+
+        long endNanos = System.nanoTime();
+        log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos), count.get());
     }
 
 }

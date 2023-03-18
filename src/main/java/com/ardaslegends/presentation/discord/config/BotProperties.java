@@ -30,7 +30,8 @@ public class BotProperties {
     private Server discordServer;
     @Value("${ardaslegends.roleplay.commands.channel}")
     private String rpCommandsChannel;
-    private TextChannel channel;
+    private TextChannel rpAppsChannel;
+    private TextChannel generalRpCommandsChannel;
     @Value("${ardaslegends.bot.staff-roles}")
     private List<String> staffRoleIds;
 
@@ -57,7 +58,7 @@ public class BotProperties {
         val channel = api.getTextChannelById(rpCommandsChannelId).orElseThrow();
         log.info("Found RpCommands Channel! getChannelByIdId {}", channel.getIdAsString());
 
-        this.channel = channel;
+        this.generalRpCommandsChannel = channel;
     }
     @Value("${ardaslegends.bot.staff-roles}")
     private void setDiscordStaffRoles(List<String> roleIds) {
@@ -71,6 +72,16 @@ public class BotProperties {
         log.info("Found roles [{}]", roles.stream().map(Nameable::getName).collect(Collectors.joining(", ")));
 
         this.discordStaffRoles = roles;
+    }
+
+    @Value("${ardaslegends.roleplay.apps.channel}")
+    private void setRpAppsChannel(String channelId) {
+        Objects.requireNonNull(channelId);
+        log.trace("Fetching rp-apps channel with id [{}]", channelId);
+        val channel = api.getTextChannelById(channelId).orElseThrow();
+        log.info("Found RpApps Channel");
+
+        this.rpAppsChannel = channel;
     }
 
     public String getRpCommandsChannel() {

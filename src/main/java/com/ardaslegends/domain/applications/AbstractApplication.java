@@ -3,37 +3,42 @@ package com.ardaslegends.domain.applications;
 import com.ardaslegends.domain.AbstractEntity;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
 @Slf4j
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class AbstractApplication extends AbstractEntity {
-    private final short REQUIRED_VOTES = 2;
+    private static final short REQUIRED_VOTES = 2;
 
-    @Getter
     @NotNull
     @PastOrPresent
     private LocalDateTime appliedAt;
+
+    @NotNull
+    @Setter(value = AccessLevel.PROTECTED)
+    private URL discordApplicationMessageLink;
 
     @Getter
     @NotNull
     private Short voteCount;
 
-    @Getter
     @NotNull
     private LocalDateTime lastVoteAt;
 
@@ -41,14 +46,18 @@ public abstract class AbstractApplication extends AbstractEntity {
     @NotNull
     private Set<Player> acceptedBy;
 
-    @Getter
     @PastOrPresent
     private LocalDateTime acceptedAt;
+
     @Getter
     @NotNull
     private Boolean accepted;
 
-    public AbstractApplication() {
+    @Setter(value = AccessLevel.PROTECTED)
+    private URL discordAcceptedMessageLink;
+
+
+    protected AbstractApplication() {
         voteCount = 0;
         appliedAt = LocalDateTime.now();
         lastVoteAt = LocalDateTime.now();
@@ -56,12 +65,27 @@ public abstract class AbstractApplication extends AbstractEntity {
 
         acceptedBy = new HashSet<>(3);
     }
+
+    protected abstract EmbedBuilder buildApplicationMessage();
+    public Message sendApplicationMessage(TextChannel channel) {
+        val embed = buildApplicationMessage();
+        val message = channel.sendMessage(embed).join();
+        this.discordApplicationMessageLink = message.getLink();
+        return message;
+    }
+    protected abstract EmbedBuilder buildAcceptedMessage();
+    public Message sendAcceptedMessage(TextChannel channel) {
+        val embed = buildAcceptedMessage();
+        val message = channel.sendMessage(embed).join();
+        this.discordAcceptedMessageLink = message.getLink();
+        return message;
+    }
     public Set<Player> getAcceptedBy() {
         return Collections.unmodifiableSet(acceptedBy);
     }
 
     public void addAcceptor(Player player) {
-        if(!player.getIsStaff()) {
+        if(Boolean.FALSE.equals(player.getIsStaff())) {
             log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
             throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
         }
@@ -91,4 +115,5 @@ public abstract class AbstractApplication extends AbstractEntity {
         acceptedAt = LocalDateTime.now();
         accepted = true;
     }
+
 }

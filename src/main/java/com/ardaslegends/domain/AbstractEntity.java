@@ -25,7 +25,7 @@ public abstract class AbstractEntity extends AbstractDomainObject {
     private Integer version;
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractEntity that = (AbstractEntity) o;
@@ -33,7 +33,7 @@ public abstract class AbstractEntity extends AbstractDomainObject {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(id);
     }
 }
