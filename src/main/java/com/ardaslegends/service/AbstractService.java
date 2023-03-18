@@ -1,8 +1,14 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.AbstractDomainObject;
+import com.ardaslegends.presentation.discord.config.BotProperties;
+import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.PersistenceException;
@@ -14,7 +20,7 @@ import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractService<T extends AbstractDomainObject, R extends JpaRepository<T, ?>>{
-
+    private TextChannel errorChannel;
 
     /***
      * This method was specifically made for Query Operations of JPA Repository Classes.
@@ -30,8 +36,9 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
         }
         try {
             return func.apply(identifier);
-        } catch (PersistenceException pEx) {
+        } catch (Exception pEx) {
             log.warn("Encountered Database Error while searching for entity, parameter [{}]", identifier);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.secureFindFailed(identifier, pEx);
         }
     }
@@ -43,8 +50,9 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
         }
         try {
             return func.get();
-        } catch (PersistenceException pEx) {
+        } catch (Exception pEx) {
             log.warn("Encountered Database Error while searching for entity, parameter [{}]", func);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.secureFindFailed(func, pEx);
         }
     }
@@ -56,8 +64,9 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
         }
         try {
             return func.apply(identifier, other);
-        } catch (PersistenceException pEx) {
+        } catch (Exception pEx) {
             log.warn("Encountered Database Error while searching for entity, parameter [{}]", identifier);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.secureFindFailed(identifier, pEx);
         }
     }
@@ -65,8 +74,9 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
     public T secureSave(T entity, R repository) {
        try {
             return repository.save(entity);
-       } catch (PersistenceException pEx) {
+       } catch (Exception pEx) {
             log.warn("Encountered Database Error while saving entity [{}]", entity);
+           recordMessageInErrorChannel(pEx);
             throw ServiceException.cannotSaveEntity(entity, pEx);
        }
     }
@@ -74,8 +84,9 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
     public List<T> secureSaveAll(Collection<T> entities, R repository) {
         try {
             return repository.saveAll(entities);
-        } catch (PersistenceException pEx) {
+        } catch (Exception pEx) {
             log.warn("Encountered Database Error while saving entity [{}]", entities);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.cannotSaveEntity(entities, pEx);
         }
     }
@@ -83,9 +94,25 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
     public void secureDelete(T entity, R repository) {
         try {
             repository.delete(entity);
-        } catch (PersistenceException pEx) {
+        } catch (Exception pEx) {
             log.warn("Encountered Database Error while deleting entity[{}]", entity);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.cannotSaveEntity(entity, pEx);
         }
+    }
+
+    private void recordMessageInErrorChannel(Throwable throwable) {
+        val embed = new EmbedBuilder()
+                .setTitle(throwable.getClass().getSimpleName())
+                .setDescription(throwable.getMessage())
+                .setTimestampToNow()
+                .setColor(ALColor.RED);
+
+        errorChannel.sendMessage(embed);
+    }
+
+    @Autowired
+    public final void setErrorChannel(BotProperties properties) {
+        this.errorChannel = properties.getErrorChannel();
     }
 }

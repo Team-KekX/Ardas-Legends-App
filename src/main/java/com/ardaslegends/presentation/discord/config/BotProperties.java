@@ -32,6 +32,7 @@ public class BotProperties {
     private String rpCommandsChannel;
     private TextChannel rpAppsChannel;
     private TextChannel generalRpCommandsChannel;
+    private TextChannel errorChannel;
     @Value("${ardaslegends.bot.staff-roles}")
     private List<String> staffRoleIds;
 
@@ -82,6 +83,16 @@ public class BotProperties {
         log.info("Found RpApps Channel");
 
         this.rpAppsChannel = channel;
+    }
+
+    @Value("${ardaslegends.bot.error.channel}")
+    private void setErrorChannel(String errorChannelId) {
+        Objects.requireNonNull(errorChannelId);
+        log.trace("Fetching error channel with id [{}]", errorChannelId);
+        val channel = api.getTextChannelById(errorChannelId).orElseThrow();
+        log.info("Found error Channel");
+
+        this.errorChannel= channel;
     }
 
     public String getRpCommandsChannel() {

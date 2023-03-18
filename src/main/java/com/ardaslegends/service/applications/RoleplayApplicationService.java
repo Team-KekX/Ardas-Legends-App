@@ -186,9 +186,9 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
                     try {
                         secureSave(application, rpRepository);
                     }
-                    catch (ServiceException serviceException) {
+                    catch (Exception e) {
                         message.delete("Failed to update application to accepted in database therefore deleting message");
-                        throw serviceException;
+                        throw e;
                     }
                     count.getAndIncrement();
                 });
