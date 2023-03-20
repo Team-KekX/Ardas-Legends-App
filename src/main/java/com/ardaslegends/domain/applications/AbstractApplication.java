@@ -5,7 +5,6 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -17,7 +16,6 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -26,7 +24,6 @@ import java.util.Set;
 @MappedSuperclass
 public abstract class AbstractApplication extends AbstractEntity {
     private static final short REQUIRED_VOTES = 2;
-
     @NotNull
     @PastOrPresent
     private LocalDateTime appliedAt;
@@ -47,21 +44,21 @@ public abstract class AbstractApplication extends AbstractEntity {
     private Set<Player> acceptedBy;
 
     @PastOrPresent
-    private LocalDateTime acceptedAt;
+    private LocalDateTime resolvedAt;
 
     @Getter
     @NotNull
-    private Boolean accepted;
+    @Enumerated(EnumType.STRING)
+    private ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
-
 
     protected AbstractApplication() {
         voteCount = 0;
         appliedAt = LocalDateTime.now();
         lastVoteAt = LocalDateTime.now();
-        accepted = false;
+        state = ApplicationState.OPEN;
 
         acceptedBy = new HashSet<>(3);
     }
@@ -112,8 +109,8 @@ public abstract class AbstractApplication extends AbstractEntity {
         return voteCount >= REQUIRED_VOTES;
     }
     protected void setAccepted() {
-        acceptedAt = LocalDateTime.now();
-        accepted = true;
+        resolvedAt = LocalDateTime.now();
+        state = ApplicationState.ACCEPTED;
     }
 
 }

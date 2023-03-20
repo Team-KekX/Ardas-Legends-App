@@ -6,6 +6,7 @@ import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.DiscordUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
@@ -56,11 +57,21 @@ public class RoleplayApplication extends AbstractApplication implements DiscordU
                 .addField("Gear", gear)
                 .addField("Link to RP", linkToLore)
                 .setColor(ALColor.YELLOW)
-                .setThumbnail(getFactionBanner(faction.getName()));
+                .setThumbnail(getFactionBanner(faction.getName()))
+                .setTimestampToNow();
     }
 
     @Override
     public EmbedBuilder buildAcceptedMessage() {
-        return null;
+        return new EmbedBuilder()
+                .setTitle("Accepted: " + player.getIgn() + "'s Character")
+                .addField("Character", characterName)
+                .addField("Title", characterTitle)
+                .addField("Faction", faction.getName())
+                .addField("Gear", gear)
+                .addField("Link to RP", linkToLore)
+                .setColor(ALColor.GREEN)
+                .setThumbnail(getFactionBanner(faction.getName()))
+                .setTimestampToNow();
     }
 }

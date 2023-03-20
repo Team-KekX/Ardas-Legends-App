@@ -1,6 +1,7 @@
 package com.ardaslegends.service.applications;
 
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.FactionRepository;
@@ -11,7 +12,6 @@ import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
 import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.ardaslegends.service.exceptions.PlayerServiceException;
-import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         log.debug("Fetching slice of active roleplay applications [{}]", pageable);
         Objects.requireNonNull(pageable);
 
-        val applications = secureFind(pageable, rpRepository::findAllByAcceptedFalse);
+        val applications = secureFind(ApplicationState.OPEN ,pageable, rpRepository::findByState);
         log.debug("Fetched active rpApplications [{}]", applications);
 
         return applications;
@@ -177,7 +177,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
 
         log.debug("Fetching all open roleplay-applications");
         AtomicInteger count = new AtomicInteger();
-        secureFind(rpRepository::findAllByAcceptedFalse).stream()
+        secureFind(ApplicationState.OPEN, rpRepository::findByState).stream()
                 .filter(RoleplayApplication::acceptable)
                 .map(RoleplayApplication::accept)
                 .forEach(application -> {
