@@ -1,5 +1,6 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -7,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -45,6 +47,23 @@ public final class RPChar extends AbstractDomainObject {
     private Boolean isHealing;
     private LocalDateTime startedHeal;
     private LocalDateTime healEnds;
+    private String linkToLore;
+
+    public RPChar(RoleplayApplication application) {
+        name = application.getCharacterName();
+        title = application.getCharacterTitle();
+        gear = application.getGear();
+        pvp = application.getPvp();
+        currentRegion = application.getFaction().getHomeRegion();
+
+        boundTo = null;
+        injured = false;
+        isHealing = false;
+        startedHeal = null;
+        healEnds = null;
+
+        linkToLore = application.getLinkToLore();
+    }
 
     @Override
     public boolean equals(Object o) {

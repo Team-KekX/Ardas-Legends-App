@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 
 @RequiredArgsConstructor
@@ -179,22 +180,27 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         AtomicInteger count = new AtomicInteger();
         secureFind(ApplicationState.OPEN, rpRepository::findByState).stream()
                 .filter(RoleplayApplication::acceptable)
-                .map(RoleplayApplication::accept)
-                .forEach(application -> {
-                    val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
-
-                    try {
-                        secureSave(application, rpRepository);
-                    }
-                    catch (Exception e) {
-                        message.delete("Failed to update application to accepted in database therefore deleting message");
-                        throw e;
-                    }
-                    count.getAndIncrement();
-                });
+                .forEach(accept(count));
 
         long endNanos = System.nanoTime();
         log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos), count.get());
+    }
+
+    private Consumer<RoleplayApplication> accept(AtomicInteger count) {
+        return application -> {
+            val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
+            val character = application.accept();
+            val player = application.getPlayer();
+
+
+            try {
+                secureSave(application, rpRepository);
+            } catch (Exception e) {
+                message.delete("Failed to update application to accepted in database therefore deleting message");
+                throw e;
+            }
+            count.getAndIncrement();
+        };
     }
 
 }

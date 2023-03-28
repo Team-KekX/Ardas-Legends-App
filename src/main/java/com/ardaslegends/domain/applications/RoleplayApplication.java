@@ -2,6 +2,7 @@ package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.DiscordUtils;
 import lombok.*;
@@ -22,7 +23,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "roleplay_apps")
-public class RoleplayApplication extends AbstractApplication implements DiscordUtils {
+public class RoleplayApplication extends AbstractApplication<RPChar> implements DiscordUtils {
 
     @ManyToOne
     @NotNull
@@ -38,14 +39,11 @@ public class RoleplayApplication extends AbstractApplication implements DiscordU
     private String whyDoYouWantToBeThisCharacter;
     @NotBlank
     private String gear;
+
+    @NotNull
+    private Boolean pvp;
     @NotBlank
     private String linkToLore;
-
-    public RoleplayApplication accept() {
-        log.debug("Accepting application [{}]", toString());
-        setAccepted();
-        return this;
-}
 
     @Override
     public EmbedBuilder buildApplicationMessage() {
@@ -66,12 +64,25 @@ public class RoleplayApplication extends AbstractApplication implements DiscordU
         return new EmbedBuilder()
                 .setTitle("Accepted: " + player.getIgn() + "'s Character")
                 .addField("Character", characterName)
-                .addField("Title", characterTitle)
+                .addInlineField("Title", characterTitle)
                 .addField("Faction", faction.getName())
-                .addField("Gear", gear)
+                .addInlineField("Gear", gear)
                 .addField("Link to RP", linkToLore)
                 .setColor(ALColor.GREEN)
                 .setThumbnail(getFactionBanner(faction.getName()))
                 .setTimestampToNow();
+    }
+
+    @Override
+    protected RPChar finishApplication() {
+        if(state != ApplicationState.ACCEPTED) {
+            // Ookok
+        }
+
+        RPChar character = new RPChar(characterName, characterTitle, gear,pvp,
+                faction.getHomeRegion(), null, false, false
+                , null, null, linkToLore);
+
+        return character;
     }
 }

@@ -22,11 +22,11 @@ import java.util.Set;
 @Slf4j
 @AllArgsConstructor
 @MappedSuperclass
-public abstract class AbstractApplication extends AbstractEntity {
+public abstract class AbstractApplication<T> extends AbstractEntity {
     private static final short REQUIRED_VOTES = 2;
     @NotNull
     @PastOrPresent
-    private LocalDateTime appliedAt;
+    LocalDateTime appliedAt;
 
     @NotNull
     @Setter(value = AccessLevel.PROTECTED)
@@ -49,7 +49,7 @@ public abstract class AbstractApplication extends AbstractEntity {
     @Getter
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ApplicationState state;
+    protected ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
@@ -108,9 +108,11 @@ public abstract class AbstractApplication extends AbstractEntity {
     public boolean acceptable() {
         return voteCount >= REQUIRED_VOTES;
     }
-    protected void setAccepted() {
+    public T accept() {
         resolvedAt = LocalDateTime.now();
         state = ApplicationState.ACCEPTED;
+        return finishApplication();
     }
 
+    protected abstract T finishApplication();
 }
