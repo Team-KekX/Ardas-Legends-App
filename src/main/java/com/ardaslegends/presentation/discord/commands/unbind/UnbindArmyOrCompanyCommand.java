@@ -34,7 +34,7 @@ public class UnbindArmyOrCompanyCommand implements ALCommandExecutor {
 
         log.debug("Getting options");
         String armyName = getStringOption("army-or-company-name", options);
-        log.debug("armyName: [{}]", armyName);
+        log.debug("name: [{}]", armyName);
         User target = getUserOption("target-player", options);
         log.debug("target-player: [{}]", target.getDiscriminatedName());
 

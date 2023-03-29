@@ -46,6 +46,12 @@ public final class RPChar extends AbstractDomainEntity {
     private LocalDateTime startedHeal;
     private LocalDateTime healEnds;
 
+    public void resetHealingStats() {
+        this.setIsHealing(false);
+        this.setStartedHeal(null);
+        this.setHealEnds(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -31,7 +31,7 @@ public class DeleteArmyOrCompanyCommand implements ALStaffCommandExecutor {
         log.trace("DeleteArmy: User is staff -> authorized");
 
         String armyName = getStringOption("army-or-company-name", options);
-        log.trace("DeleteArmy: armyName value is [{}]", armyName);
+        log.trace("DeleteArmy: name value is [{}]", armyName);
 
         log.trace("DeleteArmy: Building Dto");
         DeleteArmyDto dto = new DeleteArmyDto(interaction.getUser().getIdAsString(), armyName);

@@ -118,8 +118,8 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Trying to cancel movement of army [{}] (executed by player [{}])", dto.armyName(), dto.executorDiscordId());
 
         log.trace("Validating data");
-        ServiceUtils.checkNulls(dto, List.of("armyName", "executorDiscordId"));
-        ServiceUtils.checkBlanks(dto, List.of("armyName", "executorDiscordId"));
+        ServiceUtils.checkNulls(dto, List.of("name", "executorDiscordId"));
+        ServiceUtils.checkBlanks(dto, List.of("name", "executorDiscordId"));
 
         log.trace("Getting the army instance");
         Army army = armyService.getArmyByName(dto.armyName());

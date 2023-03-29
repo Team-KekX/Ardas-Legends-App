@@ -25,7 +25,7 @@ public class CancelHealArmyCommand implements ALCommandExecutor {
         String discordId = interaction.getUser().getIdAsString();
 
         String armyName = getStringOption("army", options);
-        log.trace("CancelHealArmy: armyName is [{}]", armyName);
+        log.trace("CancelHealArmy: name is [{}]", armyName);
 
         log.trace("CancelHealArmy: Building UpdateArmyDto");
         UpdateArmyDto dto = new UpdateArmyDto(discordId, armyName, null, null);

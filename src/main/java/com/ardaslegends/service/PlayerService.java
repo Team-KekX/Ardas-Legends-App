@@ -615,9 +615,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Char is healing - continuing");
 
         log.debug("Setting isHealing to false");
-        rpchar.setIsHealing(false);
-        rpchar.setStartedHeal(null);
-        rpchar.setHealEnds(null);
+        rpchar.resetHealingStats();
 
         log.debug("Persisting player");
         player = secureSave(player, playerRepository);

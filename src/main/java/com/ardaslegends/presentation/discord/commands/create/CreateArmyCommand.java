@@ -35,7 +35,7 @@ public class CreateArmyCommand implements ALCommandExecutor {
 
         log.trace("Getting input data");
         String armyName = getStringOption("army-name", options);
-        log.debug("armyName: [{}]", armyName);
+        log.debug("name: [{}]", armyName);
         String cbName = getStringOption("claimbuild-name", options);
         log.debug("cbName: [{}]", cbName);
         String units = getStringOption("units", options);

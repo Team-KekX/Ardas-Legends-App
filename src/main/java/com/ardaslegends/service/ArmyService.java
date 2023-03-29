@@ -159,8 +159,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     public Army healStart(UpdateArmyDto dto) {
         log.debug("Trying to start healing for army [{}]", dto.armyName());
 
-        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
-        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "name"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "name"));
 
         log.debug("Fetching required data");
 
@@ -218,8 +218,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     public Army healStop(UpdateArmyDto dto) {
         log.debug("Trying to start healing for army [{}]", dto.armyName());
 
-        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
-        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "name"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "name"));
 
         log.trace("Fetching Player");
         Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
@@ -364,8 +364,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Unbinding army [{}] from player [{}] - executed by player [{}]", dto.armyName(), dto.targetDiscordId(), dto.executorDiscordId());
 
         log.trace("Validating data...");
-        ServiceUtils.checkNulls(dto, List.of("armyName", "executorDiscordId"));
-        ServiceUtils.checkBlanks(dto, List.of("armyName", "executorDiscordId"));
+        ServiceUtils.checkNulls(dto, List.of("name", "executorDiscordId"));
+        ServiceUtils.checkBlanks(dto, List.of("name", "executorDiscordId"));
 
         log.trace("Calling playerService to get executor's instance");
         Player executor = playerService.getPlayerByDiscordId(dto.executorDiscordId());
@@ -494,8 +494,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     public Army unstation(StationDto dto) {
         log.debug("Trying to unstation army with data: [{}]", dto);
 
-        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "armyName"));
-        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "armyName"));
+        ServiceUtils.checkNulls(dto, List.of("executorDiscordId", "name"));
+        ServiceUtils.checkBlanks(dto, List.of("executorDiscordId", "name"));
 
         log.trace("Fetching army instance");
         Army army = getArmyByName(dto.armyName());
@@ -585,8 +585,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Trying to update the free tokens of army [{}] to value [{}]", dto.armyName(), dto.freeTokens());
 
         log.trace("Validating data");
-        ServiceUtils.checkNulls(dto, List.of("freeTokens", "armyName"));
-        ServiceUtils.checkBlanks(dto, List.of("armyName"));
+        ServiceUtils.checkNulls(dto, List.of("freeTokens", "name"));
+        ServiceUtils.checkBlanks(dto, List.of("name"));
 
         log.trace("Getting the army by name [{}]", dto.armyName());
         Army army = getArmyByName(dto.armyName());
@@ -727,8 +727,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     public Army setIsPaid(UpdateArmyDto dto) {
         log.debug("Trying to set isPaid to true for army or company [{}]", dto);
 
-        ServiceUtils.checkNulls(dto, List.of("armyName", "isPaid"));
-        ServiceUtils.checkBlanks(dto, List.of("armyName"));
+        ServiceUtils.checkNulls(dto, List.of("name", "isPaid"));
+        ServiceUtils.checkBlanks(dto, List.of("name"));
 
         String name = dto.armyName();
 

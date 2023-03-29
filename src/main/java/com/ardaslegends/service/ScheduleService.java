@@ -428,7 +428,7 @@ public class ScheduleService {
         if(hoursLeft <= 0) {
             log.info("Character [{}] of player [{}] finished healing - setting isInjured and isHealing to false", rpChar, player);
             rpChar.setInjured(false);
-            rpChar.setIsHealing(false);
+            rpChar.resetHealingStats();
             log.trace("Exiting function");
             return;
         }

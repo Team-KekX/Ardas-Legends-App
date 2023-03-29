@@ -3,7 +3,7 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.presentation.AbstractRestController;
-import com.ardaslegends.presentation.api.response.claimbuild.PaginatedClaimbuildResponse;
+import com.ardaslegends.presentation.api.response.claimbuild.ClaimbuildResponse;
 import com.ardaslegends.service.ClaimBuildService;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
@@ -35,11 +35,11 @@ public class ClaimbuildRestController extends AbstractRestController {
 
     @Operation(summary = "Get Claimbuilds Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
     @GetMapping
-    public ResponseEntity<Page<PaginatedClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
+    public ResponseEntity<Page<ClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
         log.debug("Incoming getClaimbuildsPaginated Request, paginated data [{}]", pageable);
 
         Page<ClaimBuild> pageDomain = wrappedServiceExecution(pageable, claimBuildService::getClaimbuildsPaginated);
-        var pageResponse = pageDomain.map(PaginatedClaimbuildResponse::new);
+        var pageResponse = pageDomain.map(ClaimbuildResponse::new);
 
         return ResponseEntity.ok(pageResponse);
     }

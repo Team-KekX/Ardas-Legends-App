@@ -34,7 +34,7 @@ public class DisbandArmyOrcompanyCommand implements ALCommandExecutor {
 
         log.debug("Getting options");
         String armyName = getStringOption("army-or-company-name", options);
-        log.debug("armyName: [{}]", armyName);
+        log.debug("name: [{}]", armyName);
 
         log.trace("Building dto");
         DeleteArmyDto dto = new DeleteArmyDto(user.getIdAsString(), armyName);

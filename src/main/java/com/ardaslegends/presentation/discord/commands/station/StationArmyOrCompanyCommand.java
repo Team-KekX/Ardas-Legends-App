@@ -34,7 +34,7 @@ public class StationArmyOrCompanyCommand implements ALCommandExecutor {
 
         log.debug("Getting options");
         String armyName = getStringOption("army-or-company-name", options);
-        log.debug("armyName: [{}]", armyName);
+        log.debug("name: [{}]", armyName);
         String cbName = getStringOption("claimbuild-name", options);
         log.debug("claimbuild-name: [{}]", cbName);
 
