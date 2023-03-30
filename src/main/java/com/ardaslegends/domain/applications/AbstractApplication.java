@@ -56,7 +56,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     @Getter
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ApplicationState state;
+    protected ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
