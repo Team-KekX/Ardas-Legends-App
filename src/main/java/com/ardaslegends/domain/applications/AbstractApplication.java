@@ -20,13 +20,20 @@ import java.util.Set;
 
 @Getter
 @Slf4j
+@NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class AbstractApplication<T> extends AbstractEntity {
-    private static final short REQUIRED_VOTES = 2;
+    private static final short REQUIRED_VOTES = 1;
+
+
+    @ManyToOne
+    @NotNull
+    protected Player applicant;
+
     @NotNull
     @PastOrPresent
-    LocalDateTime appliedAt;
+    private LocalDateTime appliedAt;
 
     @NotNull
     @Setter(value = AccessLevel.PROTECTED)
@@ -49,12 +56,13 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     @Getter
     @NotNull
     @Enumerated(EnumType.STRING)
-    protected ApplicationState state;
+    private ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
 
-    protected AbstractApplication() {
+    protected AbstractApplication(Player applicant) {
+        this.applicant = applicant;
         voteCount = 0;
         appliedAt = LocalDateTime.now();
         lastVoteAt = LocalDateTime.now();

@@ -2,8 +2,6 @@ package com.ardaslegends.presentation.api.response.applications;
 
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -25,8 +23,8 @@ public record RoleplayApplicationResponse(
     public RoleplayApplicationResponse(RoleplayApplication application) {
         this(
                 application.getId(),
-                application.getPlayer().getIgn(),
-                application.getPlayer().getFaction().getName(),
+                application.getApplicant().getIgn(),
+                application.getApplicant().getFaction().getName(),
                 application.getCharacterName(),
                 application.getCharacterTitle(),
                 application.getWhyDoYouWantToBeThisCharacter(),

@@ -7,6 +7,7 @@ public record CreateRpApplicatonDto(
         String characterTitle,
         String characterReason,
         String gear,
+        Boolean pvpPreference,
         String linkToLore
 ) {
 }

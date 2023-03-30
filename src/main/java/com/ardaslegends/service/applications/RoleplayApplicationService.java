@@ -97,7 +97,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
 
        val player = optionalPlayer.get();
 
-       var application = new RoleplayApplication(player, faction, dto.characterName(), dto.characterTitle(), dto.characterReason(), dto.gear(), dto.linkToLore());
+       var application = new RoleplayApplication(player, faction, dto.characterName(), dto.characterTitle(), dto.characterReason(), dto.gear(), dto.pvpPreference(), dto.linkToLore());
        val applicationMessage = application.sendApplicationMessage(botProperties.getRpAppsChannel());
 
        try {
@@ -190,7 +190,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         return application -> {
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
             val character = application.accept();
-            val player = application.getPlayer();
+            val player = application.getApplicant();
 
 
             try {

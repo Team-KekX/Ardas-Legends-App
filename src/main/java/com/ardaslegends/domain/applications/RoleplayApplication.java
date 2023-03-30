@@ -25,9 +25,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "roleplay_apps")
 public class RoleplayApplication extends AbstractApplication<RPChar> implements DiscordUtils {
 
-    @ManyToOne
-    @NotNull
-    private Player player;
     @NotNull
     @ManyToOne
     private Faction faction;
@@ -45,10 +42,21 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
     @NotBlank
     private String linkToLore;
 
+    public RoleplayApplication(Player applicant, Faction faction, String characterName, String characterTitle, String whyDoYouWantToBeThisCharacter, String gear, Boolean pvp, String linkToLore) {
+        super(applicant);
+        this.faction = faction;
+        this.characterName = characterName;
+        this.characterTitle = characterTitle;
+        this.whyDoYouWantToBeThisCharacter = whyDoYouWantToBeThisCharacter;
+        this.gear = gear;
+        this.pvp = pvp;
+        this.linkToLore = linkToLore;
+    }
+
     @Override
     public EmbedBuilder buildApplicationMessage() {
         return new EmbedBuilder()
-                .setTitle(player.getIgn() + "'s Application")
+                .setTitle(.getIgn() + "'s Application")
                 .addField("Character", characterName)
                 .addField("Title", characterTitle)
                 .addField("Faction", faction.getName())
@@ -79,10 +87,8 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
             // Ookok
         }
 
-        RPChar character = new RPChar(characterName, characterTitle, gear,pvp,
+        return new RPChar(characterName, characterTitle, gear,pvp,
                 faction.getHomeRegion(), null, false, false
-                , null, null, linkToLore);
-
-        return character;
+                ,null, null, linkToLore);
     }
 }
