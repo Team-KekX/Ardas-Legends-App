@@ -5,6 +5,7 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.DiscordUtils;
+import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.Message;
@@ -83,11 +84,8 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
     @Override
     protected RPChar finishApplication() {
         if(state != ApplicationState.ACCEPTED) {
-            // Ookok
+            throw RoleplayApplicationServiceException.applicationNotYetAccepted(getId());
         }
-
-        return new RPChar(applicant ,characterName, characterTitle, gear,pvp,
-                faction.getHomeRegion(), null, null,  false, false
-                ,null, null, linkToLore);
+        return new RPChar(this);
     }
 }
