@@ -36,8 +36,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
     public Page<Army> getArmiesPaginated(Pageable pageable) {
         log.info("Getting page of armies with data [size:{},page:{}]", pageable.getPageSize(), pageable.getPageNumber());
-        Page<Army> page = secureFind(pageable, armyRepository::findAll);
-        return page;
+        return secureFind(pageable, armyRepository::findAll);
     }
 
     @Transactional(readOnly = false)
@@ -77,7 +76,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Checking if the Player has the same faction as the Claimbuild");
         if(!inputClaimBuild.getOwnedBy().equals(fetchedPlayer.getFaction())) {
-            log.warn("Player [{}] and Claimbuild [{}] not in the same faction!");
+            log.warn("Player [{}] and Claimbuild [{}] not in the same faction!", fetchedPlayer.getIgn(), inputClaimBuild.getName());
             throw ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(fetchedPlayer.getFaction().getName(), inputClaimBuild.getOwnedBy().getName(), ArmyType.ARMY);
         }
 

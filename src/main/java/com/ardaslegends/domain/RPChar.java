@@ -52,6 +52,8 @@ public class RPChar extends AbstractEntity {
     private LocalDateTime healEnds;
     private String linkToLore;
 
+    private Boolean deleted;
+
     public RPChar(RoleplayApplication application) {
         name = application.getCharacterName();
         title = application.getCharacterTitle();
@@ -66,6 +68,7 @@ public class RPChar extends AbstractEntity {
         isHealing = false;
         startedHeal = null;
         healEnds = null;
+        deleted = false;
 
         linkToLore = application.getLinkToLore();
     }
@@ -85,6 +88,7 @@ public class RPChar extends AbstractEntity {
         isHealing = false;
         startedHeal = null;
         healEnds = null;
+        deleted = false;
 
         this.linkToLore = linkToLore;
     }
