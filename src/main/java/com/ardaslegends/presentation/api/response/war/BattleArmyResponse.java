@@ -11,7 +11,7 @@ public record BattleArmyResponse(
         this(
                 army.getName(),
                 army.getFaction().getName(),
-                army.getBoundTo().getIgn()
+                army.getBoundTo().getOwner().getIgn()
         );
     }
 }

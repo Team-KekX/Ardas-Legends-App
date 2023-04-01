@@ -44,9 +44,10 @@ public final class Army extends AbstractDomainObject {
     @NotNull(message = "Army: Region must not be null")
     private Region currentRegion; //region the army is currently in
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "rpChar.boundTo")
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "boundTo")
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
-    private Player boundTo; //rp character the army is currently bound to
+    private RPChar boundTo; //rp character the army is currently bound to
+
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "army")
     private List<Unit> units = new ArrayList<>(); //the units in this army contains
 
@@ -78,7 +79,7 @@ public final class Army extends AbstractDomainObject {
 
     private Boolean isPaid;
 
-    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, Player boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, LocalDateTime healStart, LocalDateTime healEnd,
+    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, RPChar boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, LocalDateTime healStart, LocalDateTime healEnd,
                 Integer hoursHealed, Integer hoursLeftHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
         this.name = name;
         this.armyType = armyType;

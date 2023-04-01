@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -47,14 +46,15 @@ public final class Player extends AbstractDomainObject {
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
-    @Embedded
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "character_id")
     private RPChar rpChar; //the player's rp character
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "player", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Movement> movements = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "past_char_id")
+    @Setter(AccessLevel.NONE)
+    private Set<RPChar> pastCharacters;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<ClaimBuild> builtClaimbuilds;
 
@@ -66,7 +66,6 @@ public final class Player extends AbstractDomainObject {
         this.discordID = discordID;
         this.faction = faction;
         this.rpChar = rpChar;
-        this.movements = new ArrayList<>(1);
         this.builtClaimbuilds = new ArrayList<>(1);
         this.isStaff = false;
     }
@@ -80,6 +79,19 @@ public final class Player extends AbstractDomainObject {
             throw PlayerServiceException.playerHasNoRpchar();
         }
     }
+
+    public void setRpChar(RPChar rpChar, Faction faction) {
+        this.rpChar = rpChar;
+    }
+
+    public Set<RPChar> getPastCharacters() {
+        return Collections.unmodifiableSet(pastCharacters);
+    }
+
+    public List<ClaimBuild> getBuiltClaimbuilds() {
+        return Collections.unmodifiableList(builtClaimbuilds);
+    }
+
     @Override
     public String toString() {
         return ign;

@@ -28,8 +28,8 @@ public final class Movement extends AbstractDomainObject {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "player_id")
-    private Player player;
+    @JoinColumn(name = "rpchar_id")
+    private RPChar rpChar;
 
     @ManyToOne
     @JoinColumn(name = "army_name")
@@ -51,8 +51,8 @@ public final class Movement extends AbstractDomainObject {
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
-        this.player = player;
+    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+        this.rpChar = rpChar;
         this.army = army;
         this.isCharMovement = isCharMovement;
         this.path = path;
@@ -84,7 +84,7 @@ public final class Movement extends AbstractDomainObject {
     @Override
     public String toString() {
         return "Movement{" +
-                "player=" + player +
+                "roleplayCharacter=" + rpChar +
                 ", army=" + army +
                 ", isCharMovement=" + isCharMovement +
                 ", path=" + path +

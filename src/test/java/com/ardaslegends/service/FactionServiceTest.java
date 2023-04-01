@@ -13,6 +13,7 @@ import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
@@ -37,7 +38,8 @@ public class FactionServiceTest {
     void setup() {
         mockFactionRepository = mock(FactionRepository.class);
         mockPlayerRepository = mock(PlayerRepository.class);
-        factionService = new FactionService(mockFactionRepository, mockPlayerRepository);
+        factionService = Mockito.spy(new FactionService(mockFactionRepository, mockPlayerRepository));
+        Mockito.doNothing().when(factionService).recordMessageInErrorChannel(any());
 
         faction = Faction.builder().name("Gondor").foodStockpile(10).build();
         player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
@@ -175,17 +177,17 @@ public class FactionServiceTest {
 
     @Test
     void ensureGetByFactionNameThrowsServiceExceptionWhenDatabaseDown() {
-        // Assign
-        String name = "Mordor";
+            // Assign
+            String name = "Mordor";
 
-        PersistenceException pEx = new PersistenceException("Database down");
+            PersistenceException pEx = new PersistenceException("Database down");
 
-        when(mockFactionRepository.findFactionByName(name)).thenThrow(pEx);
+            when(mockFactionRepository.findFactionByName(name)).thenThrow(pEx);
 
-        // Assert
-        var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
+            // Assert
+            var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
 
-        assertThat(result.getCause()).isEqualTo(pEx);
+            assertThat(result.getCause()).isEqualTo(pEx);
     }
 
     @Test

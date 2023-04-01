@@ -317,7 +317,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Checking if army is already bound to player");
         if (army.getBoundTo() != null) {
             log.warn("Army [{}] is already bound to another player [{}]!", army.getName(), army.getBoundTo());
-            throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getIgn());
+            throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getOwner().getIgn());
         }
 
         log.debug("Checking if rpchar is injured");
@@ -341,7 +341,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rp char is in an active movement");
-        Optional<Movement> charActiveMove = movementRepository.findMovementByPlayerAndIsCurrentlyActiveTrue(targetPlayer);
+        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetPlayer.getRpChar());
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
@@ -349,7 +349,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
-        army.setBoundTo(targetPlayer);
+        army.setBoundTo(targetPlayer.getRpChar());
         targetPlayer.getRpChar().setBoundTo(army);
 
         log.debug("Persisting newly changed army...");
@@ -380,9 +380,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Getting the currently bound player");
 
-        Player boundPlayer = army.getBoundTo();
+        RPChar boundCharacter = army.getBoundTo();
         log.trace("Checking if the army has a player bound to it");
-        if(boundPlayer == null) {
+        if(boundCharacter == null) {
             log.warn("There is no player bound to the army [{}]", army);
             throw ArmyServiceException.noPlayerBoundToArmy(army.getArmyType(), army.getName());
         }
@@ -414,7 +414,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Optional<Movement> activeMovement = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army);
         if(activeMovement.isPresent()) {
             String path = ServiceUtils.buildPathString(activeMovement.get().getPath());
-            log.warn("Army [{}] is currently in a movement (Path: [{}]) - cannot unbind from player [{}]", army, path, boundPlayer);
+            log.warn("Army [{}] is currently in a movement (Path: [{}]) - cannot unbind from player [{}]", army, path, boundCharacter);
             throw ArmyServiceException.cannotUnbindMovingArmy(army.getArmyType(), army.getName());
         }
 
@@ -426,12 +426,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.trace("Setting bound player to null");
         army.setBoundTo(null);
-        boundPlayer.getRpChar().setBoundTo(null);
+        boundCharacter.setBoundTo(null);
 
         log.trace("Persisting army");
         army = secureSave(army, armyRepository);
 
-        log.info("Unbound player [{}] from army [{}] (faction [{}])", boundPlayer, army, army.getFaction());
+        log.info("Unbound player [{}] from army [{}] (faction [{}])", boundCharacter, army, army.getFaction());
         return army;
     }
 
@@ -563,7 +563,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         if(army.getBoundTo() != null) {
-            army.getBoundTo().getRpChar().setBoundTo(null);
+            army.getBoundTo().setBoundTo(null);
             army.setBoundTo(null);
         }
 

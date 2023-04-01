@@ -36,7 +36,6 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
     private String whyDoYouWantToBeThisCharacter;
     @NotBlank
     private String gear;
-
     @NotNull
     private Boolean pvp;
     @NotBlank
@@ -87,8 +86,8 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
             // Ookok
         }
 
-        return new RPChar(characterName, characterTitle, gear,pvp,
-                faction.getHomeRegion(), null, false, false
+        return new RPChar(applicant ,characterName, characterTitle, gear,pvp,
+                faction.getHomeRegion(), null, null,  false, false
                 ,null, null, linkToLore);
     }
 }

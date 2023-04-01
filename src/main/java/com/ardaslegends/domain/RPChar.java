@@ -10,7 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
@@ -18,11 +18,11 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 
-@Embeddable
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name")
-public final class RPChar extends AbstractDomainObject {
+@Entity
+public class RPChar extends AbstractEntity {
+
+    @ManyToOne
+    private Player owner;
 
     @Column(unique = true)
     private String name;
@@ -43,6 +43,9 @@ public final class RPChar extends AbstractDomainObject {
     @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
     private Army boundTo; //the army that is bound to this character
 
+    @OneToMany(mappedBy = "rpChar")
+    private Set<Movement> movements;
+
     private Boolean injured;
     private Boolean isHealing;
     private LocalDateTime startedHeal;
@@ -54,7 +57,9 @@ public final class RPChar extends AbstractDomainObject {
         title = application.getCharacterTitle();
         gear = application.getGear();
         pvp = application.getPvp();
+
         currentRegion = application.getFaction().getHomeRegion();
+        movements = new HashSet<>();
 
         boundTo = null;
         injured = false;
@@ -65,21 +70,31 @@ public final class RPChar extends AbstractDomainObject {
         linkToLore = application.getLinkToLore();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RPChar rpChar = (RPChar) o;
-        return name.equals(rpChar.name);
+    public RPChar(Player owner, String name, String title, String gear, Boolean pvp, String linkToLore) {
+        this.owner = owner;
+        this.name = name;
+        this.title = title;
+        this.gear = gear;
+        this.pvp = pvp;
+
+        this.currentRegion = owner.getFaction().getHomeRegion();
+        this.movements = new HashSet<>();
+
+        boundTo = null;
+        injured = false;
+        isHealing = false;
+        startedHeal = null;
+        healEnds = null;
+
+        this.linkToLore = linkToLore;
+    }
+
+    public Set<Movement> getMovements() {
+        return Collections.unmodifiableSet(movements);
     }
 
     @Override
     public String toString() {
         return name;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

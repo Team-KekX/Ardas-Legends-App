@@ -101,7 +101,7 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
         }
     }
 
-    private void recordMessageInErrorChannel(Throwable throwable) {
+    protected void recordMessageInErrorChannel(Throwable throwable) {
         val embed = new EmbedBuilder()
                 .setTitle(throwable.getClass().getSimpleName())
                 .setDescription(throwable.getMessage())

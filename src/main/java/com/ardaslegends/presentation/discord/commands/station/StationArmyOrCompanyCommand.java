@@ -61,7 +61,7 @@ public class StationArmyOrCompanyCommand implements ALCommandExecutor {
                 .setColor(ALColor.GREEN)
                 .addInlineField("Army", army.getName())
                 .addInlineField("Army Faction", army.getFaction().getName())
-                .addInlineField("Bound Player", army.getBoundTo() == null ? "None" : army.getBoundTo().getIgn())
+                .addInlineField("Bound Player", army.getBoundTo() == null ? "None" : army.getBoundTo().getOwner().getIgn())
                 .addInlineField("Claimbuild", army.getStationedAt().getName())
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .setThumbnail(thumbnail)

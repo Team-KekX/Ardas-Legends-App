@@ -39,7 +39,7 @@ public class CancelMoveRpcharCommand implements ALCommandExecutor {
         log.trace("Calling movementService");
         Movement movement = discordServiceExecution(dto, movementService::cancelRpCharMovement, "Error while cancelling RpChar Movement");
 
-        RPChar rpChar = movement.getPlayer().getRpChar();
+        RPChar rpChar = movement.getRpChar();
 
         log.debug("Building response Embed");
         return new ALMessageResponse(null, new EmbedBuilder()
@@ -47,7 +47,7 @@ public class CancelMoveRpcharCommand implements ALCommandExecutor {
                 .setDescription("The character %s - %s stopped their movement towards region %s.\nThe character is now in region %s.".formatted(rpChar.getName(), rpChar.getTitle(), movement.getDestinationRegionId(), rpChar.getCurrentRegion().getId()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Character", rpChar.getName())
-                .addInlineField("Player", movement.getPlayer().getIgn())
+                .addInlineField("Player", rpChar.getOwner().getIgn())
                 .addInlineField("User", user.getMentionTag())
                 .addField("Current Region", rpChar.getCurrentRegion().getId())
                 .setThumbnail(Thumbnails.MOVE_CHARACTER.getUrl())

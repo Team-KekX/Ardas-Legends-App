@@ -44,7 +44,7 @@ public class CancelMoveArmyOrCompany implements ALCommandExecutor {
         Movement movement = discordServiceExecution(dto, movementService::cancelArmyMovement, "Error while cancelling Army/Company Movement");
 
         Army army = movement.getArmy();
-        Player boundPlayer = army.getBoundTo();
+        Player boundPlayer = army.getBoundTo().getOwner();
 
         log.debug("Building response Embed");
         return new ALMessageResponse(null, new EmbedBuilder()

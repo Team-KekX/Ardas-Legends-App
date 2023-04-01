@@ -44,7 +44,7 @@ public class MoveRpcharCommand implements ALCommandExecutor {
         log.trace("Calling movementService");
         Movement movement = discordServiceExecution(dto, movementService::createRpCharMovement, "Error while starting RpChar Movement");
 
-        RPChar rpChar = movement.getPlayer().getRpChar();
+        RPChar rpChar = movement.getRpChar();
 
         log.debug("Building response Embed");
         return new ALMessageResponse(null, new EmbedBuilder()
@@ -52,7 +52,7 @@ public class MoveRpcharCommand implements ALCommandExecutor {
                 .setDescription("The character %s - %s has started their movement towards region %s".formatted(rpChar.getName(), rpChar.getTitle(), movement.getDestinationRegionId()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Character", rpChar.getName())
-                .addInlineField("Player", movement.getPlayer().getIgn())
+                .addInlineField("Player", rpChar.getOwner().getIgn())
                 .addInlineField("User", user.getMentionTag())
                 .addField("Route", createPathString(movement.getPath()), false)
                 .addField("Duration", createDurationString(movement.getCost()), false)

@@ -65,7 +65,7 @@ public class PathfinderTest {
 
         faction_bad.getRegions().add(r3);
 
-        army.setBoundTo(player);
+        army.setBoundTo(player.getRpChar());
 
         r2.getClaimBuilds().add(claimbuild);
 

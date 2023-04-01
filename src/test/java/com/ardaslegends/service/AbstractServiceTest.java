@@ -5,9 +5,15 @@ import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.PlayerRepository;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.checkerframework.checker.units.qual.A;
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.PersistenceException;
 import java.util.Optional;
@@ -15,11 +21,14 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Slf4j
 public class AbstractServiceTest {
+
+    BotProperties properties;
 
     PlayerService service;
     PlayerRepository mockRepository;
@@ -30,8 +39,11 @@ public class AbstractServiceTest {
     void setup() {
         mockRepository = mock(PlayerRepository.class);
         mockProperties = mock(BotProperties.class);
+        when(mockProperties.getErrorChannel()).thenReturn(mock(TextChannel.class));
         mockDiscordApi = mock(DiscordApi.class);
-        service = new PlayerService(mockRepository, null, null, mockDiscordApi, mockProperties);
+        service = Mockito.spy(new PlayerService(mockRepository, null, null, mockDiscordApi, mockProperties));
+
+        Mockito.doNothing().when(service).recordMessageInErrorChannel(any());
     }
 
     @Test
