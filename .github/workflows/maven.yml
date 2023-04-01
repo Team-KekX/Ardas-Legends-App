@@ -22,5 +22,22 @@ jobs:
         java-version: '19'
         distribution: 'temurin'
         cache: maven
+    - name: Test env variables
+      env:
+        INTEGRATION_BOT_TOKEN: 'Test1'
+        DEV_SERVER_TOKEN: 'Test2'
+        DEV_STAFF_ROLES: 'Test3'
+        DEV_RP_COMMANDS_CHANNEL: 'Test4'
+        RP_APP_CHANNEL: 'Test5'
+        DEV_ERROR_CHANNEL: 'Test6'
+      run: echo -Dspring-boot.run.arguments="ardaslegends.bot.token=$INTEGRATION_BOT_TOKEN,ardaslegends.bot.server=$DEV_SERVER_TOKEN,ardaslegends.bot.staff-roles=$DEV_STAFF_ROLES,ardaslegends.roleplay.commands.channel=$DEV_RP_COMMANDS_CHANNEL,ardaslegends.roleplay.apps.channel=$DEV_RP_APPS_CHANNEL,ardaslegends.bot.error.channel=$DEV_ERROR_CHANNEL"
+        
     - name: Build with Maven
-      run: mvn -B clean verify --file pom.xml
+      env:
+        INTEGRATION_BOT_TOKEN: ${{ secrets.INTEGRATION_BOT_TOKEN }}
+        DEV_SERVER_TOKEN: ${{ secrets.DEV_SERVER_TOKEN }}
+        DEV_STAFF_ROLES: ${{ secrets.DEV_STAFF_ROLES }}
+        DEV_RP_COMMANDS_CHANNEL: ${{ secrets.DEV_RP_COMMANDS_CHANNEL }}
+        RP_APP_CHANNEL: ${{ secrets.DEV_RP_APPS_CHANNEL }}
+        DEV_ERROR_CHANNEL: ${{ secrets.DEV_ERROR_CHANNEL }}
+      run: mvn -B clean verify --file pom.xml -D"ardaslegends.bot.token"=$INTEGRATION_BOT_TOKEN -D"ardaslegends.bot.server"=$DEV_SERVER_TOKEN -D"ardaslegends.bot.staff-roles"=$DEV_STAFF_ROLES -D"ardaslegends.roleplay.commands.channel"=$DEV_RP_COMMANDS_CHANNEL -D"ardaslegends.roleplay.apps.channel"=$DEV_RP_APPS_CHANNEL -D"ardaslegends.bot.error.channel"=$DEV_ERROR_CHANNEL
