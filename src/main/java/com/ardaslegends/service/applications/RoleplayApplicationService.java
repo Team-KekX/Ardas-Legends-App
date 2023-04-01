@@ -177,29 +177,28 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         log.debug("Starting scheduled handling of open roleplay applications - System time: [{}]", startDateTime);
 
         log.debug("Fetching all open roleplay-applications");
-        AtomicInteger count = new AtomicInteger();
         secureFind(ApplicationState.OPEN, rpRepository::findByState).stream()
                 .filter(RoleplayApplication::acceptable)
-                .forEach(accept(count));
+                .forEach(accept());
 
         long endNanos = System.nanoTime();
-        log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos), count.get());
+        log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
     }
 
-    private Consumer<RoleplayApplication> accept(AtomicInteger count) {
+    private Consumer<RoleplayApplication> accept() {
         return application -> {
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
             val character = application.accept();
             val player = application.getApplicant();
-
+            player.setRpChar(character);
 
             try {
                 secureSave(application, rpRepository);
+                log.info("Accepted rp application from [{}]", player.getIgn());
             } catch (Exception e) {
                 message.delete("Failed to update application to accepted in database therefore deleting message");
                 throw e;
             }
-            count.getAndIncrement();
         };
     }
 
