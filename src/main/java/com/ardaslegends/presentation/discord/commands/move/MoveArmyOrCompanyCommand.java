@@ -47,7 +47,7 @@ public class MoveArmyOrCompanyCommand implements ALCommandExecutor {
         Movement movement = discordServiceExecution(dto, movementService::createArmyMovement, "Error while starting Army/Company Movement");
 
         Army army = movement.getArmy();
-        Player boundPlayer = army.getBoundTo();
+        Player boundPlayer = army.getBoundTo().getOwner();
 
         Integer foodCost = ServiceUtils.getFoodCost(movement.getPath());
 

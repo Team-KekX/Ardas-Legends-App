@@ -1,7 +1,5 @@
 package com.ardaslegends.domain;
 
-import com.ardaslegends.domain.war.War;
-import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
@@ -27,7 +25,7 @@ import java.util.Set;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class Faction extends AbstractDomainEntity {
+public final class Faction extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

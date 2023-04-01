@@ -85,7 +85,7 @@ public class PickSiegeCommand implements ALCommand, ALCommandExecutor {
                 .setColor(ALColor.GREEN)
                 .addInlineField("Army", army.getName())
                 .addInlineField("Army Faction", army.getFaction().getName())
-                .addInlineField("Bound Player", army.getBoundTo() == null ? "None" : army.getBoundTo().getIgn())
+                .addInlineField("Bound Player", army.getBoundTo() == null ? "None" : army.getBoundTo().getOwner().getIgn())
                 .addInlineField("Region", army.getCurrentRegion().getId())
                 .addInlineField("Siege", String.join(", ", army.getSieges()))
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))

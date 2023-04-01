@@ -148,7 +148,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Saving RPChar to the Database
 
         log.debug("Creating RpChar instance");
-        RPChar createdChar = new RPChar(dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), actualPlayer.getFaction().getHomeRegion(), null, false, false, null, null);
+        RPChar createdChar = new RPChar(actualPlayer, dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), null);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
         actualPlayer.setRpChar(createdChar);

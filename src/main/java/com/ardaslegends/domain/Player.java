@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ import java.util.List;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "ign")
-public final class Player extends AbstractDomainEntity {
+public final class Player extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,16 +46,19 @@ public final class Player extends AbstractDomainEntity {
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
-    @Embedded
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "character_id")
     private RPChar rpChar; //the player's rp character
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "player", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
-    public List<Movement> movements = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "past_char_id")
+    @Setter(AccessLevel.NONE)
+    private Set<RPChar> pastCharacters;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    public List<ClaimBuild> builtClaimbuilds;
+    private List<ClaimBuild> builtClaimbuilds;
+
+    private Boolean isStaff;
 
     public Player(String ign, String uuid, String discordID, Faction faction, RPChar rpChar) {
         this.ign = ign;
@@ -64,8 +66,8 @@ public final class Player extends AbstractDomainEntity {
         this.discordID = discordID;
         this.faction = faction;
         this.rpChar = rpChar;
-        this.movements = new ArrayList<>(1);
         this.builtClaimbuilds = new ArrayList<>(1);
+        this.isStaff = false;
     }
 
     @JsonIgnore
@@ -77,6 +79,19 @@ public final class Player extends AbstractDomainEntity {
             throw PlayerServiceException.playerHasNoRpchar();
         }
     }
+
+    public void setRpChar(RPChar rpChar, Faction faction) {
+        this.rpChar = rpChar;
+    }
+
+    public Set<RPChar> getPastCharacters() {
+        return Collections.unmodifiableSet(pastCharacters);
+    }
+
+    public List<ClaimBuild> getBuiltClaimbuilds() {
+        return Collections.unmodifiableList(builtClaimbuilds);
+    }
+
     @Override
     public String toString() {
         return ign;

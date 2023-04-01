@@ -76,7 +76,7 @@ public class MovementServiceTest {
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).rpChar(rpchar).build();
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player.getRpChar()).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(region1.getCost()).build();
         pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
         path = List.of(pathElement1, pathElement2);
@@ -116,7 +116,7 @@ public class MovementServiceTest {
 
         //Assert
         log.debug("Starting asserts");
-        assertThat(createdMovement.getPlayer()).isEqualTo(player);
+        assertThat(createdMovement.getRpChar()).isEqualTo(player.getRpChar());
         assertThat(createdMovement.getIsCharMovement()).isTrue();
         assertThat(createdMovement.getStartTime().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(createdMovement.getEndTime().toLocalDate()).isEqualTo(LocalDate.now().plusDays(ServiceUtils.getTotalPathCost(path)/24));
@@ -210,7 +210,7 @@ public class MovementServiceTest {
         Region toRegion = Region.builder().id("92").build();
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
-        Army army = Army.builder().name("Army of Gondor").boundTo(player).currentRegion(fromRegion).build();
+        Army army = Army.builder().name("Army of Gondor").boundTo(player.getRpChar()).currentRegion(fromRegion).build();
         rpChar.setBoundTo(army);
 
         log.trace("Initializing Dto");
@@ -291,7 +291,7 @@ public class MovementServiceTest {
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").isHealing(false).currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
         Movement movement = Movement.builder().isCharMovement(true)
-                .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).player(player).build();
+                .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).rpChar(player.getRpChar()).build();
 
         log.trace("Initializing Dto");
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
@@ -299,7 +299,7 @@ public class MovementServiceTest {
         log.trace("Mocking methods");
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
         when(mockRegionRepository.findById(toRegion.getId())).thenReturn(Optional.of(toRegion));
-        when(mockMovementRepository.findMovementsByPlayer(player)).thenReturn(List.of(movement));
+        when(mockMovementRepository.findMovementsByRpChar(player.getRpChar())).thenReturn(List.of(movement));
 
         //Act
         var exception = assertThrows(ServiceException.class, () -> movementService.createRpCharMovement(dto));
@@ -320,14 +320,14 @@ public class MovementServiceTest {
         Region fromRegion = Region.builder().id("91").build();
         RPChar rpChar = RPChar.builder().name("Belegorn Arnorion").currentRegion(fromRegion).build();
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").rpChar(rpChar).build();
-        Movement movement = Movement.builder().isCharMovement(true).player(player).path(path).isCurrentlyActive(true).build();
+        Movement movement = Movement.builder().isCharMovement(true).rpChar(player.getRpChar()).path(path).isCurrentlyActive(true).build();
 
         log.trace("Initializing Dto");
         DiscordIdDto dto = new DiscordIdDto("1234");
 
         log.trace("Mocking methods");
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
-        when(mockMovementRepository.findMovementByPlayerAndIsCurrentlyActiveTrue(player)).thenReturn(Optional.of(movement));
+        when(mockMovementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(player.getRpChar())).thenReturn(Optional.of(movement));
         when(mockMovementRepository.save(movement)).thenReturn(movement);
 
         //Act
@@ -399,7 +399,7 @@ public class MovementServiceTest {
 
         log.trace("Mocking methods");
         when(mockPlayerRepository.findByDiscordID("1234")).thenReturn(Optional.of(player));
-        when(mockMovementRepository.findMovementsByPlayer(player)).thenReturn(List.of());
+        when(mockMovementRepository.findMovementsByRpChar(player.getRpChar())).thenReturn(List.of());
 
         //Act
         var exception = assertThrows(ServiceException.class, () -> movementService.cancelRpCharMovement(dto));
@@ -416,7 +416,7 @@ public class MovementServiceTest {
         log.debug("Testing if createArmyMovement works properly given the correct values");
 
         MoveArmyDto dto = new MoveArmyDto(player.getDiscordID(), army.getName(), region2.getId());
-        army.setBoundTo(player);
+        army.setBoundTo(player.getRpChar());
         when(mockMovementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army)).thenReturn(Optional.empty());
 
         log.debug("Calling createArmyMovement, expecting no errors");
@@ -424,7 +424,7 @@ public class MovementServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getArmy()).isEqualTo(army);
-        assertThat(result.getPlayer()).isEqualTo(player);
+        assertThat(result.getRpChar()).isEqualTo(player.getRpChar());
         assertThat(result.getIsCurrentlyActive()).isTrue();
         assertThat(result.getIsCharMovement()).isFalse();
         assertThat(result.getPath()).isEqualTo(movement.getPath());
@@ -518,7 +518,8 @@ public class MovementServiceTest {
         Movement movement = Movement.builder().isCharMovement(false).army(army).path(path).isCurrentlyActive(true).build();
         RPChar rpchar = RPChar.builder().name("Belegorn").boundTo(army).build();
         Player player = Player.builder().ign("Luktronic").discordID("1234").faction(faction).rpChar(rpchar).build();
-        army.setBoundTo(player);
+        player.getRpChar().setBoundTo(army);
+        army.setBoundTo(player.getRpChar());
         MoveArmyDto dto = new MoveArmyDto("1234", armyName, null);
 
         when(mockArmyService.getArmyByName(armyName)).thenReturn(army);

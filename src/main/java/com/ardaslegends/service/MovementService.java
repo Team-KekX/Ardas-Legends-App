@@ -104,7 +104,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player.getRpChar(), army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -193,7 +193,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if rpChar is already in a movement");
-        List<Movement> playerMovements = secureFind(player, movementRepository::findMovementsByPlayer);
+        List<Movement> playerMovements = secureFind(player.getRpChar(), movementRepository::findMovementsByRpChar);
         if(playerMovements.stream().anyMatch(Movement::getIsCurrentlyActive)) { //Checking if there are any active movements
             log.warn("Player {} is already involved in a movement!", player);
             throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChar());
@@ -223,7 +223,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.trace("Building the movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
         int hoursUntilNextRegion = path.get(1).getActualCost();
-        Movement movement = new Movement(player, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player.getRpChar(), null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);
@@ -291,7 +291,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Trying to get an active Movement for the player [{}]", player);
 
         log.trace("Executing the secureFind");
-        Optional<Movement> fetchedMove = secureFind(player, movementRepository::findMovementByPlayerAndIsCurrentlyActiveTrue);
+        Optional<Movement> fetchedMove = secureFind(player.getRpChar(), movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
 
         log.debug("Checking if a movement was found");
         if(fetchedMove.isEmpty()) {

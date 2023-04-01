@@ -1,19 +1,15 @@
 package com.ardaslegends.domain.war;
 
 
-import com.ardaslegends.domain.AbstractDomainEntity;
+import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Army;
-import com.ardaslegends.domain.Unit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.val;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -23,7 +19,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "battles")
-public class Battle extends AbstractDomainEntity {
+public class Battle extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

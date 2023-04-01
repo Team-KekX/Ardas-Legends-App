@@ -78,7 +78,7 @@ public class WarService extends AbstractService<War, WarRepository> {
             // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = secureFind(factionRepository::findAll);
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
-            throw FactionServiceException.noFactionWithNameFound(createWarDto.defendingFactionName(),allFactionString);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(createWarDto.defendingFactionName(),allFactionString);
         }
 
         var defendingFaction = fetchedDefendingFaction.get();

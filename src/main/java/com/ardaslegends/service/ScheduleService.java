@@ -114,14 +114,14 @@ public class ScheduleService {
             PathElement destinationRegion = movement.getPath().get(movement.getPath().size()-1);
             if(movement.getIsCharMovement()) {
                 log.trace("Movement is char movement, setting current region to [{}]", destinationRegion);
-                movement.getPlayer().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+                movement.getRpChar().setCurrentRegion(destinationRegion.getRegion());
             }
             else {
                 log.trace("Movement is army movement, setting current region to [{}]", destinationRegion);
                 movement.getArmy().setCurrentRegion(destinationRegion.getRegion());
                 if(movement.getArmy().getBoundTo() != null) {
                     log.trace("Army is bound to a character, setting the character's region to [{}]", destinationRegion);
-                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+                    movement.getArmy().getBoundTo().setCurrentRegion(destinationRegion.getRegion());
                 }
             }
             log.debug("Setting isCurrentlyActive to false");
@@ -163,7 +163,7 @@ public class ScheduleService {
 
         Region currentRegion = null;
         if(movement.getIsCharMovement())
-            currentRegion = movement.getPlayer().getRpChar().getCurrentRegion();
+            currentRegion = movement.getRpChar().getCurrentRegion();
         else
             currentRegion = movement.getArmy().getCurrentRegion();
 
@@ -209,14 +209,14 @@ public class ScheduleService {
 
             if(movement.getIsCharMovement()) {
                 log.trace("Movement is char movement, setting current region to [{}]", nextPathRegion);
-                movement.getPlayer().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
+                movement.getRpChar().setCurrentRegion(nextPathRegion.getRegion());
             }
             else {
                 log.trace("Movement is army movement, setting current region to [{}]", nextPathRegion);
                 movement.getArmy().setCurrentRegion(nextPathRegion.getRegion());
                 if(movement.getArmy().getBoundTo() != null) {
                     log.trace("Army is bound to a character, setting the character's region to [{}]", nextPathRegion);
-                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
+                    movement.getArmy().getBoundTo().setCurrentRegion(nextPathRegion.getRegion());
                 }
             }
 
@@ -229,7 +229,7 @@ public class ScheduleService {
             if(path.get(path.size()-1).equals(nextPathRegion)) {
                 if(movement.getIsCharMovement())
                     log.info("Movement of character [{}] with path [{}] reached its destination, setting isActive to false"
-                            , movement.getPlayer().getRpChar(), ServiceUtils.buildPathString(path));
+                            , movement.getRpChar(), ServiceUtils.buildPathString(path));
                 else
                     log.info("Movement of army [{}] with path [{}] reached its destination, setting isActive to false"
                             , movement.getArmy(), ServiceUtils.buildPathString(path));

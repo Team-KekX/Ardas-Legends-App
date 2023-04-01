@@ -1,9 +1,8 @@
 package com.ardaslegends.service.exceptions;
 
-import com.ardaslegends.service.FactionService;
-
 public class FactionServiceException extends ServiceException {
 
+    public static final String NO_FACTION_WITH_NAME_FOUND_AND_ALL = "Could not find Faction with name '%s'.\nAvailable factions are: %s";
     public static final String NO_FACTION_WITH_NAME_FOUND = "Could not find Faction with name '%s'.\nAvailable factions are: %s";
     public static final String FACTION_LEADER_MUST_BE_OF_SAME_FACTION = "The faction leader must be of the same faction";
 
@@ -21,7 +20,8 @@ public class FactionServiceException extends ServiceException {
     public static FactionServiceException negativeStockpileSubtractNotSupported() {return new FactionServiceException((NEGATIVE_STOCKPILE_SUBTRACT_NOT_SUPPORTED));}
     public static FactionServiceException roleIdAlreadyUsed(long id, String factionName) {return new FactionServiceException(ROLE_ID_ALREADY_USED.formatted(id, factionName)) ;}
 
-    public static FactionServiceException noFactionWithNameFound(String factionName, String allFactions) { return new FactionServiceException(NO_FACTION_WITH_NAME_FOUND.formatted(factionName, allFactions)); }
+    public static FactionServiceException noFactionWithNameFoundAndAll(String factionName, String allFactions) { return new FactionServiceException(NO_FACTION_WITH_NAME_FOUND_AND_ALL.formatted(factionName, allFactions)); }
+    public static FactionServiceException noFactionWithNameFoundAndAll(String factionName) { return new FactionServiceException(NO_FACTION_WITH_NAME_FOUND.formatted(factionName)); }
 
     protected FactionServiceException(String message, Throwable rootCause) {
         super(message, rootCause);

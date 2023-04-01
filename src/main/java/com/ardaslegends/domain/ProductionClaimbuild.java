@@ -23,7 +23,7 @@ import java.util.Objects;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "productionSite")
-public final class ProductionClaimbuild extends AbstractDomainEntity {
+public final class ProductionClaimbuild extends AbstractDomainObject {
 
     @EmbeddedId
     private ProductionClaimbuildId id;

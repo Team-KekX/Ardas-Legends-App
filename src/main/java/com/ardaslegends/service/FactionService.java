@@ -166,7 +166,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = factionRepository.findAll();
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
-            throw FactionServiceException.noFactionWithNameFound(name, allFactionString);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(name, allFactionString);
         }
         log.debug("Successfully fetched faction [{}]", fetchedFaction);
 
@@ -195,7 +195,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             log.warn("Faction with name [{}] does not exist", factionName);
             List<Faction> allFactions = factionRepository.findAll();
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
-            throw FactionServiceException.noFactionWithNameFound(factionName, allFactionString);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(factionName, allFactionString);
         }
 
         Faction faction = fetchedFaction.get();

@@ -20,7 +20,7 @@ import java.util.Objects;
 @Builder
 
 @Embeddable
-public final class ProductionClaimbuildId extends AbstractDomainEntity implements Serializable {
+public final class ProductionClaimbuildId extends AbstractDomainObject implements Serializable {
 
     private static final long serialVersionUID = -7659401942823299559L;
 

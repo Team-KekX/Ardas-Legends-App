@@ -18,7 +18,7 @@ import javax.persistence.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "unitType")
-public final class Unit extends AbstractDomainEntity {
+public final class Unit extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
