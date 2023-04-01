@@ -78,21 +78,23 @@ public class BotProperties {
     @Value("${ardaslegends.roleplay.apps.channel}")
     private void setRpAppsChannel(String channelId) {
         Objects.requireNonNull(channelId);
-        log.trace("Fetching rp-apps channel with id [{}]", channelId);
+        log.debug("Fetching rp-apps channel with id [{}]", channelId);
+
         val channel = api.getTextChannelById(channelId).orElseThrow();
-        log.info("Found RpApps Channel");
 
         this.rpAppsChannel = channel;
+        log.info("Found RpApps Channel [{}]", rpAppsChannel.getIdAsString());
     }
 
     @Value("${ardaslegends.bot.error.channel}")
     private void setErrorChannel(String errorChannelId) {
         Objects.requireNonNull(errorChannelId);
-        log.trace("Fetching error channel with id [{}]", errorChannelId);
+        log.debug("Fetching error channel with id [{}]", errorChannelId.substring(0, 2));
+
         val channel = api.getTextChannelById(errorChannelId).orElseThrow();
-        log.info("Found error Channel");
 
         this.errorChannel= channel;
+        log.info("Found error Channel [{}]", errorChannel.getIdAsString());
     }
 
     public String getRpCommandsChannel() {
