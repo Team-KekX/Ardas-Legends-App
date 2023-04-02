@@ -20,12 +20,7 @@ import java.util.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class ClaimBuild extends AbstractDomainObject {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public final class ClaimBuild extends AbstractEntity {
 
     @Column(unique = true)
     private String name; //unique, name of the claimbuild
