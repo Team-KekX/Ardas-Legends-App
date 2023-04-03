@@ -121,17 +121,4 @@ public final class ClaimBuild extends AbstractEntity {
     public String toString() {
         return name;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClaimBuild that = (ClaimBuild) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
 }
