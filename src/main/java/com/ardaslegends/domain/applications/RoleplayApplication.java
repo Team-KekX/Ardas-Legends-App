@@ -56,7 +56,8 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
     @Override
     public EmbedBuilder buildApplicationMessage() {
         return new EmbedBuilder()
-                .setTitle(applicant.getIgn() + "'s Application")
+                .setTitle("Roleplay Character Application")
+                .addField("Applicant", applicant.getIgn())
                 .addField("Character", characterName)
                 .addField("Title", characterTitle)
                 .addField("Faction", faction.getName())

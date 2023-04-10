@@ -1,12 +1,14 @@
 package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.presentation.discord.utils.ALColor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +20,10 @@ import java.util.Set;
 @Entity
 @Table(name = "claimbuild_apps")
 public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
+
+
+    @NotBlank
+    private String claimbuildName;
 
     @ManyToOne
     @NotNull
@@ -31,6 +37,7 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     private Coordinate coordinate;
     @OneToMany
     private Set<ProductionClaimbuild> productionSites;
+
     @ElementCollection(targetClass = SpecialBuilding.class)
     @Enumerated(EnumType.STRING)
     private List<SpecialBuilding> specialBuildings;
@@ -41,9 +48,20 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Player> builtBy;
 
+
+
     @Override
     protected EmbedBuilder buildApplicationMessage() {
-        return null;
+        return new EmbedBuilder()
+                .setTitle("Claimbuild Application")
+                .addField("Name", claimbuildName)
+                .addField("For Faction", ownedBy.getName())
+                .addField("In Region", region.getId())
+                .addField("Type", claimBuildType.getName())
+                .addField("Coordinates", coordinate.toString())
+                .addField()
+                .setColor(ALColor.YELLOW)
+                .setTimestampToNow();
     }
 
     @Override
