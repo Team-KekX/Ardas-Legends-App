@@ -143,8 +143,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
             }
 
-            claimBuild = new ClaimBuild(10L, dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
-                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate,
+                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy);
 
             if(! (type.equals(ClaimBuildType.HAMLET) || type.equals(ClaimBuildType.KEEP))) {
                 log.debug("Claimbuild is not hamlet or keep, claiming region [{}] for faction [{}]", region.getId(), faction.getName());

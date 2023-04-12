@@ -75,6 +75,31 @@ public final class ClaimBuild extends AbstractEntity {
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
     private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
 
+    public ClaimBuild(String name, Region region, ClaimBuildType type, Faction ownedBy, Coordinate coordinates, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
+        this.name = name;
+        this.region = region;
+        this.type = type;
+        this.ownedBy = ownedBy;
+        this.coordinates = coordinates;
+        this.productionSites = new ArrayList<>();
+        this.specialBuildings = specialBuildings;
+        this.traders = traders;
+        this.siege = siege;
+        this.numberOfHouses = numberOfHouses;
+        this.builtBy = builtBy;
+
+        this.createdArmies = new ArrayList<>();
+        this.stationedArmies = new ArrayList<>();
+
+        this.freeArmiesRemaining = type.getFreeArmies();
+        this.freeTradingCompaniesRemaining = type.getFreeTradingCompanies();
+    }
+    public ClaimBuild(String name, Region region, ClaimBuildType type, Faction ownedBy, Coordinate coordinates, List<ProductionClaimbuild> productionSites, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
+        this(name, region, type, ownedBy, coordinates, specialBuildings, traders, siege, numberOfHouses, builtBy);
+        this.productionSites = productionSites;
+    }
+
+
     @JsonIgnore
     public int getCountOfArmies() {
         int count = (int) createdArmies.stream()

@@ -5,6 +5,7 @@ import com.ardaslegends.presentation.discord.utils.ALColor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.springframework.core.annotation.Order;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @NoArgsConstructor
@@ -73,7 +75,18 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
 
     @Override
     public ClaimBuild finishApplication() {
-        return null;
+        if(state != ApplicationState.ACCEPTED) {
+            throw new RuntimeException("Claimbuild Application not yet accepted!");
+        }
+        val cb = new ClaimBuild(claimbuildName, region, claimBuildType, ownedBy, coordinate, specialBuildings, traders, siege, numberOfHouses, builtBy);
+        cb.setProductionSites(mapProductionSites(cb));
+        return cb;
+    }
+
+    public List<ProductionClaimbuild> mapProductionSites(ClaimBuild claimBuild) {
+        return productionSites.stream().
+                map(embeddedProductionSite -> new ProductionClaimbuild(embeddedProductionSite.getProductionSite(), claimBuild, embeddedProductionSite.getCount()))
+                .collect(Collectors.toList());
     }
 
     public String createProductionSiteString() {
