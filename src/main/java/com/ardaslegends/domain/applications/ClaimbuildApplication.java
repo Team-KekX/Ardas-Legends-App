@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -35,8 +36,10 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     private ClaimBuildType claimBuildType;
     @NotNull
     private Coordinate coordinate;
-    @OneToMany
-    private Set<ProductionClaimbuild> productionSites;
+
+    @ElementCollection(targetClass = EmbeddedProductionSite.class)
+    @CollectionTable(name = "claimbuild_application_production_sites")
+    private Set<EmbeddedProductionSite> productionSites;
 
     @ElementCollection(targetClass = SpecialBuilding.class)
     @Enumerated(EnumType.STRING)
@@ -49,9 +52,8 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     private Set<Player> builtBy;
 
 
-
     @Override
-    protected EmbedBuilder buildApplicationMessage() {
+    public EmbedBuilder buildApplicationMessage() {
         return new EmbedBuilder()
                 .setTitle("Claimbuild Application")
                 .addField("Name", claimbuildName)
@@ -59,18 +61,35 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
                 .addField("In Region", region.getId())
                 .addField("Type", claimBuildType.getName())
                 .addField("Coordinates", coordinate.toString())
-                .addField()
+                .addField("Production Sites", createProductionSiteString())
                 .setColor(ALColor.YELLOW)
                 .setTimestampToNow();
     }
 
     @Override
-    protected EmbedBuilder buildAcceptedMessage() {
+    public EmbedBuilder buildAcceptedMessage() {
         return null;
     }
 
     @Override
-    protected ClaimBuild finishApplication() {
+    public ClaimBuild finishApplication() {
         return null;
     }
+
+    public String createProductionSiteString() {
+        log.debug("ProductionSiteList Count: {}", productionSites.size());
+        StringBuilder prodString = new StringBuilder();
+        productionSites.forEach(productionSite -> {
+            String resource = productionSite.getProductionSite().getProducedResource().getResourceName();
+            String type = productionSite.getProductionSite().getType().getName();
+            int count = productionSite.getCount().intValue();
+            prodString.append(count).append(" ").append(resource).append(" ").append(type).append("\n");
+        });
+
+        String returnProdString = prodString.toString();
+        log.debug("CreateProductionSiteString: {}", returnProdString);
+
+        return returnProdString.isBlank() ? "None" : returnProdString;
+    }
+
 }
