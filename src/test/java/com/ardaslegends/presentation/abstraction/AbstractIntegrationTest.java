@@ -40,7 +40,7 @@ public class AbstractIntegrationTest extends RestTest<ResponseEntity>{
 
     @Container
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14-alpine")
-            .withReuse(true);
+            .withReuse(false);
 
     @DynamicPropertySource
     static void redisProperties(DynamicPropertyRegistry registry) {

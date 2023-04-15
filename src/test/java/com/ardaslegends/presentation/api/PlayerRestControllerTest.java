@@ -15,10 +15,12 @@ import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
+import com.ardaslegends.util.TestDataFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -30,44 +32,43 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     @Autowired
     PlayerRestController playerRestController;
 
-    String ign = "Luktronic";
-    String discordId = "1234";
-
     Player player;
+    Player player2;
     RPChar rpChar;
-    Region region;
+    Faction gondor;
+    Faction mordor;
 
     PlayerResponse expectedPlayerResponse;
     RpCharResponse expectedRpCharResponse;
     PlayerRpCharResponse expectedPlayerRpCharResponse;
-
-    Faction gondor;
-    Faction mordor;
-
     CreatePlayerDto createPlayerDto;
     CreateRPCharDto createRPCharDto;
-    DiscordIdDto discordIdDto = new DiscordIdDto(discordId);
+    DiscordIdDto discordIdDto;
 
 
     @BeforeEach
     void setup() {
         baseSetup(playerRestController, PlayerRestController.BASE_URL);
 
-        gondor = Faction.builder().name("Gondor").build();
-        mordor = Faction.builder().name("Mordor").build();
-        region = Region.builder().id("102").build();
-        rpChar = RPChar.builder().injured(true).isHealing(false).currentRegion(region).name("Belegorn").title("King of Gondor").gear("Best").pvp(true).build();
-        player = Player.builder().ign(ign).faction(gondor).discordID(discordId).rpChar(rpChar).build();
+        player = TestDataFactory.playerLuktronic();
+        rpChar = TestDataFactory.rpcharBelegorn(player);
+        gondor = TestDataFactory.factionGondor(player);
+        mordor = TestDataFactory.factionMordor(null);
+        player2 = TestDataFactory.playerMirak(gondor);
+
         expectedPlayerResponse = new PlayerResponse(player);
         expectedRpCharResponse = new RpCharResponse(rpChar);
         expectedPlayerRpCharResponse = new PlayerRpCharResponse(player, false);
-        createPlayerDto = new CreatePlayerDto(ign, discordId, gondor.getName());
-        createRPCharDto = new CreateRPCharDto(discordId, rpChar.getName(), rpChar.getTitle(), rpChar.getGear(), rpChar.getPvp());
+        createPlayerDto = new CreatePlayerDto(player2.getIgn(), player2.getDiscordID(), gondor.getName());
+        createRPCharDto = new CreateRPCharDto(player.getDiscordID(), rpChar.getName(), rpChar.getTitle(), rpChar.getGear(), rpChar.getPvp());
+        discordIdDto = new DiscordIdDto(player.getDiscordID());
+
     }
 
     // Create Method Tests
 
     @Test
+    @Transactional
     void ensureCreatePlayerWorksProperly() throws Exception {
         // Act
         var result = post("", createPlayerDto, PlayerResponse.class);
@@ -130,7 +131,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if update ign works properly");
 
         // Assign
-        UpdatePlayerIgnDto dto = new UpdatePlayerIgnDto("New Ign", discordId);
+        UpdatePlayerIgnDto dto = new UpdatePlayerIgnDto("New Ign", player.getDiscordID());
 
         player.setIgn(dto.ign());
         expectedPlayerResponse = new PlayerResponse(player);
@@ -148,7 +149,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     void ensureUpdateDiscordIdWorksProperly() throws Exception {
         log.debug("Testing if update discordId works properly");
         // Assign
-        UpdateDiscordIdDto dto = new UpdateDiscordIdDto(discordId, "NEW" + discordId);
+        UpdateDiscordIdDto dto = new UpdateDiscordIdDto(player.getDiscordID(), "NEW" + player.getDiscordID());
         player.setDiscordID(dto.newDiscordId());
         PlayerUpdateDiscordIdResponse expectedResponse = new PlayerUpdateDiscordIdResponse(player, dto.oldDiscordId());
 
@@ -166,7 +167,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if updateCharacterName works properly with correct values");
 
         // Assign
-        UpdateRpCharDto dto = new UpdateRpCharDto(discordId, "New name", null, null, null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto(player.getDiscordID(), "New name", null, null, null, null, null);
 
         rpChar.setName(dto.charName());
         expectedRpCharResponse = new RpCharResponse(rpChar);
@@ -183,7 +184,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     void ensureUpdateCharacterTitleWorksProperly() throws Exception {
         log.debug("Testing if updateCharacterTitle works properly with correct values");
         // Assign
-        UpdateRpCharDto dto = new UpdateRpCharDto(discordId, null,"New Title", null, null, null, null);
+        UpdateRpCharDto dto = new UpdateRpCharDto(player.getDiscordID(), null,"New Title", null, null, null, null);
 
         rpChar.setTitle(dto.title());
         expectedRpCharResponse = new RpCharResponse(rpChar);
@@ -200,7 +201,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if updateCharacterGear works properly with correct values");
 
         // Assign
-        UpdateRpCharDto dto = new UpdateRpCharDto(discordId, null,null, null, null, "New Gear", null);
+        UpdateRpCharDto dto = new UpdateRpCharDto(player.getDiscordID(), null,null, null, null, "New Gear", null);
 
         rpChar.setGear(dto.gear());
         expectedRpCharResponse = new RpCharResponse(rpChar);
@@ -217,7 +218,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if updateCharacterPvp works properly with correct values");
 
         // Assign
-        UpdateRpCharDto dto = new UpdateRpCharDto(discordId, null,null, null, null, null, false);
+        UpdateRpCharDto dto = new UpdateRpCharDto(player.getDiscordID(), null,null, null, null, null, false);
 
         rpChar.setPvp(dto.pvp());
         expectedRpCharResponse = new RpCharResponse(rpChar);

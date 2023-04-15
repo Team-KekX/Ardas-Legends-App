@@ -19,6 +19,7 @@ import java.util.*;
 @Builder
 
 @Entity
+@Table(name = "rpchars")
 public class RPChar extends AbstractEntity {
 
     @ManyToOne
