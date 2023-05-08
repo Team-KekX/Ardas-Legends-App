@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -16,8 +17,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -132,19 +133,24 @@ public class ArmyRestControllerTest {
         // Assign
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
-        when(mockArmyService.disband(dto, true)).thenReturn(Army.builder().name("Knights of Gondor").build());
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        ObjectWriter ow = mapper.writer();
+
 
         String requestJson = ow.writeValueAsString(dto);
+
+        val army = Army.builder().name("Knights Of Gondor").build();
+        when(mockArmyService.disband(dto, true)).thenReturn(army);
+
+        String expectedResponse = ow.writeValueAsString(army);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("http://localhost:8080/api/army/delete")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(expectedResponse));
         log.info("Test passed: deleteArmy requests get handled properly");
     }
 
