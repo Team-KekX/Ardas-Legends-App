@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import javax.persistence.PersistenceException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -76,7 +78,7 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
             return repository.save(entity);
        } catch (Exception pEx) {
             log.warn("Encountered Database Error while saving entity [{}]", entity);
-           recordMessageInErrorChannel(pEx);
+            recordMessageInErrorChannel(pEx);
             throw ServiceException.cannotSaveEntity(entity, pEx);
        }
     }
@@ -98,6 +100,17 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
             log.warn("Encountered Database Error while deleting entity[{}]", entity);
             recordMessageInErrorChannel(pEx);
             throw ServiceException.cannotSaveEntity(entity, pEx);
+        }
+    }
+
+    public <G> G secureJoin(CompletableFuture<G> completableFuture) {
+        Objects.requireNonNull(completableFuture);
+        try {
+            return completableFuture.join();
+        } catch (Exception ex) {
+            log.warn("Unexpected exception in join [{}]", ex.getMessage());
+            recordMessageInErrorChannel(ex);
+            throw ServiceException.joinException(ex);
         }
     }
 
