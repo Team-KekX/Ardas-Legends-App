@@ -6,7 +6,7 @@ import com.ardaslegends.domain.SpecialBuilding;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.productionSite.ProductionSiteDto;
 
-public record CreateClaimbuildApplicationDto(String claimbuildName, String regionId, ClaimBuildType type, String factionNameOwnedBy, Coordinate coordinate,
+public record CreateClaimbuildApplicationDto(DiscordIdDto applicant, String claimbuildName, String regionId, ClaimBuildType type, String factionNameOwnedBy, Coordinate coordinate,
                                              ProductionSiteDto[] productionSites, SpecialBuilding[] specialBuildings, String traders,
                                              String siege, String houses, DiscordIdDto[] builtBy) {
 }

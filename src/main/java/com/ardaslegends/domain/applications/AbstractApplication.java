@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 @Getter
 @Slf4j
@@ -25,7 +26,6 @@ import java.util.Set;
 @MappedSuperclass
 public abstract class AbstractApplication<T> extends AbstractEntity {
     private static final short REQUIRED_VOTES = 1;
-
 
     @ManyToOne
     @NotNull

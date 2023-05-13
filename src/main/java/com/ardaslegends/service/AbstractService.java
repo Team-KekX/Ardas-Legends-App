@@ -4,6 +4,7 @@ import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.exceptions.ServiceException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.javacord.api.entity.channel.TextChannel;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -23,6 +25,9 @@ import java.util.function.Supplier;
 @Slf4j
 public abstract class AbstractService<T extends AbstractDomainObject, R extends JpaRepository<T, ?>>{
     private TextChannel errorChannel;
+
+    @Getter
+    private ExecutorService executorService;
 
     /***
      * This method was specifically made for Query Operations of JPA Repository Classes.
@@ -127,5 +132,10 @@ public abstract class AbstractService<T extends AbstractDomainObject, R extends 
     @Autowired
     public final void setErrorChannel(BotProperties properties) {
         this.errorChannel = properties.getErrorChannel();
+    }
+
+    @Autowired
+    public final void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 }

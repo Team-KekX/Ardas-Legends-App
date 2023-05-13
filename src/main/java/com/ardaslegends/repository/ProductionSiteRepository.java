@@ -13,8 +13,8 @@ public interface ProductionSiteRepository extends JpaRepository<ProductionSite, 
     //TODO Test this class
 
     @Query("""
-           FROM ProductionSite 
-           WHERE producedResource.resourceName = producedResource 
+           FROM ProductionSite
+           WHERE producedResource.resourceName = producedResource
            AND  type = type
            """)
     Optional<ProductionSite> findProductionSiteByTypeAndProducedResource(ProductionSiteType type, String producedResource);
