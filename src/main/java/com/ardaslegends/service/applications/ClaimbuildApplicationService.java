@@ -1,10 +1,9 @@
 package com.ardaslegends.service.applications;
 
-import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.repository.ClaimBuildRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.ClaimbuildApplicationRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
@@ -22,8 +21,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
 
 
 @RequiredArgsConstructor
@@ -53,9 +50,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         val builtByFuture = CompletableFuture.allOf(builtByFutureList.toArray(CompletableFuture[]::new));
         val optionalClaimbuild = secureFind(dto.claimbuildName(),claimBuildRepository::findClaimBuildByName);
 
-        val optionalApplicantFuture = CompletableFuture.supplyAsync(() ->
-                secureFind(dto.applicant().discordId(), playerRepository::findByDiscordID),
-                getExecutorService());
+        val applicantPlayer = secureFind(dto.applicant().discordId(), playerRepository::findByDiscordID);
 
         if(optionalClaimbuild.isPresent() ) {
             log.warn("Claimbuild with name [{}] already exists", dto.claimbuildName());

@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

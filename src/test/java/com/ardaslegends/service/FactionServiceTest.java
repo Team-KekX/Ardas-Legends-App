@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.repository.FactionRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
 import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;

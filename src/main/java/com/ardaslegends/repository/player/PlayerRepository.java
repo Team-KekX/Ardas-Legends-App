@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.player;
 
 import com.ardaslegends.domain.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
-public interface PlayerRepository extends JpaRepository<Player, String> {
+public interface PlayerRepository extends JpaRepository<Player, String>, PlayerRepositoryCustom {
 
     Optional<Player> findPlayerByIgn(String ign);
 
@@ -21,7 +21,4 @@ public interface PlayerRepository extends JpaRepository<Player, String> {
 
     @Query("FROM Player WHERE rpChar.name = ?1")
     Optional<Player> findPlayerByRpChar(String name);
-
-    @Async
-    CompletableFuture<Optional<Player>> queryByDiscordID(@NonNull String discordID);
 }

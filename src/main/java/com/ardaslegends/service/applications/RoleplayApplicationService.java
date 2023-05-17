@@ -5,7 +5,7 @@ import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.FactionRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.RoleplayApplicationRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
@@ -29,7 +29,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 

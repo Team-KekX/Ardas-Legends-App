@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.RegionRepository;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;

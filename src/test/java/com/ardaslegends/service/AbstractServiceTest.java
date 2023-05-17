@@ -2,18 +2,14 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.discord.config.BotProperties;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.checkerframework.checker.units.qual.A;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.PersistenceException;
 import java.util.Optional;
