@@ -3,7 +3,7 @@ package com.ardaslegends.repository.applications.claimbuildapp;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.QClaimbuildApplication;
-import com.ardaslegends.repository.exceptions.ClaimbuildApplicationException;
+import com.ardaslegends.repository.exceptions.ClaimbuildApplicationRepositoryException;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.lang.NonNull;
@@ -27,7 +27,7 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
                 .fetchFirst();
 
         if(claimbuildApp == null) {
-            throw ClaimbuildApplicationException
+            throw ClaimbuildApplicationRepositoryException
                     .entityNotFound("(claimbuildName, state)", "(" + claimbuildName + ", " + state.displayName + ")");
         }
 
