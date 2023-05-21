@@ -4,7 +4,7 @@ import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.repository.ClaimBuildRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
-import com.ardaslegends.repository.applications.ClaimbuildApplicationRepository;
+import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicationRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 
 @RequiredArgsConstructor
