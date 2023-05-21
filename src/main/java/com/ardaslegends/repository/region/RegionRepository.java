@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.region;
 
 import com.ardaslegends.domain.Region;
 import org.springframework.data.jpa.repository.JpaRepository;

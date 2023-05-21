@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.ProductionSiteRepository;
-import com.ardaslegends.repository.RegionRepository;
+import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
