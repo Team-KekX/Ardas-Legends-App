@@ -36,20 +36,18 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     public ClaimbuildApplication createClaimbuildApplication(CreateClaimbuildApplicationDto dto) {
         log.debug("Creating ClaimbuildApplication with data [{}]", dto);
         Objects.requireNonNull(dto);
-
         ServiceUtils.checkAllNulls(dto);
 
         val applicantPlayer = playerRepository.queryByDiscordId(dto.applicant().discordId());
 
-        val optionalClaimbuild = secureFind(dto.claimbuildName(),claimBuildRepository::findClaimBuildByName);
-        if(optionalClaimbuild.isPresent() ) {
+        // Check if CB with Name already exists, throw if so
+        if(claimBuildRepository.existsByNameIgnoreCase(dto.claimbuildName())) {
             log.warn("Claimbuild with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildWithNameAlreadyExists(dto.claimbuildName());
         }
 
-        val optionalClaimbuildApp = cbAppRepository.queryByNameIgnoreCaseAndStateOptional(dto.claimbuildName(), ApplicationState.OPEN);
-
-        if(optionalClaimbuildApp.isPresent()) {
+        // Check if CBApp with Name already exists that is active, throw if so
+        if(cbAppRepository.existsByNameIgnoreCaseAndState(dto.claimbuildName(), ApplicationState.OPEN)) {
             log.warn("Claimbuild Application with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildApplicationWithNameAlreadyExists(dto.claimbuildName());
         }

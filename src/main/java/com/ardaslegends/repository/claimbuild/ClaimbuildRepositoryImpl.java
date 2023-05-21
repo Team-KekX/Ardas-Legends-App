@@ -38,5 +38,10 @@ public class ClaimbuildRepositoryImpl extends QuerydslRepositorySupport implemen
         return Optional.of(fetchedClaimbuild);
     }
 
+    @Override
+    public boolean existsByNameIgnoreCase(String claimbuildName) {
+        return queryByNameIgnoreCaseOptional(claimbuildName).isPresent();
+    }
+
 
 }

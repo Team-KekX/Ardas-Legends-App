@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ClaimbuildApplicationRepositoryCustom {
     ClaimbuildApplication queryByNameIgnoreCaseAndState(String claimbuildName, ApplicationState state);
     Optional<ClaimbuildApplication> queryByNameIgnoreCaseAndStateOptional(String claimbuildName, ApplicationState state);
+    boolean existsByNameIgnoreCaseAndState(String claimbuildName, ApplicationState state);
 }

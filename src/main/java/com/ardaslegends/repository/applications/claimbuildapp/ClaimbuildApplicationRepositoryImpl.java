@@ -40,4 +40,9 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
 
         return Optional.of(claimbuildApp);
     }
+
+    @Override
+    public boolean existsByNameIgnoreCaseAndState(String claimbuildName, ApplicationState state) {
+        return queryByNameIgnoreCaseAndStateOptional(claimbuildName, state).isPresent();
+    }
 }
