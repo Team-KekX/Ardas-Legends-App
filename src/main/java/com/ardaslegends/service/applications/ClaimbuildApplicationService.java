@@ -49,13 +49,12 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
             throw ClaimbuildApplicationException.claibuildWithNameAlreadyExists(dto.claimbuildName());
         }
 
-        val optionalClaimbuildApp = secureFind(dto.claimbuildName(), ApplicationState.OPEN, cbAppRepository::findByClaimbuildNameIgnoreCaseAndState);
+        val optionalClaimbuildApp = cbAppRepository.queryByNameIgnoreCaseAndStateOptional(dto.claimbuildName(), ApplicationState.OPEN);
 
         if(optionalClaimbuildApp.isPresent()) {
             log.warn("Claimbuild Application with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildApplicationWithNameAlreadyExists(dto.claimbuildName());
         }
-
 
         val foundPlayers = playerRepository.queryByDiscordId(Arrays.stream(dto.builtBy())
                 .map(DiscordIdDto::discordId)
