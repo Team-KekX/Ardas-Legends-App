@@ -44,8 +44,16 @@ public class PlayerRepositoryTest {
         // Assert
         assertThat(query.isPresent()).isTrue();
         assertThat(query.get().getDiscordID()).isEqualTo(discordId);
+    }
 
+    @Test
+    void ensureQueryByDiscordIdWorks() {
+        String discordId=  "MiraksId";
 
+        val query = repository.queryByDiscordId(discordId);
+
+        assertThat(query).isNotNull();
+        assertThat(query.getDiscordID()).isEqualTo(discordId);
     }
 
     @Test
