@@ -41,17 +41,9 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         ServiceUtils.checkAllNulls(dto);
 
+        val applicantPlayer = playerRepository.queryByDiscordId(dto.applicant().discordId());
 
-        val builtByFutureList = Arrays.stream(dto.builtBy())
-                .map(discordIdDto -> CompletableFuture.supplyAsync(() ->
-                        secureFind(discordIdDto.discordId() ,playerRepository::findByDiscordID),
-                        getExecutorService()))
-                .toList();
-        val builtByFuture = CompletableFuture.allOf(builtByFutureList.toArray(CompletableFuture[]::new));
         val optionalClaimbuild = secureFind(dto.claimbuildName(),claimBuildRepository::findClaimBuildByName);
-
-        val applicantPlayer = secureFind(dto.applicant().discordId(), playerRepository::findByDiscordID);
-
         if(optionalClaimbuild.isPresent() ) {
             log.warn("Claimbuild with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildWithNameAlreadyExists(dto.claimbuildName());
@@ -64,15 +56,11 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
             throw ClaimbuildApplicationException.claibuildApplicationWithNameAlreadyExists(dto.claimbuildName());
         }
 
-        log.trace("Joining builtByFuture.allOf, then iterating over builtByResults");
-        secureJoin(builtByFuture);
 
-        // Joining Cfs, then getting all players where the Optional is not empty
-        val foundPlayers = builtByFutureList.stream()
-                .map(CompletableFuture::join)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        val foundPlayers = playerRepository.queryByDiscordId(Arrays.stream(dto.builtBy())
+                .map(DiscordIdDto::discordId)
+                .toArray(String[]::new)
+        );
 
         // Iterating over initial discordId which should be present in foundPlayers and mapping which Ids have not been found.
         List<String> notFoundPlayers = Arrays.stream(dto.builtBy())
