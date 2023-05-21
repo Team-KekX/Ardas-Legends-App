@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -54,6 +55,16 @@ public class PlayerRepositoryTest {
 
         assertThat(query).isNotNull();
         assertThat(query.getDiscordID()).isEqualTo(discordId);
+    }
+
+    @Test
+    void ensureQueryByDiscordIdWithArraysWorks() {
+        String[] discordIds = { "MiraksId", "vernonId", null, null, "luksId", "testIfFails" };
+
+        var query = repository.queryByDiscordId(discordIds);
+
+        assertThat(query).isNotNull();
+        assertThat(query.size()).isEqualTo(3);
     }
 
     @Test

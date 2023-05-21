@@ -8,8 +8,11 @@ import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.lang.NonNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements PlayerRepositoryCustom {
@@ -18,7 +21,7 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
     }
 
     /**
-     * Save QueryDSL Vairant
+     * Fetches a player object that corresponds with the given discordId
      * @param discordId which the queried player should have
      * @return a non-null player object
      * @throws NullPointerException if any parameter is null
@@ -38,8 +41,25 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
         return fetchedPlayer;
     }
 
+    /**
+     * @param discordIds, query parameter, null values will be filtered out
+     * @return a set of players, size does not have to match discordIds size
+     * @throws NullPointerException if any parameter is null
+     */
     @Override
-    public Set<Player> queryByDiscordId(String[] discordIds) {
-        return null;
+    public @NonNull Set<Player> queryByDiscordId(@NonNull String[] discordIds) {
+        Objects.requireNonNull(discordIds);
+        val qplayer = QPlayer.player;
+
+        val filteredNullsSet = Arrays.stream(discordIds)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        val fetchedPlayers = from(qplayer)
+                .where(qplayer.discordID.in(filteredNullsSet))
+                .fetch();
+
+        return new HashSet<>(fetchedPlayers);
+
     }
 }
