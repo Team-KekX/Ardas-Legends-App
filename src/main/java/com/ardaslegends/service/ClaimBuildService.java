@@ -1,7 +1,7 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.repository.ClaimBuildRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.ProductionSiteRepository;
 import com.ardaslegends.repository.RegionRepository;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
@@ -25,9 +25,9 @@ import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
-public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRepository> {
+public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRepository> {
 
-    private final ClaimBuildRepository claimbuildRepository;
+    private final ClaimbuildRepository claimbuildRepository;
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
 

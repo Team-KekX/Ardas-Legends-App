@@ -2,7 +2,7 @@ package com.ardaslegends.service.applications;
 
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
-import com.ardaslegends.repository.ClaimBuildRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicationRepository;
 import com.ardaslegends.service.AbstractService;
@@ -29,7 +29,7 @@ import java.util.Objects;
 public class ClaimbuildApplicationService extends AbstractService<ClaimbuildApplication, ClaimbuildApplicationRepository> {
 
     private final ClaimbuildApplicationRepository cbAppRepository;
-    private final ClaimBuildRepository claimBuildRepository;
+    private final ClaimbuildRepository claimBuildRepository;
     private final PlayerRepository playerRepository;
 
     @Transactional(readOnly = false)

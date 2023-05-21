@@ -1,7 +1,7 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.repository.ClaimBuildRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.ProductionSiteRepository;
 import com.ardaslegends.repository.RegionRepository;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class ClaimbuildServiceTest {
 
     private ClaimBuildService claimBuildService;
-    private ClaimBuildRepository mockClaimbuildRepository;
+    private ClaimbuildRepository mockClaimbuildRepository;
     private RegionRepository mockRegionRepository;
     private ProductionSiteRepository mockProductionSiteRepository;
     private FactionService mockFactionService;
@@ -52,7 +52,7 @@ public class ClaimbuildServiceTest {
 
     @BeforeEach
     void setup() {
-        mockClaimbuildRepository = mock(ClaimBuildRepository.class);
+        mockClaimbuildRepository = mock(ClaimbuildRepository.class);
         mockRegionRepository = mock(RegionRepository.class);
         mockFactionService = mock(FactionService.class);
         mockProductionSiteRepository = mock(ProductionSiteRepository.class);
