@@ -2,6 +2,7 @@ package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.InitialFaction;
+import com.ardaslegends.repository.faction.FactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

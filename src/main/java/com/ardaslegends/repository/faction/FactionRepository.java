@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.faction;
 
 import com.ardaslegends.domain.Faction;
 import org.springframework.data.jpa.repository.JpaRepository;

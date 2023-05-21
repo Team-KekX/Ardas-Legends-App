@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
-import com.ardaslegends.repository.FactionRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.service.dto.army.*;
 import com.ardaslegends.service.dto.unit.UnitTypeDto;

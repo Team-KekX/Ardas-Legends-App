@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
-import com.ardaslegends.repository.FactionRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.RoleplayApplicationRepository;
 import com.ardaslegends.service.AbstractService;
