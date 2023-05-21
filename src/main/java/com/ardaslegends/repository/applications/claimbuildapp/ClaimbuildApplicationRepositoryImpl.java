@@ -18,20 +18,14 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
 
     @Override
     public @NonNull ClaimbuildApplication queryByNameIgnoreCaseAndState(@NonNull String claimbuildName, @NonNull ApplicationState state) {
-        Objects.requireNonNull(claimbuildName);
-        Objects.requireNonNull(state);
-        val qclaimbuildApp = QClaimbuildApplication.claimbuildApplication;
+        val claimbuildApp = queryByNameIgnoreCaseAndStateOptional(claimbuildName, state);
 
-        val claimbuildApp = from(qclaimbuildApp)
-                .where(qclaimbuildApp.claimbuildName.equalsIgnoreCase(claimbuildName).and(qclaimbuildApp.state.eq(state)))
-                .fetchFirst();
-
-        if(claimbuildApp == null) {
+        if(claimbuildApp.isEmpty()) {
             throw ClaimbuildApplicationRepositoryException
                     .entityNotFound("(claimbuildName, state)", "(" + claimbuildName + ", " + state.displayName + ")");
         }
 
-        return claimbuildApp;
+        return claimbuildApp.get();
     }
 
     @Override
