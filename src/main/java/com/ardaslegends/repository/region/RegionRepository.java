@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RegionRepository extends JpaRepository<Region, String> {
-
-    @Override
-    Optional<Region> findById(String s);
-
+public interface RegionRepository extends JpaRepository<Region, String>, RegionRepositoryCustom {
     List<Region> findAllByHasOwnershipChangedTrue();
 }
