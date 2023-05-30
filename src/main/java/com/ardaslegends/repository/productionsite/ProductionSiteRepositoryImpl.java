@@ -8,9 +8,11 @@ import com.ardaslegends.service.dto.productionSite.ProductionSiteDto;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ProductionSiteRepositoryImpl extends QuerydslRepositorySupport implements ProductionSiteRepositoryCustom {
     public ProductionSiteRepositoryImpl() {
@@ -36,11 +38,5 @@ public class ProductionSiteRepositoryImpl extends QuerydslRepositorySupport impl
                 .fetchFirst();
 
         return Optional.of(fetchedSite);
-    }
-
-    @Override
-    public Set<ProductionSite> queryAllByTypeAndResource(ProductionSiteDto[] productionSites) {
-        Objects.requireNonNull()
-        return null;
     }
 }

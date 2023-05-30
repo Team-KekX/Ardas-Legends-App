@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,21 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     private Set<Player> builtBy;
 
 
+    public ClaimbuildApplication(Player applicant, String claimbuildName, Faction ownedBy, Region region, ClaimBuildType claimBuildType, Coordinate coordinate, Set<EmbeddedProductionSite> productionSites, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
+        super(applicant);
+        this.claimbuildName = claimbuildName;
+        this.ownedBy = ownedBy;
+        this.region = region;
+        this.claimBuildType = claimBuildType;
+        this.coordinate = coordinate;
+        this.productionSites = productionSites;
+        this.specialBuildings = specialBuildings;
+        this.traders = traders;
+        this.siege = siege;
+        this.numberOfHouses = numberOfHouses;
+        this.builtBy = builtBy;
+    }
+
     @Override
     public EmbedBuilder buildApplicationMessage() {
         return new EmbedBuilder()
@@ -84,8 +100,9 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     }
 
     public List<ProductionClaimbuild> mapProductionSites(ClaimBuild claimBuild) {
-        return productionSites.stream().
-                map(embeddedProductionSite -> new ProductionClaimbuild(embeddedProductionSite.getProductionSite(), claimBuild, embeddedProductionSite.getCount()))
+        Objects.requireNonNull(claimBuild);
+        return productionSites.stream()
+                .map(embeddedProductionSite -> new ProductionClaimbuild(embeddedProductionSite.getProductionSite(), claimBuild, embeddedProductionSite.getCount()))
                 .collect(Collectors.toList());
     }
 

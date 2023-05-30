@@ -19,10 +19,10 @@ import java.util.Objects;
 
 @Embeddable
 public class EmbeddedProductionSite {
+
     @ManyToOne
     private ProductionSite productionSite;
     private Long count;
-
 
     @Override
     public boolean equals(Object o) {

@@ -10,5 +10,4 @@ import java.util.Set;
 public interface ProductionSiteRepositoryCustom {
     ProductionSite queryByTypeAndResource(ProductionSiteType type, String resource);
     Optional<ProductionSite> queryByTypeAndResourceOptional(ProductionSiteType type, String resource);
-    Set<ProductionSite> queryAllByTypeAndResource(ProductionSiteDto[] productionSites);
 }
