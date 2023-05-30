@@ -107,7 +107,6 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
 
-
         return application;
     }
 }

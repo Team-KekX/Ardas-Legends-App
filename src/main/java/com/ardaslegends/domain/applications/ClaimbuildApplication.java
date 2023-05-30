@@ -1,7 +1,9 @@
 package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.utils.ALColor;
+import com.ardaslegends.presentation.discord.utils.FactionBanners;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,7 +89,26 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
 
     @Override
     public EmbedBuilder buildAcceptedMessage() {
-        return null;
+        String builtByString = builtBy.stream()
+                .map(Player::getIgn)
+                .collect(Collectors.joining(", "));
+
+        return new EmbedBuilder()
+                .setTitle("Claimbuild %s was successfully created!".formatted(claimbuildName))
+                .setColor(ALColor.YELLOW)
+                .addInlineField("Name", claimbuildName)
+                .addInlineField("Faction", ownedBy.getName())
+                .addInlineField("Region", region.getId())
+                .addInlineField("Type", claimBuildType.getName())
+                .addField("Production Sites", createProductionSiteString())
+                .addField("Special Buildings", createSpecialBuildingsString())
+                .addInlineField("Traders", traders)
+                .addInlineField("Siege", siege)
+                .addInlineField("Houses", numberOfHouses)
+                .addInlineField("Coordinates", coordinate.toString())
+                .addInlineField("Built by", builtByString)
+                .setThumbnail(FactionBanners.getBannerUrl(ownedBy.getName()))
+                .setTimestampToNow();
     }
 
     @Override
@@ -120,6 +142,19 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
         log.debug("CreateProductionSiteString: {}", returnProdString);
 
         return returnProdString.isBlank() ? "None" : returnProdString;
+    }
+
+    private String createSpecialBuildingsString() {
+        StringBuilder specialString = new StringBuilder();
+
+        Map<SpecialBuilding, Long> countedSpecialBuildings = specialBuildings.stream()
+                .collect(Collectors.groupingBy(specialBuilding -> specialBuilding, Collectors.counting()));
+
+        countedSpecialBuildings.forEach((specialBuilding, aLong) -> specialString.append(aLong + " " + specialBuilding.getName() + ", "));
+
+        String returnSpecialString = specialString.toString();
+
+        return returnSpecialString.isBlank() ? "None" : returnSpecialString;
     }
 
 }
