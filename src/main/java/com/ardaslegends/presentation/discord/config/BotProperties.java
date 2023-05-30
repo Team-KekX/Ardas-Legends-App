@@ -32,6 +32,8 @@ public class BotProperties {
     private String rpCommandsChannel;
     private TextChannel rpAppsChannel;
     private TextChannel generalRpCommandsChannel;
+    private TextChannel claimbuildAppsChannel;
+
     private TextChannel errorChannel;
     @Value("${ardaslegends.bot.staff-roles}")
     private List<String> staffRoleIds;
@@ -84,6 +86,16 @@ public class BotProperties {
 
         this.rpAppsChannel = channel;
         log.info("Found RpApps Channel [{}]", rpAppsChannel.getIdAsString());
+    }
+
+    @Value("${ardaslegends.claimbuild.apps.channel}")
+    private void setClaimbuildAppsChannel(String channelId) {
+        Objects.requireNonNull(channelId);
+        log.trace("Fetching cb-apps channel with id [{}]", channelId);
+        val channel = api.getTextChannelById(channelId).orElseThrow();
+        log.info("Found CbApps Channel");
+
+        this.claimbuildAppsChannel= channel;
     }
 
     @Value("${ardaslegends.bot.error.channel}")

@@ -105,6 +105,8 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
                 dto.houses(),
                 foundPlayers);
 
+        //val applicationMessage = application.sendApplicationMessage();
+
         application = secureSave(application, cbAppRepository);
 
         return application;
