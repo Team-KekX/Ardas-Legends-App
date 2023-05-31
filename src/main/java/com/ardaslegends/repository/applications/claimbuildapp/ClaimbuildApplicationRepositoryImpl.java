@@ -5,6 +5,8 @@ import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.QClaimbuildApplication;
 import com.ardaslegends.repository.exceptions.ClaimbuildApplicationRepositoryException;
 import lombok.val;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.lang.NonNull;
 

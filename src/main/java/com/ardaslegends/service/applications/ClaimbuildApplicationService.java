@@ -5,8 +5,10 @@ import com.ardaslegends.domain.ProductionSite;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.EmbeddedProductionSite;
+import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.ProductionSiteRepository;
+import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicationRepositoryImpl;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
@@ -20,6 +22,8 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +49,27 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
     private final BotProperties botProperties;
+
+
+    public Slice<ClaimbuildApplication> findAll(Pageable pageable) {
+        log.debug("Fetching slice of all cbApplications[{}]", pageable);
+        Objects.requireNonNull(pageable);
+
+        val applications = secureFind(pageable, cbAppRepository::findAll);
+        log.debug("Fetched active cbApplications [{}]", applications);
+
+        return applications;
+    }
+
+    public Slice<ClaimbuildApplication> findAllActive(Pageable pageable) {
+        log.debug("Fetching slice of active cbApplications [{}]", pageable);
+        Objects.requireNonNull(pageable);
+
+        val applications = secureFind(ApplicationState.OPEN ,pageable, cbAppRepository::findByState);
+        log.debug("Fetched active cbApplications [{}]", applications);
+
+        return applications;
+    }
 
     @Transactional(readOnly = false)
     public ClaimbuildApplication createClaimbuildApplication(CreateClaimbuildApplicationDto dto) {
