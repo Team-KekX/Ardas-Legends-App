@@ -82,11 +82,11 @@ public final class ClaimBuild extends AbstractEntity {
         this.ownedBy = ownedBy;
         this.coordinates = coordinates;
         this.productionSites = new ArrayList<>();
-        this.specialBuildings = specialBuildings;
+        this.specialBuildings = new ArrayList<>(specialBuildings);
         this.traders = traders;
         this.siege = siege;
         this.numberOfHouses = numberOfHouses;
-        this.builtBy = builtBy;
+        this.builtBy = new HashSet<>(builtBy);
 
         this.createdArmies = new ArrayList<>();
         this.stationedArmies = new ArrayList<>();
