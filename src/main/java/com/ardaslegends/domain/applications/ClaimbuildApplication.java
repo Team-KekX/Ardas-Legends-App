@@ -41,6 +41,7 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     @NotNull
     private Region region;
     @NotNull
+    @Enumerated(EnumType.STRING)
     private ClaimBuildType claimBuildType;
     @NotNull
     private Coordinate coordinate;

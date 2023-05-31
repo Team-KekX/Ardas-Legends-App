@@ -68,7 +68,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         log.debug("Fetching slice of active cbApplications [{}]", pageable);
         Objects.requireNonNull(pageable);
 
-        val applications = secureFind(ApplicationState.OPEN ,pageable, cbAppRepository::findByState);
+        val applications = secureFind(ApplicationState.OPEN, pageable, cbAppRepository::findByState);
         log.debug("Fetched active cbApplications [{}]", applications);
 
         return applications;
@@ -83,13 +83,13 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         val applicantPlayer = playerRepository.queryByDiscordId(dto.applicant().discordId());
 
         // Check if CB with Name already exists, throw if so
-        if(claimBuildRepository.existsByNameIgnoreCase(dto.claimbuildName())) {
+        if (claimBuildRepository.existsByNameIgnoreCase(dto.claimbuildName())) {
             log.warn("Claimbuild with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildWithNameAlreadyExists(dto.claimbuildName());
         }
 
         // Check if CBApp with Name already exists that is active, throw if so
-        if(cbAppRepository.existsByNameIgnoreCaseAndState(dto.claimbuildName(), ApplicationState.OPEN)) {
+        if (cbAppRepository.existsByNameIgnoreCaseAndState(dto.claimbuildName(), ApplicationState.OPEN)) {
             log.warn("Claimbuild Application with name [{}] already exists", dto.claimbuildName());
             throw ClaimbuildApplicationException.claibuildApplicationWithNameAlreadyExists(dto.claimbuildName());
         }
@@ -102,7 +102,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
                 .filter(discordId -> foundPlayers.stream().noneMatch(player -> player.getDiscordID().equals(discordId)))
                 .toList();
 
-        if(!notFoundPlayersIds.isEmpty()) {
+        if (!notFoundPlayersIds.isEmpty()) {
             String playersNotFound = String.join(", ", notFoundPlayersIds);
 
             log.warn("ClaimbuildApplicationService: Failed to find following builders [{}]", playersNotFound);
@@ -186,6 +186,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleOpenRoleplayApplications() {
         val startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -194,27 +195,23 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         log.debug("Fetching all open roleplay-applications");
         secureFind(ApplicationState.OPEN, cbAppRepository::queryAllByState).stream()
                 .filter(ClaimbuildApplication::acceptable)
-                .forEach(accept());
+                .forEach(this::accept);
 
         long endNanos = System.nanoTime();
-        log.info("Finished handling open claimbuild-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
+        log.info("Finished handling open claimbuild-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos - startNanos));
     }
 
-    @Transactional(readOnly = false)
-    public Consumer<ClaimbuildApplication> accept() {
-        return application -> {
-            val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
-            val claimbuild = application.accept();
-            val player = application.getApplicant();
+    public void accept(ClaimbuildApplication application) {
+        val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
+        val claimbuild = application.accept();
+        val player = application.getApplicant();
 
-            try {
-                claimBuildRepository.save(claimbuild);
-                secureSave(application, cbAppRepository);
-                log.info("Accepted cb application from [{}]", player.getIgn());
-            } catch (Exception e) {
-                message.delete("Failed to update cb application to accepted in database therefore deleting message");
-                throw e;
-            }
-        };
+        try {
+            claimBuildRepository.save(claimbuild);
+            secureSave(application, cbAppRepository);
+            log.info("Accepted cb application from [{}]", player.getIgn());
+        } catch (Exception e) {
+            message.delete("Failed to update cb application to accepted in database therefore deleting message");
+        }
     }
 }
