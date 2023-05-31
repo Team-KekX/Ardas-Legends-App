@@ -27,7 +27,7 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
                 .fetchFirst();
 
         if(fetchedCbApp == null) {
-            throw ClaimbuildApplicationRepositoryException.entityNotFound("id", id);
+            throw ClaimbuildApplicationRepositoryException.entityNotFound("id", String.valueOf(id));
         }
 
         return fetchedCbApp;
