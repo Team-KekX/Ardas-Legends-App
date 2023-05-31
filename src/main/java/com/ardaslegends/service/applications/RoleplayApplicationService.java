@@ -169,7 +169,6 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
-    @Transactional(readOnly = false)
     public void handleOpenRoleplayApplications() {
         val startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -184,7 +183,8 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
     }
 
-    private Consumer<RoleplayApplication> accept() {
+    @Transactional(readOnly = false)
+    public Consumer<RoleplayApplication> accept() {
         return application -> {
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
             val character = application.accept();
@@ -196,7 +196,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
                 secureSave(application, rpRepository);
                 log.info("Accepted rp application from [{}]", player.getIgn());
             } catch (Exception e) {
-                message.delete("Failed to update application to accepted in database therefore deleting message");
+                message.delete("Failed to update rp application to accepted in database therefore deleting message");
                 throw e;
             }
         };

@@ -197,7 +197,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
                 .forEach(accept());
 
         long endNanos = System.nanoTime();
-        log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
+        log.info("Finished handling open claimbuild-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
     }
 
     @Transactional(readOnly = false)
@@ -210,9 +210,9 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
             try {
                 claimBuildRepository.save(claimbuild);
                 secureSave(application, cbAppRepository);
-                log.info("Accepted rp application from [{}]", player.getIgn());
+                log.info("Accepted cb application from [{}]", player.getIgn());
             } catch (Exception e) {
-                message.delete("Failed to update application to accepted in database therefore deleting message");
+                message.delete("Failed to update cb application to accepted in database therefore deleting message");
                 throw e;
             }
         };
