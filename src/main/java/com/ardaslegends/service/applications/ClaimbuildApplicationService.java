@@ -3,6 +3,7 @@ package com.ardaslegends.service.applications;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.EmbeddedProductionSite;
+import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.ProductionSiteRepository;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
@@ -21,12 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +51,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
     private final BotProperties botProperties;
+    private final Clock clock;
 
 
     public Slice<ClaimbuildApplication> findAll(Pageable pageable) {
@@ -174,5 +182,39 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         log.info("Removed vote from claimbuild application [{}]", application);
 
         return application;
+    }
+
+    @Async
+    @Scheduled(cron = "0 */15 * ? * *")
+    public void handleOpenRoleplayApplications() {
+        val startDateTime = LocalDateTime.now(clock);
+        long startNanos = System.nanoTime();
+        log.debug("Starting scheduled handling of open claimbuild applications - System time: [{}]", startDateTime);
+
+        log.debug("Fetching all open roleplay-applications");
+        secureFind(ApplicationState.OPEN, cbAppRepository::queryAllByState).stream()
+                .filter(ClaimbuildApplication::acceptable)
+                .forEach(accept());
+
+        long endNanos = System.nanoTime();
+        log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
+    }
+
+    @Transactional(readOnly = false)
+    public Consumer<ClaimbuildApplication> accept() {
+        return application -> {
+            val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
+            val claimbuild = application.accept();
+            val player = application.getApplicant();
+
+            try {
+                claimBuildRepository.save(claimbuild);
+                secureSave(application, cbAppRepository);
+                log.info("Accepted rp application from [{}]", player.getIgn());
+            } catch (Exception e) {
+                message.delete("Failed to update application to accepted in database therefore deleting message");
+                throw e;
+            }
+        };
     }
 }

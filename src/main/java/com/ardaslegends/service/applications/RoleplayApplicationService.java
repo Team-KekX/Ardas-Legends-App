@@ -192,6 +192,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
             player.setRpChar(character);
 
             try {
+                playerRepository.save(player);
                 secureSave(application, rpRepository);
                 log.info("Accepted rp application from [{}]", player.getIgn());
             } catch (Exception e) {

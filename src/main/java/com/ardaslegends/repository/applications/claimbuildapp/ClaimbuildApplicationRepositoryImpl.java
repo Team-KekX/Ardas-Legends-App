@@ -10,8 +10,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.lang.NonNull;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySupport implements ClaimbuildApplicationRepositoryCustom {
     public ClaimbuildApplicationRepositoryImpl() {
@@ -31,6 +33,18 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
         }
 
         return fetchedCbApp;
+    }
+
+    @Override
+    public Set<ClaimbuildApplication> queryAllByState(ApplicationState state) {
+        Objects.requireNonNull(state, "State must not be null");
+        QClaimbuildApplication qApp = QClaimbuildApplication.claimbuildApplication;
+
+        val fetchedApplications = from(qApp)
+                .where(qApp.state.eq(state))
+                .fetch();
+
+        return new HashSet<>(fetchedApplications);
     }
 
     @Override

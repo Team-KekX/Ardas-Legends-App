@@ -137,7 +137,7 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
         Objects.requireNonNull(claimBuild);
         return productionSites.stream()
                 .map(embeddedProductionSite -> new ProductionClaimbuild(embeddedProductionSite.getProductionSite(), claimBuild, embeddedProductionSite.getCount()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String createProductionSiteString() {
