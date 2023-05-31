@@ -1,14 +1,10 @@
 package com.ardaslegends.service.applications;
 
-import com.ardaslegends.domain.ProductionClaimbuild;
-import com.ardaslegends.domain.ProductionSite;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.EmbeddedProductionSite;
-import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.ProductionSiteRepository;
-import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicationRepositoryImpl;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
@@ -16,7 +12,7 @@ import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicat
 import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
-import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
+import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.exceptions.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
@@ -28,8 +24,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -147,7 +141,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     }
 
     @Transactional(readOnly = false)
-    public ClaimbuildApplication addVote(RpApplicationVoteDto dto) {
+    public ClaimbuildApplication addVote(ApplicationVoteDto dto) {
         log.debug("Adding Vote to application [{}]", dto);
         Objects.requireNonNull(dto);
 
@@ -165,7 +159,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     }
 
     @Transactional(readOnly = false)
-    public ClaimbuildApplication removeVote(RpApplicationVoteDto dto) {
+    public ClaimbuildApplication removeVote(ApplicationVoteDto dto) {
         log.debug("Removing vote from application [{}]", dto);
         Objects.requireNonNull(dto);
 

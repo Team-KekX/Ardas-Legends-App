@@ -9,7 +9,7 @@ import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.RoleplayApplicationRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
-import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
+import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
@@ -112,7 +112,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication addVote(RpApplicationVoteDto dto) {
+    public RoleplayApplication addVote(ApplicationVoteDto dto) {
         log.debug("Adding Vote to application [{}]", dto);
         Objects.requireNonNull(dto);
 
@@ -130,7 +130,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication removeVote(RpApplicationVoteDto dto) {
+    public RoleplayApplication removeVote(ApplicationVoteDto dto) {
         log.debug("Removing vote from application [{}]", dto);
         Objects.requireNonNull(dto);
 
@@ -147,7 +147,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         return application;
     }
 
-    private Player getPlayer(RpApplicationVoteDto dto) {
+    private Player getPlayer(ApplicationVoteDto dto) {
         val optionalPlayer = secureFind(dto.discordId(), playerRepository::findByDiscordID);
 
         if(optionalPlayer.isEmpty()) {
@@ -157,7 +157,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         return optionalPlayer.get();
     }
 
-    private RoleplayApplication getRoleplayApplication(RpApplicationVoteDto dto) {
+    private RoleplayApplication getRoleplayApplication(ApplicationVoteDto dto) {
         val optionalApplication = secureFind(dto.applicationId(), rpRepository::findById);
 
         if(optionalApplication.isEmpty()) {
