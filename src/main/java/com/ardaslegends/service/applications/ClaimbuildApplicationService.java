@@ -202,7 +202,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     }
 
     public void accept(ClaimbuildApplication application) {
-        val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
+        val message = application.sendAcceptedMessage(botProperties.getClaimbuildAppsChannel());
         val claimbuild = application.accept();
         val player = application.getApplicant();
 
