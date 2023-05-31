@@ -30,7 +30,7 @@ public class RoleplayApplicationController extends AbstractRestController {
 
     @Operation(summary = "Create a Roleplay Application")
     @PostMapping
-    public HttpEntity<RoleplayApplicationResponse> createRoleplayApplication(CreateRpApplicatonDto applicationDto) {
+    public HttpEntity<RoleplayApplicationResponse> createRoleplayApplication(@RequestBody CreateRpApplicatonDto applicationDto) {
         log.debug("Incoming createRoleplayApplication Request: Data [{}]", applicationDto);
 
         val application = wrappedServiceExecution(applicationDto, rpService::createRpApplication);
