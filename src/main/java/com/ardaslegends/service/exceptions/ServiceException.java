@@ -4,6 +4,7 @@ import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
 import org.springframework.web.client.RestClientException;
 import javax.validation.constraints.NotNull;
+import java.security.Provider;
 
 public class ServiceException extends RuntimeException {
 
@@ -51,6 +52,7 @@ public class ServiceException extends RuntimeException {
     //Player
 
     private static final String CREATE_RP_CHAR_NO_FACTION = "Player %s is in no faction - cannot create Roleplay Character!";
+
     public static ServiceException cannotReadEntityDueToExternalMojangError(RestClientException ex) {
         String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(ex.getMessage());
         return new ServiceException(msg, ex);
@@ -143,6 +145,8 @@ public class ServiceException extends RuntimeException {
     public static ServiceException regionDoesNotExist(@NotNull String toRegion) {return new ServiceException(DESIRED_REGION_DOES_NOT_EXIST.formatted(toRegion)); }
 
     public static ServiceException moreThanOneActiveMovement(@NotNull RPChar rpchar) { return new ServiceException(MORE_THAN_ONE_ACTIVE_MOVEMENT.formatted(rpchar.getName())); }
+
+    public static ServiceException joinException(Throwable ex) {return new ServiceException(ex.getMessage(), ex);}
     protected ServiceException(String message, Throwable rootCause) { super(message, rootCause);}
     protected ServiceException(String message) { super(message);}
 

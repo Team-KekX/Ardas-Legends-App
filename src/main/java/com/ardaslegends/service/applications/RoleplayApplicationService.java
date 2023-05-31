@@ -4,12 +4,12 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
-import com.ardaslegends.repository.FactionRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.applications.RoleplayApplicationRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
-import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
+import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
 import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
@@ -29,7 +29,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 
@@ -113,8 +112,8 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication addVote(RpApplicationVoteDto dto) {
-        log.debug("Adding Vote to application [{}]", dto);
+    public RoleplayApplication addVote(ApplicationVoteDto dto) {
+        log.debug("Adding Vote to roleplay application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -125,14 +124,14 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         application.addAcceptor(player);
 
         application = secureSave(application, rpRepository);
-        log.info("Added vote to application [{}]", application);
+        log.info("Added vote to roleplay application [{}]", application);
 
         return application;
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication removeVote(RpApplicationVoteDto dto) {
-        log.debug("Removing vote from application [{}]", dto);
+    public RoleplayApplication removeVote(ApplicationVoteDto dto) {
+        log.debug("Removing vote from roleplay application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -143,12 +142,12 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         application.removeAccept(player);
 
         application = secureSave(application, rpRepository);
-        log.info("Removed vote from application [{}]", application);
+        log.info("Removed vote from roleplay application [{}]", application);
 
         return application;
     }
 
-    private Player getPlayer(RpApplicationVoteDto dto) {
+    private Player getPlayer(ApplicationVoteDto dto) {
         val optionalPlayer = secureFind(dto.discordId(), playerRepository::findByDiscordID);
 
         if(optionalPlayer.isEmpty()) {
@@ -158,7 +157,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         return optionalPlayer.get();
     }
 
-    private RoleplayApplication getRoleplayApplication(RpApplicationVoteDto dto) {
+    private RoleplayApplication getRoleplayApplication(ApplicationVoteDto dto) {
         val optionalApplication = secureFind(dto.applicationId(), rpRepository::findById);
 
         if(optionalApplication.isEmpty()) {
@@ -185,7 +184,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
     }
 
-    private Consumer<RoleplayApplication> accept() {
+    public Consumer<RoleplayApplication> accept() {
         return application -> {
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
             val character = application.accept();
@@ -193,10 +192,11 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
             player.setRpChar(character);
 
             try {
+                playerRepository.save(player);
                 secureSave(application, rpRepository);
                 log.info("Accepted rp application from [{}]", player.getIgn());
             } catch (Exception e) {
-                message.delete("Failed to update application to accepted in database therefore deleting message");
+                message.delete("Failed to update rp application to accepted in database therefore deleting message");
                 throw e;
             }
         };

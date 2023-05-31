@@ -8,8 +8,6 @@ import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
-import com.ardaslegends.repository.PlayerRepository;
-import com.ardaslegends.repository.ResourceRepository;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;

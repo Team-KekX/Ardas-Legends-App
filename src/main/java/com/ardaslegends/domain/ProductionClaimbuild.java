@@ -41,6 +41,7 @@ public final class ProductionClaimbuild extends AbstractDomainObject {
     private Long count;
 
     public ProductionClaimbuild(ProductionSite productionSite, ClaimBuild claimbuild, Long count) {
+        this.id = new ProductionClaimbuildId();
         this.productionSite = productionSite;
         this.claimbuild = claimbuild;
         this.count = count;

@@ -5,12 +5,11 @@ import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.applications.RoleplayApplicationResponse;
 import com.ardaslegends.service.applications.RoleplayApplicationService;
 import com.ardaslegends.service.dto.applications.CreateRpApplicatonDto;
-import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
+import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpEntity;
@@ -31,7 +30,7 @@ public class RoleplayApplicationController extends AbstractRestController {
 
     @Operation(summary = "Create a Roleplay Application")
     @PostMapping
-    public HttpEntity<RoleplayApplicationResponse> createRoleplayApplication(CreateRpApplicatonDto applicationDto) {
+    public HttpEntity<RoleplayApplicationResponse> createRoleplayApplication(@RequestBody CreateRpApplicatonDto applicationDto) {
         log.debug("Incoming createRoleplayApplication Request: Data [{}]", applicationDto);
 
         val application = wrappedServiceExecution(applicationDto, rpService::createRpApplication);
@@ -62,7 +61,7 @@ public class RoleplayApplicationController extends AbstractRestController {
 
     @Operation(summary = "Adds a vote to an application")
     @PatchMapping(ADD_VOTE)
-    public HttpEntity<RoleplayApplicationResponse> addVoteToApplication(RpApplicationVoteDto voteDto) {
+    public HttpEntity<RoleplayApplicationResponse> addVoteToApplication(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to application Request: Data [{}]", voteDto);
 
         val application = wrappedServiceExecution(voteDto, rpService::addVote);
@@ -72,7 +71,7 @@ public class RoleplayApplicationController extends AbstractRestController {
 
     @Operation(summary = "Removes a vote from an application")
     @PatchMapping(REMOVE_VOTE)
-    public HttpEntity<RoleplayApplicationResponse> removeVoteFromApplication(RpApplicationVoteDto voteDto) {
+    public HttpEntity<RoleplayApplicationResponse> removeVoteFromApplication(ApplicationVoteDto voteDto) {
         log.debug("Incoming remove-vote from application Request: Data [{}]", voteDto);
 
         val application = wrappedServiceExecution(voteDto, rpService::removeVote);

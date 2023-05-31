@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.region;
 
 import com.ardaslegends.domain.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RegionRepository extends JpaRepository<Region, String> {
-
-    @Override
-    Optional<Region> findById(String s);
-
+public interface RegionRepository extends JpaRepository<Region, String>, RegionRepositoryCustom {
     List<Region> findAllByHasOwnershipChangedTrue();
 }

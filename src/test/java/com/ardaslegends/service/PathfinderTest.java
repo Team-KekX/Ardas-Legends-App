@@ -1,8 +1,7 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.repository.RegionRepository;
-import com.ardaslegends.repository.WarRepository;
+import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.exceptions.PathfinderServiceException;
 import com.ardaslegends.service.war.WarService;
 import org.junit.jupiter.api.BeforeEach;

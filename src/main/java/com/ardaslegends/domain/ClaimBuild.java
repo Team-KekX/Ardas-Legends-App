@@ -20,12 +20,7 @@ import java.util.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class ClaimBuild extends AbstractDomainObject {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public final class ClaimBuild extends AbstractEntity {
 
     @Column(unique = true)
     private String name; //unique, name of the claimbuild
@@ -80,6 +75,31 @@ public final class ClaimBuild extends AbstractDomainObject {
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0
     private int freeTradingCompaniesRemaining; // Every new trading decrements this attribute until its at 0
 
+    public ClaimBuild(String name, Region region, ClaimBuildType type, Faction ownedBy, Coordinate coordinates, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
+        this.name = name;
+        this.region = region;
+        this.type = type;
+        this.ownedBy = ownedBy;
+        this.coordinates = coordinates;
+        this.productionSites = new ArrayList<>();
+        this.specialBuildings = new ArrayList<>(specialBuildings);
+        this.traders = traders;
+        this.siege = siege;
+        this.numberOfHouses = numberOfHouses;
+        this.builtBy = new HashSet<>(builtBy);
+
+        this.createdArmies = new ArrayList<>();
+        this.stationedArmies = new ArrayList<>();
+
+        this.freeArmiesRemaining = type.getFreeArmies();
+        this.freeTradingCompaniesRemaining = type.getFreeTradingCompanies();
+    }
+    public ClaimBuild(String name, Region region, ClaimBuildType type, Faction ownedBy, Coordinate coordinates, List<ProductionClaimbuild> productionSites, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
+        this(name, region, type, ownedBy, coordinates, specialBuildings, traders, siege, numberOfHouses, builtBy);
+        this.productionSites = productionSites;
+    }
+
+
     @JsonIgnore
     public int getCountOfArmies() {
         int count = (int) createdArmies.stream()
@@ -125,18 +145,5 @@ public final class ClaimBuild extends AbstractDomainObject {
     @Override
     public String toString() {
         return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClaimBuild that = (ClaimBuild) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

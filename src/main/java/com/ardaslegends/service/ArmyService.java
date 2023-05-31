@@ -2,8 +2,8 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
-import com.ardaslegends.repository.ClaimBuildRepository;
-import com.ardaslegends.repository.FactionRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.service.dto.army.*;
 import com.ardaslegends.service.dto.unit.UnitTypeDto;
@@ -32,7 +32,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final PlayerService playerService;
     private final FactionRepository factionRepository;
     private final UnitTypeService unitTypeService;
-    private final ClaimBuildRepository claimBuildRepository;
+    private final ClaimbuildRepository claimBuildRepository;
 
     public Page<Army> getArmiesPaginated(Pageable pageable) {
         log.info("Getting page of armies with data [size:{},page:{}]", pageable.getPageSize(), pageable.getPageNumber());

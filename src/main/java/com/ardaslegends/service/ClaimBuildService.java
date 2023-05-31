@@ -1,9 +1,9 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.repository.ClaimBuildRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.ProductionSiteRepository;
-import com.ardaslegends.repository.RegionRepository;
+import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
@@ -25,9 +25,9 @@ import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
-public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRepository> {
+public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRepository> {
 
-    private final ClaimBuildRepository claimbuildRepository;
+    private final ClaimbuildRepository claimbuildRepository;
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
 
@@ -143,8 +143,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
             }
 
-            claimBuild = new ClaimBuild(10L, dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
-                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate,
+                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy);
 
             if(! (type.equals(ClaimBuildType.HAMLET) || type.equals(ClaimBuildType.KEEP))) {
                 log.debug("Claimbuild is not hamlet or keep, claiming region [{}] for faction [{}]", region.getId(), faction.getName());

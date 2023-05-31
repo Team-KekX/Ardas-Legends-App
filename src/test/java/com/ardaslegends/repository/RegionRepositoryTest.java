@@ -1,6 +1,7 @@
 package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.Region;
+import com.ardaslegends.repository.region.RegionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

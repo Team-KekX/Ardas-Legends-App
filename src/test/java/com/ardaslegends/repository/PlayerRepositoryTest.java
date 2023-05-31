@@ -1,6 +1,7 @@
 package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.*;
+import com.ardaslegends.repository.player.PlayerRepository;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -43,8 +45,26 @@ public class PlayerRepositoryTest {
         // Assert
         assertThat(query.isPresent()).isTrue();
         assertThat(query.get().getDiscordID()).isEqualTo(discordId);
+    }
 
+    @Test
+    void ensureQueryByDiscordIdWorks() {
+        String discordId=  "MiraksId";
 
+        val query = repository.queryByDiscordId(discordId);
+
+        assertThat(query).isNotNull();
+        assertThat(query.getDiscordID()).isEqualTo(discordId);
+    }
+
+    @Test
+    void ensureQueryByDiscordIdWithArraysWorks() {
+        String[] discordIds = { "MiraksId", "vernonId", null, null, "luksId", "testIfFails" };
+
+        var query = repository.queryByDiscordId(discordIds);
+
+        assertThat(query).isNotNull();
+        assertThat(query.size()).isEqualTo(3);
     }
 
     @Test
