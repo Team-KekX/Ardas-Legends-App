@@ -169,6 +169,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
+    @Transactional(readOnly = false)
     public void handleOpenRoleplayApplications() {
         val startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
@@ -183,7 +184,6 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         log.info("Finished handling open roleplay-application [Time: {}, Amount accepted: {}]", TimeUnit.NANOSECONDS.toMillis(endNanos-startNanos));
     }
 
-    @Transactional(readOnly = false)
     public Consumer<RoleplayApplication> accept() {
         return application -> {
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
