@@ -142,7 +142,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
     @Transactional(readOnly = false)
     public ClaimbuildApplication addVote(ApplicationVoteDto dto) {
-        log.debug("Adding Vote to application [{}]", dto);
+        log.debug("Adding Vote to  claimbuild application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -153,14 +153,14 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         application.addAcceptor(player);
 
         application = secureSave(application, cbAppRepository);
-        log.info("Added vote to application [{}]", application);
+        log.info("Added vote to claimbuild application [{}]", application);
 
         return application;
     }
 
     @Transactional(readOnly = false)
     public ClaimbuildApplication removeVote(ApplicationVoteDto dto) {
-        log.debug("Removing vote from application [{}]", dto);
+        log.debug("Removing vote from claimbuild application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -171,7 +171,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         application.removeAccept(player);
 
         application = secureSave(application, cbAppRepository);
-        log.info("Removed vote from application [{}]", application);
+        log.info("Removed vote from claimbuild application [{}]", application);
 
         return application;
     }

@@ -113,7 +113,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
 
     @Transactional(readOnly = false)
     public RoleplayApplication addVote(ApplicationVoteDto dto) {
-        log.debug("Adding Vote to application [{}]", dto);
+        log.debug("Adding Vote to roleplay application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -124,14 +124,14 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         application.addAcceptor(player);
 
         application = secureSave(application, rpRepository);
-        log.info("Added vote to application [{}]", application);
+        log.info("Added vote to roleplay application [{}]", application);
 
         return application;
     }
 
     @Transactional(readOnly = false)
     public RoleplayApplication removeVote(ApplicationVoteDto dto) {
-        log.debug("Removing vote from application [{}]", dto);
+        log.debug("Removing vote from roleplay application [{}]", dto);
         Objects.requireNonNull(dto);
 
         ServiceUtils.checkAllNulls(dto);
@@ -142,7 +142,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         application.removeAccept(player);
 
         application = secureSave(application, rpRepository);
-        log.info("Removed vote from application [{}]", application);
+        log.info("Removed vote from roleplay application [{}]", application);
 
         return application;
     }
