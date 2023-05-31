@@ -106,8 +106,7 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
                 .collect(Collectors.joining(", "));
 
         return new EmbedBuilder()
-                .setTitle("Claimbuild %s was successfully created!".formatted(claimbuildName))
-                .setColor(ALColor.YELLOW)
+                .setTitle("%s %s has been accepted!".formatted(claimBuildType.getName(), claimbuildName))
                 .addInlineField("Name", claimbuildName)
                 .addInlineField("Faction", ownedBy.getName())
                 .addInlineField("Region", region.getId())
@@ -118,8 +117,9 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
                 .addInlineField("Siege", siege)
                 .addInlineField("Houses", numberOfHouses)
                 .addInlineField("Coordinates", coordinate.toString())
-                .addInlineField("Built by", builtByString)
+                .addField("Built by", builtByString)
                 .setThumbnail(FactionBanners.getBannerUrl(ownedBy.getName()))
+                .setColor(ALColor.GREEN)
                 .setTimestampToNow();
     }
 
