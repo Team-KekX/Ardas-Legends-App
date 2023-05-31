@@ -11,6 +11,7 @@ import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
 
     @Operation(summary = "Creates a Claimbuild Application")
     @PostMapping
-    public HttpEntity<ClaimbuildApplicationResponse> createClaimbuildApplication(CreateClaimbuildApplicationDto applicationDto) {
+    public HttpEntity<ClaimbuildApplicationResponse> createClaimbuildApplication(@RequestBody CreateClaimbuildApplicationDto applicationDto) {
         log.debug("Incoming createClaimbuildApplication Request: Data [{}]", applicationDto);
 
         val application = wrappedServiceExecution(applicationDto, claimbuildApplicationService::createClaimbuildApplication);

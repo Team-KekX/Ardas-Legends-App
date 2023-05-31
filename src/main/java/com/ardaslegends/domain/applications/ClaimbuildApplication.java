@@ -77,15 +77,25 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
 
     @Override
     public EmbedBuilder buildApplicationMessage() {
+        String builtByString = builtBy.stream()
+                .map(Player::getIgn)
+                .collect(Collectors.joining(", "));
+
         return new EmbedBuilder()
                 .setTitle("Claimbuild Application")
-                .addField("Name", claimbuildName)
-                .addField("For Faction", ownedBy.getName())
-                .addField("In Region", region.getId())
-                .addField("Type", claimBuildType.getName())
-                .addField("Coordinates", coordinate.toString())
-                .addField("Production Sites", createProductionSiteString())
                 .setColor(ALColor.YELLOW)
+                .addInlineField("Name", claimbuildName)
+                .addInlineField("Faction", ownedBy.getName())
+                .addInlineField("Region", region.getId())
+                .addInlineField("Type", claimBuildType.getName())
+                .addField("Production Sites", createProductionSiteString())
+                .addField("Special Buildings", createSpecialBuildingsString())
+                .addInlineField("Traders", traders)
+                .addInlineField("Siege", siege)
+                .addInlineField("Houses", numberOfHouses)
+                .addInlineField("Coordinates", coordinate.toString())
+                .addField("Built by", builtByString)
+                .setThumbnail(FactionBanners.getBannerUrl(ownedBy.getName()))
                 .setTimestampToNow();
     }
 

@@ -5,6 +5,7 @@ import com.ardaslegends.domain.ProductionSite;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.EmbeddedProductionSite;
+import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.ProductionSiteRepository;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.faction.FactionRepository;
@@ -22,6 +23,8 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +44,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     private final FactionRepository factionRepository;
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
+    private final BotProperties botProperties;
 
     @Transactional(readOnly = false)
     public ClaimbuildApplication createClaimbuildApplication(CreateClaimbuildApplicationDto dto) {
@@ -105,9 +109,13 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
                 dto.houses(),
                 foundPlayers);
 
-        //val applicationMessage = application.sendApplicationMessage();
+        val applicationMessage = application.sendApplicationMessage(botProperties.getClaimbuildAppsChannel());
 
-        application = secureSave(application, cbAppRepository);
+        try {
+            application = secureSave(application, cbAppRepository);
+        } catch (Exception e) {
+            applicationMessage.delete("Failed to save application into Database therefore deleting application message in discord").join();
+        }
 
         return application;
     }
