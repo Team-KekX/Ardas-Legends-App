@@ -19,6 +19,21 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
     }
 
     @Override
+    public ClaimbuildApplication queryById(long id) {
+        QClaimbuildApplication qApp = QClaimbuildApplication.claimbuildApplication;
+
+        val fetchedCbApp = from(qApp)
+                .where(qApp.id.eq(id))
+                .fetchFirst();
+
+        if(fetchedCbApp == null) {
+            throw ClaimbuildApplicationRepositoryException.entityNotFound("id", id);
+        }
+
+        return fetchedCbApp;
+    }
+
+    @Override
     public @NonNull ClaimbuildApplication queryByNameIgnoreCaseAndState(@NonNull String claimbuildName, @NonNull ApplicationState state) {
         val claimbuildApp = queryByNameIgnoreCaseAndStateOptional(claimbuildName, state);
 

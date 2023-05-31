@@ -16,6 +16,7 @@ import com.ardaslegends.repository.applications.claimbuildapp.ClaimbuildApplicat
 import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
+import com.ardaslegends.service.dto.applications.RpApplicationVoteDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.exceptions.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
@@ -141,6 +142,42 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         } catch (Exception e) {
             applicationMessage.delete("Failed to save application into Database therefore deleting application message in discord").join();
         }
+
+        return application;
+    }
+
+    @Transactional(readOnly = false)
+    public ClaimbuildApplication addVote(RpApplicationVoteDto dto) {
+        log.debug("Adding Vote to application [{}]", dto);
+        Objects.requireNonNull(dto);
+
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = cbAppRepository.queryById(dto.applicationId());
+        val player = playerRepository.queryByDiscordId(dto.discordId());
+
+        application.addAcceptor(player);
+
+        application = secureSave(application, cbAppRepository);
+        log.info("Added vote to application [{}]", application);
+
+        return application;
+    }
+
+    @Transactional(readOnly = false)
+    public ClaimbuildApplication removeVote(RpApplicationVoteDto dto) {
+        log.debug("Removing vote from application [{}]", dto);
+        Objects.requireNonNull(dto);
+
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = cbAppRepository.queryById(dto.applicationId());
+        val player = playerRepository.queryByDiscordId(dto.discordId());
+
+        application.removeAccept(player);
+
+        application = secureSave(application, cbAppRepository);
+        log.info("Removed vote from application [{}]", application);
 
         return application;
     }

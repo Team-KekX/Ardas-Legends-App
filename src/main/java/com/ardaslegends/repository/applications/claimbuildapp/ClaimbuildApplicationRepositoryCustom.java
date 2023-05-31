@@ -8,6 +8,7 @@ import org.springframework.data.domain.Slice;
 import java.util.Optional;
 
 public interface ClaimbuildApplicationRepositoryCustom {
+    ClaimbuildApplication queryById(long id);
     ClaimbuildApplication queryByNameIgnoreCaseAndState(String claimbuildName, ApplicationState state);
     Optional<ClaimbuildApplication> queryByNameIgnoreCaseAndStateOptional(String claimbuildName, ApplicationState state);
     boolean existsByNameIgnoreCaseAndState(String claimbuildName, ApplicationState state);
