@@ -29,7 +29,7 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
      */
     @Override
     public @NonNull Player queryByDiscordId(String discordId) {
-        Objects.requireNonNull(discordId);
+        Objects.requireNonNull(discordId, "DiscordId must not be null!");
 
         val qplayer = QPlayer.player;
 
@@ -48,7 +48,7 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
      */
     @Override
     public @NonNull Set<Player> queryByDiscordId(@NonNull String[] discordIds) {
-        Objects.requireNonNull(discordIds);
+        Objects.requireNonNull(discordIds, "DiscordIds must not be null");
         val qplayer = QPlayer.player;
 
         val filteredNullsSet = Arrays.stream(discordIds)

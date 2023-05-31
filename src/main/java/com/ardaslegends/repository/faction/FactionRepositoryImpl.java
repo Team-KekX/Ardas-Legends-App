@@ -36,6 +36,6 @@ public class FactionRepositoryImpl extends QuerydslRepositorySupport implements 
                         .or(qFaction.aliases.any().equalsIgnoreCase(factionName)))
                 .fetchFirst();
 
-        return Optional.of(fetchedFaction);
+        return Optional.ofNullable(fetchedFaction);
     }
 }

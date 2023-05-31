@@ -35,6 +35,6 @@ public class RegionRepositoryImpl extends QuerydslRepositorySupport implements R
                 .where(qRegion.id.equalsIgnoreCase(id))
                 .fetchFirst();
 
-        return Optional.of(fetchedRegion);
+        return Optional.ofNullable(fetchedRegion);
     }
 }

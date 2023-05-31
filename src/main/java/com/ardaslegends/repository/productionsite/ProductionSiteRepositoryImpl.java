@@ -37,6 +37,6 @@ public class ProductionSiteRepositoryImpl extends QuerydslRepositorySupport impl
                 .where(qProductionSite.type.eq(type).and(qProductionSite.producedResource().resourceName.equalsIgnoreCase(resource)))
                 .fetchFirst();
 
-        return Optional.of(fetchedSite);
+        return Optional.ofNullable(fetchedSite);
     }
 }

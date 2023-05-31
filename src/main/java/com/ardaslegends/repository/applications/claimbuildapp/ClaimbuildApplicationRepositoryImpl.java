@@ -38,7 +38,7 @@ public class ClaimbuildApplicationRepositoryImpl extends QuerydslRepositorySuppo
                 .where(qclaimbuildApp.claimbuildName.equalsIgnoreCase(claimbuildName).and(qclaimbuildApp.state.eq(state)))
                 .fetchFirst();
 
-        return Optional.of(claimbuildApp);
+        return Optional.ofNullable(claimbuildApp);
     }
 
     @Override
