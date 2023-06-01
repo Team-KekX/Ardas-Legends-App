@@ -28,7 +28,7 @@ public class RegionController extends AbstractRestController {
     private final String RESET_OWNERSHIP = "/reset-ownership";
     private final String GET_ALL = "/all";
     private final String GET_ALL_DETAILED = "/all/detailed";
-    private final String GET_REGION_TYPES = "/regiontypes";
+    private final String GET_REGION_TYPES = "/types";
 
     private final RegionService regionService;
 
