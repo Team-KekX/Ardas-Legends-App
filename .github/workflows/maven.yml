@@ -30,6 +30,7 @@ jobs:
         DEV_RP_COMMANDS_CHANNEL: 'Test4'
         RP_APP_CHANNEL: 'Test5'
         DEV_ERROR_CHANNEL: 'Test6'
+        DEV_CB_APP_CHANNEL: ${{ secrets.DEV_CB_APP_CHANNEL }}
       run: echo -Dspring-boot.run.arguments="ardaslegends.bot.token=$INTEGRATION_BOT_TOKEN,ardaslegends.bot.server=$DEV_SERVER_TOKEN,ardaslegends.bot.staff-roles=$DEV_STAFF_ROLES,ardaslegends.roleplay.commands.channel=$DEV_RP_COMMANDS_CHANNEL,ardaslegends.roleplay.apps.channel=$DEV_RP_APPS_CHANNEL,ardaslegends.bot.error.channel=$DEV_ERROR_CHANNEL"
         
     - name: Build with Maven
@@ -40,4 +41,5 @@ jobs:
         DEV_RP_COMMANDS_CHANNEL: ${{ secrets.DEV_RP_COMMANDS_CHANNEL }}
         DEV_RP_APPS_CHANNEL: ${{ secrets.DEV_RP_APPS_CHANNEL }}
         DEV_ERROR_CHANNEL: ${{ secrets.DEV_ERROR_CHANNEL }}
-      run: mvn -B clean verify --file pom.xml -D"ardaslegends.bot.token"=$INTEGRATION_BOT_TOKEN -D"ardaslegends.bot.server"=$DEV_SERVER_TOKEN -D"ardaslegends.bot.staff-roles"=$DEV_STAFF_ROLES -D"ardaslegends.roleplay.commands.channel"=$DEV_RP_COMMANDS_CHANNEL -D"ardaslegends.roleplay.apps.channel"=$DEV_RP_APPS_CHANNEL -D"ardaslegends.bot.error.channel"=$DEV_ERROR_CHANNEL -D"spring.jpa.hibernate.ddl-auto"=create
+        DEV_CB_APP_CHANNEL: ${{ secrets.DEV_CB_APP_CHANNEL }}
+      run: mvn -B clean verify --file pom.xml -D"ardaslegends.bot.token"=$INTEGRATION_BOT_TOKEN -D"ardaslegends.bot.server"=$DEV_SERVER_TOKEN -D"ardaslegends.bot.staff-roles"=$DEV_STAFF_ROLES -D"ardaslegends.roleplay.commands.channel"=$DEV_RP_COMMANDS_CHANNEL -D"ardaslegends.roleplay.apps.channel"=$DEV_RP_APPS_CHANNEL -D"ardaslegends.bot.error.channel"=$DEV_ERROR_CHANNEL -D"ardaslegends.claimbuild.apps.channel"=$DEV_CB_APP_CHANNEL -D"spring.sql.init.mode"=always -D"spring.jpa.defer-datasource-initialization"=true

@@ -3,16 +3,11 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
-import com.ardaslegends.domain.Region;
 import com.ardaslegends.presentation.abstraction.AbstractIntegrationTest;
-import com.ardaslegends.presentation.abstraction.ControllerUnitTest;
-import com.ardaslegends.presentation.abstraction.PersistenceConfig;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
-import com.ardaslegends.service.FactionService;
-import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
@@ -22,28 +17,9 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.event.ApplicationEventsTestExecutionListener;
-import org.springframework.test.context.event.EventPublishingTestExecutionListener;
-import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.ServletTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 
 @Slf4j

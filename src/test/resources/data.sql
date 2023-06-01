@@ -4483,9 +4483,19 @@ alter table if exists battle_defending_armies add constraint fk_battle foreign k
 alter table if exists battles add constraint FKto17uej65htuy39synjym8jvd foreign key (claim_build_id) references claimbuilds;
 alter table if exists battles add constraint FKccdcpuawy3idxmo1brk798j6s foreign key (region_id) references regions;
 alter table if exists battles add constraint FK7io733lrjjp817ugeicyaxn06 foreign key (war_id) references wars;
+alter table if exists claimbuild_application_production_sites add constraint FK6b22sa6esocas21vinc61okcs foreign key (production_site_id) references production_sites;
+alter table if exists claimbuild_application_production_sites add constraint FK9aakh5isk3ddaqx1q3119r15h foreign key (claimbuild_application_id) references claimbuild_apps;
+alter table if exists claimbuild_apps add constraint FKmrgkvv36fud6ajyk3xievjntd foreign key (applicant_id) references players;
+alter table if exists claimbuild_apps add constraint FKkl59b9hxayms2hxte6o21itvc foreign key (owned_by_id) references factions;
+alter table if exists claimbuild_apps add constraint FK72np6afj568od3a3rekcqt4e5 foreign key (region_id) references regions;
+alter table if exists claimbuild_apps_accepted_by add constraint FKaoo6cq55ramihbkkl1e5p94om foreign key (accepted_by_id) references players;
+alter table if exists claimbuild_apps_accepted_by add constraint FKr5s8sle9yqrtftu3ws93enifo foreign key (claimbuild_application_id) references claimbuild_apps;
+alter table if exists claimbuild_apps_built_by add constraint FKmi1j8cfpneyy42wgamhhw4jxf foreign key (built_by_id) references players;
+alter table if exists claimbuild_apps_built_by add constraint FKqbl9cikil8y0icpv9p75dk70 foreign key (claimbuild_application_id) references claimbuild_apps;
 alter table if exists claimbuild_builders add constraint fk_player_id foreign key (player_id) references players;
 alter table if exists claimbuild_builders add constraint fk_claimbuild_id foreign key (claimbuild_id) references claimbuilds;
 alter table if exists claimbuild_special_buildings add constraint fk_claimbuild_id foreign key (claimbuild_id) references claimbuilds;
+alter table if exists claimbuild_application_special_buildings add constraint FKh49su3y1onc1xdiwdkl44c1ch foreign key (claimbuild_application_id) references claimbuild_apps;
 alter table if exists claimbuilds add constraint fk_owned_by foreign key (owned_by) references factions;
 alter table if exists claimbuilds add constraint fk_region foreign key (region) references regions;
 alter table if exists faction_allies add constraint fk_ally_faction foreign key (ally_faction) references factions;
@@ -4519,6 +4529,7 @@ alter table if exists war_aggressors add constraint fk_faction_war_participant f
 alter table if exists war_aggressors add constraint FK4t6lbde54kf5kdfmtag4ektgi foreign key (war_id) references wars;
 alter table if exists war_defenders add constraint fk_faction_war_participant foreign key (participant_faction_id) references factions;
 alter table if exists war_defenders add constraint FKbii281msisv5mrkapr3qx5bwd foreign key (war_id) references wars;
+
 
 end;
 ' LANGUAGE PLPGSQL;
