@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.api;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.ClaimBuildType;
+import com.ardaslegends.domain.SpecialBuilding;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.claimbuild.PaginatedClaimbuildResponse;
 import com.ardaslegends.service.ClaimBuildService;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
     public static final String GET_TYPES = "/types";
+    public static final String GET_SPECIAL_BUILDINGS = "/specialbuildings";
     public static final String PATH_CREATE_CLAIMBUILD = "/create";
     public static final String PATH_UPDATE_CLAIMBUILD = "/update";
     private static final String UPDATE_CLAIMBUILD_FATION = "/update/claimbuild-faction";
@@ -56,6 +58,17 @@ public class ClaimbuildRestController extends AbstractRestController {
         var pageResponse = pageDomain.map(PaginatedClaimbuildResponse::new);
 
         return ResponseEntity.ok(pageResponse);
+    }
+
+    @GetMapping(GET_SPECIAL_BUILDINGS)
+    public HttpEntity<String[]> getSpecialBuildings() {
+        log.debug("Incoming getAllSpecialBuilds request");
+
+        val specialBuildingsStringArray = Arrays.stream(SpecialBuilding.values())
+                .map(SpecialBuilding::getName)
+                .toArray(String[]::new);
+
+        return ResponseEntity.ok(specialBuildingsStringArray);
     }
 
     @PostMapping(PATH_CREATE_CLAIMBUILD)
