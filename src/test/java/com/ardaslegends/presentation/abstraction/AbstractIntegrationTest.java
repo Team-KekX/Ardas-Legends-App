@@ -10,12 +10,20 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -27,15 +35,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 )
 @ActiveProfiles("test")
 @Testcontainers
-public class AbstractIntegrationTest extends RestTest<ResponseEntity>{
+public class AbstractIntegrationTest extends ControllerUnitTest {
 
-    private final TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder().requestFactory(HttpComponentsClientHttpRequestFactory.class));
 
     @LocalServerPort
     protected Integer port;
 
     protected void baseSetup(AbstractRestController controller, String baseUrl) {
-        super.baseSetup(controller, baseUrl, port);
+        super.baseSetup(controller, baseUrl);
     }
 
     @Container
@@ -49,33 +56,5 @@ public class AbstractIntegrationTest extends RestTest<ResponseEntity>{
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
     }
 
-    @Override
-    protected <T> ResponseEntity<T> post(String path, Object data, Class<T> responseType) {
-        return doRequest(HttpMethod.POST, path, data, responseType);
-    }
 
-    @Override
-    protected <T> ResponseEntity<T> patch(String path, Object data, Class<T> responseType) {
-        return doRequest(HttpMethod.PATCH, path, data, responseType);
-
-    }
-
-    @Override
-    protected <T> ResponseEntity<T> delete(String path, Object data, Class<T> responseType) {
-        return doRequest(HttpMethod.DELETE, path, data, responseType);
-
-    }
-
-    @Override
-    protected <T> ResponseEntity<T> get(String path, Object data, Class<T> responseType) {
-        return doRequest(HttpMethod.GET, path, data, responseType);
-    }
-
-    private <T> ResponseEntity<T> doRequest(HttpMethod method, String path, Object data, Class<T> responseType) {
-        log.trace("Building JSON from data");
-
-        log.debug("Performing {} request to {}",method ,url + path);
-        var entity = new HttpEntity<>(data);
-        return restTemplate.exchange(url + path, method, entity, responseType);
-    }
 }

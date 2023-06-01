@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,80 +18,44 @@ public class ControllerUnitTest extends RestTest<MvcResult>{
     private MockMvc mockMvc;
 
     protected void baseSetup(AbstractRestController controller, String baseUrl) {
-        super.baseSetup(controller, baseUrl, 8080);
+        super.baseSetup(baseUrl);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
-    protected MvcResult post(String path, Object data) throws Exception{
-        return post(path, data, null);
-    }
-
-    protected MvcResult patch(String path, Object data) throws Exception{
-        return patch(path, data, null);
-    }
-
-    protected MvcResult delete(String path, Object data) throws Exception{
-        return delete(path, data, null);
-    }
-
-    protected MvcResult get(String path, Object data) throws Exception{
-        return get(path, data, null);
+    @Override
+    protected MvcResult post(String path, Object data) throws Exception {
+        return perform(contentRequest(MockMvcRequestBuilders.post(url + path), data));
     }
 
     @Override
-    <T> MvcResult post(String path, Object data, Class<T> responseType) throws Exception{
-        log.trace("Building JSON from data");
-        String requestJson = ow.writeValueAsString(data);
+    protected MvcResult patch(String path, Object data) throws Exception {
+        return perform(contentRequest(MockMvcRequestBuilders.patch(url + path), data));
 
-        log.debug("Performing Post request to {}", url + path);
-        return mockMvc.perform(MockMvcRequestBuilders
-                        .post(url + path)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
     }
 
     @Override
-    <T> MvcResult patch(String path, Object data, Class<T> responseType) throws Exception{
-        log.trace("Building JSON from data");
-        String requestJson = ow.writeValueAsString(data);
+    protected MvcResult delete(String path, Object data) throws Exception {
+        return perform(contentRequest(MockMvcRequestBuilders.delete(url + path), data));
 
-        log.debug("Performing Patch request to {}", url + path);
-        return mockMvc.perform(MockMvcRequestBuilders
-                        .patch(url + path)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
     }
 
     @Override
-    <T> MvcResult delete(String path, Object data, Class<T> responseType) throws Exception{
-        log.trace("Building JSON from data");
-        String requestJson = ow.writeValueAsString(data);
+    protected MvcResult get(String path) throws Exception {
+        return perform(MockMvcRequestBuilders.get(url + path));
+    }
 
-        log.debug("Performing Delete request to {}", url + path);
-        return mockMvc.perform(MockMvcRequestBuilders
-                        .delete(url + path)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().is2xxSuccessful())
+    private MvcResult perform(MockHttpServletRequestBuilder builder) throws Exception {
+        log.trace("Performing MockMvc request");
+        return mockMvc.perform(builder)
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
     }
 
-    @Override
-    <T> MvcResult get(String path, Object data, Class<T> responseType) throws Exception{
+    private MockHttpServletRequestBuilder contentRequest(MockHttpServletRequestBuilder builder, Object data) {
         log.trace("Building JSON from data");
-        String requestJson = ow.writeValueAsString(data);
 
-        log.debug("Performing Get request to {}", url + path);
-        return mockMvc.perform(MockMvcRequestBuilders
-                        .get(url + path)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        return builder.contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(data));
     }
 
 

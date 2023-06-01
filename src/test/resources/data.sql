@@ -4439,7 +4439,7 @@ VALUES (''Huorn'', 5);
 
 INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (1, ''261173268365443074'', ''Luktronic'', false, ''cefabe13fda44d378c5d7292724f1514'', 10, 1);
 INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (2, ''244463773052567553'', ''mirak441'', false, ''4cd6b222b3894fd59d85ac90aa2c2c46'', 10, 2);
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (3, ''323522559096258582'', ''HabKeinTeammate'', false, ''84b6a14958ec4b2bb9b479328526651d'', 10, 3);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (3, ''323522559096258582'', ''HabKeinTeammate'', false, ''84b6a14958ec4b2bb9b479328526651d'', 10, NULL);
 
 
 --
@@ -4448,7 +4448,6 @@ INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, charac
 
 INSERT INTO public.rpchars (id, version, deleted, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id, past_char_id) VALUES (1, 0, false, ''All'', NULL, false, false, NULL, ''Belegorn'', true, NULL, ''King of Gondor'', NULL, ''263'', 1, NULL);
 INSERT INTO public.rpchars (id, version, deleted, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id, past_char_id) VALUES (2, 0, false, ''Full Gondolin'', NULL, false, false, NULL, ''Firyawe'', true, NULL, ''High-King of Gondor'', NULL, ''263'', 2, NULL);
-INSERT INTO public.rpchars (id, version, deleted, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id, past_char_id) VALUES (3, 0, false, ''manyullyn'', NULL, false, false, NULL, ''Whomegalul'', true, NULL, ''The one and only'', NULL, ''263'', 3, NULL);
 
 
 --
@@ -4463,6 +4462,13 @@ PERFORM pg_catalog.setval(''public.players_id_seq'', 3, true);
 --
 
 PERFORM pg_catalog.setval(''public.rpchars_id_seq'', 3, true);
+
+INSERT INTO public.claimbuilds(id, name, x, y, z, free_armies_remaining, free_trading_companies_remaining, number_of_houses, siege, traders, type, owned_by, region)
+VALUES (1, ''Claimbuild'', 100, 100, 100, 1, 1, ''10 small'', ''Trebuchet'', ''None'', ''TOWN'', 1, 263);
+
+INSERT INTO public.claimbuild_special_buildings(
+    claimbuild_id, special_buildings)
+VALUES (1, ''HOUSE_OF_HEALING'');
 
 alter table if exists armies add constraint fk_current_region foreign key (current_region) references regions;
 alter table if exists armies add constraint fk_faction foreign key (faction) references factions;

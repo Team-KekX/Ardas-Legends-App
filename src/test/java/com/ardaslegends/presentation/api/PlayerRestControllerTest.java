@@ -6,6 +6,7 @@ import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
 import com.ardaslegends.presentation.abstraction.AbstractIntegrationTest;
 import com.ardaslegends.presentation.abstraction.ControllerUnitTest;
+import com.ardaslegends.presentation.abstraction.PersistenceConfig;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerRpCharResponse;
 import com.ardaslegends.presentation.api.response.player.PlayerUpdateDiscordIdResponse;
@@ -17,9 +18,28 @@ import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
 import com.ardaslegends.util.TestDataFactory;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.event.ApplicationEventsTestExecutionListener;
+import org.springframework.test.context.event.EventPublishingTestExecutionListener;
+import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.web.ServletTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +47,7 @@ import static org.mockito.Mockito.*;
 
 
 @Slf4j
+@Transactional
 public class PlayerRestControllerTest extends AbstractIntegrationTest {
 
     @Autowired
@@ -34,6 +55,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
 
     Player player;
     Player player2;
+    Player player3;
     RPChar rpChar;
     Faction gondor;
     Faction mordor;
@@ -55,12 +77,11 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         gondor = TestDataFactory.factionGondor(player);
         mordor = TestDataFactory.factionMordor(null);
         player2 = TestDataFactory.playerMirak(gondor);
+        player3 = TestDataFactory.playerHabKeinTeammate(gondor);
 
         expectedPlayerResponse = new PlayerResponse(player);
+        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player, true);
         expectedRpCharResponse = new RpCharResponse(rpChar);
-        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player, false);
-        createPlayerDto = new CreatePlayerDto(player2.getIgn(), player2.getDiscordID(), gondor.getName());
-        createRPCharDto = new CreateRPCharDto(player.getDiscordID(), rpChar.getName(), rpChar.getTitle(), rpChar.getGear(), rpChar.getPvp());
         discordIdDto = new DiscordIdDto(player.getDiscordID());
 
     }
@@ -68,21 +89,28 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     // Create Method Tests
 
     @Test
-    @Transactional
     void ensureCreatePlayerWorksProperly() throws Exception {
+        val newPlayer = TestDataFactory.playerVernonRoche(gondor);
+        createPlayerDto = new CreatePlayerDto(newPlayer.getIgn(), newPlayer.getDiscordID(), newPlayer.getFaction().getName());
+        expectedPlayerResponse = new PlayerResponse(newPlayer);
         // Act
-        var result = post("", createPlayerDto, PlayerResponse.class);
+        var result = post("", createPlayerDto);
+
         // Assert
-        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
+        assertThat(deserialize(result.getResponse(), PlayerResponse.class)).isEqualTo(expectedPlayerResponse);
     }
 
     // ---------------------------------------------------    Create RPChar Test
 
     @Test
     void ensureCreateRpCharWorksProperly() throws Exception {
-        var result = post(PlayerRestController.PATH_RPCHAR, createRPCharDto, RpCharResponse.class);
+        val newRpChar = new RPChar(player3, "Canathir", "Master of Coin", "Gondor gear", true, "someLink");
+        expectedRpCharResponse = new RpCharResponse(newRpChar);
+        createRPCharDto = new CreateRPCharDto(newRpChar.getOwner().getDiscordID(), newRpChar.getName(), newRpChar.getTitle(), newRpChar.getGear(), newRpChar.getPvp());
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        var result = post(PlayerRestController.PATH_RPCHAR, createRPCharDto);
+
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
 
     // Read Methods Test
@@ -91,10 +119,11 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     @Test
     void ensureGetByIgnWorksProperly() throws Exception{
         // Act
-        var result = get(PlayerRestController.PATH_GET_BY_IGN.replace("{ign}", player.getIgn()), null, PlayerRpCharResponse.class);
+        var result = get(PlayerRestController.PATH_GET_BY_IGN.replace("{ign}", player.getIgn()));
 
         // Assert
-        assertThat(result.getBody()).isEqualTo(expectedPlayerRpCharResponse);
+        assertThat(deserialize(result.getResponse(), PlayerRpCharResponse.class)).isEqualTo(expectedPlayerRpCharResponse);
+
     }
 
     // by DiscordId
@@ -102,10 +131,10 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     @Test
     void ensureGetByDiscordIdWorksProperly() throws Exception{
         // Act
-        var result = get(PlayerRestController.PATH_GET_BY_DISCORD_ID.replace("{discId}", player.getDiscordID()), null, PlayerRpCharResponse.class);
+        var result = get(PlayerRestController.PATH_GET_BY_DISCORD_ID.replace("{discId}", player.getDiscordID()));
 
         // Assert
-        assertThat(result.getBody()).isEqualTo(expectedPlayerRpCharResponse);
+        assertThat(deserialize(result.getResponse(), PlayerRpCharResponse.class)).isEqualTo(expectedPlayerRpCharResponse);
     }
 
     @Test
@@ -118,9 +147,9 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedPlayerResponse = new PlayerResponse(player);
 
         //Act
-        var result = patch(PlayerRestController.PATH_FACTION, dto, PlayerResponse.class);
+        var result = patch(PlayerRestController.PATH_FACTION, dto);
 
-        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
+        assertThat(deserialize(result.getResponse(), PlayerResponse.class)).isEqualTo(expectedPlayerResponse);
         log.info("Test passed: updatePlayerFaction works properly when using correct values!");
     }
 
@@ -131,16 +160,17 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if update ign works properly");
 
         // Assign
-        UpdatePlayerIgnDto dto = new UpdatePlayerIgnDto("New Ign", player.getDiscordID());
+        UpdatePlayerIgnDto dto = new UpdatePlayerIgnDto("HanslaRoi", player.getDiscordID());
 
         player.setIgn(dto.ign());
         expectedPlayerResponse = new PlayerResponse(player);
 
         // Act
-        var result = patch(PlayerRestController.PATH_IGN, dto, PlayerResponse.class);
+        var result = patch(PlayerRestController.PATH_IGN, dto);
 
-        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
+        assertThat(deserialize(result.getResponse(), PlayerResponse.class)).isEqualTo(expectedPlayerResponse);
         log.info("Test passed: updateIgn works properly when using correct values!");
+
     }
 
     // Update DiscordId
@@ -154,9 +184,9 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         PlayerUpdateDiscordIdResponse expectedResponse = new PlayerUpdateDiscordIdResponse(player, dto.oldDiscordId());
 
         // Act
-        var result = patch(PlayerRestController.PATH_DISCORDID, dto, PlayerUpdateDiscordIdResponse.class);
+        var result = patch(PlayerRestController.PATH_DISCORDID, dto);
 
-        assertThat(result.getBody()).isEqualTo(expectedResponse);
+        assertThat(deserialize(result.getResponse(), PlayerUpdateDiscordIdResponse.class)).isEqualTo(expectedResponse);
         log.info("Test passed: updateDiscordId works properly when using correct values!");
     }
 
@@ -173,9 +203,9 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
         // Act
-        var result = patch(PlayerRestController.PATH_RPCHAR_NAME, dto, RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_RPCHAR_NAME, dto);
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
 
     // Update title
@@ -190,9 +220,9 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
         // Act
-        var result = patch(PlayerRestController.PATH_RPCHAR_TITLE, dto, RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_RPCHAR_TITLE, dto);
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
 
     // Update Gear
@@ -207,8 +237,8 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
         // Act
-        var result = patch(PlayerRestController.PATH_RPCHAR_GEAR, dto, RpCharResponse.class);
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        var result = patch(PlayerRestController.PATH_RPCHAR_GEAR, dto);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
 
     // Update PvP
@@ -224,8 +254,8 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
         // Act
-        var result = patch(PlayerRestController.PATH_RPCHAR_PVP, dto, RpCharResponse.class);
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        var result = patch(PlayerRestController.PATH_RPCHAR_PVP, dto);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
     // ------------------------------------------- Delete Methods
 
@@ -236,8 +266,8 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if deletePlayer works properly");
 
         // Act
-        var result = delete("", discordIdDto, PlayerResponse.class);
-        assertThat(result.getBody()).isEqualTo(expectedPlayerResponse);
+        var result = delete("", discordIdDto);
+        assertThat(deserialize(result.getResponse(), PlayerResponse.class)).isEqualTo(expectedPlayerResponse);
     }
 
     // Delete RpChar
@@ -247,8 +277,8 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         log.debug("Testing if RpChar works properly");
 
         // Act
-        var result = delete(PlayerRestController.PATH_RPCHAR, discordIdDto, RpCharResponse.class);
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        var result = delete(PlayerRestController.PATH_RPCHAR, discordIdDto);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
     }
 
 
@@ -261,9 +291,9 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         expectedRpCharResponse = new RpCharResponse(rpChar);
 
         // Act
-        var result = patch(PlayerRestController.PATH_INJURE, discordIdDto, RpCharResponse.class);
+        var result = patch(PlayerRestController.PATH_INJURE, discordIdDto);
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
         log.info("Test passed: injure RPChar builds the correct response");
     }
 
@@ -271,9 +301,14 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     void ensureStartHealWorksProperly() throws Exception {
         log.debug("Testing if startHeal works properly with correct values");
         // Act
-        var result = patch(PlayerRestController.PATH_HEAL_START, discordIdDto, RpCharResponse.class);
+        //First injure character
+        patch(PlayerRestController.PATH_INJURE, discordIdDto);
+        //Then heal
+        var result = patch(PlayerRestController.PATH_HEAL_START, discordIdDto);
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class).isHealing()).isEqualTo(true);
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class).startedHeal()).isNotNull();
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class).healEnds()).isNotNull();
         log.info("Test passed: startHeal builds the correct response");
     }
 
@@ -281,10 +316,18 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
     void ensureStopHealWorksProperly() throws Exception {
         log.debug("Testing if stopHeal works properly with correct values");
 
-        // Act
-        var result = patch(PlayerRestController.PATH_HEAL_STOP, discordIdDto, RpCharResponse.class);
+        rpChar.setInjured(true);
+        expectedRpCharResponse = new RpCharResponse(rpChar);
 
-        assertThat(result.getBody()).isEqualTo(expectedRpCharResponse);
+        // Act
+        //First injure character
+        patch(PlayerRestController.PATH_INJURE, discordIdDto);
+        //Then heal
+        patch(PlayerRestController.PATH_HEAL_START, discordIdDto);
+        //Then stop heal
+        var result = patch(PlayerRestController.PATH_HEAL_STOP, discordIdDto);
+
+        assertThat(deserialize(result.getResponse(), RpCharResponse.class)).isEqualTo(expectedRpCharResponse);
         log.info("Test passed: stopHeal builds the correct response");
     }
 }

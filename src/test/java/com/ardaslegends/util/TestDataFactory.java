@@ -46,12 +46,27 @@ public class TestDataFactory {
 
     public static Player playerMirak(Faction faction) {
         return Player.builder()
-                .id(1L)
+                .id(2L)
                 .ign("mirak441")
                 .discordID("244463773052567553")
                 .uuid("4cd6b222b3894fd59d85ac90aa2c2c46")
                 .faction(faction)
                 .build();
+    }
+
+    public static Player playerHabKeinTeammate(Faction faction) {
+        return Player.builder()
+                .id(3L)
+                .ign("HabKeinTeammate")
+                .discordID("323522559096258582")
+                .uuid("84b6a14958ec4b2bb9b479328526651d")
+                .faction(faction)
+                .build();
+
+    }
+
+    public static Player playerVernonRoche(Faction faction) {
+        return new Player("VernonRoche", "866830b12e944a97918439282412c487", "253505646190657537", faction, null);
     }
 
     public static RPChar rpcharBelegorn(Player player) {
