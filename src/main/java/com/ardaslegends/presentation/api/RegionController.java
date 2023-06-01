@@ -45,7 +45,7 @@ public class RegionController extends AbstractRestController {
 
         val regions = wrappedServiceExecution(regionService::getAll);
         val regionsResponse = regions.stream()
-                .map(RegionResponse::new)
+                .map(RegionResponseDetailed::new)
                 .toArray(RegionResponseDetailed[]::new);
 
         return ResponseEntity.ok(regionsResponse);
