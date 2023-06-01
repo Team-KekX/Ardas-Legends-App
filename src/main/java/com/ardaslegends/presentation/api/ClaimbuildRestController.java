@@ -2,6 +2,8 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ClaimBuild;
+import com.ardaslegends.domain.ClaimBuildType;
+import com.ardaslegends.domain.SpecialBuilding;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.claimbuild.PaginatedClaimbuildResponse;
 import com.ardaslegends.service.ClaimBuildService;
@@ -11,12 +13,14 @@ import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -26,12 +30,24 @@ import java.util.stream.Collectors;
 @RequestMapping(ClaimbuildRestController.BASE_URL)
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
+    public static final String GET_TYPES = "/types";
+    public static final String GET_SPECIAL_BUILDINGS = "/specialbuildings";
     public static final String PATH_CREATE_CLAIMBUILD = "/create";
     public static final String PATH_UPDATE_CLAIMBUILD = "/update";
     private static final String UPDATE_CLAIMBUILD_FATION = "/update/claimbuild-faction";
     private static final String DELETE_CLAIMBUILD = "/delete";
 
     private final ClaimBuildService claimBuildService;
+
+    public ResponseEntity<String[]> getTypes() {
+        log.debug("Incoming getClaimbuildTypes Request");
+
+        val claimbuildTypesStringArray = Arrays.stream(ClaimBuildType.values())
+                .map(ClaimBuildType::getName)
+                .toArray(String[]::new);
+
+        return ResponseEntity.ok(claimbuildTypesStringArray);
+    }
 
     @Operation(summary = "Get Claimbuilds Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
     @GetMapping
@@ -42,6 +58,17 @@ public class ClaimbuildRestController extends AbstractRestController {
         var pageResponse = pageDomain.map(PaginatedClaimbuildResponse::new);
 
         return ResponseEntity.ok(pageResponse);
+    }
+
+    @GetMapping(GET_SPECIAL_BUILDINGS)
+    public HttpEntity<String[]> getSpecialBuildings() {
+        log.debug("Incoming getAllSpecialBuilds request");
+
+        val specialBuildingsStringArray = Arrays.stream(SpecialBuilding.values())
+                .map(SpecialBuilding::getName)
+                .toArray(String[]::new);
+
+        return ResponseEntity.ok(specialBuildingsStringArray);
     }
 
     @PostMapping(PATH_CREATE_CLAIMBUILD)
