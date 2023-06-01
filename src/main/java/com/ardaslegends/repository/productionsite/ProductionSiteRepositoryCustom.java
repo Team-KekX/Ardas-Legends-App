@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ProductionSiteRepositoryCustom {
+
+    Set<ProductionSite> queryAll();
     ProductionSite queryByTypeAndResource(ProductionSiteType type, String resource);
     Optional<ProductionSite> queryByTypeAndResourceOptional(ProductionSiteType type, String resource);
 }
