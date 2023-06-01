@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping(RegionRestController.BASE_URL)
-public class RegionRestController extends AbstractRestController {
+@RequestMapping(RegionController.BASE_URL)
+public class RegionController extends AbstractRestController {
     public static final String BASE_URL = "/api/region";
     public static final String RESET_OWNERSHIP = "/reset-ownership";
 

@@ -17,12 +17,12 @@ public class RegionRestControllerTest {
     MockMvc mockMvc;
 
     private RegionService mockRegionService;
-    private RegionRestController regionRestController;
+    private RegionController regionRestController;
 
     @BeforeEach
     void setup() {
         mockRegionService = mock(RegionService.class);
-        regionRestController = new RegionRestController(mockRegionService);
+        regionRestController = new RegionController(mockRegionService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(regionRestController).build();
     }
