@@ -8,7 +8,7 @@ import com.ardaslegends.domain.RegionType;
 public record RegionResponseDetailed(
         String id,
         String name,
-        RegionType regionType,
+        String regionType,
         String[] claimedBy,
         String[] claimbuilds
 ) {
@@ -16,7 +16,7 @@ public record RegionResponseDetailed(
         this(
                 region.getId(),
                 region.getName(),
-                region.getRegionType(),
+                region.getRegionType().getName(),
                 region.getClaimedBy().stream().map(Faction::getName).toArray(String[]::new),
                 region.getClaimBuilds().stream().map(ClaimBuild::getName).toArray(String[]::new)
         );
