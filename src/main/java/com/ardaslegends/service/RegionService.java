@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 
@@ -35,5 +36,10 @@ public class RegionService extends AbstractService<Region, RegionRepository> {
 
         log.info("Finished setting all to false!");
         return regions;
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Region> getAll() {
+        return regionRepository.queryAll();
     }
 }
