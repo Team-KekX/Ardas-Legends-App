@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.api;
 
+import com.ardaslegends.domain.RegionType;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.region.RegionResponse;
 import com.ardaslegends.presentation.api.response.region.RegionResponseDetailed;
@@ -8,11 +9,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 
@@ -24,6 +28,7 @@ public class RegionController extends AbstractRestController {
     private final String RESET_OWNERSHIP = "/reset-ownership";
     private final String GET_ALL = "/all";
     private final String GET_ALL_DETAILED = "/all/detailed";
+    private final String GET_REGION_TYPES = "/regiontypes";
 
     private final RegionService regionService;
 
@@ -49,6 +54,17 @@ public class RegionController extends AbstractRestController {
                 .toArray(RegionResponseDetailed[]::new);
 
         return ResponseEntity.ok(regionsResponse);
+    }
+
+    @GetMapping(GET_REGION_TYPES)
+    public HttpEntity<String[]> getRegionTypes(){
+        log.debug("Incoming getRegionTypes Request");
+
+        val regionTypesStringArray = Arrays.stream(RegionType.values())
+                .map(RegionType::getName)
+                .toArray(String[]::new);
+
+        return ResponseEntity.ok(regionTypesStringArray);
     }
 
     @PatchMapping(RESET_OWNERSHIP)
