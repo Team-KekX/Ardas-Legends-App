@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@DataJpaTest(properties = {"spring.sql.init.mode=never"})
 public class RegionRepositoryTest {
 
     @Autowired

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,8 +40,7 @@ public class RegionTest {
         ClaimBuild claimBuild7 = ClaimBuild.builder().name("kek7").ownedBy(mordor).build();
         ClaimBuild claimBuild8 = ClaimBuild.builder().name("kek8").ownedBy(mordor).build();
 
-        cbSet = new HashSet<>();
-        cbSet.addAll(Set.of(claimBuild1, claimBuild2, claimBuild3, claimBuild4, claimBuild5, claimBuild6, claimBuild7, claimBuild8));
+        cbSet = new HashSet<>(List.of(claimBuild1, claimBuild2, claimBuild3, claimBuild4, claimBuild5, claimBuild6, claimBuild7, claimBuild8));
 
         region = Region.builder().claimBuilds(cbSet).claimedBy(factionSet).build();
         factionWithNoCbInClaimedBy.getRegions().add(region);
