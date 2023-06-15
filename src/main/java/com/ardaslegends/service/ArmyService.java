@@ -8,11 +8,13 @@ import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.service.dto.army.*;
 import com.ardaslegends.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -284,7 +286,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         Army army = getArmyByName(dto.armyName());
 
-        targetPlayer.hasRpCharThrowExceptionOnFalse();
+        val targetCharacter = targetPlayer.getActiveCharacter()
+                .orElseThrow(PlayerServiceException::playerHasNoRpchar);
 
         // TODO: Check for Wanderer or Allied Faction
         log.debug("Checking if army and player are in the same faction");
@@ -308,9 +311,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if army and player are in the same region");
-        if (!army.getCurrentRegion().equals(targetPlayer.getRpChars().getCurrentRegion())) {
+        if (!army.getCurrentRegion().equals(targetCharacter.getCurrentRegion())) {
             log.warn("Army and player are not in the same region!");
-            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetPlayer.getRpChars().getName());
+            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetCharacter.getName());
         }
 
         log.debug("Checking if army is already bound to player");
@@ -320,15 +323,15 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rpchar is injured");
-        if(targetPlayer.getRpChars().getInjured()) {
+        if(targetCharacter.getInjured()) {
             log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChars());
-            throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChars().getName(), army.getName());
+            throw ArmyServiceException.cannotBindCharInjured(targetCharacter.getName(), army.getName());
         }
 
         log.debug("Checking if rpchar is healing");
-        if(targetPlayer.getRpChars().getIsHealing()) {
+        if(targetCharacter.getIsHealing()) {
             log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChars());
-            throw ArmyServiceException.cannotBindCharHealing(targetPlayer.getRpChars().getName(), army.getName());
+            throw ArmyServiceException.cannotBindCharHealing(targetCharacter.getName(), army.getName());
         }
 
         log.debug("Checking if army is in an active movement");
@@ -340,16 +343,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rp char is in an active movement");
-        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetPlayer.getRpChars());
+        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetCharacter);
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
-            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),targetPlayer.getRpChars().getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(), targetCharacter.getName(), destinationRegion);
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
-        army.setBoundTo(targetPlayer.getRpChars());
-        targetPlayer.getRpChars().setBoundTo(army);
+        army.setBoundTo(targetCharacter);
+        targetCharacter.setBoundTo(army);
 
         log.debug("Persisting newly changed army...");
         army = secureSave(army, armyRepository);

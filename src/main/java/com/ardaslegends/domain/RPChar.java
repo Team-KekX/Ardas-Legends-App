@@ -20,6 +20,7 @@ import java.util.*;
 public class RPChar extends AbstractEntity {
 
     @ManyToOne
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_owner"))
     private Player owner;
 
     @Column(unique = true)
@@ -92,6 +93,20 @@ public class RPChar extends AbstractEntity {
         this.linkToLore = linkToLore;
     }
 
+    public void injure() {
+        setInjured(true);
+        Optional.ofNullable(boundTo).ifPresent(army -> {
+            army.setBoundTo(null);
+            setBoundTo(null);
+        });
+    }
+
+    public void startHealing() {
+        LocalDateTime now = LocalDateTime.now();
+        setIsHealing(true);
+        setStartedHeal(now);
+        setHealEnds(now.plusDays(2));
+    }
     public Set<Movement> getMovements() {
         return Collections.unmodifiableSet(movements);
     }

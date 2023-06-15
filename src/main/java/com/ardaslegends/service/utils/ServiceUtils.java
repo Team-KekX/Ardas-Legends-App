@@ -4,6 +4,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.PathElement;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.Region;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +72,7 @@ public class ServiceUtils {
     public static boolean boundLordLeaderPermission(Player player, Army army) {
         log.debug("Checking if bound - lord - leader permission is fulfilled for Army [{}, Faction: {}], Player [{}, Faction:{}]", army.getName(), army.getFaction(), player.getIgn(), player.getFaction());
 
-        if(player.getRpChars().equals(army.getBoundTo())) {
+        if(player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar).equals(army.getBoundTo())) {
             log.debug("Player [{}] is bound to army, allowed action", player.getIgn());
             return true;
         }

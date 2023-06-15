@@ -15,10 +15,5 @@ import java.util.concurrent.CompletableFuture;
 public interface PlayerRepository extends JpaRepository<Player, String>, PlayerRepositoryCustom {
 
     Optional<Player> findPlayerByIgn(String ign);
-
     Optional<Player> findByDiscordID(String discordId);
-    List<Player> findPlayerByRpCharIsHealingTrue();
-
-    @Query("FROM Player WHERE rpChar.name = ?1")
-    Optional<Player> findPlayerByRpChar(String name);
 }

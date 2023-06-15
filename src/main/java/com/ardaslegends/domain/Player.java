@@ -2,7 +2,6 @@ package com.ardaslegends.domain;
 
 import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +44,16 @@ public final class Player extends AbstractDomainObject {
     @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_player_faction"))
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
+<<<<<<< HEAD
     
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "character_id", foreignKey = @ForeignKey(name = "fk_player_character_id"))
     private Set<RPChar> rpChars; //the player's rp character
+=======
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+    private Set<RPChar> rpChars = new HashSet<>(); //the player's rp character
+>>>>>>> 8396cd7 (Added getActiveCharacter(), refactored bind())
 
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<ClaimBuild> builtClaimbuilds;
@@ -67,14 +72,22 @@ public final class Player extends AbstractDomainObject {
         this.isStaff = false;
     }
 
-    @JsonIgnore
-    public void hasRpCharThrowExceptionOnFalse() {
-        log.debug("Checking if player [{}] has an rpchar and throwing exception on false", this.getIgn());
 
-        if(rpChars == null) {
-            log.warn("Player [{}] has no rpchar", this.getIgn());
-            throw PlayerServiceException.playerHasNoRpchar();
-        }
+    public Player(String ign, String uuid, String discordID, Faction faction) {
+
+        this.ign = ign;
+        this.uuid = uuid;
+        this.discordID = discordID;
+        this.faction = faction;
+        this.rpChars = new HashSet<>(1);
+        this.builtClaimbuilds = new ArrayList<>(1);
+        this.isStaff = false;
+    }
+
+    public Optional<RPChar> getActiveCharacter() {
+        return rpChars.stream()
+                .filter(RPChar::getActive)
+                .findFirst();
     }
     public Set<RPChar> getRpChars() {
         return Collections.unmodifiableSet(rpChars);
@@ -82,16 +95,40 @@ public final class Player extends AbstractDomainObject {
 
     public void addActiveRpChar(RPChar rpChar) {
         Objects.requireNonNull(rpChar);
+        if(this.rpChars == null) this.rpChars = new HashSet<>();
 
         this.rpChars.stream()
                 .filter(RPChar::getActive)
-                .findFirst()
-                .ifPresent(rpChar1 -> rpChar1.setActive(false));
+                .forEach(this::clearRelations);
 
         if (!this.rpChars.add(rpChar)) {
             throw PlayerServiceException.rpcharAlreadyExists(rpChar.getName());
         }
         rpChar.setActive(true);
+    }
+
+    public RPChar deleteCharacter() {
+        val character = getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
+        clearRelations(character);
+        return character;
+    }
+
+    private void clearRelations(RPChar rpchar) {
+        rpchar.setActive(false);
+
+        Optional.ofNullable(rpchar.getBoundTo()).ifPresent(army -> {
+            army.setBoundTo(null);
+            rpchar.setBoundTo(null);
+
+            army.getMovements().stream()
+                    .filter(Movement::getIsCurrentlyActive)
+                    .findFirst().ifPresent(movement -> {
+                        // TODO: Decide on a way to handle active movements
+
+                    });
+        });
+
+        // TODO: Handle active battles
     }
 
     public List<ClaimBuild> getBuiltClaimbuilds() {

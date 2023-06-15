@@ -92,13 +92,13 @@ public class AbstractServiceTest {
         log.trace("Initializing mock methods");
         when(mockRepository.findByDiscordID("1")).thenReturn(Optional.of(returnPlayer));
         when(mockRepository.findPlayerByIgn("2")).thenReturn(Optional.of(returnPlayer));
-        when(mockRepository.findPlayerByRpChar("3")).thenReturn(Optional.of(returnPlayer));
+        when(mockRepository.queryPlayerByRpChar("3")).thenReturn(Optional.of(returnPlayer));
 
         // Act
         log.trace("Executing methods");
         var result1 = service.secureFind("1", mockRepository::findByDiscordID);
         var result2 = service.secureFind("2", mockRepository::findPlayerByIgn);
-        var result3 = service.secureFind("3", mockRepository::findPlayerByRpChar);
+        var result3 = service.secureFind("3", mockRepository::queryPlayerByRpChar);
 
         // Assert
         log.trace("Asserting that all methods returned correct objects");

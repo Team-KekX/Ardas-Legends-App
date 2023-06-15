@@ -11,6 +11,7 @@ public class PlayerServiceException extends ServiceException {
     public static final String PLAYER_HAS_NO_RPCHAR= "The inputted player does not have a roleplay character.";
     public static final String NO_PLAYER_FOUND = "No Player found for Discord User %s - please register first if you haven't already!";
     public static final String RPCHAR_ALREADY_EXISTS = "This rpchar (%s) is already registered";
+    private static final String UNEXPECTED_ERROR_WHIlE_SAVING_NEW_CHARACTER = "Could not update player %s with new character because of an unexpected issue during save";
 
 
     //Heal start
@@ -29,6 +30,7 @@ public class PlayerServiceException extends ServiceException {
     }
     public static PlayerServiceException noPlayerFound(String discordId) {return new PlayerServiceException(NO_PLAYER_FOUND.formatted(discordId));}
 
+    public static PlayerServiceException unexpectedErrorSavingCharacter(String ign) {return new PlayerServiceException(UNEXPECTED_ERROR_WHIlE_SAVING_NEW_CHARACTER.formatted(ign));}
     public static PlayerServiceException playerHasNoRpchar() {return new PlayerServiceException(PLAYER_HAS_NO_RPCHAR);}
     //Heal start
     public static PlayerServiceException cannotHealNotInjured(String charName) { return new PlayerServiceException(CANNOT_HEAL_CHAR_BECAUSE_NOT_INJURED.formatted(charName)); }

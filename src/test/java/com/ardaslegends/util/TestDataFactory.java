@@ -18,7 +18,7 @@ public class TestDataFactory {
                 .uuid("cefabe13fda44d378c5d7292724f1514")
                 .build();
         luktronic.setFaction(factionGondor(luktronic));
-        luktronic.setRpChars(rpcharBelegorn(luktronic));
+        luktronic.addActiveRpChar(rpcharBelegorn(luktronic));
         return luktronic;
     }
 
@@ -28,9 +28,9 @@ public class TestDataFactory {
                 .ign("Luktronic")
                 .discordID("261173268365443074")
                 .uuid("cefabe13fda44d378c5d7292724f1514")
-                .rpChars(rpChar)
                 .build();
         luktronic.setFaction(factionGondor(luktronic));
+        luktronic.addActiveRpChar(rpChar);
         return luktronic;
     }
 
@@ -66,7 +66,9 @@ public class TestDataFactory {
     }
 
     public static Player playerVernonRoche(Faction faction) {
-        return new Player("VernonRoche", "866830b12e944a97918439282412c487", "253505646190657537", faction, null);
+        val player = new Player("VernonRoche", "866830b12e944a97918439282412c487", "253505646190657537", faction, RPChar.builder().build());
+        player.setRpChars(Set.of());
+        return player;
     }
 
     public static RPChar rpcharBelegorn(Player player) {

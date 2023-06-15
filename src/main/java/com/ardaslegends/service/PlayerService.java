@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,7 +90,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Creating player and Saving into database
 
         log.debug("Trying to create and save entity");
-        Player player = new Player(dto.ign(), uuidConverterDto.id(), dto.discordID(), queriedFaction, null);
+        Player player = new Player(dto.ign(), uuidConverterDto.id(), dto.discordID(), queriedFaction);
 
         log.debug("Persisting player entity with ign {}, discordId {} into the database", dto.ign(), dto.discordID());
         player = secureSave(player, playerRepository);
@@ -122,7 +123,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.debug("Fetching required Data..");
 
-        Player actualPlayer = getPlayerByDiscordId(dto.discordId());             // Throws IllegalArgument, NullPointer or ServiceException if it does not succeed
+        val actualPlayer = getPlayerByDiscordId(dto.discordId());             // Throws IllegalArgument, NullPointer or ServiceException if it does not succeed
         log.debug("Fetched Player by DiscordId [{}]", actualPlayer);
 
         log.debug("Checking if the player has a faction");
@@ -132,12 +133,12 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         }
 
         // Checking if the player already has an RPChar
-        if (actualPlayer.getRpChars() != null) {
-            log.warn("Player [{}] already has an RPChar", actualPlayer);
+        actualPlayer.getActiveCharacter().ifPresent(rpChar -> {
+            log.warn("Player [{}] already has an RPChar [{}]", actualPlayer, rpChar.getName());
             throw new IllegalArgumentException("Player [%s] already has an RPChar [%s], delete the old one if you want a new Character!".formatted(actualPlayer, actualPlayer.getRpChars()));
-        }
+        });
 
-        Optional<Player> fetchedPlayer = secureFind(dto.rpCharName(), playerRepository::findPlayerByRpChar);
+        Optional<Player> fetchedPlayer = secureFind(dto.rpCharName(), playerRepository::queryPlayerByRpChar);
 
         if (fetchedPlayer.isPresent()) {
             log.warn("Player found with same RPChar Name [{}], [{}]", actualPlayer, dto.rpCharName());
@@ -149,14 +150,14 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         log.debug("Creating RpChar instance");
         RPChar createdChar = new RPChar(actualPlayer, dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), null);
-
         log.debug("Trying to persist RPChar [{}]", createdChar);
-        actualPlayer.setRpChars(createdChar);
+        actualPlayer.addActiveRpChar(createdChar);
 
-        actualPlayer = secureSave(actualPlayer, playerRepository);
+        val persistedPlayer = secureSave(actualPlayer, playerRepository);
 
         log.info("Created RPChar [{}]", createdChar);
-        return actualPlayer.getRpChars();
+        return persistedPlayer.getActiveCharacter()
+                .orElseThrow(() -> PlayerServiceException.unexpectedErrorSavingCharacter(persistedPlayer.getIgn()));
     }
 
     public Player getPlayerByIgn(String ign) {
@@ -196,11 +197,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
          */
         log.trace("Checking if input data is present...");
         ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
 
@@ -254,11 +255,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Checking if data is valid
 
         ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
 
@@ -297,11 +298,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Checking if data is valid
 
         ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         // Get the player entity which is to be updated
@@ -339,30 +340,30 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
-        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+        val playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
-        // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChars() == null) {
+        // Check if player actually has an rpchar and store that character
+        val rpChar = playerToUpdate.getActiveCharacter().orElseThrow(() -> {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its name!");
-        }
+            return new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its name!");
+        });
+
         // Check if a player has already taken the name
         log.debug("Fetching player with new RpChar name to see if that name is already taken");
-        Optional<Player> fetchedPlayer = secureFind(dto.charName(), playerRepository::findPlayerByRpChar);
-
-        if(fetchedPlayer.isPresent()) {
-            log.warn("Player found that has an Rpchar with the same name [{}] [{}]", dto.charName(), fetchedPlayer.get());
-            throw new IllegalArgumentException("RpChar Name is already taken!".formatted(fetchedPlayer.get()));
-        }
+        secureFind(dto.charName(), playerRepository::queryPlayerByRpChar).ifPresent(player -> {
+            log.warn("Player found that has an Rpchar with the same name [{}] [{}]", dto.charName(), player);
+            throw new IllegalArgumentException("RpChar Name by player [%s] is already taken!".formatted(player));
+        });
 
         log.debug("Update RpChar Name");
-        playerToUpdate.getRpChars().setName(dto.charName());
+        rpChar.setName(dto.charName());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
-        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+        val updatedPlayer = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character Name of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getName());
-        return playerToUpdate.getRpChars();
+        val updatedCharacter = updatedPlayer.getActiveCharacter().orElseThrow(() -> PlayerServiceException.unexpectedErrorSavingCharacter(updatedPlayer.getIgn()));
+        log.info("Successfully updated Rp Character Name of player [{}] to [{}]!", updatedPlayer, updatedCharacter.getName());
+        return updatedCharacter;
     }
 
     @Transactional(readOnly = false)
@@ -381,22 +382,23 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
-        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+        val playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChars() == null) {
+        val character = playerToUpdate.getActiveCharacter().orElseThrow(() -> {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its title!");
-        }
+            return new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its title!");
+        });
 
         log.debug("Update RpChar Title");
-        playerToUpdate.getRpChars().setTitle(dto.title());
+        character.setTitle(dto.title());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
-        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+        val updatedPlayer = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character title of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getTitle());
-        return playerToUpdate.getRpChars();
+        val updatedChar = updatedPlayer.getActiveCharacter().orElseThrow(() -> PlayerServiceException.unexpectedErrorSavingCharacter(updatedPlayer.getIgn()));
+        log.info("Successfully updated Rp Character title of player [{}] to [{}]!", updatedPlayer, updatedChar.getTitle());
+        return updatedChar;
     }
 
     @Transactional(readOnly = false)
@@ -410,23 +412,24 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
-        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+        val playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChars() == null) {
+        val character = playerToUpdate.getActiveCharacter().orElseThrow(() -> {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its gear!");
-        }
+            return new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its gear!");
+        });
 
         //Update the gear
         log.debug("Update RpChar Gear");
-        playerToUpdate.getRpChars().setGear(dto.gear());
+        character.setGear(dto.gear());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
-        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+        val updatedPLayer = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getGear());
-        return playerToUpdate.getRpChars();
+        val updatedCharacter = updatedPLayer.getActiveCharacter().orElseThrow(() -> PlayerServiceException.unexpectedErrorSavingCharacter(updatedPLayer.getIgn()));
+        log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", updatedPLayer, updatedCharacter.getGear());
+        return updatedCharacter;
     }
 
 
@@ -441,23 +444,24 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         // Get the player entity which is to be updated
         log.debug("Fetching player");
-        Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
+        val playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChars() == null) {
+        val character = playerToUpdate.getActiveCharacter().orElseThrow(() -> {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
-            throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its pvp status!");
-        }
+            return new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its pvp status!");
+        });
 
         //Update the pvp status
         log.debug("Update RpChar PvP Status");
-        playerToUpdate.getRpChars().setPvp(dto.pvp());
+        character.setPvp(dto.pvp());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
-        playerToUpdate = secureSave(playerToUpdate, playerRepository);
+        val updatedPlayer = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character PvP Status of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getPvp());
-        return playerToUpdate.getRpChars();
+        val updatedCharacter = updatedPlayer.getActiveCharacter().orElseThrow(() -> PlayerServiceException.unexpectedErrorSavingCharacter(updatedPlayer.getIgn()));
+        log.info("Successfully updated Rp Character PvP Status of player [{}] to [{}]!", updatedPlayer, updatedCharacter.getPvp());
+        return updatedCharacter;
     }
 
     @Transactional(readOnly = false)
@@ -467,11 +471,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Validating Data
 
         ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         // Get player who issued the command
@@ -492,29 +496,25 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         // Validating Data
 
         ServiceUtils.checkNulls(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         ServiceUtils.checkBlanks(dto, Arrays.stream(dto.getClass().getDeclaredFields())
-                .map(field -> field.getName())
+                .map(Field::getName)
                 .collect(Collectors.toList()));
 
         // Get player who issued the command
         Player player = getPlayerByDiscordId(dto.discordId());
         log.debug("Found player which issued the command [{}]", player);
 
-        if(player.getRpChars() == null) {
-            log.warn("The player has no RpChar to delete!");
-            throw new IllegalArgumentException("No roleplay character found!");
-        }
-        log.debug("Deleting RpChar [{}] from player [{}]", player.getRpChars(), player);
-        RPChar deletedRpChar = player.getRpChars();
-        player.setRpChars(null);
+        val deletedCharacter = player.deleteCharacter();
+        log.debug("Deleting RpChar [{}] from player [{}]", deletedCharacter, player);
+
         log.debug("Trying to save player with deleted RpChar [{}]", player);
         player = secureSave(player, playerRepository);
 
-        log.info("Succesfully deleted rpchar [{}]", deletedRpChar);
-        return deletedRpChar;
+        log.info("Succesfully deleted rpchar [{}]", deletedCharacter);
+        return deletedCharacter;
     }
 
     @Transactional(readOnly = false)
@@ -522,26 +522,25 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Trying to injure character of player [{}]", dto.discordId());
 
         log.trace("Fetching player instance of player [{}]", dto.discordId());
-        Player player = getPlayerByDiscordId(dto.discordId());
+        val player = getPlayerByDiscordId(dto.discordId());
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player [{}] has an rpchar", player);
-        if(player.getRpChars() == null) {
+        val rpChar = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player [{}] does not have a roleplay character!", player);
-            throw PlayerServiceException.noRpChar();
-        }
-        RPChar rpChar = player.getRpChars();
+            return PlayerServiceException.noRpChar();
+        });
+
         log.debug("Player [{}] has RpChar [{}]", player, rpChar);
 
         log.debug("Setting injured = true for character [{}]", rpChar);
-        rpChar.setInjured(true);
         log.debug("Unbinding player from army [{}]", rpChar.getBoundTo());
-        rpChar.setBoundTo(null);
+        rpChar.injure();
 
         log.debug("Persisting player");
-        player = secureSave(player, playerRepository);
+        val updatedPlayer = secureSave(player, playerRepository);
 
-        log.info("Successfully injured character [{}] of player [{}]", rpChar, player);
+        log.info("Successfully injured character [{}] of player [{}]", rpChar, updatedPlayer);
         return rpChar;
     }
 
@@ -550,15 +549,15 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Trying to start healing character of player [{}]", dto.discordId());
 
         log.trace("Fetching player instance of player [{}]", dto.discordId());
-        Player player = getPlayerByDiscordId(dto.discordId());
+        val player = getPlayerByDiscordId(dto.discordId());
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player has a character");
-        if(player.getRpChars() == null) {
+        val rpchar = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
-            throw PlayerServiceException.noRpChar();
-        }
-        RPChar rpchar = player.getRpChars();
+            return PlayerServiceException.noRpChar();
+        });
+
         log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
 
         log.debug("Checking if the character is injured");
@@ -571,23 +570,21 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Checking if there is a claimbuild with House of Healing in current region [{}] of character [{}]", rpchar.getCurrentRegion(), rpchar);
         Set<ClaimBuild> claimbuilds = rpchar.getCurrentRegion().getClaimBuilds();
         log.trace("Claimbuilds in region [{}]: [{}]", rpchar.getCurrentRegion(), claimbuilds);
-        boolean hasClaimbuildWithHoH = claimbuilds.stream().anyMatch(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING));
-        log.trace("Region [{}] has claimbuild with House of Healing: [{}]", rpchar.getCurrentRegion(), hasClaimbuildWithHoH);
-        if(!hasClaimbuildWithHoH) {
-            log.warn("Region [{}] has no claimbuilds with House of Healing!", rpchar.getCurrentRegion());
-            throw PlayerServiceException.cannotHealNoCbWithHoH(rpchar.getName(), rpchar.getCurrentRegion().getId(), claimbuilds.toString());
-        }
+
+        val cbWithHoH = claimbuilds.stream().filter(claimBuild -> claimBuild.getSpecialBuildings().contains(SpecialBuilding.HOUSE_OF_HEALING))
+                .findFirst().orElseThrow(() -> {
+                    log.warn("Region [{}] has no claimbuilds with House of Healing!", rpchar.getCurrentRegion());
+                    return PlayerServiceException.cannotHealNoCbWithHoH(rpchar.getName(), rpchar.getCurrentRegion().getId(), claimbuilds.toString());
+                });
+        log.trace("Region [{}] has claimbuild with House of Healing: [{}]", rpchar.getCurrentRegion(), cbWithHoH.getName());
 
         log.debug("Setting isHealing");
-        rpchar.setIsHealing(true);
-        LocalDateTime now = LocalDateTime.now();
-        rpchar.setStartedHeal(now);
-        rpchar.setHealEnds(now.plusDays(2));
+        rpchar.startHealing();
 
         log.debug("Persisting player");
-        player = secureSave(player, playerRepository);
+        val updatedPlayer = secureSave(player, playerRepository);
 
-        log.info("Successfully started healing character [{}] of player [{}]!", rpchar, player);
+        log.info("Successfully started healing character [{}] of player [{}]!", rpchar, updatedPlayer);
         return rpchar;
     }
 
@@ -596,15 +593,14 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.debug("Trying to stop healing character of player [{}]", dto.discordId());
 
         log.trace("Fetching the player instance");
-        Player player = getPlayerByDiscordId(dto.discordId());
+        val player = getPlayerByDiscordId(dto.discordId());
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player has a character");
-        if(player.getRpChars() == null) {
+        val rpchar = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
-            throw PlayerServiceException.noRpChar();
-        }
-        RPChar rpchar = player.getRpChars();
+            return PlayerServiceException.noRpChar();
+        });
         log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
 
         log.debug("Checking if rpchar is healing. Current healing flag: [{}]", rpchar.getIsHealing());
@@ -620,9 +616,9 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         rpchar.setHealEnds(null);
 
         log.debug("Persisting player");
-        player = secureSave(player, playerRepository);
+        val updatedPlayer = secureSave(player, playerRepository);
 
-        log.info("Successfully stopped healing character [{}] of player [{}]", rpchar, player);
+        log.info("Successfully stopped healing character [{}] of player [{}]", rpchar, updatedPlayer);
         return rpchar;
     }
 
@@ -639,6 +635,6 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
 
         return user.getRoles(properties.getDiscordServer())
                 .stream()
-                .anyMatch(role -> staffRoles.contains(role));
+                .anyMatch(staffRoles::contains);
     }
 }

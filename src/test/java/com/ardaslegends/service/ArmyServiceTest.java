@@ -15,9 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -66,7 +64,8 @@ public class ArmyServiceTest {
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").type(ClaimBuildType.CASTLE).siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).injured(false).currentRegion(region1).build();
-        player = Player.builder().discordID("1234").faction(faction).rpChars(rpchar).build();
+        player = Player.builder().discordID("1234").faction(faction).build();
+        player.addActiveRpChar(rpchar);
         army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).path(List.of(PathElement.builder().region(region1).build())).build();
 
@@ -438,7 +437,7 @@ public class ArmyServiceTest {
     void ensureUnstationWorksProperly() {
         log.debug("Testing if unstation works properly with correct values");
 
-        army.setBoundTo(player.getRpChars());
+        army.setBoundTo(player.getActiveCharacter().get());
 
         StationDto dto = new StationDto(player.getDiscordID(), army.getName(), null);
 
@@ -486,7 +485,8 @@ public class ArmyServiceTest {
         Faction faction = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
         RPChar rpChar = RPChar.builder().name("Belegorn").injured(false).isHealing(false).currentRegion(region).build();
-        Player player = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).rpChars(rpChar).build();
+        Player player = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).build();
+        player.addActiveRpChar(rpChar);
         rpChar.setOwner(player);
         Army army = Army.builder().name("Gondorian Army").currentRegion(region).armyType(ArmyType.ARMY).faction(faction).build();
 
@@ -512,8 +512,10 @@ public class ArmyServiceTest {
         Faction faction = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
         RPChar rpChar = RPChar.builder().name("Belegorn").injured(false).isHealing(false).currentRegion(region).build();
-        Player executor = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).rpChars(rpChar).build();
-        Player target = Player.builder().ign("aned").discordID("2").faction(faction).rpChars(rpChar).build();
+        Player executor = Player.builder().ign("Lüktrönic").discordID("1").faction(faction).build();
+        executor.addActiveRpChar(rpChar);
+        Player target = Player.builder().ign("aned").discordID("2").faction(faction).build();
+        target.addActiveRpChar(rpChar);
         Army army = Army.builder().name("Gondorian Army").currentRegion(region).armyType(ArmyType.ARMY).faction(faction).build();
 
         faction.setLeader(executor);
@@ -528,7 +530,7 @@ public class ArmyServiceTest {
         log.debug("Calling bind()");
         armyService.bind(dto);
 
-        assertThat(army.getBoundTo()).isEqualTo(target.getRpChars());
+        assertThat(army.getBoundTo()).isEqualTo(target.getActiveCharacter().get());
         log.info("Test passed: army binding works properly on other players as faction leader!");
     }
     @Test
@@ -555,8 +557,8 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         Faction mordor = Faction.builder().name("Mordor").build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(new RPChar()).build();
-        Player aned = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).rpChars(new RPChar()).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
+        Player aned = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(mordor).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
@@ -576,8 +578,8 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         Faction wanderer = Faction.builder().name("Wanderer").build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(new RPChar()).build();
-        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(wanderer).rpChars(new RPChar()).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
+        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(wanderer).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
@@ -600,7 +602,8 @@ public class ArmyServiceTest {
         Region region1 = Region.builder().id("90").build();
         Region region2 = Region.builder().id("91").build();
         RPChar rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(rpchar).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
+        luk.addActiveRpChar(rpchar);
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region2).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
@@ -622,10 +625,12 @@ public class ArmyServiceTest {
         Faction gondor = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
         RPChar rpchar = RPChar.builder().name("Belegorn").currentRegion(region).build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(rpchar).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
+        luk.addActiveRpChar(rpchar);
         rpchar.setOwner(luk);
-        Player aned = Player.builder().discordID("1235").faction(gondor).rpChars(rpchar).build();
-        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(aned.getRpChars()).build();
+        Player aned = Player.builder().discordID("1235").faction(gondor).build();
+        aned.addActiveRpChar(rpchar);
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(aned.getActiveCharacter().get()).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
         when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
@@ -646,7 +651,8 @@ public class ArmyServiceTest {
         Faction gondor = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
         RPChar rpchar = RPChar.builder().name("Belegorn").injured(true).currentRegion(region).build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(rpchar).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
+        luk.addActiveRpChar(rpchar);
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
@@ -711,13 +717,14 @@ public class ArmyServiceTest {
         Faction gondor = Faction.builder().name("Gondor").build();
         Region region = Region.builder().id("90").build();
         RPChar rpchar = RPChar.builder().injured(false).isHealing(false).name("Belegorn").currentRegion(region).build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(rpchar).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
+        luk.addActiveRpChar(rpchar);
         Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).currentRegion(region).boundTo(null).build();
-        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).rpChar(luk.getRpChars()).path(List.of(PathElement.builder().region(region1).build())).build();
+        Movement move = Movement.builder().isCharMovement(false).isCurrentlyActive(true).rpChar(luk.getActiveCharacter().get()).path(List.of(PathElement.builder().region(region1).build())).build();
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(luk);
         when(mockArmyRepository.findArmyByName(dto.armyName())).thenReturn(Optional.of(army));
-        when(mockMovementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(luk.getRpChars())).thenReturn(Optional.of(move));
+        when(mockMovementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(luk.getActiveCharacter().get())).thenReturn(Optional.of(move));
 
         log.debug("Calling bind()");
         log.trace("Expecting ServiceException");
@@ -734,8 +741,10 @@ public class ArmyServiceTest {
         BindArmyDto dto = new BindArmyDto("Luktronic", "Luktronic", "Slayers of Orcs");
         Faction gondor = Faction.builder().name("Gondor").build();
         RPChar rpchar = RPChar.builder().name("Belegorn").build();
-        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).rpChars(rpchar).build();
-        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(luk.getRpChars()).build();
+        Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
+        luk.addActiveRpChar(rpchar);
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(luk.getActiveCharacter().get()).build();
+
 
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
@@ -757,8 +766,9 @@ public class ArmyServiceTest {
         Faction gondor = Faction.builder().name("Gondor").build();
         RPChar rpchar = RPChar.builder().name("Tinwe").build();
         Player luk = Player.builder().discordID(dto.executorDiscordId()).faction(gondor).build();
-        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).rpChars(rpchar).build();
-        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(mirak.getRpChars()).build();
+        Player mirak = Player.builder().discordID(dto.targetDiscordId()).faction(gondor).build();
+        mirak.addActiveRpChar(rpchar);
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(mirak.getActiveCharacter().get()).build();
 
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
         when(mockArmyRepository.save(army)).thenReturn(army);
@@ -781,8 +791,9 @@ public class ArmyServiceTest {
         Faction gondor = Faction.builder().name("Gondor").build();
         RPChar rpchar = RPChar.builder().name("Tinwe").build();
         Player luk = Player.builder().ign("Luk").discordID(dto.executorDiscordId()).faction(gondor).build();
-        Player mirak = Player.builder().ign("mirak").discordID(dto.targetDiscordId()).faction(gondor).rpChars(rpchar).build();
-        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(mirak.getRpChars()).build();
+        Player mirak = Player.builder().ign("mirak").discordID(dto.targetDiscordId()).faction(gondor).build();
+        mirak.addActiveRpChar(rpchar);
+        Army army = Army.builder().name(dto.armyName()).armyType(ArmyType.ARMY).faction(gondor).boundTo(mirak.getActiveCharacter().get()).build();
         gondor.setLeader(luk);
 
         when(mockArmyRepository.findArmyByName(army.getName())).thenReturn(Optional.of(army));
@@ -917,7 +928,7 @@ public class ArmyServiceTest {
         log.debug("Testing if disbandArmy sets boundTo to null!");
 
         faction.setLeader(player);
-        army.setBoundTo(player.getRpChars());
+        army.setBoundTo(player.getActiveCharacter().get());
         rpchar.setBoundTo(army);
 
         log.trace("Initializing data");
@@ -1001,7 +1012,7 @@ public class ArmyServiceTest {
         log.trace("Initializing data");
         String siege = "trebuchet";
         PickSiegeDto dto = new PickSiegeDto(player.getDiscordID(),army.getName(), claimBuild.getName(), siege);
-        army.setBoundTo(player.getRpChars());
+        army.setBoundTo(player.getActiveCharacter().get());
         army.setCurrentRegion(claimBuild.getRegion());
 
         log.debug("Calling pickSiege");

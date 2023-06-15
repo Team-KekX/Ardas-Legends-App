@@ -88,9 +88,11 @@ public class ScheduleServiceTest {
         region4 = Region.builder().id("94").regionType(RegionType.LAND).build();
         rpChar = RPChar.builder().name("Belegorn").boundTo(army).currentRegion(region).build();
         rpChar2 = RPChar.builder().name("Tinwe").currentRegion(region4).build();
-        player = Player.builder().rpChars(rpChar).build();
-        player2 = Player.builder().rpChars(rpChar2).build();
-        army = Army.builder().name("Knights of Gondor").currentRegion(region).boundTo(player.getRpChars()).build();
+        player = Player.builder().build();
+        player.addActiveRpChar(rpChar);
+        player2 = Player.builder().build();
+        player2.addActiveRpChar(rpChar2);
+        army = Army.builder().name("Knights of Gondor").currentRegion(region).boundTo(player.getActiveCharacter().get()).build();
         army2 = Army.builder().name("Gondor Army").currentRegion(region2).boundTo(null).build();
         pathElement = PathElement.builder().region(region).actualCost(region.getCost()).baseCost(region.getCost()).build();
         pathElement2 = PathElement.builder().region(region2).actualCost(region2.getCost()).baseCost(region2.getCost()).build();
@@ -103,10 +105,10 @@ public class ScheduleServiceTest {
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
-        movement = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).rpChar(player.getRpChars()).path(path)
+        movement = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).rpChar(player.getActiveCharacter().get()).path(path)
                 .startTime(startTime).endTime(endTime).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path)).hoursUntilNextRegion(path.get(1).getActualCost())
                 .build();
-        movement2 = Movement.builder().isCharMovement(true).isCurrentlyActive(true).army(null).rpChar(player2.getRpChars()).path(path2)
+        movement2 = Movement.builder().isCharMovement(true).isCurrentlyActive(true).army(null).rpChar(player2.getActiveCharacter().get()).path(path2)
                 .startTime(startTime).endTime(endTime2).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path2)).hoursUntilNextRegion(path2.get(1).getActualCost())
                 .build();
         movement3 = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army2).rpChar(null).path(path3)
@@ -203,7 +205,7 @@ public class ScheduleServiceTest {
         log.info("Current time: [{}] - start time: [{}] - end time: [{}]", LocalDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
 
         List<Player> players = List.of(player, player2);
-        when(mockPlayerRepository.findPlayerByRpCharIsHealingTrue()).thenReturn(players);
+        when(mockPlayerRepository.queryPlayersWithHealingRpchars()).thenReturn(players);
         when(mockPlayerService.savePlayers(players)).thenReturn(players);
 
         scheduleService.handleHealings();

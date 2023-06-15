@@ -25,16 +25,16 @@ import java.util.Arrays;
 @RequestMapping(RegionController.BASE_URL)
 public class RegionController extends AbstractRestController {
     public static final String BASE_URL = "/api/region";
-    private final String RESET_OWNERSHIP = "/reset-ownership";
-    private final String GET_ALL = "/all";
-    private final String GET_ALL_DETAILED = "/all/detailed";
-    private final String GET_REGION_TYPES = "/types";
+    private static final String RESET_OWNERSHIP = "/reset-ownership";
+    private static final String GET_ALL = "/all";
+    private static final String GET_ALL_DETAILED = "/all/detailed";
+    private static final String GET_REGION_TYPES = "/types";
 
     private final RegionService regionService;
 
     @GetMapping(GET_ALL)
     public ResponseEntity<RegionResponse[]> getAll() {
-        log.debug("Incoming getAll Request");
+        log.info("Incoming getAll Request");
 
         val regions = wrappedServiceExecution(regionService::getAll);
         val regionsResponse = regions.stream()
@@ -46,7 +46,7 @@ public class RegionController extends AbstractRestController {
 
     @GetMapping(GET_ALL_DETAILED)
     public ResponseEntity<RegionResponseDetailed[]> getAllDetailed() {
-        log.debug("Incoming getAllDetailed Request");
+        log.info("Incoming getAllDetailed Request");
 
         val regions = wrappedServiceExecution(regionService::getAll);
         val regionsResponse = regions.stream()
@@ -58,7 +58,7 @@ public class RegionController extends AbstractRestController {
 
     @GetMapping(GET_REGION_TYPES)
     public HttpEntity<String[]> getRegionTypes(){
-        log.debug("Incoming getRegionTypes Request");
+        log.info("Incoming getRegionTypes Request");
 
         val regionTypesStringArray = Arrays.stream(RegionType.values())
                 .map(RegionType::getName)
@@ -69,12 +69,12 @@ public class RegionController extends AbstractRestController {
 
     @PatchMapping(RESET_OWNERSHIP)
     public ResponseEntity<Void> resetOwnershipChanged() {
-        log.debug("Incoming reset ownership-changed request");
+        log.info("Incoming reset ownership-changed request");
 
         log.debug("Calling wrappedServiceExecution regionService.resetOwnership");
         wrappedServiceExecution(regionService::resetHasOwnership);
 
-        log.info("Returning status code ok for reset-ownership");
+        log.debug("Returning status code ok for reset-ownership");
         return ResponseEntity.ok(null);
     }
 

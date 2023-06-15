@@ -58,7 +58,8 @@ public class ClaimbuildRestControllerTest {
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
-        player = Player.builder().discordID("1234").faction(faction).rpChars(rpchar).build();
+        player = Player.builder().discordID("1234").faction(faction).build();
+        player.addActiveRpChar(rpchar);
         army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         army2 = Army.builder().name("Knights of Luk").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
         army3 = Army.builder().name("Knights of Kek").armyType(ArmyType.ARMY).faction(faction).units(List.of(unit)).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region2).stationedAt(claimBuild).sieges(new ArrayList<>()).build();
