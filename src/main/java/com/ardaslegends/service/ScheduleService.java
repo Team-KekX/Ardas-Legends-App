@@ -405,7 +405,7 @@ public class ScheduleService {
 
     private void handleHealingPlayer(Player player, LocalDateTime now) {
         log.debug("Handling healing player [{}]", player);
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getRpChars();
         log.trace("Got player's rpchar [{}]", rpChar);
         LocalDateTime endTime = rpChar.getHealEnds();
 

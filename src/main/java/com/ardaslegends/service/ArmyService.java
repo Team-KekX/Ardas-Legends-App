@@ -308,9 +308,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if army and player are in the same region");
-        if (!army.getCurrentRegion().equals(targetPlayer.getRpChar().getCurrentRegion())) {
+        if (!army.getCurrentRegion().equals(targetPlayer.getRpChars().getCurrentRegion())) {
             log.warn("Army and player are not in the same region!");
-            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetPlayer.getRpChar().getName());
+            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetPlayer.getRpChars().getName());
         }
 
         log.debug("Checking if army is already bound to player");
@@ -320,15 +320,15 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rpchar is injured");
-        if(targetPlayer.getRpChar().getInjured()) {
-            log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChar());
-            throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChar().getName(), army.getName());
+        if(targetPlayer.getRpChars().getInjured()) {
+            log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChars());
+            throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChars().getName(), army.getName());
         }
 
         log.debug("Checking if rpchar is healing");
-        if(targetPlayer.getRpChar().getIsHealing()) {
-            log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChar());
-            throw ArmyServiceException.cannotBindCharHealing(targetPlayer.getRpChar().getName(), army.getName());
+        if(targetPlayer.getRpChars().getIsHealing()) {
+            log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChars());
+            throw ArmyServiceException.cannotBindCharHealing(targetPlayer.getRpChars().getName(), army.getName());
         }
 
         log.debug("Checking if army is in an active movement");
@@ -340,16 +340,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rp char is in an active movement");
-        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetPlayer.getRpChar());
+        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetPlayer.getRpChars());
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
-            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),targetPlayer.getRpChar().getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),targetPlayer.getRpChars().getName(), destinationRegion);
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
-        army.setBoundTo(targetPlayer.getRpChar());
-        targetPlayer.getRpChar().setBoundTo(army);
+        army.setBoundTo(targetPlayer.getRpChars());
+        targetPlayer.getRpChars().setBoundTo(army);
 
         log.debug("Persisting newly changed army...");
         army = secureSave(army, armyRepository);

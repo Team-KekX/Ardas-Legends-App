@@ -45,15 +45,10 @@ public final class Player extends AbstractDomainObject {
     @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_player_faction"))
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
-
-    @OneToOne(cascade = CascadeType.ALL)
+    
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "character_id", foreignKey = @ForeignKey(name = "fk_player_character_id"))
-    private RPChar rpChar; //the player's rp character
-
-    @OneToMany
-    @JoinColumn(name = "past_char_id", foreignKey = @ForeignKey(name = "fk_player_past_char_id"))
-    @Setter(AccessLevel.NONE)
-    private Set<RPChar> pastCharacters;
+    private Set<RPChar> rpChars; //the player's rp character
 
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<ClaimBuild> builtClaimbuilds;
@@ -61,11 +56,13 @@ public final class Player extends AbstractDomainObject {
     private Boolean isStaff;
 
     public Player(String ign, String uuid, String discordID, Faction faction, RPChar rpChar) {
+        Objects.requireNonNull(rpChar);
+
         this.ign = ign;
         this.uuid = uuid;
         this.discordID = discordID;
         this.faction = faction;
-        this.rpChar = rpChar;
+        this.rpChars = new HashSet<>(Set.of(rpChar));
         this.builtClaimbuilds = new ArrayList<>(1);
         this.isStaff = false;
     }
@@ -74,18 +71,27 @@ public final class Player extends AbstractDomainObject {
     public void hasRpCharThrowExceptionOnFalse() {
         log.debug("Checking if player [{}] has an rpchar and throwing exception on false", this.getIgn());
 
-        if(rpChar == null) {
+        if(rpChars == null) {
             log.warn("Player [{}] has no rpchar", this.getIgn());
             throw PlayerServiceException.playerHasNoRpchar();
         }
     }
-
-    public void setRpChar(RPChar rpChar, Faction faction) {
-        this.rpChar = rpChar;
+    public Set<RPChar> getRpChars() {
+        return Collections.unmodifiableSet(rpChars);
     }
 
-    public Set<RPChar> getPastCharacters() {
-        return Collections.unmodifiableSet(pastCharacters);
+    public void addActiveRpChar(RPChar rpChar) {
+        Objects.requireNonNull(rpChar);
+
+        this.rpChars.stream()
+                .filter(RPChar::getActive)
+                .findFirst()
+                .ifPresent(rpChar1 -> rpChar1.setActive(false));
+
+        if (!this.rpChars.add(rpChar)) {
+            throw PlayerServiceException.rpcharAlreadyExists(rpChar.getName());
+        }
+        rpChar.setActive(true);
     }
 
     public List<ClaimBuild> getBuiltClaimbuilds() {

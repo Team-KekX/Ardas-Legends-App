@@ -104,7 +104,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player.getRpChar(), army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player.getRpChars(), army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -166,7 +166,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
         Player player = fetchedPlayer.get();
         log.trace("Setting the RPChar");
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getRpChars();
 
         log.debug("Checking if the Player has a RP Char");
         if(rpChar == null) {
@@ -193,10 +193,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if rpChar is already in a movement");
-        List<Movement> playerMovements = secureFind(player.getRpChar(), movementRepository::findMovementsByRpChar);
+        List<Movement> playerMovements = secureFind(player.getRpChars(), movementRepository::findMovementsByRpChar);
         if(playerMovements.stream().anyMatch(Movement::getIsCurrentlyActive)) { //Checking if there are any active movements
             log.warn("Player {} is already involved in a movement!", player);
-            throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChar());
+            throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChars());
         }
 
         //Setting up Region Data
@@ -223,7 +223,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.trace("Building the movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
         int hoursUntilNextRegion = path.get(1).getActualCost();
-        Movement movement = new Movement(player.getRpChar(), null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(player.getRpChars(), null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);
@@ -249,7 +249,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw new IllegalArgumentException("No player found with discordId [%s]".formatted(dto.discordId()));
         }
         Player player = fetchedPlayer.get();
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getRpChars();
 
         log.debug("Checking if the Player has a RP Char");
         if(rpChar == null) {
@@ -291,12 +291,12 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Trying to get an active Movement for the player [{}]", player);
 
         log.trace("Executing the secureFind");
-        Optional<Movement> fetchedMove = secureFind(player.getRpChar(), movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
+        Optional<Movement> fetchedMove = secureFind(player.getRpChars(), movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
 
         log.debug("Checking if a movement was found");
         if(fetchedMove.isEmpty()) {
             log.warn("No active movement was found for the player [{}]!", player);
-            throw MovementServiceException.noActiveMovementChar(player.getRpChar().getName());
+            throw MovementServiceException.noActiveMovementChar(player.getRpChars().getName());
         }
 
         Movement movement = fetchedMove.get();

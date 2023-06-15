@@ -71,7 +71,7 @@ public class ServiceUtils {
     public static boolean boundLordLeaderPermission(Player player, Army army) {
         log.debug("Checking if bound - lord - leader permission is fulfilled for Army [{}, Faction: {}], Player [{}, Faction:{}]", army.getName(), army.getFaction(), player.getIgn(), player.getFaction());
 
-        if(player.getRpChar().equals(army.getBoundTo())) {
+        if(player.getRpChars().equals(army.getBoundTo())) {
             log.debug("Player [{}] is bound to army, allowed action", player.getIgn());
             return true;
         }

@@ -132,9 +132,9 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         }
 
         // Checking if the player already has an RPChar
-        if (actualPlayer.getRpChar() != null) {
+        if (actualPlayer.getRpChars() != null) {
             log.warn("Player [{}] already has an RPChar", actualPlayer);
-            throw new IllegalArgumentException("Player [%s] already has an RPChar [%s], delete the old one if you want a new Character!".formatted(actualPlayer, actualPlayer.getRpChar()));
+            throw new IllegalArgumentException("Player [%s] already has an RPChar [%s], delete the old one if you want a new Character!".formatted(actualPlayer, actualPlayer.getRpChars()));
         }
 
         Optional<Player> fetchedPlayer = secureFind(dto.rpCharName(), playerRepository::findPlayerByRpChar);
@@ -151,12 +151,12 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         RPChar createdChar = new RPChar(actualPlayer, dto.rpCharName(), dto.title(), dto.gear(), dto.pvp(), null);
 
         log.debug("Trying to persist RPChar [{}]", createdChar);
-        actualPlayer.setRpChar(createdChar);
+        actualPlayer.setRpChars(createdChar);
 
         actualPlayer = secureSave(actualPlayer, playerRepository);
 
         log.info("Created RPChar [{}]", createdChar);
-        return actualPlayer.getRpChar();
+        return actualPlayer.getRpChars();
     }
 
     public Player getPlayerByIgn(String ign) {
@@ -342,7 +342,7 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChar() == null) {
+        if (playerToUpdate.getRpChars() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
             throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its name!");
         }
@@ -356,13 +356,13 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         }
 
         log.debug("Update RpChar Name");
-        playerToUpdate.getRpChar().setName(dto.charName());
+        playerToUpdate.getRpChars().setName(dto.charName());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character Name of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getName());
-        return playerToUpdate.getRpChar();
+        log.info("Successfully updated Rp Character Name of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getName());
+        return playerToUpdate.getRpChars();
     }
 
     @Transactional(readOnly = false)
@@ -384,19 +384,19 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChar() == null) {
+        if (playerToUpdate.getRpChars() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
             throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its title!");
         }
 
         log.debug("Update RpChar Title");
-        playerToUpdate.getRpChar().setTitle(dto.title());
+        playerToUpdate.getRpChars().setTitle(dto.title());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character title of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getTitle());
-        return playerToUpdate.getRpChar();
+        log.info("Successfully updated Rp Character title of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getTitle());
+        return playerToUpdate.getRpChars();
     }
 
     @Transactional(readOnly = false)
@@ -413,20 +413,20 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChar() == null) {
+        if (playerToUpdate.getRpChars() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
             throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its gear!");
         }
 
         //Update the gear
         log.debug("Update RpChar Gear");
-        playerToUpdate.getRpChar().setGear(dto.gear());
+        playerToUpdate.getRpChars().setGear(dto.gear());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getGear());
-        return playerToUpdate.getRpChar();
+        log.info("Successfully updated Rp Character gear of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getGear());
+        return playerToUpdate.getRpChars();
     }
 
 
@@ -444,20 +444,20 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player playerToUpdate = getPlayerByDiscordId(dto.discordId());
 
         // Check if player actually has an rpchar
-        if (playerToUpdate.getRpChar() == null) {
+        if (playerToUpdate.getRpChars() == null) {
             log.warn("No Rpchar found at player [{}]", playerToUpdate);
             throw new IllegalArgumentException("Player does not have a RPChar and therefore cannot update its pvp status!");
         }
 
         //Update the pvp status
         log.debug("Update RpChar PvP Status");
-        playerToUpdate.getRpChar().setPvp(dto.pvp());
+        playerToUpdate.getRpChars().setPvp(dto.pvp());
 
         log.debug("Trying to persist player [{}]", playerToUpdate);
         playerToUpdate = secureSave(playerToUpdate, playerRepository);
 
-        log.info("Successfully updated Rp Character PvP Status of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChar().getPvp());
-        return playerToUpdate.getRpChar();
+        log.info("Successfully updated Rp Character PvP Status of player [{}] to [{}]!", playerToUpdate, playerToUpdate.getRpChars().getPvp());
+        return playerToUpdate.getRpChars();
     }
 
     @Transactional(readOnly = false)
@@ -503,13 +503,13 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         Player player = getPlayerByDiscordId(dto.discordId());
         log.debug("Found player which issued the command [{}]", player);
 
-        if(player.getRpChar() == null) {
+        if(player.getRpChars() == null) {
             log.warn("The player has no RpChar to delete!");
             throw new IllegalArgumentException("No roleplay character found!");
         }
-        log.debug("Deleting RpChar [{}] from player [{}]", player.getRpChar(), player);
-        RPChar deletedRpChar = player.getRpChar();
-        player.setRpChar(null);
+        log.debug("Deleting RpChar [{}] from player [{}]", player.getRpChars(), player);
+        RPChar deletedRpChar = player.getRpChars();
+        player.setRpChars(null);
         log.debug("Trying to save player with deleted RpChar [{}]", player);
         player = secureSave(player, playerRepository);
 
@@ -526,11 +526,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player [{}] has an rpchar", player);
-        if(player.getRpChar() == null) {
+        if(player.getRpChars() == null) {
             log.warn("Player [{}] does not have a roleplay character!", player);
             throw PlayerServiceException.noRpChar();
         }
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getRpChars();
         log.debug("Player [{}] has RpChar [{}]", player, rpChar);
 
         log.debug("Setting injured = true for character [{}]", rpChar);
@@ -554,11 +554,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player has a character");
-        if(player.getRpChar() == null) {
+        if(player.getRpChars() == null) {
             log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
             throw PlayerServiceException.noRpChar();
         }
-        RPChar rpchar = player.getRpChar();
+        RPChar rpchar = player.getRpChars();
         log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
 
         log.debug("Checking if the character is injured");
@@ -600,11 +600,11 @@ public class PlayerService extends AbstractService<Player, PlayerRepository> {
         log.trace("Found player [{}]", player);
 
         log.debug("Checking if player has a character");
-        if(player.getRpChar() == null) {
+        if(player.getRpChars() == null) {
             log.warn("Player [{}] has no roleplay character and therefore cannot heal it!", player);
             throw PlayerServiceException.noRpChar();
         }
-        RPChar rpchar = player.getRpChar();
+        RPChar rpchar = player.getRpChars();
         log.debug("Player [{}] has an rpchar called [{}]", player , rpchar);
 
         log.debug("Checking if rpchar is healing. Current healing flag: [{}]", rpchar.getIsHealing());

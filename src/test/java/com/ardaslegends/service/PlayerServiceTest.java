@@ -53,7 +53,7 @@ public class PlayerServiceTest {
         claimBuild = ClaimBuild.builder().region(region).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).build();
         region.setClaimBuilds(Set.of(claimBuild));
         rpChar = RPChar.builder().name("Belegorn").currentRegion(region).injured(false).isHealing(false).build();
-        player = Player.builder().discordID("1234").ign("Luktronic").rpChar(rpChar).faction(faction).build();
+        player = Player.builder().discordID("1234").ign("Luktronic").rpChars(rpChar).faction(faction).build();
 
         discordIdDto = new DiscordIdDto(player.getDiscordID());
 
@@ -159,7 +159,7 @@ public class PlayerServiceTest {
         // Assign
         CreateRPCharDto dto = new CreateRPCharDto("MiraksDiscordId", "ActualPrinceOfDolAmroth",
                 "Prince of Dol Amroth", "Something Gondolin and Galvorn", true);
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).faction(null).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(null).faction(null).build();
 
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
 
@@ -175,7 +175,7 @@ public class PlayerServiceTest {
                 "Prince of Dol Amroth", "Something Gondolin and Galvorn", true);
         RPChar alreadySavedRPChar = RPChar.builder().name("Gondorian Knight").build();
         Faction faction = Faction.builder().name("Gondor").homeRegion(Region.builder().id("1").build()).build();
-        Player player = Player.builder().discordID(dto.discordId()).faction(faction).rpChar(alreadySavedRPChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).faction(faction).rpChars(alreadySavedRPChar).build();
 
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
 
@@ -428,7 +428,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().name("OtherName").build();
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -453,7 +453,7 @@ public class PlayerServiceTest {
         UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null, false);
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(null).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -480,7 +480,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().name("OtherName").build();
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -512,7 +512,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().title(oldTitle).name(charName).build();
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -554,7 +554,7 @@ public class PlayerServiceTest {
         UpdateRpCharDto dto = new UpdateRpCharDto("12345", "Belegorn", "King of Gondor", "91", "Army1", null, false);
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(null).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -586,7 +586,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().name(charName).gear(oldGear).build();
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -594,7 +594,7 @@ public class PlayerServiceTest {
         when(mockPlayerRepository.save(player)).thenReturn(player);
 
         // Act
-        assertThat(player.getRpChar().getGear()).isEqualTo(oldGear);
+        assertThat(player.getRpChars().getGear()).isEqualTo(oldGear);
 
         log.trace("Executing updateCharacterGear");
         playerService.updateCharacterGear(dto);
@@ -616,7 +616,7 @@ public class PlayerServiceTest {
         UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, gear, false);
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(null).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -649,7 +649,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().name(charName).pvp(oldPvp).build();
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -657,7 +657,7 @@ public class PlayerServiceTest {
         when(mockPlayerRepository.save(player)).thenReturn(player);
 
         // Act
-        assertThat(player.getRpChar().getPvp()).isEqualTo(oldPvp);
+        assertThat(player.getRpChars().getPvp()).isEqualTo(oldPvp);
 
         log.trace("Executing updateCharacterGear");
         playerService.updateCharacterPvp(dto);
@@ -678,7 +678,7 @@ public class PlayerServiceTest {
         UpdateRpCharDto dto = new UpdateRpCharDto("12345", charName, null, null,null, null, false);
 
         log.trace("Initializing Player object");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(null).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(null).build();
 
         log.trace("Initializing mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -734,7 +734,7 @@ public class PlayerServiceTest {
         RPChar rpChar = RPChar.builder().name("RandomChar").build();
 
         log.trace("Initialize player object with above rpchar");
-        Player player = Player.builder().discordID(dto.discordId()).rpChar(rpChar).build();
+        Player player = Player.builder().discordID(dto.discordId()).rpChars(rpChar).build();
 
         log.trace("Initialize mock methods");
         when(mockPlayerRepository.findByDiscordID(dto.discordId())).thenReturn(Optional.of(player));
@@ -788,7 +788,7 @@ public class PlayerServiceTest {
     void ensureInjureCharacterThrowsSEWhenNoRpChar() {
         log.debug("Testing if injure character throws PlayerServiceException when no RpChar!");
 
-        player.setRpChar(null);
+        player.setRpChars(null);
 
         log.debug("Calling playerService.injureChar");
         var result = assertThrows(PlayerServiceException.class, () -> playerService.injureChar(discordIdDto));
@@ -814,7 +814,7 @@ public class PlayerServiceTest {
     void ensureHealStartThrowsSEWhenNoRpChar() {
         log.debug("Testing if healStart throws SE when player has no rp char!");
 
-        player.setRpChar(null);
+        player.setRpChars(null);
         var result = assertThrows(PlayerServiceException.class, () -> playerService.healStart(discordIdDto));
 
         assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());
@@ -861,7 +861,7 @@ public class PlayerServiceTest {
     void ensureHealStopThrowsSEWhenNoRpChar() {
         log.debug("Testing if healStop throws SE when player has no rp char!");
 
-        player.setRpChar(null);
+        player.setRpChars(null);
         var result = assertThrows(PlayerServiceException.class, () -> playerService.healStop(discordIdDto));
 
         assertThat(result.getMessage()).isEqualTo(PlayerServiceException.noRpChar().getMessage());

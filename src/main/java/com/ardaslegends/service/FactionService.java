@@ -108,12 +108,12 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         }
 
         log.debug("Checking if player has an RpChar");
-        if(player.getRpChar() == null) {
+        if(player.getRpChars() == null) {
             log.warn("Player [ign:{}] does not have an RpChar and cannot be leader", player.getIgn());
             throw PlayerServiceException.playerHasNoRpchar();
         }
 
-        log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), player.getRpChar().getName());
+        log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), player.getRpChars().getName());
 
         String oldLeaderIgn = faction.getLeader() == null ? "No Leader" : faction.getLeader().getIgn();
         log.debug("Faction [{}] current leader [ign:{}], setting it to new player [ign:{}]", faction.getName(),oldLeaderIgn, player.getIgn());
@@ -141,7 +141,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         }
 
         Player previousLeader = factionRm.getLeader();
-        log.trace("RmFactionLeader: Faction Leader to be removed is [{},{}]", previousLeader.getIgn(), previousLeader.getRpChar().getName());
+        log.trace("RmFactionLeader: Faction Leader to be removed is [{},{}]", previousLeader.getIgn(), previousLeader.getRpChars().getName());
         factionRm.setLeader(null);
 
         log.trace("RmFactionLeader: removed leader, saving faction");

@@ -189,7 +189,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
             val message = application.sendAcceptedMessage(botProperties.getRpAppsChannel());
             val character = application.accept();
             val player = application.getApplicant();
-            player.setRpChar(character);
+            player.setRpChars(character);
 
             try {
                 playerRepository.save(player);

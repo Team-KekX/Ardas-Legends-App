@@ -18,7 +18,7 @@ public class TestDataFactory {
                 .uuid("cefabe13fda44d378c5d7292724f1514")
                 .build();
         luktronic.setFaction(factionGondor(luktronic));
-        luktronic.setRpChar(rpcharBelegorn(luktronic));
+        luktronic.setRpChars(rpcharBelegorn(luktronic));
         return luktronic;
     }
 
@@ -28,7 +28,7 @@ public class TestDataFactory {
                 .ign("Luktronic")
                 .discordID("261173268365443074")
                 .uuid("cefabe13fda44d378c5d7292724f1514")
-                .rpChar(rpChar)
+                .rpChars(rpChar)
                 .build();
         luktronic.setFaction(factionGondor(luktronic));
         return luktronic;
@@ -78,7 +78,7 @@ public class TestDataFactory {
                 .healEnds(null)
                 .isHealing(false)
                 .boundTo(null)
-                .deleted(false)
+                .active(false)
                 .injured(false)
                 .linkToLore(null)
                 .startedHeal(null)

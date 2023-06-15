@@ -48,7 +48,7 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
         log.trace("Calling armyService");
         Army army = discordServiceExecution(dto, armyService::bind, "Error while binding to Army/Company");
         Player player = army.getBoundTo().getOwner();
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getRpChars();
 
         String armyType = army.getArmyType().getName();
 
