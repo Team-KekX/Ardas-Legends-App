@@ -3,6 +3,7 @@ package com.ardaslegends.repository.region;
 import com.ardaslegends.domain.QRegion;
 import com.ardaslegends.domain.Region;
 import com.ardaslegends.repository.exceptions.RegionRepositoryException;
+import com.querydsl.core.types.OrderSpecifier;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -24,6 +25,7 @@ public class RegionRepositoryImpl extends QuerydslRepositorySupport implements R
         QRegion qRegion = QRegion.region;
 
         val regions = from(qRegion)
+                .orderBy(qRegion.id.desc())
                 .fetch();
 
         return new HashSet<>(regions);
