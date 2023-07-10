@@ -39,7 +39,7 @@ public class RegionService extends AbstractService<Region, RegionRepository> {
     }
 
     @Transactional(readOnly = true)
-    public Set<Region> getAll() {
+    public List<Region> getAll() {
         return regionRepository.queryAll();
     }
 }

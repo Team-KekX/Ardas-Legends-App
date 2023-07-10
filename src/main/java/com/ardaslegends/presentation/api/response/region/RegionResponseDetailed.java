@@ -10,7 +10,9 @@ public record RegionResponseDetailed(
         String name,
         String regionType,
         String[] claimedBy,
-        String[] claimbuilds
+        String[] claimbuilds,
+        String[] neighbours
+
 ) {
     public RegionResponseDetailed(Region region) {
         this(
@@ -18,7 +20,8 @@ public record RegionResponseDetailed(
                 region.getName(),
                 region.getRegionType().getName(),
                 region.getClaimedBy().stream().map(Faction::getName).toArray(String[]::new),
-                region.getClaimBuilds().stream().map(ClaimBuild::getName).toArray(String[]::new)
+                region.getClaimBuilds().stream().map(ClaimBuild::getName).toArray(String[]::new),
+                region.getNeighboringRegions().stream().map(Region::getId).toArray(String[]::new)
         );
     }
 }
