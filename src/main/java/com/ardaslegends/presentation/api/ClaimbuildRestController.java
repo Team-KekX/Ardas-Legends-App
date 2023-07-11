@@ -39,6 +39,7 @@ public class ClaimbuildRestController extends AbstractRestController {
 
     private final ClaimBuildService claimBuildService;
 
+    @GetMapping(GET_TYPES)
     public ResponseEntity<String[]> getTypes() {
         log.debug("Incoming getClaimbuildTypes Request");
 

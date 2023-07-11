@@ -10,6 +10,7 @@ import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -22,6 +23,7 @@ public class ProductionSiteController extends AbstractRestController {
 
     private final ProductionSiteService productionSiteService;
 
+    @GetMapping(GET_ALL)
     public HttpEntity<ProductionSiteResponse[]> getAll() {
         log.debug("Incoming getAll productionSites request");
 
