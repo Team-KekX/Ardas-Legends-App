@@ -36,12 +36,12 @@ public class RPChar extends AbstractEntity {
     private Boolean pvp;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "current_region", foreignKey = @ForeignKey(name = "fk_current_region"))
+    @JoinColumn(name = "current_region", foreignKey = @ForeignKey(name = "fk_rpchar_current_region"))
     @NotNull(message = "RpChar: currentRegion must not be null")
     private Region currentRegion; //the region the character is currently in
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_bound_to"))
+    @JoinColumn(name = "bound_to", foreignKey = @ForeignKey(name = "fk_rpchar_bound_to"))
     private Army boundTo; //the army that is bound to this character
 
     @OneToMany(mappedBy = "rpChar")

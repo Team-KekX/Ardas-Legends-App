@@ -29,6 +29,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
 
     @ManyToOne
     @NotNull
+    @JoinColumn(name = "player_id")
     protected Player applicant;
 
     @NotNull

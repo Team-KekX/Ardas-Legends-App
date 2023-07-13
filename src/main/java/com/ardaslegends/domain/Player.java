@@ -42,16 +42,16 @@ public final class Player extends AbstractDomainObject {
     private String discordID; //unique, the ID of the player's discord account
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))
+    @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_player_faction"))
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "character_id")
+    @JoinColumn(name = "character_id", foreignKey = @ForeignKey(name = "fk_player_character_id"))
     private RPChar rpChar; //the player's rp character
 
     @OneToMany
-    @JoinColumn(name = "past_char_id")
+    @JoinColumn(name = "past_char_id", foreignKey = @ForeignKey(name = "fk_player_past_char_id"))
     @Setter(AccessLevel.NONE)
     private Set<RPChar> pastCharacters;
 

@@ -26,7 +26,7 @@ public final class ClaimBuild extends AbstractEntity {
     private String name; //unique, name of the claimbuild
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))
+    @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_claimbuild_region"))
     @NotNull(message = "Claimbuild: Region must not be null")
     private Region region; //the region the claimbuild is in
 
@@ -35,7 +35,7 @@ public final class ClaimBuild extends AbstractEntity {
     private ClaimBuildType type; //Type of claimbuild, e.g. HAMLET
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "owned_by", foreignKey = @ForeignKey(name = "fk_owned_by"))
+    @JoinColumn(name = "owned_by", foreignKey = @ForeignKey(name = "fk_claimbuild_owned_by"))
     @NotNull(message = "Claimbuild: ownedBy must not be null")
     private Faction ownedBy; //faction which owns this CB
 
@@ -56,7 +56,7 @@ public final class ClaimBuild extends AbstractEntity {
 
     @ElementCollection(targetClass = SpecialBuilding.class)
     @CollectionTable(name = "claimbuild_special_buildings",
-            joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id")))
+            joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_special_buildings_claimbuild_id")))
     @Column(name = "special_buildings")
     @Enumerated(EnumType.STRING)
     private List<SpecialBuilding> specialBuildings = new ArrayList<>(); //special buildings in this cb, e.g. House of Healing
@@ -68,8 +68,8 @@ public final class ClaimBuild extends AbstractEntity {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "claimbuild_builders",
-            joinColumns = { @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))},
-            inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_player_id")) })
+            joinColumns = { @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_builders_claimbuild_id"))},
+            inverseJoinColumns = { @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_claimbuild_builders_player_id")) })
     private Set<Player> builtBy = new HashSet<>(); //the player who built the CB
 
     private int freeArmiesRemaining; // Every new army decrements this attribute until its at 0

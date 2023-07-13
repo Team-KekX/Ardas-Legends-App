@@ -8,10 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import org.javacord.api.entity.permission.Role;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -51,8 +48,8 @@ public final class Faction extends AbstractDomainObject {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "faction_allies",
-            joinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))},
-            inverseJoinColumns = { @JoinColumn(name = "ally_faction", foreignKey = @ForeignKey(name = "fk_ally_faction")) })
+            joinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction_allies_faction"))},
+            inverseJoinColumns = { @JoinColumn(name = "ally_faction", foreignKey = @ForeignKey(name = "fk_faction_allies_ally_faction")) })
     private List<Faction> allies; //allies of this faction
     private String colorcode; //the faction's colorcode, used for painting the map
 
@@ -72,8 +69,8 @@ public final class Faction extends AbstractDomainObject {
     private Integer foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
 
     @ElementCollection
-    @CollectionTable(name = "army_sieges")
-    private Set<String> aliases = new LinkedHashSet<>();
+    @CollectionTable(name = "faction_aliases", joinColumns = @JoinColumn(name = "faction_id", foreignKey = @ForeignKey(name = "fk_faction_aliases_faction_id")))
+    private Set<String> aliases = new HashSet<>();
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;

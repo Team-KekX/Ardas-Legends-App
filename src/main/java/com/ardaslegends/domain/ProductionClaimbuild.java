@@ -30,12 +30,12 @@ public final class ProductionClaimbuild extends AbstractDomainObject {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("productionSiteId")
-    @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_production_site_id"))
+    @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_production_claimbuild_production_site_id"))
     private ProductionSite productionSite;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("claimbuildId")
-    @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))
+    @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_production_claimbuild_claimbuild_id"))
     private ClaimBuild claimbuild;
 
     private Long count;

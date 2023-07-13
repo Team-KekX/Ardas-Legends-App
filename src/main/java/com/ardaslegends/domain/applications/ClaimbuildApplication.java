@@ -36,9 +36,11 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
 
     @ManyToOne
     @NotNull
+    @JoinColumn(name = "owned_by_id", foreignKey = @ForeignKey(name = "fk_claimbuild_apps_owned_by_id"))
     private Faction ownedBy;
     @ManyToOne
     @NotNull
+    @JoinColumn(name = "region_id", foreignKey = @ForeignKey(name = "fk_claimbuild_apps_region_id"))
     private Region region;
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -47,7 +49,8 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     private Coordinate coordinate;
 
     @ElementCollection(targetClass = EmbeddedProductionSite.class)
-    @CollectionTable(name = "claimbuild_application_production_sites")
+    @CollectionTable(name = "claimbuild_application_production_sites",
+            joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_application_production_sites_")))
     private Set<EmbeddedProductionSite> productionSites;
 
     @ElementCollection(targetClass = SpecialBuilding.class)

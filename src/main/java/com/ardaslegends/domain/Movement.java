@@ -28,11 +28,11 @@ public final class Movement extends AbstractDomainObject {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "rpchar_id")
+    @JoinColumn(name = "rpchar_id", foreignKey = @ForeignKey(name = "fk_movement_rpchar_id"))
     private RPChar rpChar;
 
     @ManyToOne
-    @JoinColumn(name = "army_name")
+    @JoinColumn(name = "army_name", foreignKey = @ForeignKey(name = "fk_movement_army_name"))
     private Army army; //Is null when it's a Rp Char movement
 
     private Boolean isCharMovement; //Should be true when army = null

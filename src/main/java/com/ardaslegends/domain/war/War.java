@@ -32,9 +32,13 @@ public class War extends AbstractDomainObject {
     private String name;
 
     @ElementCollection
+    @CollectionTable(name = "war_aggressors",
+            joinColumns = @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_war_aggressors_war_id")))
     private Set<WarParticipant> aggressors = new HashSet<>(2);
 
     @ElementCollection
+    @CollectionTable(name = "war_defenders",
+            joinColumns = @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_war_defenders_war_id")))
     private Set<WarParticipant> defenders = new HashSet<>(2);
 
     @NotNull

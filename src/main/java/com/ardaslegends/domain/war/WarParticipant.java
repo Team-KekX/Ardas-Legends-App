@@ -23,7 +23,7 @@ import java.util.Objects;
 public class WarParticipant  {
 
     @ManyToOne
-    @JoinColumn(name = "participant_faction_id", foreignKey = @ForeignKey(name = "fk_faction_war_participant"))
+    @JoinColumn(name = "participant_faction_id")
     @NotNull
     private Faction warParticipant;
 

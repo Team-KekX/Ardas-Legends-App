@@ -25,11 +25,11 @@ public final class Unit extends AbstractDomainObject {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_type"))
+    @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_unit_type"))
     private UnitType unitType; //The kind of unit, e.g. Gondor Soldier
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "army", foreignKey = @ForeignKey(name = "fk_army"))
+    @JoinColumn(name = "army", foreignKey = @ForeignKey(name = "fk_unit_army"))
     private Army army; // The army in which these units are
 
     private Integer count; //maximum aamount of those units that are in the army

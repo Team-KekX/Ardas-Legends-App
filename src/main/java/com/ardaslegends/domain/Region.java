@@ -32,8 +32,8 @@ public final class Region extends AbstractDomainObject {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "faction_claimed_regions",
-            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
-            inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_faction_claimed_regions_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction_claimed_regions_faction")) })
     private Set<Faction> claimedBy = new HashSet<>(); //the list of factions which the region is claimed by
 
     @JsonIgnore
@@ -42,8 +42,8 @@ public final class Region extends AbstractDomainObject {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "region_neighbours",
-            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
-            inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_neighbour")) })
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region_neighbours_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_region_neighbours_neighbour")) })
     private Set<Region> neighboringRegions = new HashSet<>(); //list of neighboring regions
 
     @Column(name = "has_ownership_changed_since_last_claimmap_update")

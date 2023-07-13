@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Embeddable;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Objects;
 
@@ -21,6 +23,7 @@ import java.util.Objects;
 public class EmbeddedProductionSite {
 
     @ManyToOne
+    @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_claimbuild_application_production_sites_production_site_id"))
     private ProductionSite productionSite;
     private Long count;
 
