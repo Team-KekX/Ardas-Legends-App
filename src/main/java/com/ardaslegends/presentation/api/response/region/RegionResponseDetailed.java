@@ -1,9 +1,6 @@
 package com.ardaslegends.presentation.api.response.region;
 
-import com.ardaslegends.domain.ClaimBuild;
-import com.ardaslegends.domain.Faction;
-import com.ardaslegends.domain.Region;
-import com.ardaslegends.domain.RegionType;
+import com.ardaslegends.domain.*;
 
 public record RegionResponseDetailed(
         String id,
@@ -11,7 +8,8 @@ public record RegionResponseDetailed(
         String regionType,
         String[] claimedBy,
         String[] claimbuilds,
-        String[] neighbours
+        String[] neighbours,
+        String[] charactersInRegion
 
 ) {
     public RegionResponseDetailed(Region region) {
@@ -21,7 +19,8 @@ public record RegionResponseDetailed(
                 region.getRegionType().getName(),
                 region.getClaimedBy().stream().map(Faction::getName).toArray(String[]::new),
                 region.getClaimBuilds().stream().map(ClaimBuild::getName).toArray(String[]::new),
-                region.getNeighboringRegions().stream().map(Region::getId).toArray(String[]::new)
+                region.getNeighboringRegions().stream().map(Region::getId).toArray(String[]::new),
+                region.getCharsInRegion().stream().map(RPChar::getName).toArray(String[]::new)
         );
     }
 }

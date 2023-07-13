@@ -102,7 +102,7 @@ public class ClaimbuildRestControllerTest {
         var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
-        log.error(result.getResponse().getContentAsString());
+        log.debug(result.getResponse().getContentAsString());
         ClaimBuild response = mapper.readValue(result.getResponse().getContentAsString()
                 ,ClaimBuild.class);
 
@@ -142,7 +142,7 @@ public class ClaimbuildRestControllerTest {
         var request = result.getResponse();
         request.setCharacterEncoding("UTF-8");
 
-        log.error(result.getResponse().getContentAsString());
+        log.debug(result.getResponse().getContentAsString());
         ClaimBuild response = mapper.readValue(result.getResponse().getContentAsString()
                 ,ClaimBuild.class);
 
