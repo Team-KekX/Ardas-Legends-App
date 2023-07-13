@@ -49,6 +49,9 @@ public final class Region extends AbstractDomainObject {
     @Column(name = "has_ownership_changed_since_last_claimmap_update")
     private boolean hasOwnershipChanged;
 
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "currentRegion")
+    private Set<RPChar> charsInRegion = new HashSet<>(1);
+
     @JsonIgnore
     public Region(String id, String name, RegionType regionType, Set<Faction> claimedBy, Set<ClaimBuild> claimBuilds, Set<Region> neighboringRegions) {
         this.id = id;
