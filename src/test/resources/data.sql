@@ -4506,11 +4506,9 @@ alter table if exists factions add constraint FKe6ypaht2bxdcuddlc5xftq9te foreig
 alter table if exists factions add constraint FK20t2dysjgym3rgogundycuihx foreign key (leader_id) references players;
 alter table if exists movement_path add constraint FK7emisc3ivfq6qe9rxcql32b13 foreign key (region_id) references regions;
 alter table if exists movement_path add constraint FKp5tu7ll8bt129nbhov91dr00f foreign key (movement_id) references movements;
-<<<<<<< HEAD
 alter table if exists movements add constraint fk_movement_army_name foreign key (army_name) references armies;
 alter table if exists movements add constraint fk_movement_rpchar_id foreign key (rpchar_id) references rpchars;
 alter table if exists players add constraint fk_player_faction foreign key (faction) references factions;
-alter table if exists players add constraint fk_player_character_id foreign key (character_id) references rpchars;
 alter table if exists production_claimbuild add constraint fk_production_claimbuild_claimbuild_id foreign key (claimbuild_id) references claimbuilds;
 alter table if exists production_claimbuild add constraint fk_production_claimbuild_production_site_id foreign key (production_site_id) references production_sites;
 alter table if exists production_sites add constraint fk_production_site_resource_name foreign key (produced_resource) references resources (resource_name);
@@ -4522,37 +4520,14 @@ alter table if exists roleplay_apps_accepted_by add constraint FKen8yb0bxswf3hh7
 alter table if exists roleplay_apps_accepted_by add constraint FKh1ilsqvciqumnbvh6jd5ax31p foreign key (roleplay_application_id) references roleplay_apps;
 alter table if exists rpchars add constraint fk_rpchar_bound_to foreign key (bound_to) references armies;
 alter table if exists rpchars add constraint fk_rpchar_current_region foreign key (current_region) references regions;
-alter table if exists rpchars add constraint FK9md3q928g8h1qdga9oy5kofkx foreign key (owner_id) references players;
-alter table if exists rpchars add constraint fk_player_past_char_id foreign key (past_char_id) references players;
+alter table if exists rpchars add constraint fk_rpchars_owner foreign key (owner_id) references players;
 alter table if exists units add constraint fk_unit_army foreign key (army) references armies;
 alter table if exists units add constraint fk_unit_unit_type foreign key (unit_type) references unit_types;
 alter table if exists war_aggressors add constraint FKn288l28fyvw8jrmpvag32qd36 foreign key (participant_faction_id) references factions;
 alter table if exists war_aggressors add constraint fk_war_aggressors_war_id foreign key (war_id) references wars;
 alter table if exists war_defenders add constraint FKiuo9k6nivhdwwr6q2ktfoxgjb foreign key (participant_faction_id) references factions;
 alter table if exists war_defenders add constraint fk_war_defenders_war_id foreign key (war_id) references wars;
-=======
-alter table if exists movements add constraint FKqtngk9ycc2leqi2w4i1r0l4wg foreign key (army_name) references armies;
-alter table if exists movements add constraint FKax2gx3v59e4ejhymig679rs0k foreign key (rpchar_id) references rpchars;
-alter table if exists players add constraint fk_faction foreign key (faction) references factions;
-alter table if exists production_claimbuild add constraint fk_claimbuild_id foreign key (claimbuild_id) references claimbuilds;
-alter table if exists production_claimbuild add constraint fk_production_site_id foreign key (production_site_id) references production_sites;
-alter table if exists production_sites add constraint fk_resource_name foreign key (produced_resource) references resources (resource_name);
-alter table if exists region_neighbours add constraint fk_neighbour foreign key (neighbour) references regions;
-alter table if exists region_neighbours add constraint fk_region foreign key (region) references regions;
-alter table if exists roleplay_apps add constraint FKkhws7sa2iqg2ljyntxenlnrs4 foreign key (applicant_id) references players;
-alter table if exists roleplay_apps add constraint FK7u5alh0tixpk1fsnmubp6kpcc foreign key (faction_id) references factions;
-alter table if exists roleplay_apps_accepted_by add constraint FKen8yb0bxswf3hh7d0148x0skb foreign key (accepted_by_id) references players;
-alter table if exists roleplay_apps_accepted_by add constraint FKh1ilsqvciqumnbvh6jd5ax31p foreign key (roleplay_application_id) references roleplay_apps;
-alter table if exists rpchars add constraint fk_bound_to foreign key (bound_to) references armies;
-alter table if exists rpchars add constraint fk_current_region foreign key (current_region) references regions;
-alter table if exists rpchars add constraint fk_owner foreign key (owner_id) references players;
-alter table if exists units add constraint fk_army foreign key (army) references armies;
-alter table if exists units add constraint fk_unit_type foreign key (unit_type) references unit_types;
-alter table if exists war_aggressors add constraint fk_faction_war_participant foreign key (participant_faction_id) references factions;
-alter table if exists war_aggressors add constraint FK4t6lbde54kf5kdfmtag4ektgi foreign key (war_id) references wars;
-alter table if exists war_defenders add constraint fk_faction_war_participant foreign key (participant_faction_id) references factions;
-alter table if exists war_defenders add constraint FKbii281msisv5mrkapr3qx5bwd foreign key (war_id) references wars;
->>>>>>> 8396cd7 (Added getActiveCharacter(), refactored bind())
+
 
 
 end;

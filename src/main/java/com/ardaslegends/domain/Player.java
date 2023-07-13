@@ -44,16 +44,10 @@ public final class Player extends AbstractDomainObject {
     @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_player_faction"))
     @NotNull(message = "Player: Faction must not be null")
     private Faction faction; //the faction this character belongs to
-<<<<<<< HEAD
-    
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "character_id", foreignKey = @ForeignKey(name = "fk_player_character_id"))
-    private Set<RPChar> rpChars; //the player's rp character
-=======
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
     private Set<RPChar> rpChars = new HashSet<>(); //the player's rp character
->>>>>>> 8396cd7 (Added getActiveCharacter(), refactored bind())
 
     @ManyToMany(mappedBy = "builtBy", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<ClaimBuild> builtClaimbuilds;

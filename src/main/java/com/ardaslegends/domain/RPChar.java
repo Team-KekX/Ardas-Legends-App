@@ -20,7 +20,7 @@ import java.util.*;
 public class RPChar extends AbstractEntity {
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_owner"))
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_rpchars_owner"))
     private Player owner;
 
     @Column(unique = true)
