@@ -12,6 +12,7 @@ import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.dto.army.BindArmyDto;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -48,7 +49,7 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
         log.trace("Calling armyService");
         Army army = discordServiceExecution(dto, armyService::bind, "Error while binding to Army/Company");
         Player player = army.getBoundTo().getOwner();
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
 
         String armyType = army.getArmyType().getName();
 

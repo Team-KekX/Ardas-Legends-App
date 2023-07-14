@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest(properties = {"spring.sql.init.mode=never"})
@@ -28,7 +27,7 @@ public class PlayerRepositoryTest {
         Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").homeRegion(region).build()).uuid("anedsUUID").build();
         Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").homeRegion(region).build()).uuid("anotherOneUUID").build();;
         RPChar rpChar = new RPChar(p5, "Sauron", "s","s", true, null);
-        p5.setRpChar(rpChar);
+        p5.addActiveRpChar(rpChar);
 
         repository.saveAll(List.of(p1,p2,p3,p4,p5));
     }
@@ -87,12 +86,12 @@ public class PlayerRepositoryTest {
         val rpChar2 = RPChar.builder().name("Sauron").title("e").gear("e").pvp(true).build();
 
         // Act
-        var result = repository.findPlayerByRpChar(rpChar2.getName());
+        var result = repository.queryPlayerByRpChar(rpChar2.getName());
 
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.isPresent()).isTrue();
-        assertThat(result.get().getRpChar().getGear()).isNotEqualTo(rpChar2.getGear());
+        assertThat(result.get().getActiveCharacter().get().getGear()).isNotEqualTo(rpChar2.getGear());
 
     }
 
@@ -103,7 +102,7 @@ public class PlayerRepositoryTest {
         val rpChar2 = RPChar.builder().name("SSomebodyThatIUsedToKnoooow").title("e").gear("e").pvp(true).build();
 
         // Act
-        var result = repository.findPlayerByRpChar(rpChar2.getName());
+        var result = repository.queryPlayerByRpChar(rpChar2.getName());
 
         // Assert
         assertThat(result).isNotNull();

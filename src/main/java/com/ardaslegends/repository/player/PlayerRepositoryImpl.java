@@ -2,16 +2,14 @@ package com.ardaslegends.repository.player;
 
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.QPlayer;
+import com.ardaslegends.domain.QRPChar;
 import com.ardaslegends.repository.exceptions.PlayerRepositoryException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.lang.NonNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,5 +59,36 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
 
         return new HashSet<>(fetchedPlayers);
 
+    }
+
+    @Override
+    public Optional<Player> queryPlayerByRpChar(String name) {
+        Objects.requireNonNull(name, "Name must not be null");
+
+        val qPlayer = QPlayer.player;
+        val qRpChar = QRPChar.rPChar;
+
+        val joinedRpChars = new QRPChar("rpCharacters");
+
+        val result = from(qPlayer)
+                .innerJoin(qPlayer.rpChars, joinedRpChars)
+                .where(joinedRpChars.name.equalsIgnoreCase(name))
+                .fetchFirst();
+
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public List<Player> queryPlayersWithHealingRpchars() {
+
+        val qPlayer = QPlayer.player;
+
+        val joinedRpChars = new QRPChar("rpCharacters");
+
+        return from(qPlayer)
+                .innerJoin(qPlayer.rpChars, joinedRpChars)
+                .where(joinedRpChars.isHealing.isTrue())
+                .fetch();
     }
 }

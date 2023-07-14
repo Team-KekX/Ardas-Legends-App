@@ -4,6 +4,7 @@ import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class ScheduleService {
         log.debug("Found [{}] healing armies - continuing with handling", healingArmies.size());
 
         log.debug("Getting all characters that are healing");
-        List<Player> healingPlayers = playerRepository.findPlayerByRpCharIsHealingTrue();
+        List<Player> healingPlayers = playerRepository.queryPlayersWithHealingRpchars();
         log.debug("Found [{}] healing chars - continuing with handling", healingPlayers.size());
 
         log.debug("Calling parallelStream handleHealingArmy");
@@ -405,7 +406,7 @@ public class ScheduleService {
 
     private void handleHealingPlayer(Player player, LocalDateTime now) {
         log.debug("Handling healing player [{}]", player);
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         log.trace("Got player's rpchar [{}]", rpChar);
         LocalDateTime endTime = rpChar.getHealEnds();
 

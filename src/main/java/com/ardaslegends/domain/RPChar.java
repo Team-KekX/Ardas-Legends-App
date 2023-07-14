@@ -1,14 +1,11 @@
 package com.ardaslegends.domain;
 
 import com.ardaslegends.domain.applications.RoleplayApplication;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -23,6 +20,7 @@ import java.util.*;
 public class RPChar extends AbstractEntity {
 
     @ManyToOne
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_rpchars_owner"))
     private Player owner;
 
     @Column(unique = true)
@@ -53,9 +51,10 @@ public class RPChar extends AbstractEntity {
     private LocalDateTime healEnds;
     private String linkToLore;
 
-    private Boolean deleted;
+    private Boolean active;
 
     public RPChar(RoleplayApplication application) {
+        this.owner = application.getApplicant();
         name = application.getCharacterName();
         title = application.getCharacterTitle();
         gear = application.getGear();
@@ -69,7 +68,7 @@ public class RPChar extends AbstractEntity {
         isHealing = false;
         startedHeal = null;
         healEnds = null;
-        deleted = false;
+        active = true;
 
         linkToLore = application.getLinkToLore();
     }
@@ -89,11 +88,25 @@ public class RPChar extends AbstractEntity {
         isHealing = false;
         startedHeal = null;
         healEnds = null;
-        deleted = false;
+        active = true;
 
         this.linkToLore = linkToLore;
     }
 
+    public void injure() {
+        setInjured(true);
+        Optional.ofNullable(boundTo).ifPresent(army -> {
+            army.setBoundTo(null);
+            setBoundTo(null);
+        });
+    }
+
+    public void startHealing() {
+        LocalDateTime now = LocalDateTime.now();
+        setIsHealing(true);
+        setStartedHeal(now);
+        setHealEnds(now.plusDays(2));
+    }
     public Set<Movement> getMovements() {
         return Collections.unmodifiableSet(movements);
     }

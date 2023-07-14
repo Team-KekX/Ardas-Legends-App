@@ -15,6 +15,7 @@ import com.ardaslegends.service.exceptions.movement.MovementServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,7 +105,8 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
-        Movement movement = new Movement(player.getRpChar(), army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        val character = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
+        Movement movement = new Movement(character, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -165,14 +167,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw new IllegalArgumentException("No player found with discordId [%s]".formatted(dto.discordId()));
         }
         Player player = fetchedPlayer.get();
-        log.trace("Setting the RPChar");
-        RPChar rpChar = player.getRpChar();
-
         log.debug("Checking if the Player has a RP Char");
-        if(rpChar == null) {
+        log.trace("Setting the RPChar");
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player {} has no RP Char!", player);
-            throw PlayerServiceException.noRpChar();
-        }
+            return PlayerServiceException.noRpChar();
+        });
+
 
         log.debug("Checking if destination is the current region");
         if(dto.toRegion().equals(rpChar.getCurrentRegion().getId())) {
@@ -193,10 +194,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if rpChar is already in a movement");
-        List<Movement> playerMovements = secureFind(player.getRpChar(), movementRepository::findMovementsByRpChar);
+        List<Movement> playerMovements = secureFind(rpChar, movementRepository::findMovementsByRpChar);
         if(playerMovements.stream().anyMatch(Movement::getIsCurrentlyActive)) { //Checking if there are any active movements
             log.warn("Player {} is already involved in a movement!", player);
-            throw ServiceException.cannotMoveRpCharAlreadyMoving(player.getRpChar());
+            throw ServiceException.cannotMoveRpCharAlreadyMoving(rpChar);
         }
 
         //Setting up Region Data
@@ -223,7 +224,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.trace("Building the movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
         int hoursUntilNextRegion = path.get(1).getActualCost();
-        Movement movement = new Movement(player.getRpChar(), null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
+        Movement movement = new Movement(rpChar, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
         log.trace("Saving the new movement");
         movement = secureSave(movement, movementRepository);
@@ -249,13 +250,10 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
             throw new IllegalArgumentException("No player found with discordId [%s]".formatted(dto.discordId()));
         }
         Player player = fetchedPlayer.get();
-        RPChar rpChar = player.getRpChar();
-
-        log.debug("Checking if the Player has a RP Char");
-        if(rpChar == null) {
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player {} has no RP Char!", player);
-            throw PlayerServiceException.noRpChar();
-        }
+            return PlayerServiceException.noRpChar();
+        });
 
         log.trace("Searching for active movements of this player");
         Movement movement = getActiveMovementByChar(player);
@@ -290,13 +288,18 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement getActiveMovementByChar(Player player) {
         log.debug("Trying to get an active Movement for the player [{}]", player);
 
+        val character = player.getActiveCharacter().orElseThrow(() -> {
+            log.warn("Player {} has no RP Char!", player);
+            return PlayerServiceException.noRpChar();
+        });
+
         log.trace("Executing the secureFind");
-        Optional<Movement> fetchedMove = secureFind(player.getRpChar(), movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
+        Optional<Movement> fetchedMove = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
 
         log.debug("Checking if a movement was found");
         if(fetchedMove.isEmpty()) {
             log.warn("No active movement was found for the player [{}]!", player);
-            throw MovementServiceException.noActiveMovementChar(player.getRpChar().getName());
+            throw MovementServiceException.noActiveMovementChar(character.getName());
         }
 
         Movement movement = fetchedMove.get();

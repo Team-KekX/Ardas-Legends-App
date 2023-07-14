@@ -16,8 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.persistence.PersistenceException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +44,7 @@ public class FactionServiceTest {
         Mockito.doNothing().when(factionService).recordMessageInErrorChannel(any());
 
         faction = Faction.builder().name("Gondor").foodStockpile(10).build();
-        player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
+        player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
         dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
 
         when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
@@ -89,7 +91,7 @@ public class FactionServiceTest {
     void ensureSetFactionLeaderThrowsSeWhenPlayerDoesNotHaveAnRpChar() {
         log.debug("Testing if setFactionLeader properly throws Se when player does not have an rpchar");
 
-        player.setRpChar(null);
+        player.setRpChars(new HashSet<>(1));
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
         var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));

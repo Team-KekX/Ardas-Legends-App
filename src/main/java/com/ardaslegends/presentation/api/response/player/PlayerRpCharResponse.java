@@ -22,7 +22,7 @@ public record PlayerRpCharResponse (
 ) {
 
     public PlayerRpCharResponse(Player player, boolean isStaff) {
-        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getRpChar() == null ? null : new RpCharResponse(player.getRpChar())), isStaff);
+        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getActiveCharacter().isEmpty() ? null : new RpCharResponse(player.getActiveCharacter().get())), isStaff);
         log.debug("Created PlayerResponse: '{}'", this);
     }
 }

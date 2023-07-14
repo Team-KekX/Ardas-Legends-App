@@ -4437,17 +4437,17 @@ INSERT INTO unit_types(unit_name, token_cost)
 VALUES (''Huorn'', 5);
 
 
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (1, ''261173268365443074'', ''Luktronic'', false, ''cefabe13fda44d378c5d7292724f1514'', 10, 1);
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (2, ''244463773052567553'', ''mirak441'', false, ''4cd6b222b3894fd59d85ac90aa2c2c46'', 10, 2);
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction, character_id) VALUES (3, ''323522559096258582'', ''HabKeinTeammate'', false, ''84b6a14958ec4b2bb9b479328526651d'', 10, NULL);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (1, ''261173268365443074'', ''Luktronic'', false, ''cefabe13fda44d378c5d7292724f1514'', 10);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (2, ''244463773052567553'', ''mirak441'', false, ''4cd6b222b3894fd59d85ac90aa2c2c46'', 10);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (3, ''323522559096258582'', ''HabKeinTeammate'', false, ''84b6a14958ec4b2bb9b479328526651d'', 10);
 
 
 --
 -- Data for Name: rpchars; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.rpchars (id, version, deleted, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id, past_char_id) VALUES (1, 0, false, ''All'', NULL, false, false, NULL, ''Belegorn'', true, NULL, ''King of Gondor'', NULL, ''263'', 1, NULL);
-INSERT INTO public.rpchars (id, version, deleted, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id, past_char_id) VALUES (2, 0, false, ''Full Gondolin'', NULL, false, false, NULL, ''Firyawe'', true, NULL, ''High-King of Gondor'', NULL, ''263'', 2, NULL);
+INSERT INTO public.rpchars (id, version, active, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id) VALUES (1, 0, true, ''All'', NULL, false, false, NULL, ''Belegorn'', true, NULL, ''King of Gondor'', NULL, ''263'', 1);
+INSERT INTO public.rpchars (id, version, active, gear, heal_ends, injured, is_healing, link_to_lore, name, pvp, started_heal, title, bound_to, current_region, owner_id) VALUES (2, 0, true, ''Full Gondolin'', NULL, false, false, NULL, ''Firyawe'', true, NULL, ''High-King of Gondor'', NULL, ''263'', 2);
 
 
 --
@@ -4509,7 +4509,6 @@ alter table if exists movement_path add constraint FKp5tu7ll8bt129nbhov91dr00f f
 alter table if exists movements add constraint fk_movement_army_name foreign key (army_name) references armies;
 alter table if exists movements add constraint fk_movement_rpchar_id foreign key (rpchar_id) references rpchars;
 alter table if exists players add constraint fk_player_faction foreign key (faction) references factions;
-alter table if exists players add constraint fk_player_character_id foreign key (character_id) references rpchars;
 alter table if exists production_claimbuild add constraint fk_production_claimbuild_claimbuild_id foreign key (claimbuild_id) references claimbuilds;
 alter table if exists production_claimbuild add constraint fk_production_claimbuild_production_site_id foreign key (production_site_id) references production_sites;
 alter table if exists production_sites add constraint fk_production_site_resource_name foreign key (produced_resource) references resources (resource_name);
@@ -4521,14 +4520,14 @@ alter table if exists roleplay_apps_accepted_by add constraint FKen8yb0bxswf3hh7
 alter table if exists roleplay_apps_accepted_by add constraint FKh1ilsqvciqumnbvh6jd5ax31p foreign key (roleplay_application_id) references roleplay_apps;
 alter table if exists rpchars add constraint fk_rpchar_bound_to foreign key (bound_to) references armies;
 alter table if exists rpchars add constraint fk_rpchar_current_region foreign key (current_region) references regions;
-alter table if exists rpchars add constraint FK9md3q928g8h1qdga9oy5kofkx foreign key (owner_id) references players;
-alter table if exists rpchars add constraint fk_player_past_char_id foreign key (past_char_id) references players;
+alter table if exists rpchars add constraint fk_rpchars_owner foreign key (owner_id) references players;
 alter table if exists units add constraint fk_unit_army foreign key (army) references armies;
 alter table if exists units add constraint fk_unit_unit_type foreign key (unit_type) references unit_types;
 alter table if exists war_aggressors add constraint FKn288l28fyvw8jrmpvag32qd36 foreign key (participant_faction_id) references factions;
 alter table if exists war_aggressors add constraint fk_war_aggressors_war_id foreign key (war_id) references wars;
 alter table if exists war_defenders add constraint FKiuo9k6nivhdwwr6q2ktfoxgjb foreign key (participant_faction_id) references factions;
 alter table if exists war_defenders add constraint fk_war_defenders_war_id foreign key (war_id) references wars;
+
 
 
 end;

@@ -14,11 +14,11 @@ public record PaginatedPlayerResponse(
                 player.getId(),
                 player.getIgn(),
                 player.getFaction().getName(),
-                player.getRpChar() != null ?
-                        player.getRpChar().getName()
+                player.getActiveCharacter().isPresent()?
+                        player.getActiveCharacter().get().getName()
                         : null,
-                player.getRpChar() != null ?
-                        player.getRpChar().getTitle()
+                player.getActiveCharacter().isPresent() ?
+                        player.getActiveCharacter().get().getTitle()
                         : null
         );
     }
