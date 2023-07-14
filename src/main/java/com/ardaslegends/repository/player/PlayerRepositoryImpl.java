@@ -39,13 +39,27 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
         return fetchedPlayer;
     }
 
+    @Override
+    public @NonNull Player queryByIgn(String ign) {
+        Objects.requireNonNull(ign, "Ign must not be null!");
+
+        val qplayer = QPlayer.player;
+
+        val fetchedPlayer = from(qplayer)
+                .where(qplayer.ign.eq(ign))
+                .fetchFirst();
+
+        if(fetchedPlayer == null) { throw PlayerRepositoryException.entityNotFound("ign", ign); }
+        return fetchedPlayer;
+    }
+
     /**
      * @param discordIds, query parameter, null values will be filtered out
      * @return a set of players, size does not have to match discordIds size
      * @throws NullPointerException if any parameter is null
      */
     @Override
-    public @NonNull Set<Player> queryByDiscordId(@NonNull String[] discordIds) {
+    public @NonNull Set<Player> queryAllByDiscordIds(@NonNull String[] discordIds) {
         Objects.requireNonNull(discordIds, "DiscordIds must not be null");
         val qplayer = QPlayer.player;
 
@@ -55,6 +69,23 @@ public class PlayerRepositoryImpl extends QuerydslRepositorySupport implements P
 
         val fetchedPlayers = from(qplayer)
                 .where(qplayer.discordID.in(filteredNullsSet))
+                .fetch();
+
+        return new HashSet<>(fetchedPlayers);
+
+    }
+
+    @Override
+    public @NonNull Set<Player> queryAllByIgns(@NonNull String[] igns) {
+        Objects.requireNonNull(igns, "igns must not be null");
+        val qplayer = QPlayer.player;
+
+        val filteredNullsSet = Arrays.stream(igns)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        val fetchedPlayers = from(qplayer)
+                .where(qplayer.ign.in(filteredNullsSet))
                 .fetch();
 
         return new HashSet<>(fetchedPlayers);

@@ -8,5 +8,5 @@ import com.ardaslegends.service.dto.productionSite.ProductionSiteDto;
 
 public record CreateClaimbuildApplicationDto(DiscordIdDto applicant, String claimbuildName, String regionId, ClaimBuildType type, String factionNameOwnedBy, Coordinate coordinate,
                                              ProductionSiteDto[] productionSites, SpecialBuilding[] specialBuildings, String traders,
-                                             String siege, String houses, DiscordIdDto[] builtBy) {
+                                             String siege, String houses, String[] builtBy) {
 }
