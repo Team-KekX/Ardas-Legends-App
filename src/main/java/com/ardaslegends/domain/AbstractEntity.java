@@ -20,7 +20,7 @@ public abstract class AbstractEntity extends AbstractDomainObject {
 
     @Version
     @EqualsAndHashCode.Exclude
-    private Integer version;
+    private Integer version = 0;
 
     @Override
     public final boolean equals(Object o) {
