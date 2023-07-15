@@ -8,8 +8,7 @@ import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -46,6 +45,22 @@ public class ClaimbuildRepositoryImpl extends QuerydslRepositorySupport implemen
     public boolean existsByNameIgnoreCase(String claimbuildName) {
         log.trace("Checking if a claimbuild with name '%s' already exists");
         return queryByNameIgnoreCaseOptional(claimbuildName).isPresent();
+    }
+
+    @Override
+    public List<ClaimBuild> findClaimBuildsByNames(String[] names) {
+        log.debug("Querying claimbuilds by names: {}", names);
+        Objects.requireNonNull(names, "Names must not be null");
+        QClaimBuild qClaimBuild = QClaimBuild.claimBuild;
+
+        log.trace("Executing query");
+        val fetchedClaimbuilds = from(qClaimBuild)
+                .where(qClaimBuild.name.in(names))
+                .stream().toList();
+
+        log.debug("Queried claimbuilds: [{}]", fetchedClaimbuilds);
+
+        return fetchedClaimbuilds;
     }
 
 

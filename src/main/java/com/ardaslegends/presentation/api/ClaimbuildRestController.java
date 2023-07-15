@@ -5,7 +5,7 @@ import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.ClaimBuildType;
 import com.ardaslegends.domain.SpecialBuilding;
 import com.ardaslegends.presentation.AbstractRestController;
-import com.ardaslegends.presentation.api.response.claimbuild.PaginatedClaimbuildResponse;
+import com.ardaslegends.presentation.api.response.claimbuild.ClaimbuildResponse;
 import com.ardaslegends.service.ClaimBuildService;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -52,13 +53,26 @@ public class ClaimbuildRestController extends AbstractRestController {
 
     @Operation(summary = "Get Claimbuilds Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
     @GetMapping
-    public ResponseEntity<Page<PaginatedClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
+    public ResponseEntity<Page<ClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
         log.debug("Incoming getClaimbuildsPaginated Request, paginated data [{}]", pageable);
 
         Page<ClaimBuild> pageDomain = wrappedServiceExecution(pageable, claimBuildService::getClaimbuildsPaginated);
-        var pageResponse = pageDomain.map(PaginatedClaimbuildResponse::new);
+        var pageResponse = pageDomain.map(ClaimbuildResponse::new);
 
         return ResponseEntity.ok(pageResponse);
+    }
+
+    @Operation(summary = "Get Claimbuilds By Name", description = "Returns an array of claimbuilds with the specified names")
+    @GetMapping
+    public ResponseEntity<ClaimbuildResponse[]> getClaimbuildsByNames(@RequestParam String[] names) {
+        log.debug("Incoming getClaimbuildsByName Request, parameter names: [{}]", (Object) names);
+
+        List<ClaimBuild> claimBuilds = wrappedServiceExecution(names, claimBuildService::getClaimBuildsByNames);
+
+        log.debug("Building ClaimbuildResponses with claimbuilds [{}]", claimBuilds);
+        ClaimbuildResponse[] response = claimBuilds.stream().map(ClaimbuildResponse::new).toArray(ClaimbuildResponse[]::new);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(GET_SPECIAL_BUILDINGS)

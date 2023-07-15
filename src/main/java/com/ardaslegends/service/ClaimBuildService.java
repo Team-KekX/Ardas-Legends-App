@@ -35,8 +35,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
     private final PlayerService playerService;
 
     public Page<ClaimBuild> getClaimbuildsPaginated(Pageable pageable) {
-        var page = secureFind(pageable, claimbuildRepository::findAll);
-        return page;
+        return secureFind(pageable, claimbuildRepository::findAll);
     }
 
     @Transactional(readOnly = false)
@@ -219,7 +218,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
         Objects.requireNonNull(name, "Name must not be null");
         ServiceUtils.checkBlankString(name, "Name");
 
-        log.debug("Fetching unit with name [{}]", name);
+        log.debug("Fetching claimbuild with name [{}]", name);
         Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findClaimBuildByName);
 
         if(fetchedBuild.isEmpty()) {
@@ -229,6 +228,24 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
 
         log.debug("Successfully returning Claimbuild with name [{}]", name);
         return fetchedBuild.get();
+    }
+
+    public List<ClaimBuild> getClaimBuildsByNames(String[] names) {
+        log.debug("Getting Claimbuild with names [{}]", (Object) names);
+
+        Objects.requireNonNull(names, "Names must not be null");
+        Arrays.stream(names).forEach(str -> ServiceUtils.checkBlankString(str, "Name"));
+
+        log.debug("Fetching claimbuilds with names [{}]", (Object) names);
+        List<ClaimBuild> fetchedClaimbuilds = secureFind(names, claimbuildRepository::findClaimBuildsByNames);
+
+        if(fetchedClaimbuilds.isEmpty()) {
+            log.warn("No Claimbuild found with names [{}]", (Object) names);
+            throw ClaimBuildServiceException.noCbWithName(Arrays.toString(names));
+        }
+
+        log.debug("Successfully returning Claimbuilds found with names [{}]", (Object) names);
+        return fetchedClaimbuilds;
     }
 
     public Set<Player> createBuiltByFromString(String builtByString) {
