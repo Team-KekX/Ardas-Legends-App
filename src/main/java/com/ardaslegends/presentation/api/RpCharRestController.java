@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @Tag(name = "RPChar Controller", description = "All REST endpoints regarding Roleplay Characters")
-@RequestMapping(RPCharRestController.BASE_URL)
-public class RPCharRestController extends AbstractRestController {
+@RequestMapping(RpCharRestController.BASE_URL)
+public class RpCharRestController extends AbstractRestController {
 
     public final static String BASE_URL = "/api/rpchars";
 
