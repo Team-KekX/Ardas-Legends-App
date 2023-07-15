@@ -1,5 +1,9 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.configuration.converter.ProductionSiteTypeEnumConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(converter = ProductionSiteTypeEnumConverter.class)
 public enum ProductionSiteType {
     FARM("Farm"),
     FISHING_LODGE("Fishing Lodge"),

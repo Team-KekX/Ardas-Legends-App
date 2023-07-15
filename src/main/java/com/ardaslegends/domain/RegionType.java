@@ -1,7 +1,11 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.configuration.converter.ClaimbuildTypeEnumConverter;
+import com.ardaslegends.configuration.converter.RegionTypeEnumConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 
+@JsonDeserialize(converter = RegionTypeEnumConverter.class)
 public enum RegionType {
 
     // The number next to the Enum represensts the cost/duration to move into such a region
