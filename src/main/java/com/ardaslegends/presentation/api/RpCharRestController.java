@@ -1,7 +1,9 @@
 package com.ardaslegends.presentation.api;
 
+import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.claimbuild.ClaimbuildResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharOwnerResponse;
 import com.ardaslegends.service.RpCharService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +15,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RpCharRestController extends AbstractRestController {
 
     public final static String BASE_URL = "/api/rpchars";
+    public final static String NAME = "/name";
 
     private final RpCharService rpCharService;
 
@@ -42,6 +48,19 @@ public class RpCharRestController extends AbstractRestController {
 
         log.info("Successfully handled get all RpChars request - returning data [{}]", rpCharOwnerResponses);
         return ResponseEntity.ok(rpCharOwnerResponses);
+    }
+
+    @Operation(summary = "Get RpChars By Names", description = "Returns an array of RpChars with the specified names")
+    @GetMapping(NAME)
+    public ResponseEntity<RpCharOwnerResponse[]> getRpCharsByNames(@RequestParam(name = "name") String[] names) {
+        log.debug("Incoming getRpCharsByNames Request, parameter names: [{}]", (Object) names);
+
+        List<RPChar> rpchars = wrappedServiceExecution(names, rpCharService::getRpCharsByNames);
+
+        log.debug("Building RpCharOwnerResponse with rpchars [{}]", rpchars);
+        RpCharOwnerResponse[] response = rpchars.stream().map(RpCharOwnerResponse::new).toArray(RpCharOwnerResponse[]::new);
+
+        return ResponseEntity.ok(response);
     }
 
 }

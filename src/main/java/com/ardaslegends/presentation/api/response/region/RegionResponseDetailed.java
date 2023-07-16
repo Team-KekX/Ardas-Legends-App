@@ -9,7 +9,7 @@ public record RegionResponseDetailed(
         String[] claimedBy,
         String[] claimbuilds,
         String[] neighbours,
-        String[] charactersInRegion
+        String[] characters
 
 ) {
     public RegionResponseDetailed(Region region) {
