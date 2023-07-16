@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @RequestMapping(ClaimbuildRestController.BASE_URL)
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
+    public static final String NAME = "/name";
     public static final String GET_TYPES = "/types";
     public static final String GET_SPECIAL_BUILDINGS = "/specialbuildings";
     public static final String PATH_CREATE_CLAIMBUILD = "/create";
@@ -63,8 +64,8 @@ public class ClaimbuildRestController extends AbstractRestController {
     }
 
     @Operation(summary = "Get Claimbuilds By Name", description = "Returns an array of claimbuilds with the specified names")
-    @GetMapping
-    public ResponseEntity<ClaimbuildResponse[]> getClaimbuildsByNames(@RequestParam String[] names) {
+    @GetMapping(NAME)
+    public ResponseEntity<ClaimbuildResponse[]> getClaimbuildsByNames(@RequestParam(name = "name") String[] names) {
         log.debug("Incoming getClaimbuildsByName Request, parameter names: [{}]", (Object) names);
 
         List<ClaimBuild> claimBuilds = wrappedServiceExecution(names, claimBuildService::getClaimBuildsByNames);

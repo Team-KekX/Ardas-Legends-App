@@ -7,7 +7,7 @@ public record ClaimbuildResponse(
         Long id,
         String name,
         String region,
-        ClaimBuildType claimBuildType,
+        String claimBuildType,
         String faction,
         int armiesStationedCount
 ) {
@@ -16,7 +16,7 @@ public record ClaimbuildResponse(
                 claimBuild.getId(),
                 claimBuild.getName(),
                 claimBuild.getRegion().getId(),
-                claimBuild.getType(),
+                claimBuild.getType().getName(),
                 claimBuild.getOwnedBy().getName(),
                 claimBuild.getStationedArmies().size()
         );
