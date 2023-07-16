@@ -3,20 +3,20 @@ package com.ardaslegends.presentation.api.response.claimbuild;
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.ClaimBuildType;
 
-public record PaginatedClaimbuildResponse(
+public record ClaimbuildResponse(
         Long id,
-        String nameOfClaimbuild,
+        String name,
         String region,
-        ClaimBuildType claimBuildType,
-        String nameOfFaction,
+        String claimBuildType,
+        String faction,
         int armiesStationedCount
 ) {
-    public PaginatedClaimbuildResponse(ClaimBuild claimBuild) {
+    public ClaimbuildResponse(ClaimBuild claimBuild) {
         this(
                 claimBuild.getId(),
                 claimBuild.getName(),
                 claimBuild.getRegion().getId(),
-                claimBuild.getType(),
+                claimBuild.getType().getName(),
                 claimBuild.getOwnedBy().getName(),
                 claimBuild.getStationedArmies().size()
         );

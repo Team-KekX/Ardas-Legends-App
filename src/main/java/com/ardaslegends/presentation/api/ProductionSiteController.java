@@ -10,11 +10,13 @@ import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping(ProductionSiteController.BASE_URL)
 public class ProductionSiteController extends AbstractRestController {
     public static final String BASE_URL = "/api/productionsite";
@@ -22,6 +24,7 @@ public class ProductionSiteController extends AbstractRestController {
 
     private final ProductionSiteService productionSiteService;
 
+    @GetMapping(GET_ALL)
     public HttpEntity<ProductionSiteResponse[]> getAll() {
         log.debug("Incoming getAll productionSites request");
 

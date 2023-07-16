@@ -95,15 +95,14 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         }
 
         // Fetching all builders
-        val foundPlayers = playerRepository.queryByDiscordId(Arrays.stream(dto.builtBy()).map(DiscordIdDto::discordId).toArray(String[]::new));
+        val foundPlayers = playerRepository.queryAllByIgns(dto.builtBy());
         // Iterating over initial discordId which should be present in foundPlayers and mapping which Ids have not been found.
-        List<String> notFoundPlayersIds = Arrays.stream(dto.builtBy())
-                .map(DiscordIdDto::discordId)
-                .filter(discordId -> foundPlayers.stream().noneMatch(player -> player.getDiscordID().equals(discordId)))
+        List<String> notFoundPlayers = Arrays.stream(dto.builtBy())
+                .filter(ign -> foundPlayers.stream().noneMatch(player -> player.getIgn().equals(ign)))
                 .toList();
 
-        if (!notFoundPlayersIds.isEmpty()) {
-            String playersNotFound = String.join(", ", notFoundPlayersIds);
+        if (!notFoundPlayers.isEmpty()) {
+            String playersNotFound = String.join(", ", notFoundPlayers);
 
             log.warn("ClaimbuildApplicationService: Failed to find following builders [{}]", playersNotFound);
             throw ClaimbuildApplicationException.buildersNotFound(playersNotFound);

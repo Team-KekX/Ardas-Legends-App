@@ -60,7 +60,7 @@ public class PlayerRepositoryTest {
     void ensureQueryByDiscordIdWithArraysWorks() {
         String[] discordIds = { "MiraksId", "vernonId", null, null, "luksId", "testIfFails" };
 
-        var query = repository.queryByDiscordId(discordIds);
+        var query = repository.queryAllByDiscordIds(discordIds);
 
         assertThat(query).isNotNull();
         assertThat(query.size()).isEqualTo(3);

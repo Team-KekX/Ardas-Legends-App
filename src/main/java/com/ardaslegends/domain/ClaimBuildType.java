@@ -1,5 +1,9 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.configuration.converter.ClaimbuildTypeEnumConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(converter = ClaimbuildTypeEnumConverter.class)
 public enum ClaimBuildType {
 
     // maxArmies, maxTradingCompanies, freeArmies, freeTradingCompanies

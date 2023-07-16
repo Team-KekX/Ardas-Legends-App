@@ -6,6 +6,8 @@ import com.ardaslegends.domain.Faction;
 public record PaginatedFactionResponse(
         long id,
         String nameOfFaction,
+        String leaderIgn,
+        String homeRegion,
         int countOfArmies,
         int countOfClaimbuilds,
         int countOfClaimedRegions,
@@ -15,7 +17,9 @@ public record PaginatedFactionResponse(
         this(
                 faction.getId(),
                 faction.getName(),
-                (int) faction.getArmies().stream().filter(army -> ArmyType.ARMY.equals(army)).count(),
+                faction.getLeader() != null ? faction.getLeader().getIgn() : null,
+                faction.getHomeRegion().getId(),
+                (int) faction.getArmies().stream().filter(army -> ArmyType.ARMY.equals(army.getArmyType())).count(),
                 faction.getClaimBuilds().size(),
                 faction.getRegions().size(),
                 faction.getPlayers().size()

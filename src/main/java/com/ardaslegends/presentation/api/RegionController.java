@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.api;
 
+import com.ardaslegends.domain.Region;
 import com.ardaslegends.domain.RegionType;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.region.RegionResponse;
@@ -11,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -29,6 +27,7 @@ public class RegionController extends AbstractRestController {
     private static final String GET_ALL = "/all";
     private static final String GET_ALL_DETAILED = "/all/detailed";
     private static final String GET_REGION_TYPES = "/types";
+    private static final String GET_RPCHARS = "/{id}";
 
     private final RegionService regionService;
 
@@ -43,6 +42,23 @@ public class RegionController extends AbstractRestController {
 
         return ResponseEntity.ok(regionsResponse);
     }
+
+    @GetMapping(GET_RPCHARS)
+    public ResponseEntity<RegionResponse> getRegion(@PathVariable String regionId) {
+        log.debug("Incoming getRegion Request with regionId path variable [{}]", regionId);
+
+        log.debug("Calling RegionService getRegion()");
+        Region region = wrappedServiceExecution(regionId, regionService::getRegion);
+        log.debug("Got region [{}]", region);
+
+        log.trace("Building RegionResponse");
+        val regionResponse = new RegionResponse(region);
+        log.debug("Built RegionResponse {}", regionResponse);
+
+        log.info("Succesfully handled GetRegion request and sending response [{}]", regionResponse);
+        return ResponseEntity.ok(regionResponse);
+    }
+
 
     @GetMapping(GET_ALL_DETAILED)
     public ResponseEntity<RegionResponseDetailed[]> getAllDetailed() {

@@ -8,7 +8,9 @@ import java.util.Set;
 
 public interface PlayerRepositoryCustom {
     Player queryByDiscordId(String discordId);
-    Set<Player> queryByDiscordId(String[] discordIds);
+    Player queryByIgn(String ign);
+    Set<Player> queryAllByDiscordIds(String[] discordIds);
+    Set<Player> queryAllByIgns(String[] igns);
     Optional<Player> queryPlayerByRpChar(String name);
     List<Player> queryPlayersWithHealingRpchars();
 }
