@@ -4,8 +4,6 @@ import com.ardaslegends.domain.ProductionSite;
 import com.ardaslegends.domain.ProductionSiteType;
 import com.ardaslegends.domain.Resource;
 import com.ardaslegends.domain.ResourceType;
-import com.ardaslegends.presentation.discord.config.BotProperties;
-import com.ardaslegends.service.AbstractService;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +35,7 @@ public class ProductionSiteRepositoryTest {
 
     @Test
     void ensurefindProductionSiteByTypeAndProducedResourceNameWorksProperly() {
-        val prodSite = productionSiteRepository.findProductionSiteByTypeAndProducedResource(ProductionSiteType.LUMBER_CAMP, "Oak");
+        val prodSite = productionSiteRepository.findProductionSiteByTypeAndProducedResource_ResourceName(ProductionSiteType.LUMBER_CAMP, "Oak");
 
         assertThat(prodSite).isPresent();
         assertThat(prodSite.get().getProducedResource().getResourceName()).isEqualTo("Oak");

@@ -2,7 +2,7 @@ package com.ardaslegends.presentation.api.response.war;
 
 import com.ardaslegends.domain.war.War;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

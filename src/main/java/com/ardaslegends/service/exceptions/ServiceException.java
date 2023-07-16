@@ -3,7 +3,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
 import org.springframework.web.client.RestClientException;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.security.Provider;
 
 public class ServiceException extends RuntimeException {

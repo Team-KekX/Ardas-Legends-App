@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -303,7 +303,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
             }
 
             log.debug("Fetching Production Site with type [{}] and resource [{}]", type, resource);
-            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource);
+            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource_ResourceName);
 
             if(fetchedProdSite.isEmpty()) {
                 log.warn("No Production Site found for type [{}] and resource [{}]!", type, resource);

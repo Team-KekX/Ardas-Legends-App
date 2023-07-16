@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
@@ -21,11 +22,15 @@ public class PlayerRepositoryTest {
     @BeforeEach
     void setup() {
         val region = Region.builder().name("").id("1").regionType(RegionType.DESERT).build();
+        val region2 = Region.builder().name("").id("2").regionType(RegionType.DESERT).build();
+        val region3 = Region.builder().name("").id("3").regionType(RegionType.DESERT).build();
+        val region4 = Region.builder().name("").id("4").regionType(RegionType.DESERT).build();
+        val region5 = Region.builder().name("").id("5").regionType(RegionType.DESERT).build();
         Player p1 = Player.builder().ign("mirak").discordID("MiraksId").faction(Faction.builder().name("Gondor").homeRegion(region).build()).uuid("MiraksUUID").build();
-        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").homeRegion(region).build()).uuid("vernonUUID").build();
-        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").homeRegion(region).build()).uuid("luksUUID").build();
-        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").homeRegion(region).build()).uuid("anedsUUID").build();
-        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").homeRegion(region).build()).uuid("anotherOneUUID").build();;
+        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").homeRegion(region2).build()).uuid("vernonUUID").build();
+        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").homeRegion(region3).build()).uuid("luksUUID").build();
+        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").homeRegion(region4).build()).uuid("anedsUUID").build();
+        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").homeRegion(region5).build()).uuid("anotherOneUUID").build();;
         RPChar rpChar = new RPChar(p5, "Sauron", "s","s", true, null);
         p5.addActiveRpChar(rpChar);
 
