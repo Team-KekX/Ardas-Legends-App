@@ -12,7 +12,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;

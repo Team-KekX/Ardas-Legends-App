@@ -11,6 +11,7 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Getter
 @Slf4j
 @RequiredArgsConstructor
-@ConfigurationProperties("ardaslegends.bot")
+@Configuration
 public class BotProperties {
 
     @Value("${ardaslegends.bot.token}")

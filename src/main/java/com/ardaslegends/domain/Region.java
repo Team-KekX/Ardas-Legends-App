@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 @Getter

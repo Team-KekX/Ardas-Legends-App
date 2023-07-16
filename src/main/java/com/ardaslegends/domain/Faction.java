@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.javacord.api.entity.permission.Role;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 @Getter

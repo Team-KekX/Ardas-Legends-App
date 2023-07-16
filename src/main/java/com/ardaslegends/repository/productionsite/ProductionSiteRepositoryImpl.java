@@ -41,7 +41,7 @@ public class ProductionSiteRepositoryImpl extends QuerydslRepositorySupport impl
         QProductionSite qProductionSite = QProductionSite.productionSite;
 
         val fetchedSite = from(qProductionSite)
-                .where(qProductionSite.type.eq(type).and(qProductionSite.producedResource().resourceName.equalsIgnoreCase(resource)))
+                .where(qProductionSite.type.eq(type).and(qProductionSite.producedResource.resourceName.equalsIgnoreCase(resource)))
                 .fetchFirst();
 
         return Optional.ofNullable(fetchedSite);

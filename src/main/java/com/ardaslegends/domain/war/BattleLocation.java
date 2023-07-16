@@ -3,10 +3,10 @@ package com.ardaslegends.domain.war;
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.Region;
 
-import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Embeddable
 public class BattleLocation {

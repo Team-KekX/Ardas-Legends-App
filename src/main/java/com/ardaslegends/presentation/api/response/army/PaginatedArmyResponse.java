@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.presentation.api.response.war.PaginatedWarsResponse;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public record PaginatedArmyResponse(
         long id,
