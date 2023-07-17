@@ -49,12 +49,11 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     @ElementCollection(targetClass = EmbeddedProductionSite.class)
     @CollectionTable(name = "claimbuild_application_production_sites",
             joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_application_production_sites_")))
-    private Set<EmbeddedProductionSite> productionSites = new HashSet<>()
+    private Set<EmbeddedProductionSite> productionSites = new HashSet<>();
 
     @ElementCollection(targetClass = SpecialBuilding.class)
     @Enumerated(EnumType.STRING)
-    private List<SpecialBuilding> specialBuildings = new ArrayList<>() {
-    }
+    private List<SpecialBuilding> specialBuildings = new ArrayList<>();
     private String traders;
     private String siege;
     private String numberOfHouses;
