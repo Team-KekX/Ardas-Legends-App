@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 @Getter
 @Slf4j
@@ -49,7 +48,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
 
     @OneToMany
     @NotNull
-    private Set<Player> acceptedBy;
+    private Set<Player> acceptedBy = new HashSet<>();
 
     @PastOrPresent
     private LocalDateTime resolvedAt;

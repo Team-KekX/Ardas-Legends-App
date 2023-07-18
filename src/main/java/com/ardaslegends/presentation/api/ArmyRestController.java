@@ -2,7 +2,7 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.presentation.AbstractRestController;
-import com.ardaslegends.presentation.api.response.army.PaginatedArmyResponse;
+import com.ardaslegends.presentation.api.response.army.ArmyResponse;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.dto.army.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,11 +43,11 @@ public class ArmyRestController extends AbstractRestController {
 
     @Operation(summary = "Get Armies Paginated", description = "Retrieves a Page with a set of elements, parameters define the size, which Page you want and how its sorted")
     @GetMapping
-    public HttpEntity<Page<PaginatedArmyResponse>> getArmiesPaginated(Pageable pageable) {
+    public HttpEntity<Page<ArmyResponse>> getArmiesPaginated(Pageable pageable) {
         log.debug("Incoming getArmiesPaginated: Data [{}]", pageable.toString());
 
         Page<Army> pageDomain = wrappedServiceExecution(pageable, armyService::getArmiesPaginated);
-        Page<PaginatedArmyResponse> pageResponse = pageDomain.map(PaginatedArmyResponse::new);
+        Page<ArmyResponse> pageResponse = pageDomain.map(ArmyResponse::new);
 
         return ResponseEntity.ok(pageResponse);
     }

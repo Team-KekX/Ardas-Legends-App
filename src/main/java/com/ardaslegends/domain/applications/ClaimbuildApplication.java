@@ -15,10 +15,8 @@ import org.springframework.core.annotation.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,17 +49,17 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
     @ElementCollection(targetClass = EmbeddedProductionSite.class)
     @CollectionTable(name = "claimbuild_application_production_sites",
             joinColumns = @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_application_production_sites_")))
-    private Set<EmbeddedProductionSite> productionSites;
+    private Set<EmbeddedProductionSite> productionSites = new HashSet<>();
 
     @ElementCollection(targetClass = SpecialBuilding.class)
     @Enumerated(EnumType.STRING)
-    private List<SpecialBuilding> specialBuildings;
+    private List<SpecialBuilding> specialBuildings = new ArrayList<>();
     private String traders;
     private String siege;
     private String numberOfHouses;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Player> builtBy;
+    private Set<Player> builtBy = new HashSet<>();
 
 
     public ClaimbuildApplication(Player applicant, String claimbuildName, Faction ownedBy, Region region, ClaimBuildType claimBuildType, Coordinate coordinate, Set<EmbeddedProductionSite> productionSites, List<SpecialBuilding> specialBuildings, String traders, String siege, String numberOfHouses, Set<Player> builtBy) {
