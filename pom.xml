@@ -294,7 +294,7 @@
                 <executions>
                     <execution>
                         <id>asciidoc-to-html</id>
-                        <phase>generate-resources</phase>
+                        <phase>none</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
