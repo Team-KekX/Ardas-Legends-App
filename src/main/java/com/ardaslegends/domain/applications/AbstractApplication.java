@@ -16,6 +16,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -91,19 +92,44 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         return Collections.unmodifiableSet(acceptedBy);
     }
 
+    public Set<Player> getDeclinedB() {
+        return Collections.unmodifiableSet(declinedBy);
+    }
+
     public void addAcceptor(Player player) {
+        Objects.requireNonNull(player, "Player must not be null to vote");
+
         isStaffElseThrow(player);
 
         declinedBy.remove(player);
         val success = acceptedBy.add(player);
 
-        if(!success){
-            log.warn("Player [{}] already added their vote to the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerAlreadyVoted(player.getIgn());
-        }
-
+        isVoteSuccessfulElseThrow(player, success);
         voteCount = (short) acceptedBy.size();
         lastVoteAt = LocalDateTime.now();
+    }
+
+    public void addDecline(Player player) {
+        Objects.requireNonNull(player, "Player must not be null to vote");
+        isStaffElseThrow(player);
+
+        acceptedBy.remove(player);
+        val success = declinedBy.add(player);
+
+        isVoteSuccessfulElseThrow(player, success);
+
+        if(voteCount != acceptedBy.size()) {
+            voteCount = (short) acceptedBy.size();
+            lastVoteAt = LocalDateTime.now();
+        }
+    }
+
+    private static void isVoteSuccessfulElseThrow(Player player, boolean success) {
+        if(!success) {
+            val staffIgn = player.getIgn();
+            log.warn("Player [{}] already added their vote to the application", staffIgn);
+            throw RoleplayApplicationServiceException.playerAlreadyVoted(staffIgn);
+         }
     }
 
     private static void isStaffElseThrow(Player player) {
