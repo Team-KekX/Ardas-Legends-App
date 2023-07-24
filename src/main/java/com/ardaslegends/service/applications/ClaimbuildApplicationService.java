@@ -3,7 +3,6 @@ package com.ardaslegends.service.applications;
 import com.ardaslegends.domain.applications.ApplicationState;
 import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.domain.applications.EmbeddedProductionSite;
-import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.repository.ProductionSiteRepository;
 import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
@@ -14,7 +13,6 @@ import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
 import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
-import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.exceptions.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -186,7 +183,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
-    public void handleOpenRoleplayApplications() {
+    public void handleOpenClaimbuildApplications() {
         val startDateTime = LocalDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.debug("Starting scheduled handling of open claimbuild applications - System time: [{}]", startDateTime);
