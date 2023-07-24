@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -21,18 +21,18 @@ import java.util.Objects;
         property = "id")
 @Entity
 @Table(name = "movements")
-public final class Movement extends AbstractDomainEntity{
+public final class Movement extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "player_id")
-    private Player player;
+    @JoinColumn(name = "rpchar_id", foreignKey = @ForeignKey(name = "fk_movement_rpchar_id"))
+    private RPChar rpChar;
 
     @ManyToOne
-    @JoinColumn(name = "army_name")
+    @JoinColumn(name = "army_name", foreignKey = @ForeignKey(name = "fk_movement_army_name"))
     private Army army; //Is null when it's a Rp Char movement
 
     private Boolean isCharMovement; //Should be true when army = null
@@ -51,8 +51,8 @@ public final class Movement extends AbstractDomainEntity{
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(Player player, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
-        this.player = player;
+    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+        this.rpChar = rpChar;
         this.army = army;
         this.isCharMovement = isCharMovement;
         this.path = path;
@@ -84,7 +84,7 @@ public final class Movement extends AbstractDomainEntity{
     @Override
     public String toString() {
         return "Movement{" +
-                "player=" + player +
+                "roleplayCharacter=" + rpChar +
                 ", army=" + army +
                 ", isCharMovement=" + isCharMovement +
                 ", path=" + path +

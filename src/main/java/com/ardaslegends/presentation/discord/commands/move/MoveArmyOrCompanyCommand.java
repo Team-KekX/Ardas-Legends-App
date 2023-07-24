@@ -4,6 +4,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.service.MovementService;
@@ -26,7 +27,7 @@ public class MoveArmyOrCompanyCommand implements ALCommandExecutor {
     private final MovementService movementService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /move army-or-company request");
 
         User user = interaction.getUser();
@@ -46,12 +47,12 @@ public class MoveArmyOrCompanyCommand implements ALCommandExecutor {
         Movement movement = discordServiceExecution(dto, movementService::createArmyMovement, "Error while starting Army/Company Movement");
 
         Army army = movement.getArmy();
-        Player boundPlayer = army.getBoundTo();
+        Player boundPlayer = army.getBoundTo().getOwner();
 
         Integer foodCost = ServiceUtils.getFoodCost(movement.getPath());
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Started %s Movement".formatted(army.getArmyType().getName()))
                 .setDescription("The %s %s has started its movement towards region %s.\n%d Stacks of food were removed from food stockpile of faction %s"
                         .formatted(army.getArmyType().getName(), army.getName(), movement.getDestinationRegionId(), foodCost, army.getFaction().getName()))
@@ -64,6 +65,6 @@ public class MoveArmyOrCompanyCommand implements ALCommandExecutor {
                 .addInlineField("Food Cost", foodCost.toString())
                 .addInlineField("Faction Stockpile", army.getFaction().getFoodStockpile().toString())
                 .setThumbnail(getFactionBanner(army.getFaction().getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

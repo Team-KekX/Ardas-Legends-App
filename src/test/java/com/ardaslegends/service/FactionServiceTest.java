@@ -3,8 +3,8 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
-import com.ardaslegends.repository.FactionRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
 import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
@@ -13,10 +13,13 @@ import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,14 +40,15 @@ public class FactionServiceTest {
     void setup() {
         mockFactionRepository = mock(FactionRepository.class);
         mockPlayerRepository = mock(PlayerRepository.class);
-        factionService = new FactionService(mockFactionRepository, mockPlayerRepository);
+        factionService = Mockito.spy(new FactionService(mockFactionRepository, mockPlayerRepository));
+        Mockito.doNothing().when(factionService).recordMessageInErrorChannel(any());
 
         faction = Faction.builder().name("Gondor").foodStockpile(10).build();
-        player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChar(new RPChar()).build();
+        player = Player.builder().discordID("1234").ign("mirak551").faction(faction).rpChars(new HashSet<>(Set.of(RPChar.builder().active(true).build()))).build();
         dto = new UpdateFactionLeaderDto(faction.getName(), player.getDiscordID());
 
         when(mockPlayerRepository.findByDiscordID(player.getDiscordID())).thenReturn(Optional.of(player));
-        when(mockFactionRepository.findById(faction.getName())).thenReturn(Optional.of(faction));
+        when(mockFactionRepository.findFactionByName(faction.getName())).thenReturn(Optional.of(faction));
         when(mockFactionRepository.save(faction)).thenReturn(faction);
     }
 
@@ -87,7 +91,7 @@ public class FactionServiceTest {
     void ensureSetFactionLeaderThrowsSeWhenPlayerDoesNotHaveAnRpChar() {
         log.debug("Testing if setFactionLeader properly throws Se when player does not have an rpchar");
 
-        player.setRpChar(null);
+        player.setRpChars(new HashSet<>(1));
 
         log.debug("Calling factionService.setFactionLeader, expecting Se");
         var result = assertThrows(PlayerServiceException.class, () -> factionService.setFactionLeader(dto));
@@ -151,7 +155,7 @@ public class FactionServiceTest {
         // Assign
         String name = "Mordor";
 
-        when(mockFactionRepository.findById(name)).thenReturn(Optional.of(Faction.builder().name(name).build()));
+        when(mockFactionRepository.findFactionByName(name)).thenReturn(Optional.of(Faction.builder().name(name).build()));
 
         // Act
         var result = factionService.getFactionByName(name);
@@ -175,17 +179,17 @@ public class FactionServiceTest {
 
     @Test
     void ensureGetByFactionNameThrowsServiceExceptionWhenDatabaseDown() {
-        // Assign
-        String name = "Mordor";
+            // Assign
+            String name = "Mordor";
 
-        PersistenceException pEx = new PersistenceException("Database down");
+            PersistenceException pEx = new PersistenceException("Database down");
 
-        when(mockFactionRepository.findById(name)).thenThrow(pEx);
+            when(mockFactionRepository.findFactionByName(name)).thenThrow(pEx);
 
-        // Assert
-        var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
+            // Assert
+            var result = assertThrows(ServiceException.class, () -> factionService.getFactionByName(name));
 
-        assertThat(result.getCause()).isEqualTo(pEx);
+            assertThat(result.getCause()).isEqualTo(pEx);
     }
 
     @Test
@@ -194,12 +198,12 @@ public class FactionServiceTest {
 
         String name = "Mordor";
 
-        when(mockFactionRepository.findById(name)).thenReturn(Optional.empty());
+        when(mockFactionRepository.findFactionByName(name)).thenReturn(Optional.empty());
         when(mockFactionRepository.findAll()).thenReturn(List.of());
         // Assert
         var result = assertThrows(FactionServiceException.class, () -> factionService.getFactionByName(name));
 
-        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionWithNameFound(name, "").getMessage());
+        assertThat(result.getMessage()).isEqualTo(FactionServiceException.noFactionWithNameFoundAndAll(name, "").getMessage());
         log.info("Test passed: getFactionByName throws Se when no faction found in database");
     }
 

@@ -2,17 +2,21 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
-import com.ardaslegends.repository.ClaimBuildRepository;
-import com.ardaslegends.repository.FactionRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.service.dto.army.*;
 import com.ardaslegends.service.dto.unit.UnitTypeDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.exceptions.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +34,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
     private final PlayerService playerService;
     private final FactionRepository factionRepository;
     private final UnitTypeService unitTypeService;
-    private final ClaimBuildRepository claimBuildRepository;
+    private final ClaimbuildRepository claimBuildRepository;
+
+    public Page<Army> getArmiesPaginated(Pageable pageable) {
+        log.info("Getting page of armies with data [size:{},page:{}]", pageable.getPageSize(), pageable.getPageNumber());
+        return secureFind(pageable, armyRepository::findAll);
+    }
 
     @Transactional(readOnly = false)
     public Army createArmy(CreateArmyDto dto) {
@@ -43,7 +52,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Fetching required Data");
 
         log.trace("Fetching if an army with name [{}] already exists.", dto.name());
-        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findById);
+        Optional<Army> fetchedArmy = secureFind(dto.name(), armyRepository::findArmyByName);
 
         if(fetchedArmy.isPresent()) {
             log.warn("Army with name [{}] already exists", dto.name());
@@ -56,7 +65,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.debug("Assembling Units Map, fetching units");
 
         log.trace("Fetching Claimbuild with name [{}]", dto.claimBuildName());
-        Optional<ClaimBuild> fetchedClaimbuild = secureFind(dto.claimBuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> fetchedClaimbuild = secureFind(dto.claimBuildName(), claimBuildRepository::findClaimBuildByName);
 
         if(fetchedClaimbuild.isEmpty()) {
             log.warn("No ClaimBuild found with name [{}]", dto.claimBuildName());
@@ -69,7 +78,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Checking if the Player has the same faction as the Claimbuild");
         if(!inputClaimBuild.getOwnedBy().equals(fetchedPlayer.getFaction())) {
-            log.warn("Player [{}] and Claimbuild [{}] not in the same faction!");
+            log.warn("Player [{}] and Claimbuild [{}] not in the same faction!", fetchedPlayer.getIgn(), inputClaimBuild.getName());
             throw ArmyServiceException.cannotCreateArmyFromClaimbuildInDifferentFaction(fetchedPlayer.getFaction().getName(), inputClaimBuild.getOwnedBy().getName(), ArmyType.ARMY);
         }
 
@@ -277,7 +286,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         Army army = getArmyByName(dto.armyName());
 
-        targetPlayer.hasRpCharThrowExceptionOnFalse();
+        val targetCharacter = targetPlayer.getActiveCharacter()
+                .orElseThrow(PlayerServiceException::playerHasNoRpchar);
 
         // TODO: Check for Wanderer or Allied Faction
         log.debug("Checking if army and player are in the same faction");
@@ -301,27 +311,27 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if army and player are in the same region");
-        if (!army.getCurrentRegion().equals(targetPlayer.getRpChar().getCurrentRegion())) {
+        if (!army.getCurrentRegion().equals(targetCharacter.getCurrentRegion())) {
             log.warn("Army and player are not in the same region!");
-            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetPlayer.getRpChar().getName());
+            throw ArmyServiceException.notInSameRegion(army.getArmyType(), army.getName(), targetCharacter.getName());
         }
 
         log.debug("Checking if army is already bound to player");
         if (army.getBoundTo() != null) {
             log.warn("Army [{}] is already bound to another player [{}]!", army.getName(), army.getBoundTo());
-            throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getIgn());
+            throw ArmyServiceException.alreadyBound(army.getArmyType(), army.getName(), army.getBoundTo().getOwner().getIgn());
         }
 
         log.debug("Checking if rpchar is injured");
-        if(targetPlayer.getRpChar().getInjured()) {
-            log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChar());
-            throw ArmyServiceException.cannotBindCharInjured(targetPlayer.getRpChar().getName(), army.getName());
+        if(targetCharacter.getInjured()) {
+            log.warn("Target Character [{}] is injured and cannot be bound to army!", targetPlayer.getRpChars());
+            throw ArmyServiceException.cannotBindCharInjured(targetCharacter.getName(), army.getName());
         }
 
         log.debug("Checking if rpchar is healing");
-        if(targetPlayer.getRpChar().getIsHealing()) {
-            log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChar());
-            throw ArmyServiceException.cannotBindCharHealing(targetPlayer.getRpChar().getName(), army.getName());
+        if(targetCharacter.getIsHealing()) {
+            log.warn("Target character [{}] is currently healing and cannot be bound to army!", targetPlayer.getRpChars());
+            throw ArmyServiceException.cannotBindCharHealing(targetCharacter.getName(), army.getName());
         }
 
         log.debug("Checking if army is in an active movement");
@@ -333,16 +343,16 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Checking if rp char is in an active movement");
-        Optional<Movement> charActiveMove = movementRepository.findMovementByPlayerAndIsCurrentlyActiveTrue(targetPlayer);
+        Optional<Movement> charActiveMove = movementRepository.findMovementByRpCharAndIsCurrentlyActiveTrue(targetCharacter);
         if(charActiveMove.isPresent()) {
             String destinationRegion =  charActiveMove.get().getDestinationRegionId();
             log.warn("Character [{}] is currently moving to region [{}] and therefore cannot be bound to army [{}]!", targetPlayer, destinationRegion, army.getName());
-            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(),targetPlayer.getRpChar().getName(), destinationRegion);
+            throw ArmyServiceException.cannotBindCharIsMoving(army.getArmyType(), targetCharacter.getName(), destinationRegion);
         }
 
         log.debug("Binding army [{}] to player [{}]...", army.getName(), targetPlayer);
-        army.setBoundTo(targetPlayer);
-        targetPlayer.getRpChar().setBoundTo(army);
+        army.setBoundTo(targetCharacter);
+        targetCharacter.setBoundTo(army);
 
         log.debug("Persisting newly changed army...");
         army = secureSave(army, armyRepository);
@@ -372,9 +382,9 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.debug("Getting the currently bound player");
 
-        Player boundPlayer = army.getBoundTo();
+        RPChar boundCharacter = army.getBoundTo();
         log.trace("Checking if the army has a player bound to it");
-        if(boundPlayer == null) {
+        if(boundCharacter == null) {
             log.warn("There is no player bound to the army [{}]", army);
             throw ArmyServiceException.noPlayerBoundToArmy(army.getArmyType(), army.getName());
         }
@@ -406,7 +416,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Optional<Movement> activeMovement = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(army);
         if(activeMovement.isPresent()) {
             String path = ServiceUtils.buildPathString(activeMovement.get().getPath());
-            log.warn("Army [{}] is currently in a movement (Path: [{}]) - cannot unbind from player [{}]", army, path, boundPlayer);
+            log.warn("Army [{}] is currently in a movement (Path: [{}]) - cannot unbind from player [{}]", army, path, boundCharacter);
             throw ArmyServiceException.cannotUnbindMovingArmy(army.getArmyType(), army.getName());
         }
 
@@ -418,12 +428,12 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         log.trace("Setting bound player to null");
         army.setBoundTo(null);
-        boundPlayer.getRpChar().setBoundTo(null);
+        boundCharacter.setBoundTo(null);
 
         log.trace("Persisting army");
         army = secureSave(army, armyRepository);
 
-        log.info("Unbound player [{}] from army [{}] (faction [{}])", boundPlayer, army, army.getFaction());
+        log.info("Unbound player [{}] from army [{}] (faction [{}])", boundCharacter, army, army.getFaction());
         return army;
     }
 
@@ -442,7 +452,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         Player player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
         log.trace("Fetching claimbuild)");
-        Optional<ClaimBuild> optionalClaimBuild = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> optionalClaimBuild = secureFind(dto.claimbuildName(), claimBuildRepository::findClaimBuildByName);
 
         if(optionalClaimBuild.isEmpty()) {
             log.warn("Claimbuild with name [{}] does not exist in database", dto.claimbuildName());
@@ -555,7 +565,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         if(army.getBoundTo() != null) {
-            army.getBoundTo().getRpChar().setBoundTo(null);
+            army.getBoundTo().setBoundTo(null);
             army.setBoundTo(null);
         }
 
@@ -632,7 +642,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         }
 
         log.debug("Fetching claimbuild [{}]", dto.claimbuildName());
-        Optional<ClaimBuild> foundCb = secureFind(dto.claimbuildName(), claimBuildRepository::findById);
+        Optional<ClaimBuild> foundCb = secureFind(dto.claimbuildName(), claimBuildRepository::findClaimBuildByName);
         if(foundCb.isEmpty()) {
             log.warn("Found no claimbuild with name [{}]", dto.claimbuildName());
             throw ClaimBuildServiceException.noCbWithName(dto.claimbuildName());
@@ -681,7 +691,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
 
         if(fetchedFaction.isEmpty()) {
             log.warn("No faction found with name [{}] in database", factionName);
-            throw FactionServiceException.noFactionWithNameFound(factionName, factionName);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(factionName, factionName);
         }
 
         log.debug("Calculating upkeep of faction [{}]", factionName);
@@ -703,7 +713,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         List<UpkeepDto> upkeepDtoList = new ArrayList<>();
 
         log.debug("Iterating through factions:");
-        factions.parallelStream().
+        factions.stream().
                 forEach(faction -> {
                     int armyCount = (int) faction.getArmies().stream()
                             .filter(army -> ArmyType.ARMY.equals(army.getArmyType()))

@@ -5,12 +5,14 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.dto.army.BindArmyDto;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -28,7 +30,7 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /bind army-or-company request");
 
         User user = interaction.getUser();
@@ -46,8 +48,8 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
 
         log.trace("Calling armyService");
         Army army = discordServiceExecution(dto, armyService::bind, "Error while binding to Army/Company");
-        Player player = army.getBoundTo();
-        RPChar rpChar = player.getRpChar();
+        Player player = army.getBoundTo().getOwner();
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
 
         String armyType = army.getArmyType().getName();
 
@@ -59,7 +61,7 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
         }
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Bound to %s".formatted(armyType))
                 .setDescription("%s - %s has been bound to the %s %s".formatted(rpChar.getName(), rpChar.getTitle(), armyType, army.getName()))
                 .setColor(ALColor.GREEN)
@@ -69,6 +71,6 @@ public class BindArmyOrCompanyCommand implements ALCommandExecutor {
                 .addInlineField("%s Faction".formatted(armyType), army.getFaction().getName())
                 .addInlineField("Current Region", army.getCurrentRegion().getId())
                 .setThumbnail(thumbnail)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

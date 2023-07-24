@@ -1,31 +1,45 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.Player;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.presentation.discord.config.BotProperties;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Slf4j
 public class AbstractServiceTest {
 
+    BotProperties properties;
+
     PlayerService service;
     PlayerRepository mockRepository;
+    private DiscordApi mockDiscordApi;
+    private BotProperties mockProperties;
 
     @BeforeEach
     void setup() {
         mockRepository = mock(PlayerRepository.class);
-        service = new PlayerService(mockRepository, null, null);
+        mockProperties = mock(BotProperties.class);
+        when(mockProperties.getErrorChannel()).thenReturn(mock(TextChannel.class));
+        mockDiscordApi = mock(DiscordApi.class);
+        service = Mockito.spy(new PlayerService(mockRepository, null, null, mockDiscordApi, mockProperties));
+
+        Mockito.doNothing().when(service).recordMessageInErrorChannel(any());
     }
 
     @Test
@@ -78,13 +92,13 @@ public class AbstractServiceTest {
         log.trace("Initializing mock methods");
         when(mockRepository.findByDiscordID("1")).thenReturn(Optional.of(returnPlayer));
         when(mockRepository.findPlayerByIgn("2")).thenReturn(Optional.of(returnPlayer));
-        when(mockRepository.findPlayerByRpChar("3")).thenReturn(Optional.of(returnPlayer));
+        when(mockRepository.queryPlayerByRpChar("3")).thenReturn(Optional.of(returnPlayer));
 
         // Act
         log.trace("Executing methods");
         var result1 = service.secureFind("1", mockRepository::findByDiscordID);
         var result2 = service.secureFind("2", mockRepository::findPlayerByIgn);
-        var result3 = service.secureFind("3", mockRepository::findPlayerByRpChar);
+        var result3 = service.secureFind("3", mockRepository::queryPlayerByRpChar);
 
         // Assert
         log.trace("Asserting that all methods returned correct objects");

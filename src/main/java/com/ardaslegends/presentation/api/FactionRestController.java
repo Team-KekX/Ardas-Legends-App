@@ -2,12 +2,15 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.faction.PaginatedFactionResponse;
 import com.ardaslegends.service.FactionService;
 import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
 import com.ardaslegends.service.dto.faction.UpdateFactionLeaderResponseDto;
 import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,16 @@ public class FactionRestController extends AbstractRestController {
     private static final String PATH_GET_STOCKPILE_INFO = "/get/stockpile/info/{faction}";
 
     private final FactionService factionService;
+
+    @GetMapping
+    public ResponseEntity<Page<PaginatedFactionResponse>> getFactionsPaginated(Pageable pageable) {
+        log.debug("Incoming getFactionsPaginated request, paginated data [{}]", pageable);
+
+        Page<Faction> pageDomain = wrappedServiceExecution(pageable, factionService::getFactionsPaginated);
+        var pageResponse = pageDomain.map(PaginatedFactionResponse::new);
+
+        return ResponseEntity.ok(pageResponse);
+    }
 
     @PatchMapping(PATH_UPDATE_FACTION_LEADER)
     public ResponseEntity<UpdateFactionLeaderResponseDto> setFactionLeader(@RequestBody UpdateFactionLeaderDto dto) {

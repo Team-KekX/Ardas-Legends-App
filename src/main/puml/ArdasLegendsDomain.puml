@@ -1,4 +1,46 @@
 @startuml
+
+class War <<Entity>> {
+    id_Key: Long
+    name: String
+    aggressors: List<WarParticipants>
+    defenders: List<WarParticipants>
+    startDate: LocalDateTime
+    battles: List<Battle>
+}
+
+class WarParticipant <<Entity>> {
+    id_Key: Long
+    war_key: Long
+    warParticipant: Faction
+    initialParty: Boolean
+    joiningDate: LocalDateTime
+}
+
+class Battle <<Entity>> {
+    id_Key: Long
+    declaredDate: LocalDateTime
+    timeFrozenFrom: LocalDateTime
+    timeFrozenUntil: LocalDateTime
+    agreedBattleDate: LocalDateTime
+    attackers: List<BattleParticipant>
+    defenders: List<BattleParticipant>
+    battleLocation: BattleLocation
+}
+
+class BattleParticipant <<Entity>> {
+    id_Key: Long
+    battle_Key: Long
+    army: Army
+    boundTo: Player
+}
+
+class BattleLocation <<Value Object>> {
+    region: Region
+    fieldBattle: Boolean
+    claimbuild: ClaimBuild
+}
+
 class Region <<Entity>> {
     id_Key: String
     name: String
@@ -16,7 +58,8 @@ enum RegionType {
 }
 
 class ClaimBuild <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
     region: Region
     type: ClaimBuildType
     ownedBy: Faction
@@ -42,8 +85,44 @@ enum ClaimBuildType {
     STRONGHOLD
 }
 
+enum InitialFaction {
+    ANGMAR
+    BLUE_MOUNTAINS
+    BREE
+    DALE
+    DOL_AMROTH
+    DOL_GULDUR
+    DORWINION
+    DUNLAND
+    DURINS_FOLK
+    RHUDEL
+    LOTHLORIEN
+    GONDOR
+    GULF_OF_HARAD
+    GUNDABAD
+    HALF_TROLL
+    LINDON
+    HOBBIT
+    MORDOR
+    MORWAITH
+    HARNENNOR
+    DUNEDAIN
+    RIVENDELL
+    ROHAN
+    NOMADS
+    TAURETHRIM
+    UMBAR
+    ISENGARD
+    WANDERER
+    WOOD_ELVES
+    REBELLION
+    CUSTOM
+}
+
 class Faction <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
+    initialFaction: InitialFaction
     factionLeader: Player
     armies: List<Army> |By Army|
     players:  List<Player> |By Player|
@@ -51,11 +130,15 @@ class Faction <<Entity>> {
     claimbuilds: List<ClaimBuilds> |By Claimbuild|
     allies: List<Faction>
     colorcode: String
+    factionRoleId: Long
     homeRegion: Region
     factionBuffDescr: String
+    aliases: List<String>
+
 }
 
 class Player <<Entity>> {
+    id_Key: Long
     ign: String
     uuid: String
     discordID: String
@@ -81,8 +164,29 @@ class Coordinate <<Value Object>> {
 class ProductionSite <<Entity>> {
     id_Key: Long
     type: ProductionSiteType
-    producedResource: String
+    producedResource: Resource
     amountProduced: Integer
+}
+
+class Resource <<Entity>> {
+    id_Key: Long
+    minecraftItemId: String
+    name: String
+    resourceType: ResourceType
+}
+
+enum ResourceType {
+    ORE
+    GEM
+    STONE
+    SHOVELABLE
+    WOOD
+    MINERAL
+    SIEGE
+    COIN
+    MEAT
+    CROP
+    OTHER
 }
 
 class ProductionClaimbuild <<Entity>> {
@@ -120,7 +224,8 @@ enum SpecialBuilding {
 }
 
 class Army <<Entity>> {
-    name_Key: String
+    id_Key: Long
+    name: String
     armyType: ArmyType
     faction: Faction
     currentRegion: Region
@@ -158,13 +263,27 @@ Faction -right Player
 Faction -left Army
 Faction -up- ClaimBuild
 Faction - Faction
+Faction -right- WarParticipant
+Faction -right- InitialFaction
+
+WarParticipant -up- War
+War -right- Battle
+Battle -up- BattleLocation
+Battle -down- BattleParticipant
+BattleParticipant -left- Player
+BattleParticipant -left- Army
+
+
 
 ClaimBuild - Player
 ClaimBuild -right- ClaimBuildType
 ClaimBuild -up- Coordinate
 ClaimBuild - Army
+ClaimBuild -up- BattleLocation
 
 ProductionSite - ProductionClaimbuild
+ProductionSite -down- Resource
+Resource -left- ResourceType
 ProductionClaimbuild - ClaimBuild
 SpecialBuilding - ClaimBuild
 

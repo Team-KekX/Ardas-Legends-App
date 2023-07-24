@@ -2,7 +2,7 @@ package com.ardaslegends.domain;
 
 import lombok.*;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 @Getter

@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
 import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,10 +24,10 @@ public class UpdateRpcharGearCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /update rpchar gear request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         User user = getUserOption("player", options);
@@ -43,13 +44,13 @@ public class UpdateRpcharGearCommand implements ALStaffCommandExecutor {
         RPChar rpChar = discordServiceExecution(dto, playerService::updateCharacterGear, "Error while updating Rp Char Gear");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Updated RpChar Gear")
                 .setDescription("Successfully changed gear of Roleplay Character %s".formatted(rpChar.getName()))
                 .addInlineField("Rp Char", rpChar.getName())
                 .addInlineField("New Gear", rpChar.getGear())
                 .addInlineField("User", user.getMentionTag())
                 .setColor(ALColor.YELLOW)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

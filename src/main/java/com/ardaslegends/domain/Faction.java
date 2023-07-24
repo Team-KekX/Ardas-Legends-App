@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
+import org.javacord.api.entity.permission.Role;
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import jakarta.persistence.*;
+import java.util.*;
 
 @Getter
 @Setter
@@ -23,10 +22,16 @@ import java.util.Set;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name")
-public final class Faction extends AbstractDomainEntity {
+public final class Faction extends AbstractDomainObject {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
     private String name; //unique, name of the faction
+
+    private InitialFaction initialFaction;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Player leader; //the player who leads this faction
@@ -43,10 +48,16 @@ public final class Faction extends AbstractDomainEntity {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "faction_allies",
-            joinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction"))},
-            inverseJoinColumns = { @JoinColumn(name = "ally_faction", foreignKey = @ForeignKey(name = "fk_ally_faction")) })
+            joinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction_allies_faction"))},
+            inverseJoinColumns = { @JoinColumn(name = "ally_faction", foreignKey = @ForeignKey(name = "fk_faction_allies_ally_faction")) })
     private List<Faction> allies; //allies of this faction
     private String colorcode; //the faction's colorcode, used for painting the map
+
+    @Column(name = "role_id", unique = true)
+    private Long factionRoleId; // The roleId of the factionRole so that it can be pinged
+
+    @Transient // Not persisted into DB, only for runtime
+    private Role factionRole;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Region homeRegion; //Homeregion of the faction
@@ -56,6 +67,10 @@ public final class Faction extends AbstractDomainEntity {
 
     @Column(name = "food_stockpile")
     private Integer foodStockpile = 0; // Food stacks in a factions stockpile, these are used for army movements
+
+    @ElementCollection
+    @CollectionTable(name = "faction_aliases", joinColumns = @JoinColumn(name = "faction_id", foreignKey = @ForeignKey(name = "fk_faction_aliases_faction_id")))
+    private Set<String> aliases = new HashSet<>();
 
     public Faction(String name, Player leader, List<Army> armies, List<Player> players, Set<Region> regions, List<ClaimBuild> claimBuilds, List<Faction> allies, String colorcode, Region homeRegion, String factionBuffDescr) {
         this.name = name;

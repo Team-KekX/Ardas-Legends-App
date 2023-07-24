@@ -2,8 +2,8 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
-import com.ardaslegends.repository.FactionRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.faction.FactionRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.dto.UpdateFactionLeaderDto;
 import com.ardaslegends.service.dto.faction.UpdateStockpileDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
@@ -11,6 +11,9 @@ import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,10 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
 
     private final PlayerRepository playerRepository;
 
+    public Page<Faction> getFactionsPaginated(Pageable pageable) {
+        var page = secureFind(pageable, factionRepository::findAll);
+        return page;
+    }
     @Transactional(readOnly = false)
     public Faction addToStockpile(UpdateStockpileDto dto) {
         log.debug("Updating stockpile of faction with data [{}]",dto);
@@ -102,12 +109,12 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         }
 
         log.debug("Checking if player has an RpChar");
-        if(player.getRpChar() == null) {
+        val character = player.getActiveCharacter().orElseThrow(() -> {
             log.warn("Player [ign:{}] does not have an RpChar and cannot be leader", player.getIgn());
-            throw PlayerServiceException.playerHasNoRpchar();
-        }
+            return PlayerServiceException.playerHasNoRpchar();
+        });
 
-        log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), player.getRpChar().getName());
+        log.debug("Player [ign:{}] has an rpchar [name:{}]", player.getIgn(), character.getName());
 
         String oldLeaderIgn = faction.getLeader() == null ? "No Leader" : faction.getLeader().getIgn();
         log.debug("Faction [{}] current leader [ign:{}], setting it to new player [ign:{}]", faction.getName(),oldLeaderIgn, player.getIgn());
@@ -135,7 +142,7 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
         }
 
         Player previousLeader = factionRm.getLeader();
-        log.trace("RmFactionLeader: Faction Leader to be removed is [{},{}]", previousLeader.getIgn(), previousLeader.getRpChar().getName());
+        log.trace("RmFactionLeader: Faction Leader to be removed is [{}]", previousLeader.getIgn());
         factionRm.setLeader(null);
 
         log.trace("RmFactionLeader: removed leader, saving faction");
@@ -153,18 +160,55 @@ public class FactionService extends AbstractService<Faction, FactionRepository>{
             log.warn("Faction name is blank");
             throw new IllegalArgumentException("Faction name must not be blank!");
         }
-        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findById);
+        Optional<Faction> fetchedFaction = secureFind(name, factionRepository::findFactionByName);
         
         if (fetchedFaction.isEmpty()) {
             log.warn("No faction found with name {}", name);
+            // TODO: This is stupid as fuck, find other solution
             List<Faction> allFactions = factionRepository.findAll();
             String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
-            throw FactionServiceException.noFactionWithNameFound(name, allFactionString);
+            throw FactionServiceException.noFactionWithNameFoundAndAll(name, allFactionString);
         }
         log.debug("Successfully fetched faction [{}]", fetchedFaction);
 
         return fetchedFaction.get();
 
+    }
+
+    @Transactional(readOnly = false)
+    public Faction setFactionRoleId(String factionName, Long roleId) {
+        log.debug("SetFactionRole: Setting roleId of faction [{}] to [{}]", factionName, roleId);
+        Objects.requireNonNull(roleId, "RoleId must not be null");
+        Objects.requireNonNull(factionName, "FactionName must not be null");
+
+        log.trace("Checkign if roleId [{}] is already used", roleId);
+        var fetchedFaction = secureFind(roleId, factionRepository::findFactionByFactionRoleId);
+
+        if(fetchedFaction.isPresent()) {
+            log.warn("RoleId [{}] is already used by Faction [{}]", roleId, fetchedFaction.get());
+            throw FactionServiceException.roleIdAlreadyUsed(roleId, fetchedFaction.get().getName());
+        }
+
+        log.trace("Fetching faction with name [{}]", factionName);
+        fetchedFaction = secureFind(factionName, factionRepository::findFactionByName);
+
+        if(fetchedFaction.isEmpty()) {
+            log.warn("Faction with name [{}] does not exist", factionName);
+            List<Faction> allFactions = factionRepository.findAll();
+            String allFactionString = allFactions.stream().map(Faction::getName).collect(Collectors.joining(", "));
+            throw FactionServiceException.noFactionWithNameFoundAndAll(factionName, allFactionString);
+        }
+
+        Faction faction = fetchedFaction.get();
+        log.debug("Found faction [{}], changing roleId", faction.getName());
+
+        faction.setFactionRoleId(roleId);
+
+        log.debug("Persisting Faction [{}] with roleId [{}]", faction.getName(), faction.getFactionRoleId());
+        faction = secureSave(faction, factionRepository);
+
+        log.debug("New IDDDDD [{}]", faction.getFactionRoleId());
+        return faction;
     }
 
     public Faction save(Faction faction) {

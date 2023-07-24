@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.update.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -23,10 +24,10 @@ public class UpdateArmyPaidCommand implements ALStaffCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Handling /update army paid command, fetching option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         String armyName = getStringOption("army", options);
         log.trace("UpdateArmyPaid: Army name is [{}]", armyName);
@@ -44,13 +45,13 @@ public class UpdateArmyPaidCommand implements ALStaffCommandExecutor {
                 ? "Setting isPaid of Army " + army.getName() + "to true. \nThis indicates that the army has been paid for!"
                 : "Setting isPaid of Army " + army.getName() + "to false.\nThis indicates that the creation of the army still needs to be paid for!";
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Payment received!")
                 .setDescription(description)
                 .addInlineField("Army", army.getName())
                 .addInlineField("IsPaid", army.getIsPaid().toString())
                 .setColor(ALColor.YELLOW)
-                .setTimestampToNow();
+                .setTimestampToNow());
 
     }
 }

@@ -1,18 +1,21 @@
 package com.ardaslegends.repository;
 
-import com.ardaslegends.domain.Faction;
-import com.ardaslegends.domain.Player;
-import com.ardaslegends.domain.RPChar;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.repository.player.PlayerRepository;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@DataJpaTest(properties = {"spring.sql.init.mode=never"})
+@ActiveProfiles("test")
 public class PlayerRepositoryTest {
 
     @Autowired
@@ -20,13 +23,18 @@ public class PlayerRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Player p1 = Player.builder().ign("mirak").discordID("MiraksId").faction(Faction.builder().name("Gondor").build()).uuid("MiraksUUID").build();
-        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").build()).uuid("vernonUUID").build();
-        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").build()).uuid("luksUUID").build();
-        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").build()).uuid("anedsUUID").build();
-        RPChar rpChar = new RPChar("Sauron", "s","s", true,null, null, false, false, null, null);
-        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").build()).uuid("anotherOneUUID").rpChar(rpChar).build();;
-
+        val region = Region.builder().name("").id("1").regionType(RegionType.DESERT).build();
+        val region2 = Region.builder().name("").id("2").regionType(RegionType.DESERT).build();
+        val region3 = Region.builder().name("").id("3").regionType(RegionType.DESERT).build();
+        val region4 = Region.builder().name("").id("4").regionType(RegionType.DESERT).build();
+        val region5 = Region.builder().name("").id("5").regionType(RegionType.DESERT).build();
+        Player p1 = Player.builder().ign("mirak").discordID("MiraksId").faction(Faction.builder().name("Gondor").homeRegion(region).build()).uuid("MiraksUUID").build();
+        Player p2 = Player.builder().ign("vernon").discordID("vernonId").faction(Faction.builder().name("Mordor").homeRegion(region2).build()).uuid("vernonUUID").build();
+        Player p3 = Player.builder().ign("luk").discordID("luksId").faction(Faction.builder().name("Arnor").homeRegion(region3).build()).uuid("luksUUID").build();
+        Player p4 = Player.builder().ign("aned").discordID("anedsId").faction(Faction.builder().name("Rivendell").homeRegion(region4).build()).uuid("anedsUUID").build();
+        Player p5 = Player.builder().ign("anotherOne").discordID("anotherOnesId").faction(Faction.builder().name("SecretNewFac").homeRegion(region5).build()).uuid("anotherOneUUID").build();;
+        RPChar rpChar = new RPChar(p5, "Sauron", "s","s", true, null);
+        p5.addActiveRpChar(rpChar);
 
         repository.saveAll(List.of(p1,p2,p3,p4,p5));
     }
@@ -43,8 +51,26 @@ public class PlayerRepositoryTest {
         // Assert
         assertThat(query.isPresent()).isTrue();
         assertThat(query.get().getDiscordID()).isEqualTo(discordId);
+    }
 
+    @Test
+    void ensureQueryByDiscordIdWorks() {
+        String discordId=  "MiraksId";
 
+        val query = repository.queryByDiscordId(discordId);
+
+        assertThat(query).isNotNull();
+        assertThat(query.getDiscordID()).isEqualTo(discordId);
+    }
+
+    @Test
+    void ensureQueryByDiscordIdWithArraysWorks() {
+        String[] discordIds = { "MiraksId", "vernonId", null, null, "luksId", "testIfFails" };
+
+        var query = repository.queryAllByDiscordIds(discordIds);
+
+        assertThat(query).isNotNull();
+        assertThat(query.size()).isEqualTo(3);
     }
 
     @Test
@@ -64,15 +90,15 @@ public class PlayerRepositoryTest {
     void ensureFindByRPCharWorks() {
         // Assign
 
-        RPChar rpChar2 = new RPChar("Sauron", "e", "e",true, null,null, false, false, null, null);
+        val rpChar2 = RPChar.builder().name("Sauron").title("e").gear("e").pvp(true).build();
 
         // Act
-        var result = repository.findPlayerByRpChar(rpChar2.getName());
+        var result = repository.queryPlayerByRpChar(rpChar2.getName());
 
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.isPresent()).isTrue();
-        assertThat(result.get().getRpChar().getGear()).isNotEqualTo(rpChar2.getGear());
+        assertThat(result.get().getActiveCharacter().get().getGear()).isNotEqualTo(rpChar2.getGear());
 
     }
 
@@ -80,10 +106,10 @@ public class PlayerRepositoryTest {
     void ensureFindByRPCharReturnsEmptyOptionalWhenNothingFound() {
         // Assign
 
-        RPChar rpChar2 = new RPChar("SomebodyThatIUsedToKnoooow", "e", "e", true, null,null, false, false, null, null);
+        val rpChar2 = RPChar.builder().name("SSomebodyThatIUsedToKnoooow").title("e").gear("e").pvp(true).build();
 
         // Act
-        var result = repository.findPlayerByRpChar(rpChar2.getName());
+        var result = repository.queryPlayerByRpChar(rpChar2.getName());
 
         // Assert
         assertThat(result).isNotNull();

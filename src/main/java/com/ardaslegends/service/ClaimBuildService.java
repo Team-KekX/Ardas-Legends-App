@@ -1,9 +1,9 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.repository.ClaimBuildRepository;
+import com.ardaslegends.repository.claimbuild.ClaimbuildRepository;
 import com.ardaslegends.repository.ProductionSiteRepository;
-import com.ardaslegends.repository.RegionRepository;
+import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
@@ -12,10 +12,12 @@ import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -23,14 +25,18 @@ import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
-public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRepository> {
+public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRepository> {
 
-    private final ClaimBuildRepository claimbuildRepository;
+    private final ClaimbuildRepository claimbuildRepository;
     private final RegionRepository regionRepository;
     private final ProductionSiteRepository productionSiteRepository;
 
     private final FactionService factionService;
     private final PlayerService playerService;
+
+    public Page<ClaimBuild> getClaimbuildsPaginated(Pageable pageable) {
+        return secureFind(pageable, claimbuildRepository::findAll);
+    }
 
     @Transactional(readOnly = false)
     public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
@@ -65,7 +71,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.trace("Checking if claimbuild with name [{}] already exists", dto.name());
         log.trace("Fetching claimbuild with name [{}]", dto.name());
-        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findById);
+        Optional<ClaimBuild> existingClaimbuild = secureFind(dto.name(), claimbuildRepository::findClaimBuildByName);
 
         log.trace("Checking if a claimbuild was found");
         if (existingClaimbuild.isPresent() && isNewlyCreated) {
@@ -136,8 +142,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.regionIsNotClaimableForFaction(region.getId(), faction.getName());
             }
 
-            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate, new ArrayList<>(), new ArrayList<>(), null,
-                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy, type.getFreeArmies(), type.getFreeTradingCompanies());
+            claimBuild = new ClaimBuild(dto.name(), region, type, faction, coordinate,
+                    specialBuildings, dto.traders(), dto.siege(), dto.numberOfHouses(), builtBy);
 
             if(! (type.equals(ClaimBuildType.HAMLET) || type.equals(ClaimBuildType.KEEP))) {
                 log.debug("Claimbuild is not hamlet or keep, claiming region [{}] for faction [{}]", region.getId(), faction.getName());
@@ -212,8 +218,8 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
         Objects.requireNonNull(name, "Name must not be null");
         ServiceUtils.checkBlankString(name, "Name");
 
-        log.debug("Fetching unit with name [{}]", name);
-        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findById);
+        log.debug("Fetching claimbuild with name [{}]", name);
+        Optional<ClaimBuild> fetchedBuild = secureFind(name, claimbuildRepository::findClaimBuildByName);
 
         if(fetchedBuild.isEmpty()) {
             log.warn("No Claimbuild found with name [{}]", name);
@@ -222,6 +228,24 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
 
         log.debug("Successfully returning Claimbuild with name [{}]", name);
         return fetchedBuild.get();
+    }
+
+    public List<ClaimBuild> getClaimBuildsByNames(String[] names) {
+        log.debug("Getting Claimbuild with names [{}]", (Object) names);
+
+        Objects.requireNonNull(names, "Names must not be null");
+        Arrays.stream(names).forEach(str -> ServiceUtils.checkBlankString(str, "Name"));
+
+        log.debug("Fetching claimbuilds with names [{}]", (Object) names);
+        List<ClaimBuild> fetchedClaimbuilds = secureFind(names, claimbuildRepository::findClaimBuildsByNames);
+
+        if(fetchedClaimbuilds.isEmpty()) {
+            log.warn("No Claimbuild found with names [{}]", (Object) names);
+            throw ClaimBuildServiceException.noCbWithName(Arrays.toString(names));
+        }
+
+        log.debug("Successfully returning Claimbuilds found with names [{}]", (Object) names);
+        return fetchedClaimbuilds;
     }
 
     public Set<Player> createBuiltByFromString(String builtByString) {
@@ -279,7 +303,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
             }
 
             log.debug("Fetching Production Site with type [{}] and resource [{}]", type, resource);
-            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource);
+            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource_ResourceName);
 
             if(fetchedProdSite.isEmpty()) {
                 log.warn("No Production Site found for type [{}] and resource [{}]!", type, resource);
@@ -296,7 +320,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimBuildRep
                 throw ClaimBuildServiceException.invalidProductionSiteString(prodString);
             }
 
-            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getName());
+            ProductionClaimbuildId id = new ProductionClaimbuildId(fetchedProdSite.get().getId(), claimBuild.getId());
             ProductionClaimbuild productionClaimbuild = new ProductionClaimbuild(id, fetchedProdSite.get(), claimBuild, prodSiteAmount);
             productionSites.add(productionClaimbuild);
         }

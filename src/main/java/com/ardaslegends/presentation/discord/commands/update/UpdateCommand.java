@@ -366,6 +366,25 @@ public class UpdateCommand implements ALCommand {
                                                         .setRequired(true)
                                                         .build()
                                         ))
+                                        .build(),
+                                new SlashCommandOptionBuilder()
+                                        .setType(SlashCommandOptionType.SUB_COMMAND)
+                                        .setName("role")
+                                        .setDescription("Changes the faction role that gets pinged for that faction")
+                                        .setOptions(Arrays.asList(
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.STRING)
+                                                        .setName("faction-name")
+                                                        .setDescription("The faction of which the role gets changed")
+                                                        .setRequired(true)
+                                                        .build(),
+                                                new SlashCommandOptionBuilder()
+                                                        .setType(SlashCommandOptionType.ROLE)
+                                                        .setName("role")
+                                                        .setDescription("The role to which it gets changed")
+                                                        .setRequired(true)
+                                                        .build()
+                                        ))
                                         .build()
                         ))
                         .build(),
@@ -392,6 +411,7 @@ public class UpdateCommand implements ALCommand {
         commands.put("update army free-tokens", new UpdateArmyFreeTokensCommand(armyService));
 
         commands.put("update faction leader", new UpdateFactionLeaderCommand(factionService));
+        commands.put("update faction role", new UpdateFactionRoleCommand(factionService));
 
         commands.put("update claimmap", new UpdateClaimmapCommand(regionService));
         log.info("Finished initializing /update command");

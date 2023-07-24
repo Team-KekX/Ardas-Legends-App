@@ -3,7 +3,8 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
+import com.ardaslegends.service.exceptions.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public class ScheduleService {
         log.debug("Found [{}] active movements - continuing with handling", allActiveMoves.size());
 
         log.debug("Calling parallelStream handleSingleMovement");
-        allActiveMoves.parallelStream().forEach(movement -> handleSingleMovement(movement, startDateTime));
+        allActiveMoves.stream().forEach(movement -> handleSingleMovement(movement, startDateTime));
 
         log.debug("Saving all movements");
         allActiveMoves = movementService.saveMovements(allActiveMoves);
@@ -70,14 +71,14 @@ public class ScheduleService {
         log.debug("Found [{}] healing armies - continuing with handling", healingArmies.size());
 
         log.debug("Getting all characters that are healing");
-        List<Player> healingPlayers = playerRepository.findPlayerByRpCharIsHealingTrue();
+        List<Player> healingPlayers = playerRepository.queryPlayersWithHealingRpchars();
         log.debug("Found [{}] healing chars - continuing with handling", healingPlayers.size());
 
         log.debug("Calling parallelStream handleHealingArmy");
-        healingArmies.parallelStream().forEach(army -> handleHealingArmy(army, startDateTime));
+        healingArmies.stream().forEach(army -> handleHealingArmy(army, startDateTime));
 
         log.debug("Calling parallelStream handleHealingPlayer");
-        healingPlayers.parallelStream().forEach(player -> handleHealingPlayer(player, startDateTime));
+        healingPlayers.stream().forEach(player -> handleHealingPlayer(player, startDateTime));
 
         log.trace("Persisting data");
         healingArmies = armyService.saveArmies(healingArmies);
@@ -114,14 +115,14 @@ public class ScheduleService {
             PathElement destinationRegion = movement.getPath().get(movement.getPath().size()-1);
             if(movement.getIsCharMovement()) {
                 log.trace("Movement is char movement, setting current region to [{}]", destinationRegion);
-                movement.getPlayer().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+                movement.getRpChar().setCurrentRegion(destinationRegion.getRegion());
             }
             else {
                 log.trace("Movement is army movement, setting current region to [{}]", destinationRegion);
                 movement.getArmy().setCurrentRegion(destinationRegion.getRegion());
                 if(movement.getArmy().getBoundTo() != null) {
                     log.trace("Army is bound to a character, setting the character's region to [{}]", destinationRegion);
-                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(destinationRegion.getRegion());
+                    movement.getArmy().getBoundTo().setCurrentRegion(destinationRegion.getRegion());
                 }
             }
             log.debug("Setting isCurrentlyActive to false");
@@ -163,7 +164,7 @@ public class ScheduleService {
 
         Region currentRegion = null;
         if(movement.getIsCharMovement())
-            currentRegion = movement.getPlayer().getRpChar().getCurrentRegion();
+            currentRegion = movement.getRpChar().getCurrentRegion();
         else
             currentRegion = movement.getArmy().getCurrentRegion();
 
@@ -209,14 +210,14 @@ public class ScheduleService {
 
             if(movement.getIsCharMovement()) {
                 log.trace("Movement is char movement, setting current region to [{}]", nextPathRegion);
-                movement.getPlayer().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
+                movement.getRpChar().setCurrentRegion(nextPathRegion.getRegion());
             }
             else {
                 log.trace("Movement is army movement, setting current region to [{}]", nextPathRegion);
                 movement.getArmy().setCurrentRegion(nextPathRegion.getRegion());
                 if(movement.getArmy().getBoundTo() != null) {
                     log.trace("Army is bound to a character, setting the character's region to [{}]", nextPathRegion);
-                    movement.getArmy().getBoundTo().getRpChar().setCurrentRegion(nextPathRegion.getRegion());
+                    movement.getArmy().getBoundTo().setCurrentRegion(nextPathRegion.getRegion());
                 }
             }
 
@@ -229,7 +230,7 @@ public class ScheduleService {
             if(path.get(path.size()-1).equals(nextPathRegion)) {
                 if(movement.getIsCharMovement())
                     log.info("Movement of character [{}] with path [{}] reached its destination, setting isActive to false"
-                            , movement.getPlayer().getRpChar(), ServiceUtils.buildPathString(path));
+                            , movement.getRpChar(), ServiceUtils.buildPathString(path));
                 else
                     log.info("Movement of army [{}] with path [{}] reached its destination, setting isActive to false"
                             , movement.getArmy(), ServiceUtils.buildPathString(path));
@@ -288,7 +289,7 @@ public class ScheduleService {
         if(hoursLeft <= 0) {
             log.debug("Healing has less than or 0 hours left - completing it");
             log.debug("Healing all the units");
-            army.getUnits().parallelStream().forEach(unit -> unit.setAmountAlive(unit.getCount()));
+            army.getUnits().stream().forEach(unit -> unit.setAmountAlive(unit.getCount()));
             log.info("Army [{}] has finished its healing process!", army.getName());
             army.resetHealingStats();
         }
@@ -405,7 +406,7 @@ public class ScheduleService {
 
     private void handleHealingPlayer(Player player, LocalDateTime now) {
         log.debug("Handling healing player [{}]", player);
-        RPChar rpChar = player.getRpChar();
+        RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         log.trace("Got player's rpchar [{}]", rpChar);
         LocalDateTime endTime = rpChar.getHealEnds();
 

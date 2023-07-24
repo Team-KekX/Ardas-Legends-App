@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.remove.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -21,10 +22,10 @@ public class RemoveFactionLeaderCommand implements ALStaffCommandExecutor {
     private final FactionService factionService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /remove faction leader request");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
 
         log.debug("Getting options");
         String factionName = getStringOption("faction-name", options);
@@ -32,11 +33,11 @@ public class RemoveFactionLeaderCommand implements ALStaffCommandExecutor {
         var result = discordServiceExecution(factionName, factionService::removeFactionLeader, "Error while removing faction leader");
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Removed Faction Leader")
                 .setDescription("Removed %s from faction leader position in the faction %s".formatted(result.getIgn(), factionName))
                 .setColor(ALColor.YELLOW)
                 .setThumbnail(FactionBanners.getBannerUrl(factionName))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

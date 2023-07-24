@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 
@@ -23,24 +23,25 @@ import java.util.Objects;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "productionSite")
-public final class ProductionClaimbuild extends AbstractDomainEntity {
+public final class ProductionClaimbuild extends AbstractDomainObject {
 
     @EmbeddedId
     private ProductionClaimbuildId id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("productionSiteId")
-    @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_production_site_id"))
+    @JoinColumn(name = "production_site_id", foreignKey = @ForeignKey(name = "fk_production_claimbuild_production_site_id"))
     private ProductionSite productionSite;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("claimbuildId")
-    @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_claimbuild_id"))
+    @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_production_claimbuild_claimbuild_id"))
     private ClaimBuild claimbuild;
 
     private Long count;
 
     public ProductionClaimbuild(ProductionSite productionSite, ClaimBuild claimbuild, Long count) {
+        this.id = new ProductionClaimbuildId();
         this.productionSite = productionSite;
         this.claimbuild = claimbuild;
         this.count = count;

@@ -1,5 +1,6 @@
 package com.ardaslegends.presentation.discord.commands.delete.staff;
 
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.commands.ALStaffCommandExecutor;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
@@ -24,10 +25,10 @@ public class DeleteCharacterCommand implements ALStaffCommandExecutor {
     private final PlayerService playerService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Incoming /delete character request, getting option-data");
 
-        checkStaff(interaction, properties.getStaffRoles());
+        checkStaff(interaction, properties.getStaffRoleIds());
         log.debug("User is a staff member -> allowed");
 
         User userId = getUserOption("target", options);
@@ -38,10 +39,10 @@ public class DeleteCharacterCommand implements ALStaffCommandExecutor {
         log.debug("Calling discordExecutionService");
         var character = discordServiceExecution(dto, playerService::deleteRpChar, "Error during deletion of the roleplay character!");
 
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Deleted Roleplay Character")
                 .setColor(ALColor.YELLOW)
                 .setDescription("Deleted the character %s".formatted(character.getName()))
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

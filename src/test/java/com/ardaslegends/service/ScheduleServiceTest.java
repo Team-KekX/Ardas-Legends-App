@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
-import com.ardaslegends.repository.PlayerRepository;
+import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,9 +88,11 @@ public class ScheduleServiceTest {
         region4 = Region.builder().id("94").regionType(RegionType.LAND).build();
         rpChar = RPChar.builder().name("Belegorn").boundTo(army).currentRegion(region).build();
         rpChar2 = RPChar.builder().name("Tinwe").currentRegion(region4).build();
-        player = Player.builder().rpChar(rpChar).build();
-        player2 = Player.builder().rpChar(rpChar2).build();
-        army = Army.builder().name("Knights of Gondor").currentRegion(region).boundTo(player).build();
+        player = Player.builder().build();
+        player.addActiveRpChar(rpChar);
+        player2 = Player.builder().build();
+        player2.addActiveRpChar(rpChar2);
+        army = Army.builder().name("Knights of Gondor").currentRegion(region).boundTo(player.getActiveCharacter().get()).build();
         army2 = Army.builder().name("Gondor Army").currentRegion(region2).boundTo(null).build();
         pathElement = PathElement.builder().region(region).actualCost(region.getCost()).baseCost(region.getCost()).build();
         pathElement2 = PathElement.builder().region(region2).actualCost(region2.getCost()).baseCost(region2.getCost()).build();
@@ -103,13 +105,13 @@ public class ScheduleServiceTest {
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
-        movement = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).player(player).path(path)
+        movement = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).rpChar(player.getActiveCharacter().get()).path(path)
                 .startTime(startTime).endTime(endTime).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path)).hoursUntilNextRegion(path.get(1).getActualCost())
                 .build();
-        movement2 = Movement.builder().isCharMovement(true).isCurrentlyActive(true).army(null).player(player2).path(path2)
+        movement2 = Movement.builder().isCharMovement(true).isCurrentlyActive(true).army(null).rpChar(player2.getActiveCharacter().get()).path(path2)
                 .startTime(startTime).endTime(endTime2).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path2)).hoursUntilNextRegion(path2.get(1).getActualCost())
                 .build();
-        movement3 = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army2).player(null).path(path3)
+        movement3 = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army2).rpChar(null).path(path3)
                 .startTime(startTime).endTime(endTime3).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path3)).hoursUntilNextRegion(path3.get(1).getActualCost())
                 .build();
         claimBuild = ClaimBuild.builder().type(ClaimBuildType.CASTLE).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).region(region).build();
@@ -203,7 +205,7 @@ public class ScheduleServiceTest {
         log.info("Current time: [{}] - start time: [{}] - end time: [{}]", LocalDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
 
         List<Player> players = List.of(player, player2);
-        when(mockPlayerRepository.findPlayerByRpCharIsHealingTrue()).thenReturn(players);
+        when(mockPlayerRepository.queryPlayersWithHealingRpchars()).thenReturn(players);
         when(mockPlayerService.savePlayers(players)).thenReturn(players);
 
         scheduleService.handleHealings();

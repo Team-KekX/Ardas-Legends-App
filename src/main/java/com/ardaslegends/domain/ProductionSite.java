@@ -2,7 +2,7 @@ package com.ardaslegends.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 @Getter
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "production_sites")
-public final class ProductionSite extends AbstractDomainEntity {
+public final class ProductionSite extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,9 @@ public final class ProductionSite extends AbstractDomainEntity {
     @Enumerated(EnumType.STRING)
     private ProductionSiteType type; //unique, type of production site, e.g. FARM
 
-    @Column(name = "produced_resource")
-    private String producedResource; //the resource this production site produces
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "resource_name", name = "produced_resource", foreignKey = @ForeignKey(name = "fk_production_site_resource_name"))
+    private Resource producedResource; //the resource this production site produces
 
     @Column(name = "amount_produced")
     private Integer amountProduced; //the amount

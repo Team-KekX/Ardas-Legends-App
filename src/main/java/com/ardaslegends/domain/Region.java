@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 @Getter
@@ -20,7 +20,7 @@ import java.util.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-public final class Region extends AbstractDomainEntity {
+public final class Region extends AbstractDomainObject {
 
     @Id
     private String id; //unique, the region id
@@ -32,8 +32,8 @@ public final class Region extends AbstractDomainEntity {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "faction_claimed_regions",
-            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
-            inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction")) })
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_faction_claimed_regions_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "faction", foreignKey = @ForeignKey(name = "fk_faction_claimed_regions_faction")) })
     private Set<Faction> claimedBy = new HashSet<>(); //the list of factions which the region is claimed by
 
     @JsonIgnore
@@ -42,12 +42,15 @@ public final class Region extends AbstractDomainEntity {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "region_neighbours",
-            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region"))},
-            inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_neighbour")) })
+            joinColumns = { @JoinColumn(name = "region", foreignKey = @ForeignKey(name = "fk_region_neighbours_region"))},
+            inverseJoinColumns = { @JoinColumn(name = "neighbour", foreignKey = @ForeignKey(name = "fk_region_neighbours_neighbour")) })
     private Set<Region> neighboringRegions = new HashSet<>(); //list of neighboring regions
 
     @Column(name = "has_ownership_changed_since_last_claimmap_update")
     private boolean hasOwnershipChanged;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "currentRegion")
+    private Set<RPChar> charsInRegion = new HashSet<>(1);
 
     @JsonIgnore
     public Region(String id, String name, RegionType regionType, Set<Faction> claimedBy, Set<ClaimBuild> claimBuilds, Set<Region> neighboringRegions) {

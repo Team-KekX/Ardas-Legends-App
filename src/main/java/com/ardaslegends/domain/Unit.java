@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
@@ -18,18 +18,18 @@ import javax.persistence.*;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "unitType")
-public final class Unit extends AbstractDomainEntity {
+public final class Unit extends AbstractDomainObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_type"))
+    @JoinColumn(name = "unit_type", foreignKey = @ForeignKey(name = "fk_unit_unit_type"))
     private UnitType unitType; //The kind of unit, e.g. Gondor Soldier
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "army", foreignKey = @ForeignKey(name = "fk_army"))
+    @JoinColumn(name = "army", foreignKey = @ForeignKey(name = "fk_unit_army"))
     private Army army; // The army in which these units are
 
     private Integer count; //maximum aamount of those units that are in the army

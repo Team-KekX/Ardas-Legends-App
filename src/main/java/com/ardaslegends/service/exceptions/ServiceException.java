@@ -3,8 +3,8 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.domain.Region;
 import org.springframework.web.client.RestClientException;
-import javax.persistence.PersistenceException;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+import java.security.Provider;
 
 public class ServiceException extends RuntimeException {
 
@@ -52,12 +52,13 @@ public class ServiceException extends RuntimeException {
     //Player
 
     private static final String CREATE_RP_CHAR_NO_FACTION = "Player %s is in no faction - cannot create Roleplay Character!";
+
     public static ServiceException cannotReadEntityDueToExternalMojangError(RestClientException ex) {
         String msg = CANNOT_READ_ENTITY_DUE_TO_EXTERNAL_MOJANG_API_ERROR.formatted(ex.getMessage());
         return new ServiceException(msg, ex);
     }
 
-    public static <T> ServiceException cannotCreateEntity(T entity, PersistenceException pEx) {
+    public static <T> ServiceException cannotCreateEntity(T entity, Exception pEx) {
         String msg = (entity == null)
                 ? CANNOT_CREATE_DUE_TO_DATABASE_PROBLEMS_WITH_NULL_ENTITY
                 : CANNOT_CREATE_ENTITY_DUE_TO_DATABASE_PROBLEMS.formatted(entity.getClass().getSimpleName(), entity.toString());
@@ -69,7 +70,7 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(msg);
     }
 
-    public static <T> ServiceException cannotReadEntityDueToDatabase(T entity, PersistenceException pEx) {
+    public static <T> ServiceException cannotReadEntityDueToDatabase(T entity, Exception pEx) {
         String msg = (entity == null)
                 ? CANNOT_READ_ENTITY_DUE_TO_DATABASE_PROBLEMS_NULL_ENTITY
                 : CANNOT_READ_ENTITY_DUE_TO_DATABASE_PROBLEMS.formatted(entity.getClass().getSimpleName(), entity.toString());
@@ -82,7 +83,7 @@ public class ServiceException extends RuntimeException {
     }
 
 
-    public static <T> ServiceException cannotSaveEntity(T entity, PersistenceException pEx) {
+    public static <T> ServiceException cannotSaveEntity(T entity, Exception pEx) {
         String msg = (entity == null)
                 ? CANNOT_SAVE_DUE_TO_DATABASE_PROBLEMS_WITH_NULL_ENTITY
                 : CANNOT_SAVE_ENTITY_DUE_TO_DATABASE_PROBLEMS.formatted(entity.getClass().getSimpleName(), entity.toString());
@@ -99,7 +100,7 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(msg, e);
     }
 
-    public static <T> ServiceException cannotDeleteEntity(T entity, PersistenceException pEx) {
+    public static <T> ServiceException cannotDeleteEntity(T entity, Exception pEx) {
         String msg = (entity == null)
                 ? CANNOT_DELETE_DUE_TO_DATABASE_PROBLEMS_WITH_NULL_ENTITY
                 : CANNOT_DELETE_ENTITY_DUE_TO_DATABASE_PROBLEMS.formatted(entity.getClass().getSimpleName(), entity.toString());
@@ -110,7 +111,7 @@ public class ServiceException extends RuntimeException {
         return new ServiceException(PASSED_FUNCTION_NULL, null);
     }
 
-    public static <T> ServiceException secureFindFailed(T identifier, PersistenceException pEx) {
+    public static <T> ServiceException secureFindFailed(T identifier, Exception pEx) {
         String msg = (identifier == null)
                 ? SECURE_FIND_FAILED_BECAUSE_OF_DATABASE_PROBLEM_NULL_IDENTIFIER
                 : SECURE_FIND_FAILED_BECAUSE_OF_DATABASE_PROBLEM.formatted(identifier);
@@ -144,6 +145,8 @@ public class ServiceException extends RuntimeException {
     public static ServiceException regionDoesNotExist(@NotNull String toRegion) {return new ServiceException(DESIRED_REGION_DOES_NOT_EXIST.formatted(toRegion)); }
 
     public static ServiceException moreThanOneActiveMovement(@NotNull RPChar rpchar) { return new ServiceException(MORE_THAN_ONE_ACTIVE_MOVEMENT.formatted(rpchar.getName())); }
+
+    public static ServiceException joinException(Throwable ex) {return new ServiceException(ex.getMessage(), ex);}
     protected ServiceException(String message, Throwable rootCause) { super(message, rootCause);}
     protected ServiceException(String message) { super(message);}
 

@@ -1,5 +1,9 @@
 package com.ardaslegends.domain;
 
+import com.ardaslegends.configuration.converter.SpecialBuildingEnumConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(converter = SpecialBuildingEnumConverter.class)
 public enum SpecialBuilding {
     WATCHTOWER("Watchtower"),
     HOUSE_OF_HEALING("House of Healing"),

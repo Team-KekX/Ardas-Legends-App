@@ -3,7 +3,7 @@ package com.ardaslegends.domain;
 
 import lombok.*;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -20,13 +20,13 @@ import java.util.Objects;
 @Builder
 
 @Embeddable
-public final class ProductionClaimbuildId extends AbstractDomainEntity implements Serializable {
+public final class ProductionClaimbuildId extends AbstractDomainObject implements Serializable {
 
     private static final long serialVersionUID = -7659401942823299559L;
 
     private Long productionSiteId;
 
-    private String claimbuildId;
+    private Long claimbuildId;
 
     @Override
     public boolean equals(Object o) {

@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.disband;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -25,7 +26,7 @@ public class DisbandArmyOrcompanyCommand implements ALCommandExecutor {
     private final ArmyService armyService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /disband army-or-company request");
 
         User user = interaction.getUser();
@@ -51,7 +52,7 @@ public class DisbandArmyOrcompanyCommand implements ALCommandExecutor {
         }
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Disbanded %s".formatted(armyType))
                 .setDescription("The %s %s has been disbanded".formatted(armyType, army.getName()))
                 .setColor(ALColor.GREEN)
@@ -60,6 +61,6 @@ public class DisbandArmyOrcompanyCommand implements ALCommandExecutor {
                 .addInlineField("Was in Region", army.getCurrentRegion().getId())
                 .addInlineField("Created from Claimbuild", army.getOriginalClaimbuild().getName())
                 .setThumbnail(thumbnail)
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }

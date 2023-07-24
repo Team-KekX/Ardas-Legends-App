@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "unitName")
-public final class UnitType extends AbstractDomainEntity {
+public final class UnitType extends AbstractDomainObject {
 
     @Id
     private String unitName; //unique, the name of this Unit

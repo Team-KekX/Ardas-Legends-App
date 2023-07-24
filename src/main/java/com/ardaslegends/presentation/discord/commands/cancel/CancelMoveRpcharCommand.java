@@ -3,6 +3,7 @@ package com.ardaslegends.presentation.discord.commands.cancel;
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.commands.ALCommandExecutor;
+import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
@@ -25,7 +26,7 @@ public class CancelMoveRpcharCommand implements ALCommandExecutor {
     private final MovementService movementService;
 
     @Override
-    public EmbedBuilder execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
+    public ALMessageResponse execute(SlashCommandInteraction interaction, List<SlashCommandInteractionOption> options, BotProperties properties) {
         log.debug("Executing /cancel move rpchar request");
 
         User user = interaction.getUser();
@@ -38,18 +39,18 @@ public class CancelMoveRpcharCommand implements ALCommandExecutor {
         log.trace("Calling movementService");
         Movement movement = discordServiceExecution(dto, movementService::cancelRpCharMovement, "Error while cancelling RpChar Movement");
 
-        RPChar rpChar = movement.getPlayer().getRpChar();
+        RPChar rpChar = movement.getRpChar();
 
         log.debug("Building response Embed");
-        return new EmbedBuilder()
+        return new ALMessageResponse(null, new EmbedBuilder()
                 .setTitle("Cancelled RpChar Movement")
                 .setDescription("The character %s - %s stopped their movement towards region %s.\nThe character is now in region %s.".formatted(rpChar.getName(), rpChar.getTitle(), movement.getDestinationRegionId(), rpChar.getCurrentRegion().getId()))
                 .setColor(ALColor.GREEN)
                 .addInlineField("Character", rpChar.getName())
-                .addInlineField("Player", movement.getPlayer().getIgn())
+                .addInlineField("Player", rpChar.getOwner().getIgn())
                 .addInlineField("User", user.getMentionTag())
                 .addField("Current Region", rpChar.getCurrentRegion().getId())
                 .setThumbnail(Thumbnails.MOVE_CHARACTER.getUrl())
-                .setTimestampToNow();
+                .setTimestampToNow());
     }
 }
