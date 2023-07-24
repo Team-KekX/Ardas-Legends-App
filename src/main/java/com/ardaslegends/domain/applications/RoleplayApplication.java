@@ -89,4 +89,9 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
         }
         return new RPChar(this);
     }
+
+    @Override
+    protected Short getRequiredVoteCount() {
+        return 2;
+    }
 }

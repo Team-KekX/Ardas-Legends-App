@@ -25,7 +25,6 @@ import java.util.Set;
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class AbstractApplication<T> extends AbstractEntity {
-    private static final short REQUIRED_VOTES = 1;
 
     @ManyToOne
     @NotNull
@@ -71,7 +70,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         lastVoteAt = LocalDateTime.now();
         state = ApplicationState.OPEN;
 
-        acceptedBy = new HashSet<>(3);
+        acceptedBy = HashSet.newHashSet(3);
     }
 
     protected abstract EmbedBuilder buildApplicationMessage();
@@ -149,7 +148,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     }
 
     public boolean acceptable() {
-        return declinedBy.size() == 0 && voteCount >= REQUIRED_VOTES;
+        return declinedBy.isEmpty() && voteCount >= getRequiredVoteCount();
     }
     public T accept() {
         resolvedAt = LocalDateTime.now();
@@ -158,4 +157,5 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     }
 
     protected abstract T finishApplication();
+    protected abstract Short getRequiredVoteCount();
 }
