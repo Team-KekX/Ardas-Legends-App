@@ -47,8 +47,10 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     private LocalDateTime lastVoteAt;
 
     @OneToMany
-    @NotNull
     private Set<Player> acceptedBy = new HashSet<>();
+
+    @OneToMany
+    private Set<Player> declinedBy = new HashSet<>();
 
     @PastOrPresent
     private LocalDateTime resolvedAt;
@@ -90,18 +92,25 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     }
 
     public void addAcceptor(Player player) {
-        if(Boolean.FALSE.equals(player.getIsStaff())) {
-            log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
-            throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
-        }
+        isStaffElseThrow(player);
 
+        declinedBy.remove(player);
         val success = acceptedBy.add(player);
+
         if(!success){
             log.warn("Player [{}] already added their vote to the application", player.getIgn());
             throw RoleplayApplicationServiceException.playerAlreadyVoted(player.getIgn());
         }
+
         voteCount = (short) acceptedBy.size();
         lastVoteAt = LocalDateTime.now();
+    }
+
+    private static void isStaffElseThrow(Player player) {
+        if(Boolean.FALSE.equals(player.getIsStaff())) {
+            log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
+            throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
+        }
     }
 
     public void removeAccept(Player player) {
@@ -114,7 +123,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     }
 
     public boolean acceptable() {
-        return voteCount >= REQUIRED_VOTES;
+        return declinedBy.size() == 0 && voteCount >= REQUIRED_VOTES;
     }
     public T accept() {
         resolvedAt = LocalDateTime.now();
