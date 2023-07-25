@@ -15,6 +15,7 @@ import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
 import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.exceptions.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -176,6 +177,22 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
         log.info("Removed vote from claimbuild application [{}]", application);
+
+        return application;
+    }
+
+    @Transactional(readOnly = false)
+    public ClaimbuildApplication addDeclineVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Adding decline vote to claimbuild application with data [{}]", dto);
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = cbAppRepository.queryById(dto.applicationId());
+        val player = playerRepository.queryByDiscordId(dto.discordId());
+
+        application.addDecline(player);
+
+        application = secureSave(application, cbAppRepository);
+        log.info("Added decline vote to claimbuild application [{}]", application);
 
         return application;
     }
