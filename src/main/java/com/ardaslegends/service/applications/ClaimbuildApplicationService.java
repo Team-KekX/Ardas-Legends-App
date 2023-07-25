@@ -196,6 +196,22 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         return application;
     }
+    @Transactional(readOnly = false)
+    public ClaimbuildApplication removeDeclineVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Removing decline vote from claimbuild application with data [{}]", dto);
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = cbAppRepository.queryById(dto.applicationId());
+        val player = playerRepository.queryByDiscordId(dto.discordId());
+
+        application.removeDecline(player);
+
+        application = secureSave(application, cbAppRepository);
+        log.info("Removed decline vote from claimbuild application [{}]", application);
+
+        return application;
+    }
+
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
