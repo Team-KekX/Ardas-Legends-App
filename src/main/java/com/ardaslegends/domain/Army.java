@@ -26,8 +26,8 @@ public final class Army extends AbstractDomainObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name; //unique, the army's name
+
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "army_type")
