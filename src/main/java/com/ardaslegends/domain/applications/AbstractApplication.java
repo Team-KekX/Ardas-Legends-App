@@ -123,12 +123,30 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         }
     }
 
+    public void removeAccept(Player player) {
+        val success = acceptedBy.remove(player);
+        if(!success) {
+            log.warn("Player [{}] did not accept the application", player.getIgn());
+            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
+        }
+        voteCount = (short) acceptedBy.size();
+    }
+
+    public void removeDecline(Player player) {
+        val success = declinedBy.remove(player);
+        if(!success) {
+            log.warn("Player [{}] did not decline the application", player.getIgn());
+            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
+        }
+        voteCount = (short) acceptedBy.size();
+    }
+
     private static void isVoteSuccessfulElseThrow(Player player, boolean success) {
         if(!success) {
             val staffIgn = player.getIgn();
             log.warn("Player [{}] already added their vote to the application", staffIgn);
             throw RoleplayApplicationServiceException.playerAlreadyVoted(staffIgn);
-         }
+        }
     }
 
     private static void isStaffElseThrow(Player player) {
@@ -136,15 +154,6 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
             log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
             throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
         }
-    }
-
-    public void removeAccept(Player player) {
-        val success = acceptedBy.remove(player);
-        if(!success) {
-            log.warn("Player [{}] did not vote on the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
-        }
-        voteCount = (short) acceptedBy.size();
     }
 
     public boolean acceptable() {
