@@ -494,12 +494,6 @@ ALTER TABLE production_sites
 ALTER TABLE region_neighbours
     ADD CONSTRAINT fk_region FOREIGN KEY (region) REFERENCES regions (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-ALTER TABLE region_neighbours
-    ADD CONSTRAINT fk_region FOREIGN KEY (region) REFERENCES regions (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-ALTER TABLE region_neighbours
-    ADD CONSTRAINT fk_region FOREIGN KEY (region) REFERENCES regions (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
-
 ALTER TABLE rpchars
     ADD CONSTRAINT fk_rpchar_bound_to FOREIGN KEY (bound_to) REFERENCES armies (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
