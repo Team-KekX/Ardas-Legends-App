@@ -66,8 +66,6 @@ CREATE TABLE rpchars
     CONSTRAINT rpchars_pkey PRIMARY KEY (id)
 );
 
-CREATE INDEX flyway_schema_history_s_idx ON flyway_schema_history (success);
-
 ALTER TABLE roleplay_apps_accepted_by
     ADD CONSTRAINT uk_27e1hgu7k3qyebo1d1wtfwjkn UNIQUE (accepted_by_id);
 
