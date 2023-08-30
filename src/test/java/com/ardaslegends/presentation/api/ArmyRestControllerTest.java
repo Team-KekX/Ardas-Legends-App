@@ -1,6 +1,7 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.domain.Army;
+import com.ardaslegends.domain.*;
+import com.ardaslegends.presentation.api.response.army.ArmyResponse;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.dto.army.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,11 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -28,8 +34,16 @@ public class ArmyRestControllerTest {
     private ArmyService mockArmyService;
     private ArmyRestController armyRestController;
 
+    private Army army;
+
     @BeforeEach
     void setup() {
+        val faction = Faction.builder().name("Gondor").build();
+        val region = Region.builder().id("10").neighboringRegions(new HashSet<>()).build();
+        val originalClaimbuild = ClaimBuild.builder().name("Nimheria").build();
+        army = new Army(1L, "Army Name", ArmyType.ARMY, faction, region, null,
+                new ArrayList<Unit>(), new ArrayList<String>(), null, 0.0, false, null, null, 0, 0,
+                originalClaimbuild, LocalDateTime.now(), new ArrayList<Movement>(), true);
         mockArmyService = mock(ArmyService.class);
         armyRestController = new ArmyRestController(mockArmyService);
         mockMvc = MockMvcBuilders.standaloneSetup(armyRestController).build();
@@ -42,7 +56,7 @@ public class ArmyRestControllerTest {
         // Assign
         CreateArmyDto dto = new CreateArmyDto(null, null, null, null, null, null);
 
-        when(mockArmyService.createArmy(dto)).thenReturn(new Army());
+        when(mockArmyService.createArmy(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -64,7 +78,7 @@ public class ArmyRestControllerTest {
         // Assign
         BindArmyDto dto = new BindArmyDto("1234", "1234", "Knights of Gondor");
 
-        when(mockArmyService.bind(dto)).thenReturn(new Army());
+        when(mockArmyService.bind(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -87,7 +101,7 @@ public class ArmyRestControllerTest {
         // Assign
         BindArmyDto dto = new BindArmyDto("1234", "1234", "Knights of Gondor");
 
-        when(mockArmyService.unbind(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+        when(mockArmyService.unbind(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -110,7 +124,7 @@ public class ArmyRestControllerTest {
         // Assign
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
-        when(mockArmyService.disband(dto, false)).thenReturn(Army.builder().name("Knights of Gondor").build());
+        when(mockArmyService.disband(dto, false)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -140,10 +154,9 @@ public class ArmyRestControllerTest {
 
         String requestJson = ow.writeValueAsString(dto);
 
-        val army = Army.builder().name("Knights Of Gondor").build();
-        when(mockArmyService.disband(dto, true)).thenReturn(army);
+        when(mockArmyService.disband(eq(dto), anyBoolean())).thenReturn(army);
 
-        String expectedResponse = ow.writeValueAsString(army);
+        String expectedResponse = ow.writeValueAsString(new ArmyResponse(army));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("http://localhost:8080/api/army/delete")
@@ -161,7 +174,7 @@ public class ArmyRestControllerTest {
         // Assign
         UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null, null);
 
-        when(mockArmyService.healStart(dto)).thenReturn(new Army());
+        when(mockArmyService.healStart(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -184,7 +197,7 @@ public class ArmyRestControllerTest {
         // Assign
         UpdateArmyDto dto = new UpdateArmyDto("kekw", "Knights of Gondor", null, null);
 
-        when(mockArmyService.healStop(dto)).thenReturn(new Army());
+        when(mockArmyService.healStop(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -207,7 +220,7 @@ public class ArmyRestControllerTest {
         // Assign
         StationDto dto = new StationDto("Kek", "kek", "kek");
 
-        when(mockArmyService.station(dto)).thenReturn(new Army());
+        when(mockArmyService.station(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -229,7 +242,7 @@ public class ArmyRestControllerTest {
         // Assign
         StationDto dto = new StationDto("Kek", "kek", "kek");
 
-        when(mockArmyService.unstation(dto)).thenReturn(new Army());
+        when(mockArmyService.unstation(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -251,7 +264,7 @@ public class ArmyRestControllerTest {
         // Assign
         UpdateArmyDto dto = new UpdateArmyDto(null, "Knights of Gondor", 20.0, null);
 
-        when(mockArmyService.setFreeArmyTokens(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+        when(mockArmyService.setFreeArmyTokens(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -274,7 +287,7 @@ public class ArmyRestControllerTest {
         // Assign
         PickSiegeDto dto = new PickSiegeDto("1234", "Knights of Gondor", "Gondor CB", "Trebuchet");
 
-        when(mockArmyService.pickSiege(dto)).thenReturn(Army.builder().name("Knights of Gondor").build());
+        when(mockArmyService.pickSiege(dto)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -323,6 +336,8 @@ public class ArmyRestControllerTest {
 
         String requestJson = ow.writeValueAsString(dto);
 
+        when(mockArmyService.setIsPaid(dto)).thenReturn(army);
+
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("http://localhost:8080/api/army/setPaid")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -334,7 +349,7 @@ public class ArmyRestControllerTest {
     void ensureGetUnpaidWorksProperly() throws Exception {
         log.debug("Testing if ArmyRestController getUnpaid works properly");
 
-        List<Army> army = List.of(Army.builder().name("kek").build());
+        List<Army> army = List.of(this.army);
 
         when(mockArmyService.getUnpaid()).thenReturn(army);
 
