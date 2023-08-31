@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.permission;
 
 public class StaffPermissionException extends PermissionException{
     protected StaffPermissionException(String message, Throwable rootCause) {

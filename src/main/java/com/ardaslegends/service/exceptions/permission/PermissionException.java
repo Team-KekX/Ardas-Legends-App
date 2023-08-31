@@ -1,6 +1,8 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.permission;
 
-public class PermissionException extends ServiceException{
+import com.ardaslegends.service.exceptions.ServiceException;
+
+public class PermissionException extends ServiceException {
     protected PermissionException(String message, Throwable rootCause) {
         super(message, rootCause);
     }
