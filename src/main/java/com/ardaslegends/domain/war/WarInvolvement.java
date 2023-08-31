@@ -1,6 +1,6 @@
 package com.ardaslegends.domain.war;
 
-public enum WarInvolvment {
+public enum WarInvolvement {
     ATTACKING,
     DEFENDING
 }

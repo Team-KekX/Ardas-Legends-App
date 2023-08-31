@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -31,15 +33,8 @@ public class War extends AbstractDomainObject {
     @NotNull
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "war_aggressors",
-            joinColumns = @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_war_aggressors_war_id")))
-    private Set<WarParticipant> aggressors = new HashSet<>(2);
-
-    @ElementCollection
-    @CollectionTable(name = "war_defenders",
-            joinColumns = @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_war_defenders_war_id")))
-    private Set<WarParticipant> defenders = new HashSet<>(2);
+    @OneToMany
+    private Set<WarParticipant> warParticipants = new HashSet<>(2);
 
     @NotNull
     private LocalDateTime startDate;
@@ -58,50 +53,48 @@ public class War extends AbstractDomainObject {
         var warDeclarationDate = LocalDateTime.now();
 
         log.trace("Creating Aggressor WarParticipantObject");
-        WarParticipant aggressorWarParticipant = new WarParticipant(aggressor, true, warDeclarationDate);
+        WarParticipant aggressorWarParticipant = new WarParticipant(aggressor, true, warDeclarationDate, WarInvolvement.ATTACKING);
 
         log.trace("Creating Defender WarParticipantObject");
-        WarParticipant defenderWarParticipant = new WarParticipant(defender, true, warDeclarationDate);
+        WarParticipant defenderWarParticipant = new WarParticipant(defender, true, warDeclarationDate, WarInvolvement.DEFENDING);
 
         this.name = name;
-        this.aggressors.add(aggressorWarParticipant);
-        this.defenders.add(defenderWarParticipant);
+        this.warParticipants.add(aggressorWarParticipant);
+        this.warParticipants.add(defenderWarParticipant);
 
         this.startDate = warDeclarationDate;
     }
 
     @NotNull
     public Set<WarParticipant> getEnemies(Faction faction) {
-        // If the faction is in the aggressors -> return defenders
-        var containsAggressor = this.aggressors.stream()
-                .map(participant -> participant.getWarParticipant())
-                .anyMatch(aggressor -> aggressor.equals(faction));
+        AtomicReference<WarInvolvement> enemyInvolvement = new AtomicReference<>();
+        warParticipants.stream()
+                .filter(participant -> participant.getWarParticipant().equals(faction))
+                .findFirst()
+                .ifPresentOrElse(it -> {
+                    WarInvolvement involvement = it.getInvolvment() == WarInvolvement.ATTACKING ? WarInvolvement.DEFENDING : WarInvolvement.ATTACKING;
+                    enemyInvolvement.set(involvement);
+                }, () -> {
+                    throw new RuntimeException("Faction %s is not participating in the war '%s'".formatted(faction.getName(), this.name));
+                });
 
-        if (containsAggressor)
-            return this.defenders;
-
-        var containsDefenders = this.defenders.stream()
-                .map(participant -> participant.getWarParticipant())
-                .anyMatch(defender -> defender.equals(faction));
-
-        // If the faction is in defenders -> return aggressors
-        if(containsDefenders)
-            return this.aggressors;
-
-        return new HashSet<WarParticipant>();
+        return warParticipants.stream()
+                .filter(warParticipant -> warParticipant.getInvolvment().equals(enemyInvolvement.get()))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public WarParticipant getInitialAttacker() {
-        return getInitialParty(this.aggressors);
+        return getInitialParty(WarInvolvement.ATTACKING);
     }
 
     public WarParticipant getInitialDefender() {
-        return getInitialParty(this.defenders);
+        return getInitialParty(WarInvolvement.DEFENDING);
     }
 
-    private WarParticipant getInitialParty(Set<WarParticipant> participants) {
-        return participants.stream()
-                .filter(warParticipant -> warParticipant.getInitialParty())
+    private WarParticipant getInitialParty(WarInvolvement involvement) {
+        Objects.requireNonNull(involvement);
+        return warParticipants.stream()
+                .filter(participant -> participant.getInvolvment().equals(involvement) && participant.getInitialParty())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Found no initialParty in War '%s'".formatted(this.name)));
     }
@@ -116,11 +109,22 @@ public class War extends AbstractDomainObject {
     }
 
     public void addToAggressors(WarParticipant participant) {
-        addToSet(this.aggressors, participant, WarServiceException.factionAlreadyJoinedTheWarAsAttacker(participant.getWarParticipant().getName()));
     }
 
-    public void addToDefenders(WarParticipant participant) {
-        addToSet(this.defenders, participant, WarServiceException.factionAlreadyJoinedTheWarAsDefender(participant.getWarParticipant().getName()));
+    public void addToDefenders() {
+
+    }
+
+    private void addParticipant(Faction faction, WarInvolvement involvement) {
+        warParticipants.stream()
+                .filter(warParticipant -> warParticipant.getWarParticipant().equals(faction))
+                .findFirst()
+                .ifPresent(it -> { throw WarServiceException.factionAlreadyJoinedTheWar(faction.getName(), it.getInvolvment()); });
+
+        log.debug("Adding faction [{}] as a new participant in war [{}]", faction.getName(), this.name);
+        val newParticipant = new WarParticipant(faction, false, LocalDateTime.now(), involvement);
+
+        this.warParticipants.add(newParticipant);
     }
 
     public void addToBattles(Battle battle) {
@@ -128,11 +132,15 @@ public class War extends AbstractDomainObject {
     }
 
     public Set<WarParticipant> getAggressors() {
-        return Collections.unmodifiableSet(this.aggressors);
+        return this.warParticipants.stream()
+                .filter(warParticipant -> warParticipant.getInvolvment().equals(WarInvolvement.ATTACKING))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Set<WarParticipant> getDefenders() {
-        return Collections.unmodifiableSet(this.defenders);
+        return this.warParticipants.stream()
+                .filter(warParticipant -> warParticipant.getInvolvment().equals(WarInvolvement.DEFENDING))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Set<Battle> getBattles() {
