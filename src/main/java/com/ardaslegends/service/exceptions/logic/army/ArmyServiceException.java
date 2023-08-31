@@ -1,9 +1,9 @@
-package com.ardaslegends.service.exceptions.army;
+package com.ardaslegends.service.exceptions.logic.army;
 
 import com.ardaslegends.domain.ArmyType;
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class ArmyServiceException extends ServiceException{
+public class ArmyServiceException extends LogicException {
 
     private static final String NO_ARMYTYPE_WITH_NAME = "No %s with the name '%s' found!";
     private static final String NO_PERMISSION_TO_PERFORM_ACTION = "No permission to perform this action. You need to be either bound, have a lordship rank of that faction or be faction leader";

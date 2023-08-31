@@ -6,7 +6,7 @@ import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.dto.player.*;
 import com.ardaslegends.service.dto.player.rpchar.CreateRPCharDto;
 import com.ardaslegends.service.dto.player.rpchar.UpdateRpCharDto;
-import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.external.MojangApiService;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.ardaslegends.domain;
 
-import com.ardaslegends.service.exceptions.FactionServiceException;
+import com.ardaslegends.service.exceptions.logic.faction.FactionServiceException;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

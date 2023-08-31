@@ -1,8 +1,8 @@
-package com.ardaslegends.service.exceptions.region;
+package com.ardaslegends.service.exceptions.logic.region;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class RegionServiceException extends ServiceException {
+public class RegionServiceException extends LogicException {
     protected RegionServiceException(String message) {
         super(message);
     }

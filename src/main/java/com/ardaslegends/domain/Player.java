@@ -1,6 +1,6 @@
 package com.ardaslegends.domain;
 
-import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;

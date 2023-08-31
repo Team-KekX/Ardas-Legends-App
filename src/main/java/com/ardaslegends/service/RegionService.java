@@ -2,7 +2,7 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.Region;
 import com.ardaslegends.repository.region.RegionRepository;
-import com.ardaslegends.service.exceptions.region.RegionServiceException;
+import com.ardaslegends.service.exceptions.logic.region.RegionServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @RequiredArgsConstructor
 

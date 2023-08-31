@@ -2,7 +2,7 @@ package com.ardaslegends.service;
 
 import com.ardaslegends.domain.UnitType;
 import com.ardaslegends.repository.UnitTypeRepository;
-import com.ardaslegends.service.exceptions.units.UnitServiceException;
+import com.ardaslegends.service.exceptions.logic.units.UnitServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
