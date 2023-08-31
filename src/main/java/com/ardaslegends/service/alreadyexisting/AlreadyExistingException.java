@@ -1,6 +1,8 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.alreadyexisting;
 
-public class AlreadyExistingException extends ServiceException{
+import com.ardaslegends.service.exceptions.ServiceException;
+
+public class AlreadyExistingException extends ServiceException {
     protected AlreadyExistingException(String message, Throwable rootCause) {
         super(message, rootCause);
     }

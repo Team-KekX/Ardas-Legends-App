@@ -1,6 +1,8 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic;
 
-public class LogicException extends ServiceException{
+import com.ardaslegends.service.exceptions.ServiceException;
+
+public class LogicException extends ServiceException {
     protected LogicException(String message, Throwable rootCause) {
         super(message, rootCause);
     }
