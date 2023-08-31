@@ -118,7 +118,7 @@ public class WarService extends AbstractService<War, WarRepository> {
     }
 
     public Set<War> getWarsOfFaction(Faction faction) {
-        Set<War> wars = secureFind(faction, warRepository::findAllWarsWithFaction);
+        Set<War> wars = secureFind(faction, warRepository::findWarsWithFaction);
         return wars;
     }
 

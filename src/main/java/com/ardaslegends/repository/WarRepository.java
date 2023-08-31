@@ -2,17 +2,10 @@ package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.war.War;
-import com.ardaslegends.presentation.api.WarRestController;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,11 +15,9 @@ public interface WarRepository extends JpaRepository<War, Long> {
 
     @Query("""
             select w from War w 
-                left join w.aggressors aggressors 
-                left join w.defenders defenders
-            where aggressors.warParticipant = ?1
-            or defenders.warParticipant = ?1""")
-    Set<War> findAllWarsWithFaction(Faction faction);
+            inner join w.warParticipants warParticipants 
+            where warParticipants.warParticipant = ?1""")
+    Set<War> findWarsWithFaction(Faction warParticipant);
 
     @Query("""
             select (count(w) > 0) from War w 
@@ -36,4 +27,7 @@ public interface WarRepository extends JpaRepository<War, Long> {
             or (aggressors.warParticipant = ?2 and defenders.warParticipant = ?1)""")
     boolean isFactionAtWarWithOtherFaction(Faction faction, Faction otherFaction);
 
+
+
+    
 }
