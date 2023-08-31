@@ -1,8 +1,8 @@
 package com.ardaslegends.service.exceptions.logic.claimbuild;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class ClaimBuildServiceException extends ServiceException {
+public class ClaimBuildServiceException extends LogicException {
 
     private static final String NO_CB_WITH_NAME = "Found no claimbuild with name '%s'!";
     private static final String DIFFERENT_FACTION = "The claimbuild '%s' is part of a different faction ('%s') - you cannot interact with it!";

@@ -1,8 +1,8 @@
 package com.ardaslegends.service.exceptions.logic.applications;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class RoleplayApplicationServiceException extends ServiceException {
+public class RoleplayApplicationServiceException extends LogicException {
 
     private static final String NO_APPLICATION_FOUND_WITH_ID = "No roleplay application was found with id. [%s]";
     private static final String PLAYER_IS_NOT_STAFF = "Player [%s] is not staff and therefore cannot vote on applications";

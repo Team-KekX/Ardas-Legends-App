@@ -1,8 +1,8 @@
 package com.ardaslegends.service.exceptions.logic.movement;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class MovementServiceException extends ServiceException {
+public class MovementServiceException extends LogicException {
 
     private static final String NO_ACTIVE_MOVEMENT_FOUND_ARMY = "No active movement found for army '%s'!";
     private static final String NO_ACTIVE_MOVEMENT_CHAR = "There are no active movements for the character '%s'!";

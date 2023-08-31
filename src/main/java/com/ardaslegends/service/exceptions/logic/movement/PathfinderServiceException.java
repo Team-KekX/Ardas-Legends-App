@@ -1,8 +1,8 @@
 package com.ardaslegends.service.exceptions.logic.movement;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class PathfinderServiceException extends ServiceException {
+public class PathfinderServiceException extends LogicException {
     private static final String NO_PATH_FOUND = "Could not find a valid path from region '%s' to region '%s'!";
     private static final String ALREADY_IN_REGION = "Target is already in destination region!";
 

@@ -1,8 +1,8 @@
 package com.ardaslegends.service.exceptions.logic.player;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class PlayerServiceException extends ServiceException {
+public class PlayerServiceException extends LogicException {
 
     public static final String IGN_ALREADY_USED = "Another player already registered with this ign '%s'. If you own this minecraft account then please contact staff!";
     public static final String ALREADY_REGISTERED = "Your discord account is already linked/registered in our roleplay-system!";
