@@ -7,28 +7,22 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.Battle;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.repository.*;
+import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.ClaimBuildService;
 import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.BattleServiceException;
-import com.ardaslegends.service.exceptions.PlayerServiceException;
-import com.ardaslegends.service.exceptions.WarServiceException;
 import com.ardaslegends.service.exceptions.army.ArmyServiceException;
-import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.DiscordApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j

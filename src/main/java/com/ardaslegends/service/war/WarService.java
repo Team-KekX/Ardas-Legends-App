@@ -5,7 +5,7 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
-import com.ardaslegends.repository.WarRepository;
+import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.exceptions.FactionServiceException;
