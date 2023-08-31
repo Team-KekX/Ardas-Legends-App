@@ -72,14 +72,14 @@ public class War extends AbstractDomainObject {
                 .filter(participant -> participant.getWarParticipant().equals(faction))
                 .findFirst()
                 .ifPresentOrElse(it -> {
-                    WarInvolvement involvement = it.getInvolvment() == WarInvolvement.ATTACKING ? WarInvolvement.DEFENDING : WarInvolvement.ATTACKING;
+                    WarInvolvement involvement = it.getInvolvement() == WarInvolvement.ATTACKING ? WarInvolvement.DEFENDING : WarInvolvement.ATTACKING;
                     enemyInvolvement.set(involvement);
                 }, () -> {
                     throw new RuntimeException("Faction %s is not participating in the war '%s'".formatted(faction.getName(), this.name));
                 });
 
         return warParticipants.stream()
-                .filter(warParticipant -> warParticipant.getInvolvment().equals(enemyInvolvement.get()))
+                .filter(warParticipant -> warParticipant.getInvolvement().equals(enemyInvolvement.get()))
                 .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -94,7 +94,7 @@ public class War extends AbstractDomainObject {
     private WarParticipant getInitialParty(WarInvolvement involvement) {
         Objects.requireNonNull(involvement);
         return warParticipants.stream()
-                .filter(participant -> participant.getInvolvment().equals(involvement) && participant.getInitialParty())
+                .filter(participant -> participant.getInvolvement().equals(involvement) && participant.getInitialParty())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Found no initialParty in War '%s'".formatted(this.name)));
     }
@@ -119,7 +119,7 @@ public class War extends AbstractDomainObject {
         warParticipants.stream()
                 .filter(warParticipant -> warParticipant.getWarParticipant().equals(faction))
                 .findFirst()
-                .ifPresent(it -> { throw WarServiceException.factionAlreadyJoinedTheWar(faction.getName(), it.getInvolvment()); });
+                .ifPresent(it -> { throw WarServiceException.factionAlreadyJoinedTheWar(faction.getName(), it.getInvolvement()); });
 
         log.debug("Adding faction [{}] as a new participant in war [{}]", faction.getName(), this.name);
         val newParticipant = new WarParticipant(faction, false, LocalDateTime.now(), involvement);
@@ -133,13 +133,13 @@ public class War extends AbstractDomainObject {
 
     public Set<WarParticipant> getAggressors() {
         return this.warParticipants.stream()
-                .filter(warParticipant -> warParticipant.getInvolvment().equals(WarInvolvement.ATTACKING))
+                .filter(warParticipant -> warParticipant.getInvolvement().equals(WarInvolvement.ATTACKING))
                 .collect(Collectors.toUnmodifiableSet());
     }
 
     public Set<WarParticipant> getDefenders() {
         return this.warParticipants.stream()
-                .filter(warParticipant -> warParticipant.getInvolvment().equals(WarInvolvement.DEFENDING))
+                .filter(warParticipant -> warParticipant.getInvolvement().equals(WarInvolvement.DEFENDING))
                 .collect(Collectors.toUnmodifiableSet());
     }
 

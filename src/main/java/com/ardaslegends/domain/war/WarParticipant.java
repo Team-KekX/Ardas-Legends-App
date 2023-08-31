@@ -32,5 +32,5 @@ public class WarParticipant extends AbstractEntity {
     private LocalDateTime joiningDate;
 
     @NotNull
-    private WarInvolvement involvment;
+    private WarInvolvement involvement;
 }
