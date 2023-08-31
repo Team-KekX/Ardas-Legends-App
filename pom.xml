@@ -221,16 +221,10 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-
-                        <compilerArgs>
-                            <arg>--enable-preview</arg>
-                        </compilerArgs>
-
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                         <release>${maven.compiler.release}</release>
                         <encoding>UTF-8</encoding>
-
                     </configuration>
                 </plugin>
             </plugins>
@@ -333,7 +327,6 @@
                 <configuration>
                     <source>19</source>
                     <target>19</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
