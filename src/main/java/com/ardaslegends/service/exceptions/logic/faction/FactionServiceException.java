@@ -1,4 +1,6 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.faction;
+
+import com.ardaslegends.service.exceptions.ServiceException;
 
 public class FactionServiceException extends ServiceException {
 

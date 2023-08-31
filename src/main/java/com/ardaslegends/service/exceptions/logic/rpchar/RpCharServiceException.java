@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.rpchar;
+package com.ardaslegends.service.exceptions.logic.rpchar;
 
 import com.ardaslegends.service.exceptions.ServiceException;
 

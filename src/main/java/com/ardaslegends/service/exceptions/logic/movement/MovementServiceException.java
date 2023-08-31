@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.movement;
+package com.ardaslegends.service.exceptions.logic.movement;
 
 import com.ardaslegends.service.exceptions.ServiceException;
 

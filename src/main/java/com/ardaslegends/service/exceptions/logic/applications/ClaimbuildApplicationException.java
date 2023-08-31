@@ -1,7 +1,6 @@
-package com.ardaslegends.service.exceptions.applications;
+package com.ardaslegends.service.exceptions.logic.applications;
 
 
-import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.service.exceptions.ServiceException;
 
 public class ClaimbuildApplicationException extends ServiceException {

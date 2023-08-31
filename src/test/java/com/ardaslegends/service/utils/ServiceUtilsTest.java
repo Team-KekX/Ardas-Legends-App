@@ -2,7 +2,7 @@ package com.ardaslegends.service.utils;
 
 
 import com.ardaslegends.domain.Player;
-import com.ardaslegends.service.exceptions.army.ArmyServiceException;
+import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

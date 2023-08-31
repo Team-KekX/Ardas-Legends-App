@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.region;
+package com.ardaslegends.service.exceptions.logic.region;
 
 import com.ardaslegends.service.exceptions.ServiceException;
 

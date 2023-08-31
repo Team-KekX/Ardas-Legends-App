@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.army;
+package com.ardaslegends.service.exceptions.logic.army;
 
 import com.ardaslegends.domain.ArmyType;
 import com.ardaslegends.service.exceptions.ServiceException;

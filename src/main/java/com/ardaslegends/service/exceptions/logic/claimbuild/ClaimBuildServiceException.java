@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.claimbuild;
+package com.ardaslegends.service.exceptions.logic.claimbuild;
 
 import com.ardaslegends.service.exceptions.ServiceException;
 

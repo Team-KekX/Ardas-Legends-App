@@ -1,6 +1,6 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.player;
 
-import com.ardaslegends.service.PlayerService;
+import com.ardaslegends.service.exceptions.ServiceException;
 
 public class PlayerServiceException extends ServiceException {
 

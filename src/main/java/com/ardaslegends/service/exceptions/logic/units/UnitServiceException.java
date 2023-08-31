@@ -1,4 +1,4 @@
-package com.ardaslegends.service.exceptions.units;
+package com.ardaslegends.service.exceptions.logic.units;
 
 import com.ardaslegends.service.exceptions.ServiceException;
 

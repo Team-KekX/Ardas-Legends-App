@@ -1,4 +1,6 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.war;
+
+import com.ardaslegends.service.exceptions.ServiceException;
 
 public class BattleServiceException extends ServiceException {
     public static final String FACTIONS_NOT_AT_WAR = "The two factions with the names '%s' and '%s' are not at war with each other";

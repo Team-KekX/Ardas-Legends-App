@@ -1,6 +1,6 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.war;
 
-import com.ardaslegends.domain.war.War;
+import com.ardaslegends.service.exceptions.ServiceException;
 
 public class WarServiceException extends ServiceException {
 

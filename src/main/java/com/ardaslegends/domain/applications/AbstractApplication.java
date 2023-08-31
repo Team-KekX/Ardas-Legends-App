@@ -2,7 +2,7 @@ package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.AbstractEntity;
 import com.ardaslegends.domain.Player;
-import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
+import com.ardaslegends.service.exceptions.logic.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.TextChannel;
