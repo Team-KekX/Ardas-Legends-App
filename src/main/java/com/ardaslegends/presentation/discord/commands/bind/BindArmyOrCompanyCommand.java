@@ -12,7 +12,7 @@ import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.service.ArmyService;
 import com.ardaslegends.service.dto.army.BindArmyDto;
-import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;

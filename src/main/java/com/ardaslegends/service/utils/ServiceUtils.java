@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.PathElement;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.Region;
-import com.ardaslegends.service.exceptions.PlayerServiceException;
+import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 

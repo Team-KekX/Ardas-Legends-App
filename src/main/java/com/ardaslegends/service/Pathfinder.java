@@ -3,7 +3,7 @@ package com.ardaslegends.service;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.repository.region.RegionRepository;
-import com.ardaslegends.service.exceptions.PathfinderServiceException;
+import com.ardaslegends.service.exceptions.logic.movement.PathfinderServiceException;
 import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import com.ardaslegends.service.war.WarService;
