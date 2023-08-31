@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.version>3.1.0</spring.version>
+        <spring.version>3.1.1</spring.version>
         <java.version>19</java.version>
         <selenium.version>4.1.2</selenium.version>
         <testcontainers.version>1.17.6</testcontainers.version>
@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1</version>
     </parent>
 
     <repositories>
@@ -203,6 +203,12 @@
             <classifier>jakarta</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.16.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -259,6 +265,12 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>9.21.1</version>
             </plugin>
 
             <plugin>
