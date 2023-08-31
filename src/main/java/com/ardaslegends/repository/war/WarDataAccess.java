@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.Objects;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class WarDataAccess {
 
     public Set<War> findAllWarsWithFaction(Faction faction) {
         log.debug("Finding all wars for faction {}", faction);
+        Objects.requireNonNull(faction, "Faction must not be null!");
 
         //TODO add exception handling
 
