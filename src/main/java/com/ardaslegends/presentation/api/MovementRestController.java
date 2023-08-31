@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.movement.MovementResponse;
 import com.ardaslegends.service.MovementService;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
@@ -30,46 +31,54 @@ public class MovementRestController extends AbstractRestController {
 
 
     @PostMapping(PATH_MOVE_CHAR)
-    public HttpEntity<Movement> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
+    public HttpEntity<MovementResponse> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
 
         log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of createRpCharMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::createRpCharMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
 
         log.info("Successfully handled request for creating rpchar movement!");
-        return ResponseEntity.ok(movement);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_CANCEL_CHAR_MOVEMENT)
-    public HttpEntity<Movement> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
+    public HttpEntity<MovementResponse> cancelRoleplayCharacterMove(@RequestBody DiscordIdDto dto) {
 
         log.debug("Incoming Post Request to cancel rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of cancelRpCharMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::cancelRpCharMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
 
         log.info("Successfully handled request for cancelling rpchar movement!");
-        return ResponseEntity.ok(movement);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(PATH_MOVE_ARMY)
-    public HttpEntity<Movement> moveArmy(@RequestBody MoveArmyDto dto) {
+    public HttpEntity<MovementResponse> moveArmy(@RequestBody MoveArmyDto dto) {
         log.debug("Incoming Post Request to create army movement, data [{}]", dto);
 
         log.trace("WrappedServiceExecution of createArmyMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::createArmyMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
 
         log.info("Successfully handled request for creating army movement!");
-        return ResponseEntity.ok(movement);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_CANCEL_ARMY_MOVEMENT)
-    public HttpEntity<Movement> cancelArmyMove(@RequestBody MoveArmyDto dto) {
+    public HttpEntity<MovementResponse> cancelArmyMove(@RequestBody MoveArmyDto dto) {
 
         log.debug("Incoming Post Request to cancel army movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of cancelArmyMovement function");
         Movement movement = wrappedServiceExecution(dto, movementService::cancelArmyMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
 
         log.info("Successfully handled request for cancelling army movement!");
-        return ResponseEntity.ok(movement);
+        return ResponseEntity.ok(response);
     }
 }

@@ -52,126 +52,148 @@ public class ArmyRestController extends AbstractRestController {
         return ResponseEntity.ok(pageResponse);
     }
     @PostMapping(PATH_CREATE_ARMY)
-    public HttpEntity<Army> createArmy(@RequestBody CreateArmyDto dto) {
+    public HttpEntity<ArmyResponse> createArmy(@RequestBody CreateArmyDto dto) {
         log.debug("Incoming createArmy Request: Data [{}]", dto);
 
         var units = armyService.convertUnitInputIntoUnits(dto.unitString());
         CreateArmyDto dtoWithUnits = new CreateArmyDto(dto.executorDiscordId(), dto.name(), dto.armyType(), dto.claimBuildName(), units);
         log.debug("Calling ArmyService.createArmy");
         Army createdArmy = wrappedServiceExecution(dtoWithUnits, armyService::createArmy);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(createdArmy);
 
         log.info("Sending successful createArmy Request for [{}]", createdArmy.getName());
-        return ResponseEntity.ok(createdArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_BIND_ARMY)
-    public HttpEntity<Army> bindArmy(@RequestBody BindArmyDto dto) {
+    public HttpEntity<ArmyResponse> bindArmy(@RequestBody BindArmyDto dto) {
         log.debug("Incoming bindArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.bind()");
         Army boundArmy = wrappedServiceExecution(dto, armyService::bind);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(boundArmy);
 
         log.info("Sending successful bindArmy request for [{}]", boundArmy.getName());
-        return ResponseEntity.ok(boundArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_UNBIND_ARMY)
-    public HttpEntity<Army> unbindArmy(@RequestBody BindArmyDto dto) {
+    public HttpEntity<ArmyResponse> unbindArmy(@RequestBody BindArmyDto dto) {
         log.debug("Incoming unbindArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
         Army unboundArmy = wrappedServiceExecution(dto, armyService::unbind);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(unboundArmy);
 
         log.info("Sending successful unbindArmy request for [{}]", unboundArmy.getName());
-        return ResponseEntity.ok(unboundArmy);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(PATH_DISBAND_ARMY)
-    public HttpEntity<Army> disbandArmy(@RequestBody DeleteArmyDto dto) {
+    public HttpEntity<ArmyResponse> disbandArmy(@RequestBody DeleteArmyDto dto) {
         log.debug("Incoming disbandArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
         Army disbandedArmy = wrappedServiceExecution(dto, false, armyService::disband);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(disbandedArmy);
 
         log.info("Sending successful disbandArmy request for [{}]", disbandedArmy.getName());
-        return ResponseEntity.ok(disbandedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(PATH_DELETE_ARMY)
-    public HttpEntity<Army> deleteArmy(@RequestBody DeleteArmyDto dto) {
+    public HttpEntity<ArmyResponse> deleteArmy(@RequestBody DeleteArmyDto dto) {
         log.debug("Incoming deleteArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.disband()");
         Army deletedArmy = wrappedServiceExecution(dto, true, armyService::disband);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(deletedArmy);
 
         log.info("Sending successful deleteArmy request for [{}]", deletedArmy.getName());
-        return ResponseEntity.ok(deletedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_START_HEALING)
-    public HttpEntity<Army> startHealing(@RequestBody UpdateArmyDto dto) {
+    public HttpEntity<ArmyResponse> startHealing(@RequestBody UpdateArmyDto dto) {
         log.debug("Incoming start healing Request: Data [{}]", dto);
 
         log.debug("Calling healStart()");
         Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStart);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(modifiedArmy);
 
         log.info("Sending successful start healing Request for [{}]", modifiedArmy.toString());
-        return ResponseEntity.ok(modifiedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_STOP_HEALING)
-    public HttpEntity<Army> stopHealing(@RequestBody UpdateArmyDto dto) {
+    public HttpEntity<ArmyResponse> stopHealing(@RequestBody UpdateArmyDto dto) {
         log.debug("Incoming stop healing Request: Data [{}]", dto);
 
         log.debug("Calling healStop()");
         Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStop);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(modifiedArmy);
 
         log.info("Sending successful stop healing Request for [{}]", modifiedArmy.toString());
-        return ResponseEntity.ok(modifiedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_STATION)
-    public HttpEntity<Army> station(@RequestBody StationDto dto) {
+    public HttpEntity<ArmyResponse> station(@RequestBody StationDto dto) {
         log.debug("Incoming station request: Data [{}]", dto);
 
         log.debug("Calling station()");
         Army modifiedArmy = wrappedServiceExecution(dto, armyService::station);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(modifiedArmy);
 
         log.info("Sending successful station request for [{}]", modifiedArmy.toString());
-        return ResponseEntity.ok(modifiedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_UNSTATION)
-    public HttpEntity<Army> unstation(@RequestBody StationDto dto) {
+    public HttpEntity<ArmyResponse> unstation(@RequestBody StationDto dto) {
         log.debug("Incoming station request: Data [{}]", dto);
 
         log.debug("Calling unstation()");
         Army modifiedArmy = wrappedServiceExecution(dto, armyService::unstation);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(modifiedArmy);
 
         log.info("Sending successful unstation request for [{}]", modifiedArmy.toString());
-        return ResponseEntity.ok(modifiedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_SET_FREE_TOKENS)
-    public HttpEntity<Army> setFreeArmyTokens(@RequestBody UpdateArmyDto dto) {
+    public HttpEntity<ArmyResponse> setFreeArmyTokens(@RequestBody UpdateArmyDto dto) {
         log.debug("Incoming setFreeArmyTokens Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.setFreeArmyTokens()");
         Army deletedArmy = wrappedServiceExecution(dto, armyService::setFreeArmyTokens);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(deletedArmy);
 
         log.info("Sending successful setFreeArmyTokens request for [{}]", deletedArmy.getName());
-        return ResponseEntity.ok(deletedArmy);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(PATH_PICK_SIEGE)
-    public HttpEntity<Army> pickSiege(@RequestBody PickSiegeDto dto) {
+    public HttpEntity<ArmyResponse> pickSiege(@RequestBody PickSiegeDto dto) {
         log.debug("Incoming pickSiege Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.pickSiege()");
         Army army = wrappedServiceExecution(dto, armyService::pickSiege);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(army);
 
         log.info("Sending successful pickSiege request for [{}]", army.getName());
-        return ResponseEntity.ok(army);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(PATH_UPKEEP)
@@ -197,24 +219,28 @@ public class ArmyRestController extends AbstractRestController {
     }
 
     @PatchMapping(PATH_SET_IS_PAID)
-    public HttpEntity<Army> setIsPaid(@RequestBody UpdateArmyDto dto) {
+    public HttpEntity<ArmyResponse> setIsPaid(@RequestBody UpdateArmyDto dto) {
         log.debug("Incoming setIsPaid Request for army or company [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution armyService.setIsPaid");
         var result = wrappedServiceExecution(dto, armyService::setIsPaid);
+        log.debug("Converting to ArmyResponse");
+        ArmyResponse response = new ArmyResponse(result);
 
         log.info("Sending setPaid Response, success [{}]", result);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(PATH_GET_UNPAID)
-    public HttpEntity<List<Army>> getUnpaid() {
+    public HttpEntity<List<ArmyResponse>> getUnpaid() {
         log.debug("Incoming getUnpaid Request");
 
         log.trace("Calling wrappedServiceExecution, armyService.getUnpaid");
         var result = wrappedServiceExecution(armyService::getUnpaid);
+        log.debug("Converting to ArmyResponse");
+        var response = result.stream().map(ArmyResponse::new).toList();
 
-        log.info("Sending getUnpaid Response, data [{}]", result);
-        return ResponseEntity.ok(result);
+        log.info("Sending getUnpaid Response, data [{}]", response);
+        return ResponseEntity.ok(response);
     }
 }

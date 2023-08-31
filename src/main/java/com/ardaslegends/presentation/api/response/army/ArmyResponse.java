@@ -4,10 +4,11 @@ import com.ardaslegends.domain.Army;
 
 public record ArmyResponse(
         long id,
-        String nameOfArmy,
+        String name,
         String armyType,
-        String nameOfFaction,
-        String currentRegion
+        String faction,
+        String currentRegion,
+        String boundTo
 ) {
     public ArmyResponse(Army army) {
         this(
@@ -15,7 +16,8 @@ public record ArmyResponse(
                 army.getName(),
                 army.getArmyType().getName(),
                 army.getFaction().getName(),
-                army.getCurrentRegion().getId()
+                army.getCurrentRegion().getId(),
+                army.getBoundTo() == null ? null : army.getBoundTo().getName()
         );
     }
 }
