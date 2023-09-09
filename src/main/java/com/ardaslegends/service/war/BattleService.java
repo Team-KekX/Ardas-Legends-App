@@ -30,8 +30,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final PlayerService playerService;
     private final ClaimBuildService claimBuildService;
     private final WarRepository warRepository;
-    private final MovementRepository movementRepository;
-
+    private final Pathfinder pathfinder;
 
     public Battle createBattle(CreateBattleDto createBattleDto) {
         log.debug("Creating battle with data {}", createBattleDto);
@@ -58,11 +57,23 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
 
         Set<Army> defendingArmies = new HashSet<>();
+        List<PathElement> paths ;
+        boolean movementisAble;
 
         if(createBattleDto.FieldBattle()){
             log.debug("Field battle boolean is set to true - fetching one defending army with name: [{}]", createBattleDto.defendingArmyName());
             log.trace("Calling getArmyByName with name: [{}]", createBattleDto.defendingArmyName());
             Army fetchedArmy = armyService.getArmyByName(createBattleDto.defendingArmyName());
+
+
+            //pathfinder
+            paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(),fetchedArmy.getCurrentRegion(),executorPlayer,true);
+
+            if(paths.size() > 1){
+                log.warn("Battle is not possible");
+                throw BattleServiceException.battleNotAbleDueHours();
+            }
+
             defendingArmies.add(fetchedArmy);
             log.debug("Setting defending Faction to: [{}]", fetchedArmy.getFaction().getName());
             defendingFaction = fetchedArmy.getFaction();
@@ -73,6 +84,14 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             ClaimBuild fetchedClaimBuild = claimBuildService.getClaimBuildByName(createBattleDto.ClaimBuildName());
             defendingFaction = fetchedClaimBuild.getOwnedBy();
             List<Army> stationedArmies = fetchedClaimBuild.getStationedArmies();
+
+            //pathfinder
+            paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), fetchedClaimBuild.getRegion(),executorPlayer,true);
+
+            if(paths.size() > 1){
+                log.warn("Battle is not possible");
+                throw BattleServiceException.battleNotAbleDueHours();
+            }
 
             if(stationedArmies.isEmpty())
                 log.debug("No armies stationed at claim build with name: [{}]", createBattleDto.ClaimBuildName());
@@ -95,38 +114,10 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
 
         //ToDo: Add 24h in reach check, if the attacking army is in reach of the defending army / CB
-        boolean movementisAble;
 
-        Movement movement = null;
-        Optional<Movement> movements = movementRepository.findMovementByArmyAndIsCurrentlyActiveTrue(attackingArmy);
-
-        // Checks if there is more than one active movement
-        if(movements.stream().count() > 1){
-            log.warn("Army has more than one active movement");
-            throw BattleServiceException.moreThanOneActiveMovement();
-        }
-
-
-        if(movements.isPresent()){
-            movement = movements.get();
-        }
-
-        var hours = ChronoUnit.HOURS.between(movement.getEndTime(), movement.getStartTime());
-
-        if(hours < 24){
-            movementisAble = true;
-        }
-        else{
-            movementisAble = false;
-        }
-
-        if(!movementisAble){
-            log.warn("The attacking army: [{}] can not reach the region within 24 hours!");
-            throw BattleServiceException.battleNotAbleDueHours();
-        }
 
         // Checking if army has enough health for the battle
-        if(!attackingArmy.getIsHealing()){
+        if(attackingArmy.getFreeTokens() <=0 ){
             log.warn("The attacking army: [{}] can not start a battle, because they don`t have enough health!");
             throw BattleServiceException.notEnoughHealth();
         }
