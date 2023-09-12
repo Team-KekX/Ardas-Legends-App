@@ -69,11 +69,21 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             //pathfinder
             paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(),fetchedArmy.getCurrentRegion(),executorPlayer,true);
 
+            //checks if the defending army is further than 24 hours
             if(paths.size() > 1){
-                log.warn("Battle is not possible");
+                log.warn("The defending army is to far, battle is not possible");
                 throw BattleServiceException.battleNotAbleDueHours();
             }
-
+            //checks if the defending army is moving
+            if(fetchedArmy.getMovements().size() > 0){
+                log.warn("Defending Army is in movement, battle is not possible!");
+                throw BattleServiceException.defendingArmyIsMoving();
+            }
+            //checks if the attacking army has another movement
+            if(attackingArmy.getMovements().size() > 0){
+                log.warn("Attacking army has another active movement, battle is not possible!");
+                throw BattleServiceException.attackingArmyHasAnotherMovement();
+            }
             defendingArmies.add(fetchedArmy);
             log.debug("Setting defending Faction to: [{}]", fetchedArmy.getFaction().getName());
             defendingFaction = fetchedArmy.getFaction();
