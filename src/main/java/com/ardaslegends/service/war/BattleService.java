@@ -98,7 +98,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             //pathfinder
             paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), fetchedClaimBuild.getRegion(),executorPlayer,true);
 
-            if(paths.size() > 1){
+            if(paths.size() > 2){
                 log.warn("Battle is not possible");
                 throw BattleServiceException.battleNotAbleDueHours();
             }
@@ -136,9 +136,10 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         //ToDo: Add proper BattleLocation when the 24h check is available
 
 
+        War war = warRepository.findWarByAggressorsAndDefenders(attackingFaction,defendingFaction);
 
         log.trace("Assembling Battle Object");
-        Battle battle = new Battle(new War(),
+        Battle battle = new Battle(war,
                 "Battle name",
                 Set.of(attackingArmy),
                 defendingArmies,
@@ -148,6 +149,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 null,
                 null);
 
+        //battleRepository.save(battle);
         log.debug("Trying to persist the battle object");
         battle = secureSave(battle, battleRepository);
 

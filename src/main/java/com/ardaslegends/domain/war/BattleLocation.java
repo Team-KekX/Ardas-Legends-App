@@ -21,4 +21,13 @@ public class BattleLocation {
     @JoinColumn(name = "claimbuild_id", foreignKey = @ForeignKey(name = "fk_battle_location_claimbuild_id"))
     private ClaimBuild claimBuild;
 
+    public BattleLocation(Region region,boolean fieldBattle,ClaimBuild claimBuild){
+        this.region = region;
+        this.fieldBattle = fieldBattle;
+        this.claimBuild = claimBuild;
+    }
+
+    public BattleLocation() {
+
+    }
 }
