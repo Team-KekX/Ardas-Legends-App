@@ -3,6 +3,7 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.Battle;
 import com.ardaslegends.domain.war.War;
+import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.service.*;
@@ -98,7 +99,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             //pathfinder
             paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), fetchedClaimBuild.getRegion(),executorPlayer,true);
 
-            if(paths.size() > 2){
+            if(paths.size() > 1){
                 log.warn("Battle is not possible");
                 throw BattleServiceException.battleNotAbleDueHours();
             }
@@ -135,12 +136,26 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         //ToDo: Add proper BattleLocation when the 24h check is available
 
+        WarParticipant aggressors = WarParticipant.builder().warParticipant(attackingFaction).joiningDate(LocalDateTime.now()).initialParty(false).build();
+        WarParticipant defenders = WarParticipant.builder().warParticipant(defendingFaction).joiningDate(LocalDateTime.now()).initialParty(false).build();
 
-        War war = warRepository.findWarByAggressorsAndDefenders(attackingFaction,defendingFaction);
+        Set<WarParticipant> aggressorsSet = new HashSet<>();
+        Set<WarParticipant> defendersSet = new HashSet<>();
+
+        aggressorsSet.add(aggressors);
+        defendersSet.add(defenders);
+
+
+        War war = warRepository.findWarByAggressorsAndDefenders(aggressorsSet,defendersSet);
+        System.out.println(war.getName());
+
+                //War.builder().name("War of Gondor").aggressors(aggressorsSet).defenders(defendersSet).startDate(LocalDateTime.now()).build();
+                //
+        log.debug("War inforamtion: " + war);
 
         log.trace("Assembling Battle Object");
         Battle battle = new Battle(war,
-                "Battle name",
+                createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,
                 LocalDateTime.now(),
@@ -149,9 +164,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 null,
                 null);
 
-        //battleRepository.save(battle);
+        battleRepository.save(battle);
         log.debug("Trying to persist the battle object");
-        battle = secureSave(battle, battleRepository);
+        //battle = secureSave(battle, battleRepository);
 
         log.info("Successfully created army [{}]!", battle.getName());
         return battle;

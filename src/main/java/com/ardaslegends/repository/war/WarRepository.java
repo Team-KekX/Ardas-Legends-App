@@ -2,6 +2,7 @@ package com.ardaslegends.repository.war;
 
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.war.War;
+import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.presentation.api.WarRestController;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,5 +37,7 @@ public interface WarRepository extends JpaRepository<War, Long> {
             or (aggressors.warParticipant = ?2 and defenders.warParticipant = ?1)""")
     boolean isFactionAtWarWithOtherFaction(Faction faction, Faction otherFaction);
 
-    War findWarByAggressorsAndDefenders(Faction attackingFaction, Faction defendingFaction);
+    War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors, Set<WarParticipant> defenders);
+
+
 }

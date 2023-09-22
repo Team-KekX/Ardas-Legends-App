@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -136,19 +138,21 @@ public class BattleServiceTest {
 
         pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(region1.getCost()).build();
         pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
-        path = List.of(pathElement1, pathElement2);
+        path = List.of(pathElement1);
 
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
 
-        when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
-        when(mockPlayerService.getPlayerByDiscordId(player2.getDiscordID())).thenReturn(player2);
-        when(mockArmyService.getArmyByName(army1.getName())).thenReturn(army1);
-        when(mockArmyService.getArmyByName(army2.getName())).thenReturn(army2);
+        when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player1);
+        when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player2);
+        when(mockArmyService.getArmyByName(any())).thenReturn(army1);
+        when(mockArmyService.getArmyByName(any())).thenReturn(army2);
         when(pathfinder.findShortestWay(any(),any(),any(),anyBoolean())).thenReturn(movement.getPath());
-        when(mockClaimBuildService.getClaimBuildByName(claimBuild1.getName())).thenReturn(claimBuild1);
-        when(mockClaimBuildService.getClaimBuildByName(claimBuild2.getName())).thenReturn(claimBuild2);
-        when(mockClaimBuildService.getClaimBuildByName(claimBuild3.getName())).thenReturn(claimBuild3);
-        when(mockWarRepository.isFactionAtWarWithOtherFaction(faction1,faction2)).thenReturn(true);
+        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild1);
+        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild2);
+        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild3);
+        when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(true);
+        when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
+
 
     }
 
@@ -163,6 +167,8 @@ public class BattleServiceTest {
 
         Battle newBattle = battleService.createBattle(createBattleDto);
         log.debug(newBattle.getName());
-
+        //log.debug(newBattle.getWar().getName());
+        assertThat(newBattle).isNotNull();
+        assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
     }
 }
