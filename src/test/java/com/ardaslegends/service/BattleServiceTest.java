@@ -9,6 +9,9 @@ import com.ardaslegends.repository.BattleRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
+import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
+import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
+import com.ardaslegends.service.utils.ServiceUtils;
 import com.ardaslegends.service.war.BattleService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +78,11 @@ public class BattleServiceTest {
 
     private Movement movement;
 
+    private ServiceUtils serviceUtils;
+
+    Set<Army> attackingArmies;
+    Set<Army> defendingArmies;
+
     @BeforeEach
     void setup(){
         mockBattleRepository = mock(BattleRepository.class);
@@ -106,7 +114,7 @@ public class BattleServiceTest {
 
 
         rpchar1 = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
-        rpchar2 = RPChar.builder().name("Gandalf").isHealing(false).currentRegion(region1).build();
+        rpchar2 = RPChar.builder().name("Gandalf").isHealing(false).currentRegion(region2).build();
 
         player1 = Player.builder().discordID("1234").faction(faction1).build();
         player1.addActiveRpChar(rpchar1);
@@ -116,6 +124,8 @@ public class BattleServiceTest {
         army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region1).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         army2 = Army.builder().name("Knights of Isengard").armyType(ArmyType.ARMY).faction(faction2).freeTokens(30 - unit2.getCount() * unitType2.getTokenCost()).currentRegion(region2).boundTo(player2.getActiveCharacter().get()).stationedAt(claimBuild2).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
 
+        army2.setMovements(new ArrayList<>());
+        army1.setMovements(new ArrayList<>());
         warParticipant1= WarParticipant.builder().warParticipant(faction1).initialParty(true).joiningDate(LocalDateTime.now()).build();
         warParticipant1= WarParticipant.builder().warParticipant(faction2).initialParty(true).joiningDate(LocalDateTime.now()).build();
 
@@ -127,10 +137,10 @@ public class BattleServiceTest {
 
         war = War.builder().name("War of Gondor").aggressors(attacker).defenders(defender).startDate(LocalDateTime.now()).build();
 
-        Set<Army> attackingArmies = new HashSet<>();
+        attackingArmies = new HashSet<>();
         attackingArmies.add(army1);
-        Set<Army> defendingArmies = new HashSet<>();
-        attackingArmies.add(army2);
+        defendingArmies = new HashSet<>();
+        defendingArmies.add(army2);
 
         battleLocation = new BattleLocation(region2,false,claimBuild2);
 
@@ -143,9 +153,9 @@ public class BattleServiceTest {
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
 
         when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player1);
-        when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player2);
+        //when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player2);
         when(mockArmyService.getArmyByName(any())).thenReturn(army1);
-        when(mockArmyService.getArmyByName(any())).thenReturn(army2);
+        //when(mockArmyService.getArmyByName(any())).thenReturn(army2);
         when(pathfinder.findShortestWay(any(),any(),any(),anyBoolean())).thenReturn(movement.getPath());
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild1);
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild2);
@@ -157,18 +167,59 @@ public class BattleServiceTest {
     }
 
 
+    //works
     @Test
     void ensureCreateBattleWorks(){
         log.debug("Testing if createBattle works with valid values!");
 
         // Assign
         log.trace("Initializing player, rpchar, regions, army");
-        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",false,"Aira");
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
+
+        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
+        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
 
         Battle newBattle = battleService.createBattle(createBattleDto);
         log.debug(newBattle.getName());
-        //log.debug(newBattle.getWar().getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
+        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
+        assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
     }
+
+    @Test
+    void ensureCreateBattleThrowsNoPermissionToPerformThisActionException(){
+        //when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
+        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
+        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
+
+
+        player1.setRpChars(null);
+
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Isengard","Knights of Gondor",true,"Aira");
+
+        //Battle newBattle = battleService.createBattle(createBattleDto);
+
+        var exception = assertThrows(ArmyServiceException.class, ()-> battleService.createBattle(createBattleDto));
+
+        assertThat(exception.getMessage()).contains("No permission to perform");
+    }
+
+    //works
+    @Test
+    void ensureCreateBattleThrowsNotEnoughHealthException(){
+        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
+        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
+        army1.setFreeTokens(0.0);
+
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
+
+        var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
+
+        assertThat(exception.getMessage()).contains("Army does not have enough health");
+
+    }
+
+
 }
