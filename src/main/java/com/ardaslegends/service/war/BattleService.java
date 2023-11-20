@@ -46,8 +46,6 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Calling getArmyByName with name: [{}]", createBattleDto.attackingArmyName());
         Army attackingArmy = armyService.getArmyByName(createBattleDto.attackingArmyName());
 
-//        System.out.println(executorPlayer.getActiveCharacter().get().getBoundTo().getName());
-        System.out.println(attackingArmy.getName());
         if (!ServiceUtils.boundLordLeaderPermission(executorPlayer, attackingArmy)) {
             log.warn("Player [{}] does not have the permission to start a battle with the army [{}]!", executorPlayer.getIgn(), createBattleDto.attackingArmyName());
             throw ArmyServiceException.noPermissionToPerformThisAction();
@@ -148,8 +146,6 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
 
         War war = warRepository.findWarByAggressorsAndDefenders(aggressorsSet,defendersSet);
-        System.out.println(war.getName());
-
 
         log.debug("War inforamtion: " + war);
 
