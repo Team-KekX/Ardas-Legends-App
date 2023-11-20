@@ -78,8 +78,6 @@ public class BattleServiceTest {
 
     private Movement movement;
 
-    private ServiceUtils serviceUtils;
-
     Set<Army> attackingArmies;
     Set<Army> defendingArmies;
 
@@ -155,21 +153,19 @@ public class BattleServiceTest {
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
 
         when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player1);
-        //when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player2);
         when(mockArmyService.getArmyByName(any())).thenReturn(army1);
-        //when(mockArmyService.getArmyByName(any())).thenReturn(army2);
+        when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
         when(pathfinder.findShortestWay(any(),any(),any(),anyBoolean())).thenReturn(movement.getPath());
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild1);
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild2);
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild3);
         when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(true);
         when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
-
+        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
+        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
 
     }
 
-
-    //works
     @Test
     void ensureCreateBattleWorks(){
         log.debug("Testing if createBattle works with valid values!");
@@ -178,8 +174,6 @@ public class BattleServiceTest {
         log.trace("Initializing player, rpchar, regions, army");
         CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
 
-        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
-        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
 
         Battle newBattle = battleService.createBattle(createBattleDto);
         log.debug(newBattle.getName());
@@ -192,25 +186,14 @@ public class BattleServiceTest {
 
     @Test
     void ensureCreateBattleThrowsNoPermissionToPerformThisActionException(){
-        when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
-        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
-        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
-
-
-        player1.getActiveCharacter().get().setBoundTo(null);
-
-//        player1.setRpChars(new HashSet<>());
 
         CreateBattleDto createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor","Knights of Isengard","Knights of Gondor",true,"Aira");
-
-        //Battle newBattle = battleService.createBattle(createBattleDto);
 
         var exception = assertThrows(ArmyServiceException.class, ()-> battleService.createBattle(createBattleDto));
 
         assertThat(exception.getMessage()).contains("No permission to perform");
     }
 
-    //works
     @Test
     void ensureCreateBattleThrowsNotEnoughHealthException(){
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
