@@ -167,13 +167,12 @@ public class BattleServiceTest {
     }
 
     @Test
-    void ensureCreateBattleWorks(){
-        log.debug("Testing if createBattle works with valid values!");
+    void ensureCreateBattleWorksWhenPlayerBoundToArmy(){
+        log.debug("Testing if createBattle works when player is not leader but bound to the army!");
 
         // Assign
         log.trace("Initializing player, rpchar, regions, army");
         CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
-
 
         Battle newBattle = battleService.createBattle(createBattleDto);
         log.debug(newBattle.getName());
@@ -185,19 +184,38 @@ public class BattleServiceTest {
     }
 
     @Test
-    void ensureCreateBattleThrowsNoPermissionToPerformThisActionException(){
+    void ensureCreateBattleWorksWhenPlayerIsLeader(){
+        log.debug("Testing if createBattle works when player is the faction leader but not bound to the army!");
+        army1.setBoundTo(rpchar2);
+        faction1.setLeader(player1);
 
-        CreateBattleDto createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor","Knights of Isengard","Knights of Gondor",true,"Aira");
+        // Assign
+        log.trace("Initializing player, rpchar, regions, army");
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
+
+        Battle newBattle = battleService.createBattle(createBattleDto);
+        log.debug(newBattle.getName());
+        assertThat(newBattle).isNotNull();
+        assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
+        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
+        assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
+    }
+
+    @Test
+    void ensureCreateBattleThrowsExceptionWhenPlayerNotBound(){
+        //Player1 is not bound to attacking army, so they have no permission to create a battle
+        CreateBattleDto createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor",
+                "Knights of Isengard","Knights of Gondor",true,"Aira");
 
         var exception = assertThrows(ArmyServiceException.class, ()-> battleService.createBattle(createBattleDto));
 
-        assertThat(exception.getMessage()).contains("No permission to perform");
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noPermissionToPerformThisAction().getMessage());
     }
 
     @Test
     void ensureCreateBattleThrowsNotEnoughHealthException(){
-        when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
-        when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
+
         army1.setFreeTokens(0.0);
 
         CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
@@ -205,7 +223,6 @@ public class BattleServiceTest {
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
 
         assertThat(exception.getMessage()).contains("Army does not have enough health");
-
     }
 
 
