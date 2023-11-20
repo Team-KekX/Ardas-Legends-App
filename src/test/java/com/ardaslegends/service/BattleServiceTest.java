@@ -8,6 +8,7 @@ import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.BattleRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.war.WarRepository;
+import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
@@ -74,6 +75,7 @@ public class BattleServiceTest {
     private BattleLocation battleLocation;
     private PathElement pathElement1;
     private PathElement pathElement2;
+    private PathElement pathElement3;
     private List<PathElement> path;
 
     private Movement movement;
@@ -91,9 +93,14 @@ public class BattleServiceTest {
         mockClaimBuildService = mock(ClaimBuildService.class);
         battleService = new BattleService(mockBattleRepository,mockArmyService,mockPlayerService,mockClaimBuildService,mockWarRepository,pathfinder);
 
-        region1 = Region.builder().id("90").regionType(RegionType.LAND).build();
-        region2 = Region.builder().id("91").regionType(RegionType.LAND).build();
-        region3 = Region.builder().id("92").regionType(RegionType.LAND).build();
+        region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
+        region3 = Region.builder().id("92").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
+
+        region1.addNeighbour(region2);
+        region2.addNeighbour(region1);
+        region2.addNeighbour(region3);
+        region3.addNeighbour(region2);
 
         faction1 = Faction.builder().name("Gondor").allies(new ArrayList<>()).foodStockpile(10).build();
         faction2 = Faction.builder().name("Isengard").allies(new ArrayList<>()).foodStockpile(10).build();
@@ -146,21 +153,23 @@ public class BattleServiceTest {
 
         battle = new Battle(war,"Battle of Gondor",attackingArmies,defendingArmies, LocalDateTime.now(),LocalDateTime.of(2023,9,20,0,0),LocalDateTime.of(2023,9,30,0,0),LocalDateTime.of(2023,9,20,0,0),battleLocation);
 
-        pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(region1.getCost()).build();
+        pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(0).build();
         pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
-        path = List.of(pathElement1);
+        pathElement3 = PathElement.builder().region(region3).baseCost(region3.getCost()).actualCost(region3.getCost()).build();
+        path = List.of(pathElement1, pathElement2);
 
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
 
         when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player1);
         when(mockArmyService.getArmyByName(any())).thenReturn(army1);
         when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
-        when(pathfinder.findShortestWay(any(),any(),any(),anyBoolean())).thenReturn(movement.getPath());
+        when(pathfinder.findShortestWay(army1.getCurrentRegion(),region2,player1,false)).thenReturn(movement.getPath());
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild1);
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild2);
         when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild3);
         when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(true);
         when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
+        when(mockBattleRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
         when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
 
@@ -188,6 +197,32 @@ public class BattleServiceTest {
         log.debug("Testing if createBattle works when player is the faction leader but not bound to the army!");
         army1.setBoundTo(rpchar2);
         faction1.setLeader(player1);
+
+        // Assign
+        log.trace("Initializing player, rpchar, regions, army");
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
+
+        Battle newBattle = battleService.createBattle(createBattleDto);
+        log.debug(newBattle.getName());
+        assertThat(newBattle).isNotNull();
+        assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
+        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
+        assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
+    }
+
+    @Test
+    void ensureCreateBattleWorksWhenDefendingArmyIsMovingButCanBeCaught(){
+        log.debug("Testing if createBattle works when defending army is moving but can be caught!");
+
+        var movementPath = List.of(
+                new PathElement(0, army2.getCurrentRegion().getCost(), army2.getCurrentRegion()),
+                new PathElement(region3.getCost(), region3.getCost(), region3),pathElement3);
+;
+        var movement = new Movement(null, army2, false, movementPath, LocalDateTime.now(),
+                LocalDateTime.now().plusDays(ServiceUtils.getTotalPathCost(movementPath)), true, ServiceUtils.getTotalPathCost(movementPath),
+                movementPath.get(1).getActualCost(), 0);
+        army2.getMovements().add(movement);
 
         // Assign
         log.trace("Initializing player, rpchar, regions, army");

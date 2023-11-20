@@ -15,8 +15,8 @@ import java.util.Objects;
 @Embeddable
 public class PathElement {
 
-    private Integer actualCost; //in days
-    private Integer baseCost; //in days
+    private Integer actualCost; //in hours
+    private Integer baseCost; //in hours
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Region region;

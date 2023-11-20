@@ -71,16 +71,26 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
 
             log.debug("Checking if the defending army is reachable in 24h");
-            if(ServiceUtils.getTotalPathCost(path) > 1){
-                log.warn("Cannot create battle because defending army is too far away ([{} days])", ServiceUtils.getTotalPathCost(path));
+            if(ServiceUtils.getTotalPathCost(path) > 24) {
+                log.warn("Cannot create battle because defending army is too far away ([{} hours])", ServiceUtils.getTotalPathCost(path));
                 throw BattleServiceException.battleNotAbleDueHours();
             }
-            log.debug("Defending army [{}] is in reach of attacking army [{}]", defendingArmy, attackingArmy);
+            log.debug("Defending army [{}] is in 24h reach of attacking army [{}]", defendingArmy, attackingArmy);
 
             //checks if the defending army is moving
-            if(defendingArmy.getMovements().size() > 0){
-                log.warn("Defending Army is in movement, battle is not possible!");
-                throw BattleServiceException.defendingArmyIsMoving();
+//            if(defendingArmy.getMovements().size() > 0){
+//                log.warn("Defending Army is in movement, battle is not possible!");
+//                throw BattleServiceException.defendingArmyIsMoving();
+//            }
+
+            log.debug("Checking if defending army is moving");
+            if(defendingArmy.getActiveMovement().isPresent()) {
+                var activeMovement = defendingArmy.getActiveMovement().get();
+                log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
+                log.debug("Hours until next region: [{}]", activeMovement.getHoursUntilNextRegion());
+                if(activeMovement.getHoursUntilNextRegion() <= 24) {
+
+                }
             }
 
             log.debug("Checking if attacking army is currently in a movement");
@@ -107,7 +117,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
 
             log.debug("Checking if claimbuild is reachable in 24 hours");
-            if(ServiceUtils.getTotalPathCost(path) > 1){
+            if(ServiceUtils.getTotalPathCost(path) > 24){
                 log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
                 throw BattleServiceException.battleNotAbleDueHours();
             }
@@ -169,9 +179,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 null,
                 battleLocation);
 
-        battleRepository.save(battle);
         log.debug("Trying to persist the battle object");
-        //battle = secureSave(battle, battleRepository);
+        battle = secureSave(battle, battleRepository);
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
