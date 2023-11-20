@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -38,14 +36,15 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         Objects.requireNonNull(createBattleDto, "CreateBattleDto must not be null");
         Objects.requireNonNull(createBattleDto.battleName(), "BattleName must not be null");
 
-        if (!createBattleDto.FieldBattle())
-            Objects.requireNonNull(createBattleDto.ClaimBuildName(), "Name of claim build attacked must not be null when creating a claim build battle");
+        if (!createBattleDto.isFieldBattle())
+            Objects.requireNonNull(createBattleDto.claimBuildName(), "Name of claim build attacked must not be null when creating a claim build battle");
 
         log.debug("Calling getPlayerByDiscordId with id: [{}]", createBattleDto.executorDiscordId());
         Player executorPlayer = playerService.getPlayerByDiscordId(createBattleDto.executorDiscordId());
         log.debug("Calling getArmyByName with name: [{}]", createBattleDto.attackingArmyName());
         Army attackingArmy = armyService.getArmyByName(createBattleDto.attackingArmyName());
 
+        log.debug("Checking if player has permission to start the battle");
         if (!ServiceUtils.boundLordLeaderPermission(executorPlayer, attackingArmy)) {
             log.warn("Player [{}] does not have the permission to start a battle with the army [{}]!", executorPlayer.getIgn(), createBattleDto.attackingArmyName());
             throw ArmyServiceException.noPermissionToPerformThisAction();
@@ -53,71 +52,74 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.debug("Setting attacking faction to: [{}]", attackingArmy.getFaction().getName());
         Faction attackingFaction = attackingArmy.getFaction();
-        Faction defendingFaction;
-
+        Faction defendingFaction; //Not initializing yet, defending faction is evaluated differently for field battles
 
         Set<Army> defendingArmies = new HashSet<>();
-        List<PathElement> paths ;
-        boolean movementisAble;
+        List<PathElement> path;
 
-        if(createBattleDto.FieldBattle()){
-            log.debug("Field battle boolean is set to true - fetching one defending army with name: [{}]", createBattleDto.defendingArmyName());
+        if(createBattleDto.isFieldBattle()){
+            log.debug("Declared battle is field battle");
+            log.debug("Fetching single defending army with name: [{}]", createBattleDto.defendingArmyName());
             log.trace("Calling getArmyByName with name: [{}]", createBattleDto.defendingArmyName());
-            Army fetchedArmy = armyService.getArmyByName(createBattleDto.defendingArmyName());
+            Army defendingArmy = armyService.getArmyByName(createBattleDto.defendingArmyName());
 
+            log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), defendingArmy.getCurrentRegion());
+            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(),defendingArmy.getCurrentRegion(), executorPlayer,false);
+            log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
 
-            //pathfinder
-            paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(),fetchedArmy.getCurrentRegion(),executorPlayer,true);
-
-            //checks if the defending army is further than 24 hours
-            if(paths.size() > 1){
-                log.warn("The defending army is to far, battle is not possible");
+            log.debug("Checking if the defending army is reachable in 24h");
+            if(ServiceUtils.getTotalPathCost(path) > 1){
+                log.warn("Cannot create battle because defending army is too far away ([{} days])", ServiceUtils.getTotalPathCost(path));
                 throw BattleServiceException.battleNotAbleDueHours();
             }
+            log.debug("Defending army [{}] is in reach of attacking army [{}]", defendingArmy, attackingArmy);
+
             //checks if the defending army is moving
-            if(fetchedArmy.getMovements().size() > 0){
+            if(defendingArmy.getMovements().size() > 0){
                 log.warn("Defending Army is in movement, battle is not possible!");
                 throw BattleServiceException.defendingArmyIsMoving();
             }
-            //checks if the attacking army has another movement
-            if(attackingArmy.getMovements().size() > 0){
-                log.warn("Attacking army has another active movement, battle is not possible!");
+
+            log.debug("Checking if attacking army is currently in a movement");
+            if(attackingArmy.getActiveMovement().isPresent()){
+                log.warn("Attacking army is currently moving, cannot declare battle!");
                 throw BattleServiceException.attackingArmyHasAnotherMovement();
             }
-            defendingArmies.add(fetchedArmy);
-            log.debug("Setting defending Faction to: [{}]", fetchedArmy.getFaction().getName());
-            defendingFaction = fetchedArmy.getFaction();
+
+            defendingArmies.add(defendingArmy);
+            log.debug("Setting defending Faction to: [{}]", defendingArmy.getFaction().getName());
+            defendingFaction = defendingArmy.getFaction();
         }
         else {
-            log.debug("Field battle boolean is set to false - fetching all stationed armies at claim build: [{}]", createBattleDto.ClaimBuildName());
-            log.trace("Calling getClaimBuildByName with name: [{}]", createBattleDto.ClaimBuildName());
-            ClaimBuild fetchedClaimBuild = claimBuildService.getClaimBuildByName(createBattleDto.ClaimBuildName());
-            defendingFaction = fetchedClaimBuild.getOwnedBy();
-            List<Army> stationedArmies = fetchedClaimBuild.getStationedArmies();
+            log.debug("Declared battle is claimbuild battle");
+            log.debug("Fetching all stationed armies at claimbuild: [{}]", createBattleDto.claimBuildName());
+            log.trace("Calling getClaimBuildByName with name: [{}]", createBattleDto.claimBuildName());
+            ClaimBuild claimbuild = claimBuildService.getClaimBuildByName(createBattleDto.claimBuildName());
+            defendingFaction = claimbuild.getOwnedBy();
+            List<Army> stationedArmies = claimbuild.getStationedArmies();
 
             //pathfinder
-            paths = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), fetchedClaimBuild.getRegion(),executorPlayer,true);
+            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), claimbuild.getRegion(),executorPlayer,true);
 
-            if(paths.size() > 1){
-                log.warn("Battle is not possible");
+            log.debug("Checking if claimbuild is reachable in 24 hours");
+            if(ServiceUtils.getTotalPathCost(path) > 1){
+                log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", claimbuild.getName(), attackingArmy.getName());
                 throw BattleServiceException.battleNotAbleDueHours();
             }
 
             if(stationedArmies.isEmpty())
-                log.debug("No armies stationed at claim build with name: [{}]", createBattleDto.ClaimBuildName());
+                log.debug("No armies stationed at claim build with name: [{}]", createBattleDto.claimBuildName());
             else {
-                log.debug("[{}] armies stationed at claim build with name: [{}]", stationedArmies.size(), createBattleDto.ClaimBuildName());
+                log.debug("[{}] armies stationed at claim build with name: [{}]", stationedArmies.size(), createBattleDto.claimBuildName());
                 defendingArmies.addAll(stationedArmies);
             }
         }
 
         boolean factionsAreAtWar = warRepository.isFactionAtWarWithOtherFaction(attackingFaction, defendingFaction);
         if(!factionsAreAtWar){
-            log.warn("The attacking faction: [{}] and the defending faction: [{}] are not at war with each other", attackingFaction.getName(), defendingFaction.getName());
+            log.warn("Cannot create battle: The attacking faction [{}] and the defending faction [{}] are not at war with each other", attackingFaction.getName(), defendingFaction.getName());
             throw BattleServiceException.factionsNotAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
-
-
 
         //ToDo: Add proper War object when query exists that fetches a specific wars between two factions
 
@@ -164,7 +166,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Trying to persist the battle object");
         //battle = secureSave(battle, battleRepository);
 
-        log.info("Successfully created army [{}]!", battle.getName());
+        log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
     }
 }

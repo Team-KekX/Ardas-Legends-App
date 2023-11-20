@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -120,6 +121,10 @@ public final class Army extends AbstractDomainObject {
 
     public boolean allUnitsAlive() {
         return this.units.stream().allMatch(unit -> Objects.equals(unit.getAmountAlive(), unit.getCount()));
+    }
+
+    public Optional<Movement> getActiveMovement() {
+        return this.getMovements().stream().filter(Movement::getIsCurrentlyActive).findFirst();
     }
 
     @JsonIgnore
