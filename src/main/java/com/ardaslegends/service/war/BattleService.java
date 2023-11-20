@@ -2,6 +2,7 @@ package com.ardaslegends.service.war;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.Battle;
+import com.ardaslegends.domain.war.BattleLocation;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.*;
@@ -53,6 +54,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Setting attacking faction to: [{}]", attackingArmy.getFaction().getName());
         Faction attackingFaction = attackingArmy.getFaction();
         Faction defendingFaction; //Not initializing yet, defending faction is evaluated differently for field battles
+        Region battleRegion;
+        ClaimBuild attackedClaimbuild = null;
 
         Set<Army> defendingArmies = new HashSet<>();
         List<PathElement> path;
@@ -89,21 +92,23 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             defendingArmies.add(defendingArmy);
             log.debug("Setting defending Faction to: [{}]", defendingArmy.getFaction().getName());
             defendingFaction = defendingArmy.getFaction();
+            battleRegion = defendingArmy.getCurrentRegion();
         }
         else {
             log.debug("Declared battle is claimbuild battle");
             log.debug("Fetching all stationed armies at claimbuild: [{}]", createBattleDto.claimBuildName());
             log.trace("Calling getClaimBuildByName with name: [{}]", createBattleDto.claimBuildName());
-            ClaimBuild claimbuild = claimBuildService.getClaimBuildByName(createBattleDto.claimBuildName());
-            defendingFaction = claimbuild.getOwnedBy();
-            List<Army> stationedArmies = claimbuild.getStationedArmies();
+            attackedClaimbuild = claimBuildService.getClaimBuildByName(createBattleDto.claimBuildName());
+            defendingFaction = attackedClaimbuild.getOwnedBy();
+            battleRegion = attackedClaimbuild.getRegion();
+            List<Army> stationedArmies = attackedClaimbuild.getStationedArmies();
 
             //pathfinder
-            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), claimbuild.getRegion(),executorPlayer,true);
+            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
 
             log.debug("Checking if claimbuild is reachable in 24 hours");
             if(ServiceUtils.getTotalPathCost(path) > 1){
-                log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", claimbuild.getName(), attackingArmy.getName());
+                log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
                 throw BattleServiceException.battleNotAbleDueHours();
             }
 
@@ -146,7 +151,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         aggressorsSet.add(aggressors);
         defendersSet.add(defenders);
 
-
+        log.debug("Creating BattleLocation");
+        BattleLocation battleLocation = new BattleLocation(battleRegion, createBattleDto.isFieldBattle(), attackedClaimbuild);
+        log.debug("Created BattleLocation [{}]", battleLocation);
         War war = warRepository.findWarByAggressorsAndDefenders(aggressorsSet,defendersSet);
 
         log.debug("War inforamtion: " + war);
@@ -160,7 +167,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 null,
                 null,
                 null,
-                null);
+                battleLocation);
 
         battleRepository.save(battle);
         log.debug("Trying to persist the battle object");
