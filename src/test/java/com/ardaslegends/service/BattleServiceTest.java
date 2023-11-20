@@ -114,11 +114,13 @@ public class BattleServiceTest {
 
 
         rpchar1 = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
+        rpchar1.setId(1L);
         rpchar2 = RPChar.builder().name("Gandalf").isHealing(false).currentRegion(region2).build();
+        rpchar2.setId(2L);
 
-        player1 = Player.builder().discordID("1234").faction(faction1).build();
+        player1 = Player.builder().discordID("1234").ign("Luk").faction(faction1).build();
         player1.addActiveRpChar(rpchar1);
-        player2 = Player.builder().discordID("4321").faction(faction2).build();
+        player2 = Player.builder().discordID("4321").ign("mirak").faction(faction2).build();
         player2.addActiveRpChar(rpchar2);
 
         army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region1).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
@@ -190,14 +192,16 @@ public class BattleServiceTest {
 
     @Test
     void ensureCreateBattleThrowsNoPermissionToPerformThisActionException(){
-        //when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
+        when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
         when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
 
 
-        player1.setRpChars(null);
+        player1.getActiveCharacter().get().setBoundTo(null);
 
-        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Isengard","Knights of Gondor",true,"Aira");
+//        player1.setRpChars(new HashSet<>());
+
+        CreateBattleDto createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor","Knights of Isengard","Knights of Gondor",true,"Aira");
 
         //Battle newBattle = battleService.createBattle(createBattleDto);
 
