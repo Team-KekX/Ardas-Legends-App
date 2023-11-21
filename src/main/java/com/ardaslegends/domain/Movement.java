@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder
+@Slf4j
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -66,6 +69,43 @@ public final class Movement extends AbstractDomainObject {
 
     public Integer getCost() {
         return ServiceUtils.getTotalPathCost(path);
+    }
+
+
+    public Region getCurrentRegion() {
+        return isCharMovement ? rpChar.getCurrentRegion() : army.getCurrentRegion();
+    }
+
+    /**
+     * Returns the next region in the path
+     * @return The next region. Null if there is no next region
+     */
+    public Region getNextRegion() {
+        val nextPathElement = getNextPathElement();
+        return nextPathElement == null ? null : nextPathElement.getRegion();
+    }
+
+    public PathElement getCurrentPathElement() {
+        val currentRegion = getCurrentRegion();
+        return path.stream().filter(pathElement -> pathElement.hasRegion(currentRegion)).findFirst()
+                .orElseThrow(() -> {
+                    log.warn("COULD NOT FIND REGION [{}] IN PATH [{}] OF MOVEMENT [{}] - THIS ERROR SHOULD NEVER BE THROWN",
+                            currentRegion, ServiceUtils.buildPathString(path), this);
+                    return new IllegalStateException("COULD NOT FIND REGION %s IN PATH %s. PLEASE CONTACT A DEV IMMEDIATELY"
+                            .formatted(currentRegion.getId(), ServiceUtils.buildPathString(path)));
+                });
+    }
+
+    /**
+     * Returns the next PathElement in the path
+     * @return The next PathElement. Null if there is no next region
+     */
+    public PathElement getNextPathElement() {
+        val currentPathElement = getCurrentPathElement();
+        val nextRegionIndex = path.indexOf(currentPathElement) + 1;
+        if(nextRegionIndex >= path.size())
+            return null;
+        return path.get(nextRegionIndex);
     }
 
     @Override

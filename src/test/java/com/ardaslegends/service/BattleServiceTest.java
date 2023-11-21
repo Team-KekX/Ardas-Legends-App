@@ -83,6 +83,7 @@ public class BattleServiceTest {
     Set<Army> attackingArmies;
     Set<Army> defendingArmies;
 
+    CreateBattleDto createBattleDto;
     @BeforeEach
     void setup(){
         mockBattleRepository = mock(BattleRepository.class);
@@ -115,9 +116,6 @@ public class BattleServiceTest {
         unit1 = Unit.builder().unitType(unitType1).army(army1).amountAlive(5).count(10).build();
         unit2 = Unit.builder().unitType(unitType2).army(army2).amountAlive(5).count(10).build();
 
-
-
-
         rpchar1 = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         rpchar1.setId(1L);
         rpchar2 = RPChar.builder().name("Gandalf").isHealing(false).currentRegion(region2).build();
@@ -136,11 +134,11 @@ public class BattleServiceTest {
         warParticipant1= WarParticipant.builder().warParticipant(faction1).initialParty(true).joiningDate(LocalDateTime.now()).build();
         warParticipant1= WarParticipant.builder().warParticipant(faction2).initialParty(true).joiningDate(LocalDateTime.now()).build();
 
-         Set<WarParticipant> attacker = new HashSet<>();
-         Set<WarParticipant> defender = new HashSet<>();
+        Set<WarParticipant> attacker = new HashSet<>();
+        Set<WarParticipant> defender = new HashSet<>();
 
-         attacker.add(warParticipant1);
-         defender.add(warParticipant2);
+        attacker.add(warParticipant1);
+        defender.add(warParticipant2);
 
         war = War.builder().name("War of Gondor").aggressors(attacker).defenders(defender).startDate(LocalDateTime.now()).build();
 
@@ -159,6 +157,9 @@ public class BattleServiceTest {
         path = List.of(pathElement1, pathElement2);
 
         movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
+
+        createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor",
+                "Knights of Isengard","Knights of Gondor",true,"Aira");
 
         when(mockPlayerService.getPlayerByDiscordId(any())).thenReturn(player1);
         when(mockArmyService.getArmyByName(any())).thenReturn(army1);
@@ -215,9 +216,11 @@ public class BattleServiceTest {
     void ensureCreateBattleWorksWhenDefendingArmyIsMovingButCanBeCaught(){
         log.debug("Testing if createBattle works when defending army is moving but can be caught!");
 
+        army2.setCurrentRegion(region1);
         var movementPath = List.of(
                 new PathElement(0, army2.getCurrentRegion().getCost(), army2.getCurrentRegion()),
-                new PathElement(region3.getCost(), region3.getCost(), region3),pathElement3);
+                pathElement2,
+                pathElement3);
 ;
         var movement = new Movement(null, army2, false, movementPath, LocalDateTime.now(),
                 LocalDateTime.now().plusDays(ServiceUtils.getTotalPathCost(movementPath)), true, ServiceUtils.getTotalPathCost(movementPath),
@@ -250,7 +253,6 @@ public class BattleServiceTest {
 
     @Test
     void ensureCreateBattleThrowsNotEnoughHealthException(){
-
         army1.setFreeTokens(0.0);
 
         CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
@@ -260,5 +262,22 @@ public class BattleServiceTest {
         assertThat(exception.getMessage()).contains("Army does not have enough health");
     }
 
+    @Test
+    void ensureCreateBattleThrowsExceptionWhenDefendingArmyIsMovingAway(){
+        log.debug("Testing if createBattle works when defending army is moving away and cannot be caught!");
+
+        var movementPath = List.of(
+                new PathElement(0, army2.getCurrentRegion().getCost(), army2.getCurrentRegion()),
+                new PathElement(region3.getCost(), region3.getCost(), region3),pathElement3);
+        ;
+        var movement = new Movement(null, army2, false, movementPath, LocalDateTime.now(),
+                LocalDateTime.now().plusDays(ServiceUtils.getTotalPathCost(movementPath)), true, ServiceUtils.getTotalPathCost(movementPath),
+                movementPath.get(1).getActualCost(), 0);
+        army2.getMovements().add(movement);
+
+        var exception = assertThrows(ArmyServiceException.class, ()-> battleService.createBattle(createBattleDto));
+
+        assertThat(exception.getMessage()).isEqualTo(ArmyServiceException.noPermissionToPerformThisAction().getMessage());
+    }
 
 }
