@@ -51,6 +51,18 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             throw ArmyServiceException.noPermissionToPerformThisAction();
         }
 
+        log.debug("Checking if army has enough health to start the battle");
+        if(attackingArmy.getFreeTokens() <=0 ){
+            log.warn("The attacking army: [{}] can not start a battle, because they don`t have enough health!", attackingArmy);
+            throw BattleServiceException.notEnoughHealth();
+        }
+
+        log.debug("Checking if attacking army is currently in a movement");
+        if(attackingArmy.getActiveMovement().isPresent()){
+            log.warn("Attacking army is currently moving, cannot declare battle!");
+            throw BattleServiceException.attackingArmyHasAnotherMovement();
+        }
+
         log.debug("Setting attacking faction to: [{}]", attackingArmy.getFaction().getName());
         Faction attackingFaction = attackingArmy.getFaction();
         Faction defendingFaction; //Not initializing yet, defending faction is evaluated differently for field battles
@@ -77,26 +89,16 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             }
             log.debug("Defending army [{}] is in 24h reach of attacking army [{}]", defendingArmy, attackingArmy);
 
-            //checks if the defending army is moving
-//            if(defendingArmy.getMovements().size() > 0){
-//                log.warn("Defending Army is in movement, battle is not possible!");
-//                throw BattleServiceException.defendingArmyIsMoving();
-//            }
-
             log.debug("Checking if defending army is moving");
             if(defendingArmy.getActiveMovement().isPresent()) {
                 var activeMovement = defendingArmy.getActiveMovement().get();
                 log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
                 log.debug("Hours until next region: [{}]", activeMovement.getHoursUntilNextRegion());
                 if(activeMovement.getHoursUntilNextRegion() <= 24) {
-
+                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
+                    throw BattleServiceException.defendingArmyIsMovingAway(activeMovement.getHoursUntilNextRegion());
                 }
-            }
-
-            log.debug("Checking if attacking army is currently in a movement");
-            if(attackingArmy.getActiveMovement().isPresent()){
-                log.warn("Attacking army is currently moving, cannot declare battle!");
-                throw BattleServiceException.attackingArmyHasAnotherMovement();
+                log.debug("Defending army is moving but can be reached in 24h");
             }
 
             defendingArmies.add(defendingArmy);
@@ -113,8 +115,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             battleRegion = attackedClaimbuild.getRegion();
             List<Army> stationedArmies = attackedClaimbuild.getStationedArmies();
 
-            //pathfinder
+            log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
             path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
+            log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
 
             log.debug("Checking if claimbuild is reachable in 24 hours");
             if(ServiceUtils.getTotalPathCost(path) > 24){
@@ -141,14 +144,6 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
 
         //ToDo: Add 24h in reach check, if the attacking army is in reach of the defending army / CB
-
-
-        // Checking if army has enough health for the battle
-        if(attackingArmy.getFreeTokens() <=0 ){
-            log.warn("The attacking army: [{}] can not start a battle, because they don`t have enough health!");
-            throw BattleServiceException.notEnoughHealth();
-        }
-
 
         //ToDo: Add proper BattleLocation when the 24h check is available
 
