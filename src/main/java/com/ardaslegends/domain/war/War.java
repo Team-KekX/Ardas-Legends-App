@@ -138,4 +138,17 @@ public class War extends AbstractDomainObject {
     public Set<Battle> getBattles() {
         return Collections.unmodifiableSet(this.battles);
     }
+
+    @Override
+    public String toString() {
+        return "War{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", aggressors=" + aggressors +
+                ", defenders=" + defenders +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", battles=" + battles +
+                '}';
+    }
 }

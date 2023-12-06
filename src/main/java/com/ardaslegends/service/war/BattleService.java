@@ -99,7 +99,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 if(activeMovement.getHoursUntilNextRegion() <= 24) {
                     log.debug("Next region is reached in <= 24h");
                     log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
-                    throw BattleServiceException.defendingArmyIsMovingAway(activeMovement.getHoursUntilNextRegion());
+                    throw BattleServiceException.defendingArmyIsMovingAway(defendingArmy);
                 }
                 log.debug("Defending army is moving but is still in the region for the next 24h");
 

@@ -45,4 +45,13 @@ public class WarParticipant  {
     public int hashCode() {
         return Objects.hash(warParticipant);
     }
+
+    @Override
+    public String toString() {
+        return "WarParticipant{" +
+                "warParticipant=" + warParticipant +
+                ", initialParty=" + initialParty +
+                ", joiningDate=" + joiningDate +
+                '}';
+    }
 }
