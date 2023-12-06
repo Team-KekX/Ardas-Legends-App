@@ -51,6 +51,9 @@ public class BattleServiceTest {
 
     private BattleLocation battleLocation;
 
+    private Region region1;
+    private Region region2;
+    private ClaimBuild claimBuild2;
     private Movement movement;
 
     Set<Army> attackingArmies;
@@ -67,8 +70,8 @@ public class BattleServiceTest {
         ClaimBuildService mockClaimBuildService = mock(ClaimBuildService.class);
         battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockClaimBuildService,mockWarRepository, pathfinder);
 
-        Region region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
-        Region region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();
+        region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();
         Region region3 = Region.builder().id("92").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
 
         region1.addNeighbour(region2);
@@ -80,7 +83,7 @@ public class BattleServiceTest {
         faction2 = Faction.builder().name("Isengard").allies(new ArrayList<>()).foodStockpile(10).build();
 
         ClaimBuild claimBuild1 = ClaimBuild.builder().name("Nimheria").siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction1).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
-        ClaimBuild claimBuild2 = ClaimBuild.builder().name("Aira").siege("Ram, Trebuchet, Tower").region(region2).ownedBy(faction2).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
+        claimBuild2 = ClaimBuild.builder().name("Aira").siege("Ram, Trebuchet, Tower").region(region2).ownedBy(faction2).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         ClaimBuild claimBuild3 = ClaimBuild.builder().name("Dondle").siege("Ram, Trebuchet, Tower").region(region3).ownedBy(faction2).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
 
         UnitType unitType1 = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
@@ -138,9 +141,9 @@ public class BattleServiceTest {
         when(mockArmyService.getArmyByName(any())).thenReturn(army1);
         when(mockPlayerService.getPlayerByDiscordId(player1.getDiscordID())).thenReturn(player1);
         when(pathfinder.findShortestWay(army1.getCurrentRegion(), region2,player1,false)).thenReturn(movement.getPath());
-        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild1);
-        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild2);
-        when(mockClaimBuildService.getClaimBuildByName(any())).thenReturn(claimBuild3);
+        when(mockClaimBuildService.getClaimBuildByName(claimBuild1.getName())).thenReturn(claimBuild1);
+        when(mockClaimBuildService.getClaimBuildByName(claimBuild2.getName())).thenReturn(claimBuild2);
+        when(mockClaimBuildService.getClaimBuildByName(claimBuild3.getName())).thenReturn(claimBuild3);
         when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(true);
         when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
         when(mockBattleRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -164,6 +167,26 @@ public class BattleServiceTest {
         assertThat(newBattle.getWar()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
+        assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
+    }
+
+    @Test
+    void ensureCreateBattleWorksWithClaimBuildBattle(){
+        log.debug("Testing if createBattle works when player is not leader but bound to the army!");
+
+        // Assign
+        log.trace("Initializing player, rpchar, regions, army");
+        claimBuild2.setStationedArmies(List.of(army2));
+        army2.setStationedAt(claimBuild2);
+        battleLocation = new BattleLocation(claimBuild2.getRegion(), false, claimBuild2);
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor",null,false, claimBuild2.getName());
+
+        Battle newBattle = battleService.createBattle(createBattleDto);
+        log.debug(newBattle.getName());
+        assertThat(newBattle).isNotNull();
+        assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
+        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
     }
 
@@ -247,4 +270,30 @@ public class BattleServiceTest {
 
         assertThat(exception.getMessage()).isEqualTo(BattleServiceException.factionsNotAtWar(faction1.getName(), faction2.getName()).getMessage());
     }
+
+    @Test
+    void ensureCreateBattleThrowsExceptionWhenAttackingArmyIsMoving(){
+        log.debug("Testing if createBattle throws exception when attacking army is moving!");
+
+        movement.setArmy(army1);
+        var movements = new ArrayList<Movement>();
+        movements.add(movement);
+        army1.setMovements(movements);
+
+        var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
+
+        assertThat(exception.getMessage()).isEqualTo(BattleServiceException.attackingArmyHasAnotherMovement().getMessage());
+    }
+
+    @Test
+    void ensureCreateBattleThrowsExceptionWhenArmiesNotInSameRegion(){
+        log.debug("Testing if createBattle throws exception when armies not in same region!");
+
+        army1.setCurrentRegion(region1);
+
+        var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
+
+        assertThat(exception.getMessage()).isEqualTo(BattleServiceException.notInSameRegion(army1, army2).getMessage());
+    }
+
 }
