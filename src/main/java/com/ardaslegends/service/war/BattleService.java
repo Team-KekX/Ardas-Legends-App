@@ -78,24 +78,32 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             log.trace("Calling getArmyByName with name: [{}]", createBattleDto.defendingArmyName());
             Army defendingArmy = armyService.getArmyByName(createBattleDto.defendingArmyName());
 
-            log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), defendingArmy.getCurrentRegion());
-            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(),defendingArmy.getCurrentRegion(), executorPlayer,false);
-            log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
+            Region defenderRegion = defendingArmy.getCurrentRegion();
+            Region attackerRegion = attackingArmy.getCurrentRegion();
 
-            log.debug("Checking if the defending army is reachable in 24h");
-            log.debug("Attacking army region: [{}]", attackingArmy.getCurrentRegion());
-            log.debug("Defending army region: [{}]", defendingArmy.getCurrentRegion());
-            if(ServiceUtils.getTotalPathCost(path) > 24) {
-                log.debug("Defending army [{}] is more than 24h away", defendingArmy);
-                log.debug("Checking if defending army might be moving towards 24h reach");
-                boolean willBeReachableIn24h = willArmyBeReachableIn24h(attackingArmy, defendingArmy);
+            log.debug("Checking if the defending army is in same region as attacking army for the next 24h");
+            log.debug("Attacking army region: [{}]", attackerRegion);
+            log.debug("Defending army region: [{}]", defenderRegion);
 
-
-
-                log.warn("Cannot create battle because defending army is too far away ([{} hours])", ServiceUtils.getTotalPathCost(path));
-                throw BattleServiceException.battleNotAbleDueHours();
+            if(!defenderRegion.equals(attackerRegion)) {
+                log.warn("Attacking army is not in the same region [{}] as defending army [{}]", attackerRegion, defenderRegion);
+                throw BattleServiceException.notInSameRegion(attackingArmy, defendingArmy);
             }
-            log.debug("Defending army [{}] is in 24h reach of attacking army [{}]", defendingArmy, attackingArmy);
+
+            log.debug("Checking if defending army is moving away");
+            if(defendingArmy.getActiveMovement().isPresent()) {
+                var activeMovement = defendingArmy.getActiveMovement().get();
+                log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
+                log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getHoursUntilNextRegion());
+
+                if(activeMovement.getHoursUntilNextRegion() <= 24) {
+                    log.debug("Next region is reached in <= 24h");
+                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
+                    throw BattleServiceException.defendingArmyIsMovingAway(activeMovement.getHoursUntilNextRegion());
+                }
+                log.debug("Defending army is moving but is still in the region for the next 24h");
+
+            }
 
             defendingArmies.add(defendingArmy);
             log.debug("Setting defending Faction to: [{}]", defendingArmy.getFaction().getName());
@@ -175,23 +183,5 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
-    }
-
-    private boolean willArmyBeReachableIn24h(Army attackingArmy, Army defendingArmy) {
-        boolean willBeReachableIn24h = true;
-        
-        log.debug("Checking if defending army is moving");
-        if(defendingArmy.getActiveMovement().isPresent()) {
-            var activeMovement = defendingArmy.getActiveMovement().get();
-            log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
-            log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getHoursUntilNextRegion());
-            if(activeMovement.getHoursUntilNextRegion() <= 24) {
-                log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
-                throw BattleServiceException.defendingArmyIsMovingAway(activeMovement.getHoursUntilNextRegion());
-            }
-            log.debug("Defending army is moving but can be reached in 24h");
-        }
-
-        return willBeReachableIn24h;
     }
 }

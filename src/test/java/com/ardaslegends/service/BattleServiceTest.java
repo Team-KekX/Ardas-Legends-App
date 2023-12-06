@@ -95,7 +95,7 @@ public class BattleServiceTest {
         battleService = new BattleService(mockBattleRepository,mockArmyService,mockPlayerService,mockClaimBuildService,mockWarRepository,pathfinder);
 
         region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
-        region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
+        region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();
         region3 = Region.builder().id("92").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
 
         region1.addNeighbour(region2);
@@ -126,7 +126,7 @@ public class BattleServiceTest {
         player2 = Player.builder().discordID("4321").ign("mirak").faction(faction2).build();
         player2.addActiveRpChar(rpchar2);
 
-        army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region1).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
+        army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region2).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
         army2 = Army.builder().name("Knights of Isengard").armyType(ArmyType.ARMY).faction(faction2).freeTokens(30 - unit2.getCount() * unitType2.getTokenCost()).currentRegion(region2).boundTo(player2.getActiveCharacter().get()).stationedAt(claimBuild2).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
 
         army2.setMovements(new ArrayList<>());
@@ -147,16 +147,16 @@ public class BattleServiceTest {
         defendingArmies = new HashSet<>();
         defendingArmies.add(army2);
 
-        battleLocation = new BattleLocation(region2,false,claimBuild2);
+        battleLocation = new BattleLocation(region2,true, null);
 
         battle = new Battle(war,"Battle of Gondor",attackingArmies,defendingArmies, LocalDateTime.now(),LocalDateTime.of(2023,9,20,0,0),LocalDateTime.of(2023,9,30,0,0),LocalDateTime.of(2023,9,20,0,0),battleLocation);
 
         pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(0).build();
         pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
         pathElement3 = PathElement.builder().region(region3).baseCost(region3.getCost()).actualCost(region3.getCost()).build();
-        path = List.of(pathElement1, pathElement2);
+        path = List.of(pathElement2, pathElement1);
 
-        movement =  Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army1).path(path).build();
+        movement =  Movement.builder().isCharMovement(false).hoursMoved(2).hoursUntilNextRegion(46).hoursUntilComplete(46).isCurrentlyActive(true).army(army1).path(path).build();
 
         createBattleDto = new CreateBattleDto(player1.getDiscordID(),"Battle of Gondor",
                 "Knights of Isengard","Knights of Gondor",true,"Aira");
@@ -182,7 +182,7 @@ public class BattleServiceTest {
 
         // Assign
         log.trace("Initializing player, rpchar, regions, army");
-        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"Aira");
+        CreateBattleDto createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor","Knights of Isengard",true,"TEEEST");
 
         Battle newBattle = battleService.createBattle(createBattleDto);
         log.debug(newBattle.getName());
@@ -191,6 +191,7 @@ public class BattleServiceTest {
         assertThat(newBattle.getWar()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
+        assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
     }
 
     @Test
@@ -215,17 +216,6 @@ public class BattleServiceTest {
     @Test
     void ensureCreateBattleWorksWhenDefendingArmyIsMovingButCanBeCaught(){
         log.debug("Testing if createBattle works when defending army is moving but can be caught!");
-
-        army2.setCurrentRegion(region1);
-        var movementPath = List.of(
-                new PathElement(0, army2.getCurrentRegion().getCost(), army2.getCurrentRegion()),
-                pathElement2,
-                pathElement3);
-;
-        var movement = new Movement(null, army2, false, movementPath, LocalDateTime.now(),
-                LocalDateTime.now().plusDays(ServiceUtils.getTotalPathCost(movementPath)), true, ServiceUtils.getTotalPathCost(movementPath),
-                movementPath.get(1).getActualCost(), 0);
-        army2.getMovements().add(movement);
 
         // Assign
         log.trace("Initializing player, rpchar, regions, army");
@@ -266,13 +256,8 @@ public class BattleServiceTest {
     void ensureCreateBattleThrowsExceptionWhenDefendingArmyIsMovingAway(){
         log.debug("Testing if createBattle works when defending army is moving away and cannot be caught!");
 
-        var movementPath = List.of(
-                new PathElement(0, army2.getCurrentRegion().getCost(), army2.getCurrentRegion()),
-                new PathElement(region3.getCost(), region3.getCost(), region3),pathElement3);
-        ;
-        var movement = new Movement(null, army2, false, movementPath, LocalDateTime.now(),
-                LocalDateTime.now().plusDays(ServiceUtils.getTotalPathCost(movementPath)), true, ServiceUtils.getTotalPathCost(movementPath),
-                movementPath.get(1).getActualCost(), 0);
+        movement.setHoursUntilComplete(22);
+        movement.setHoursUntilNextRegion(22);
         army2.getMovements().add(movement);
 
         var exception = assertThrows(ArmyServiceException.class, ()-> battleService.createBattle(createBattleDto));

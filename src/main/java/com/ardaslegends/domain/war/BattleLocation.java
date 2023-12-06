@@ -8,6 +8,8 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import java.util.Objects;
+
 @Embeddable
 public class BattleLocation {
 
@@ -29,5 +31,34 @@ public class BattleLocation {
 
     public BattleLocation() {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BattleLocation that = (BattleLocation) o;
+
+        if (!region.equals(that.region)) return false;
+        if (!fieldBattle.equals(that.fieldBattle)) return false;
+        return Objects.equals(claimBuild, that.claimBuild);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = region.hashCode();
+        result = 31 * result + fieldBattle.hashCode();
+        result = 31 * result + (claimBuild != null ? claimBuild.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BattleLocation{" +
+                "region=" + region +
+                ", fieldBattle=" + fieldBattle +
+                ", claimBuild=" + claimBuild +
+                '}';
     }
 }
