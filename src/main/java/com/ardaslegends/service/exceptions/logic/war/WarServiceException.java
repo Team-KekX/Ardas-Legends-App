@@ -1,8 +1,8 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.war;
 
-import com.ardaslegends.domain.war.War;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class WarServiceException extends ServiceException {
+public class WarServiceException extends LogicException {
 
     private static final String NO_WAR_DECLARATION_PERMISSIONS = "You are not a faction leader or lord with permission to declare wars!";
     private static final String FACTION_ALREADY_JOINED_THE_WAR_AS_ATTACKER = "%s already joined the war as an attacking faction";

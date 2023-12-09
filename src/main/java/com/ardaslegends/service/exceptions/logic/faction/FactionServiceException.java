@@ -1,6 +1,8 @@
-package com.ardaslegends.service.exceptions;
+package com.ardaslegends.service.exceptions.logic.faction;
 
-public class FactionServiceException extends ServiceException {
+import com.ardaslegends.service.exceptions.logic.LogicException;
+
+public class FactionServiceException extends LogicException {
 
     public static final String NO_FACTION_WITH_NAME_FOUND_AND_ALL = "Could not find Faction with name '%s'.\nAvailable factions are: %s";
     public static final String NO_FACTION_WITH_NAME_FOUND = "Could not find Faction with name '%s'.\nAvailable factions are: %s";

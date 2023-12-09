@@ -1,10 +1,10 @@
-package com.ardaslegends.service.exceptions.rpchar;
+package com.ardaslegends.service.exceptions.logic.rpchar;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
 import java.util.Arrays;
 
-public class RpCharServiceException extends ServiceException {
+public class RpCharServiceException extends LogicException {
     private final static String NO_RPCHAR_FOUND = "No RP Char found with name '%s'";
     private final static String NO_RPCHARS_FOUND = "No RP Chars found with names '%s'";
 

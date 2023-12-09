@@ -8,7 +8,7 @@ import com.ardaslegends.service.dto.claimbuild.CreateClaimBuildDto;
 import com.ardaslegends.service.dto.claimbuilds.DeleteClaimbuildDto;
 import com.ardaslegends.service.dto.claimbuilds.UpdateClaimbuildOwnerDto;
 import com.ardaslegends.service.exceptions.ServiceException;
-import com.ardaslegends.service.exceptions.claimbuild.ClaimBuildServiceException;
+import com.ardaslegends.service.exceptions.logic.claimbuild.ClaimBuildServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

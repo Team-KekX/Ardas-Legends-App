@@ -13,7 +13,7 @@ import com.ardaslegends.repository.region.RegionRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
 import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
-import com.ardaslegends.service.exceptions.applications.ClaimbuildApplicationException;
+import com.ardaslegends.service.exceptions.logic.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

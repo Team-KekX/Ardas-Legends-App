@@ -1,8 +1,8 @@
-package com.ardaslegends.service.exceptions.units;
+package com.ardaslegends.service.exceptions.logic.units;
 
-import com.ardaslegends.service.exceptions.ServiceException;
+import com.ardaslegends.service.exceptions.logic.LogicException;
 
-public class UnitServiceException extends ServiceException {
+public class UnitServiceException extends LogicException {
 
     private static final String UNIT_NOT_FOUND = "No Unit with name '%s' found!";
 

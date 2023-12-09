@@ -5,11 +5,9 @@ import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.DiscordUtils;
-import com.ardaslegends.service.exceptions.applications.RoleplayApplicationServiceException;
+import com.ardaslegends.service.exceptions.logic.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import jakarta.persistence.*;
