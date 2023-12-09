@@ -29,6 +29,9 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     private static final String FIND_ACTIVE = "/active";
     private static final String ADD_VOTE = "/vote/add";
     private static final String REMOVE_VOTE = "/vote/remove";
+
+    private static final String ADD_DECLINE_VOTE = "/decline/add";
+    private static final String REMOVE_DECLINE_VOTE = "/decline/remove";
     private final ClaimbuildApplicationService cbbAppService;
 
     @Operation(summary = "Creates a Claimbuild Application")
@@ -82,4 +85,23 @@ public class ClaimbuildApplicationController extends AbstractRestController {
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
 
+    @Operation(summary = "Adds a decline vote to a claimbuild application")
+    @PatchMapping(ADD_DECLINE_VOTE)
+    public HttpEntity<ClaimbuildApplicationResponse> addDeclineVoteToApplication(ApplicationVoteDto voteDto) {
+        log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
+
+        val application = wrappedServiceExecution(voteDto, cbbAppService::addDeclineVote);
+
+        return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
+    }
+
+    @Operation(summary = "Removes a vote from a claimbuild application")
+    @PatchMapping(REMOVE_DECLINE_VOTE)
+    public HttpEntity<ClaimbuildApplicationResponse> removeDeclineVoteFromApplication(ApplicationVoteDto voteDto) {
+        log.debug("Incoming remove-vote from claimbuild application Request: Data [{}]", voteDto);
+
+        val application = wrappedServiceExecution(voteDto, cbbAppService::removeDeclineVote);
+
+        return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
+    }
 }
