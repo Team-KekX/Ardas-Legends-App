@@ -2,6 +2,7 @@ package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.AbstractEntity;
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.service.exceptions.logic.applications.ApplicationException;
 import com.ardaslegends.service.exceptions.logic.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +131,20 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
             throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
         }
         voteCount = (short) acceptedBy.size();
+    }
+
+    public void removeVote(Player player) {
+        Objects.requireNonNull(player);
+
+        if (acceptedBy.contains(player)) {
+            acceptedBy.remove(player);
+        }
+        else if (declinedBy.contains(player)) {
+            declinedBy.remove(player);
+        }
+        else {
+            throw ApplicationException.noVoteNeededToBeRemoved(player.getIgn());
+        }
     }
 
     public void removeDecline(Player player) {
