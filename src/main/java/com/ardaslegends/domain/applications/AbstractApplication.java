@@ -124,15 +124,6 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         }
     }
 
-    public void removeAccept(Player player) {
-        val success = acceptedBy.remove(player);
-        if(!success) {
-            log.warn("Player [{}] did not accept the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
-        }
-        voteCount = (short) acceptedBy.size();
-    }
-
     public void removeVote(Player player) {
         Objects.requireNonNull(player);
 
@@ -145,15 +136,6 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         else {
             throw ApplicationException.noVoteNeededToBeRemoved(player.getIgn());
         }
-    }
-
-    public void removeDecline(Player player) {
-        val success = declinedBy.remove(player);
-        if(!success) {
-            log.warn("Player [{}] did not decline the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
-        }
-        voteCount = (short) acceptedBy.size();
     }
 
     private static void isVoteSuccessfulElseThrow(Player player, boolean success) {
