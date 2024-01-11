@@ -66,7 +66,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<ClaimbuildApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::addVote);
+        val application = wrappedServiceExecution(voteDto, cbbAppService::addAcceptVote);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }

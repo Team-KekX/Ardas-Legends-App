@@ -146,7 +146,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     }
 
     @Transactional(readOnly = false)
-    public ClaimbuildApplication addVote(ApplicationVoteDto dto) {
+    public ClaimbuildApplication addAcceptVote(ApplicationVoteDto dto) {
         log.debug("Adding Vote to  claimbuild application [{}]", dto);
         Objects.requireNonNull(dto);
 
@@ -159,24 +159,6 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
         log.info("Added vote to claimbuild application [{}]", application);
-
-        return application;
-    }
-
-    @Transactional(readOnly = false)
-    public ClaimbuildApplication removeVote(ApplicationVoteDto dto) {
-        log.debug("Removing vote from claimbuild application [{}]", dto);
-        Objects.requireNonNull(dto);
-
-        ServiceUtils.checkAllNulls(dto);
-
-        var application = cbAppRepository.queryById(dto.applicationId());
-        val player = playerRepository.queryByDiscordId(dto.discordId());
-
-        application.removeAccept(player);
-
-        application = secureSave(application, cbAppRepository);
-        log.info("Removed vote from claimbuild application [{}]", application);
 
         return application;
     }
@@ -196,22 +178,24 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         return application;
     }
+
     @Transactional(readOnly = false)
-    public ClaimbuildApplication removeDeclineVote(@NonNull ApplicationVoteDto dto) {
-        log.debug("Removing decline vote from claimbuild application with data [{}]", dto);
+    public ClaimbuildApplication removeVote(ApplicationVoteDto dto) {
+        log.debug("Removing vote from claimbuild application [{}]", dto);
+        Objects.requireNonNull(dto);
+
         ServiceUtils.checkAllNulls(dto);
 
         var application = cbAppRepository.queryById(dto.applicationId());
         val player = playerRepository.queryByDiscordId(dto.discordId());
 
-        application.removeDecline(player);
+        application.removeVote(player);
 
         application = secureSave(application, cbAppRepository);
-        log.info("Removed decline vote from claimbuild application [{}]", application);
+        log.info("Removed vote from claimbuild application [{}]", application);
 
         return application;
     }
-
 
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
