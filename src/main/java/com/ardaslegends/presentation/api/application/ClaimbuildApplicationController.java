@@ -1,10 +1,7 @@
 package com.ardaslegends.presentation.api.application;
 
-import com.ardaslegends.domain.applications.ClaimbuildApplication;
-import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.applications.ClaimbuildApplicationResponse;
-import com.ardaslegends.presentation.api.response.applications.RoleplayApplicationResponse;
 import com.ardaslegends.service.applications.ClaimbuildApplicationService;
 import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
@@ -66,7 +63,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
 
     @Operation(summary = "Adds a vote to a claimbuild application")
     @PatchMapping(ADD_VOTE)
-    public HttpEntity<ClaimbuildApplicationResponse> addVoteToApplication(ApplicationVoteDto voteDto) {
+    public HttpEntity<ClaimbuildApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
 
         val application = wrappedServiceExecution(voteDto, cbbAppService::addVote);
@@ -74,22 +71,23 @@ public class ClaimbuildApplicationController extends AbstractRestController {
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
 
-    @Operation(summary = "Removes a vote from a claimbuild application")
-    @PatchMapping(REMOVE_VOTE)
-    public HttpEntity<ClaimbuildApplicationResponse> removeVoteFromApplication(ApplicationVoteDto voteDto) {
-        log.debug("Incoming remove-vote from claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::removeVote);
+    @Operation(summary = "Adds a decline vote to a claimbuild application")
+    @PatchMapping(ADD_DECLINE_VOTE)
+    public HttpEntity<ClaimbuildApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
+        log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
+
+        val application = wrappedServiceExecution(voteDto, cbbAppService::addDeclineVote);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
 
-    @Operation(summary = "Adds a decline vote to a claimbuild application")
-    @PatchMapping(ADD_DECLINE_VOTE)
-    public HttpEntity<ClaimbuildApplicationResponse> addDeclineVoteToApplication(ApplicationVoteDto voteDto) {
-        log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
+    @Operation(summary = "Removes a vote from a claimbuild application")
+    @PatchMapping(REMOVE_VOTE)
+    public HttpEntity<ClaimbuildApplicationResponse> removeVote(ApplicationVoteDto voteDto) {
+        log.debug("Incoming remove-vote from claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::addDeclineVote);
+        val application = wrappedServiceExecution(voteDto, cbbAppService::removeVote);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
