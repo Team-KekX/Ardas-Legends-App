@@ -88,6 +88,10 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         this.discordApplicationMessageId = message.getId();
         return message;
     }
+    public void updateApplicationMessage(TextChannel channel) {
+        val message = channel.getMessageById(this.discordApplicationMessageId).join();
+        message.edit(buildApplicationMessage());
+    }
     protected abstract EmbedBuilder buildAcceptedMessage();
     public Message sendAcceptedMessage(TextChannel channel) {
         val embed = buildAcceptedMessage();

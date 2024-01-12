@@ -160,6 +160,9 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         application = secureSave(application, cbAppRepository);
         log.info("Added vote to claimbuild application [{}]", application);
 
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
+
         return application;
     }
 
@@ -175,6 +178,9 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
         log.info("Added decline vote to claimbuild application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
 
         return application;
     }
@@ -193,6 +199,9 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
         log.info("Removed vote from claimbuild application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
 
         return application;
     }

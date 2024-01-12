@@ -97,6 +97,8 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
                 .addInlineField("Coordinates", coordinate.toString())
                 .addField("Built by", builtByString)
                 .setThumbnail(FactionBanners.getBannerUrl(ownedBy.getName()))
+                .addField("Upvoted By", getAcceptedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")))
+                .addInlineField("Downvoted By", getDeclinedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")))
                 .setTimestampToNow();
     }
 
