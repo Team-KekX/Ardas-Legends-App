@@ -61,7 +61,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
         return ResponseEntity.ok(roleplayAppResponseSlice);
     }
 
-    @Operation(summary = "Adds a vote to a claimbuild application")
+    @Operation(summary = "Adds a upvote to an application, if the same staff member has downvoted this application then that downvote will be removed")
     @PatchMapping(ADD_VOTE)
     public HttpEntity<ClaimbuildApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
@@ -72,7 +72,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     }
 
 
-    @Operation(summary = "Adds a decline vote to a claimbuild application")
+    @Operation(summary = "Adds a downvote to an application, if the same staff member has upvoted this application then that upvoted will be removed")
     @PatchMapping(ADD_DECLINE_VOTE)
     public HttpEntity<ClaimbuildApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);

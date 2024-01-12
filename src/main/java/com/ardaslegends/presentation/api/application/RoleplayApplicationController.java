@@ -61,7 +61,7 @@ public class RoleplayApplicationController extends AbstractRestController {
         return ResponseEntity.ok(roleplayAppResponseSlice);
     }
 
-    @Operation(summary = "Adds a vote to an application")
+    @Operation(summary = "Adds a upvote to an application, if the same staff member has downvoted this application then that downvote will be removed")
     @PatchMapping(ADD_VOTE)
     public HttpEntity<RoleplayApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming accept-vote to application Request: Data [{}]", voteDto);
@@ -71,7 +71,7 @@ public class RoleplayApplicationController extends AbstractRestController {
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }
 
-    @Operation(summary = "Adds a vote to an application")
+    @Operation(summary = "Adds a downvote to an application, if the same staff member has upvoted this application then that upvoted will be removed")
     @PatchMapping(ADD_DECLINE_VOTE)
     public HttpEntity<RoleplayApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming decline-vote to application Request: Data [{}]", voteDto);
