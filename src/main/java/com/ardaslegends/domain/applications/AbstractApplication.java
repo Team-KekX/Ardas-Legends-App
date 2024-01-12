@@ -36,9 +36,6 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     @PastOrPresent
     private LocalDateTime appliedAt;
 
-    @NotNull
-    @Setter(value = AccessLevel.PROTECTED)
-    private URL discordApplicationMessageLink;
 
     @Getter
     @NotNull
@@ -62,7 +59,16 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     protected ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
+    private URL discordApplicationMessageLink;
+
+    @Setter(value = AccessLevel.PROTECTED)
+    private Long discordApplicationMessageId;
+
+    @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
+
+    @Setter(value = AccessLevel.PROTECTED)
+    private Long discordAcceptedMessageId;
 
     protected AbstractApplication(Player applicant) {
         this.applicant = applicant;
@@ -79,6 +85,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         val embed = buildApplicationMessage();
         val message = channel.sendMessage(embed).join();
         this.discordApplicationMessageLink = message.getLink();
+        this.discordApplicationMessageId = message.getId();
         return message;
     }
     protected abstract EmbedBuilder buildAcceptedMessage();
@@ -86,6 +93,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         val embed = buildAcceptedMessage();
         val message = channel.sendMessage(embed).join();
         this.discordAcceptedMessageLink = message.getLink();
+        this.discordAcceptedMessageId = message.getId();
         return message;
     }
     public Set<Player> getAcceptedBy() {
