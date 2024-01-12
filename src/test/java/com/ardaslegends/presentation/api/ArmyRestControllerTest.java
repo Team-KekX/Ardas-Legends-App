@@ -50,7 +50,7 @@ public class ArmyRestControllerTest {
     }
 
     @Test
-    void ensureCreateArmyRequestWorksProperly() throws Exception{
+    void ensureCreateArmyRequestWorksProperly() throws Exception {
         log.debug("Testing if ArmyRestController createArmy works properly with correct values");
 
         // Assign
