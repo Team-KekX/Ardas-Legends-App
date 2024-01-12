@@ -14,6 +14,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.stream.Collectors;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -63,7 +65,9 @@ public class RoleplayApplication extends AbstractApplication<RPChar> implements 
                 .addField("Link to RP", linkToLore)
                 .setColor(ALColor.YELLOW)
                 .setThumbnail(getFactionBanner(faction.getName()))
-                .setTimestampToNow();
+                .setTimestampToNow()
+                .addField("Upvoted By", getAcceptedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")))
+                .addInlineField("Downvoted By", getDeclinedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")));
     }
 
     @Override

@@ -24,8 +24,10 @@ public class RoleplayApplicationController extends AbstractRestController {
     public static final String BASE_URL = "/api/applications/roleplay";
     private static final String FIND_ALL = "/all";
     private static final String FIND_ACTIVE = "/active";
-    private static final String ADD_VOTE = "/vote/add";
+    private static final String ADD_VOTE = "/vote/accept";
     private static final String REMOVE_VOTE = "/vote/remove";
+    private static final String ADD_DECLINE_VOTE = "/vote/decline";
+
     private final RoleplayApplicationService rpService;
 
     @Operation(summary = "Create a Roleplay Application")
@@ -61,10 +63,20 @@ public class RoleplayApplicationController extends AbstractRestController {
 
     @Operation(summary = "Adds a vote to an application")
     @PatchMapping(ADD_VOTE)
-    public HttpEntity<RoleplayApplicationResponse> addVoteToApplication(ApplicationVoteDto voteDto) {
-        log.debug("Incoming add-vote to application Request: Data [{}]", voteDto);
+    public HttpEntity<RoleplayApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
+        log.debug("Incoming accept-vote to application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, rpService::addVote);
+        val application = wrappedServiceExecution(voteDto, rpService::addAcceptVote);
+
+        return ResponseEntity.ok(new RoleplayApplicationResponse(application));
+    }
+
+    @Operation(summary = "Adds a vote to an application")
+    @PatchMapping(ADD_DECLINE_VOTE)
+    public HttpEntity<RoleplayApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
+        log.debug("Incoming decline-vote to application Request: Data [{}]", voteDto);
+
+        val application = wrappedServiceExecution(voteDto, rpService::addDeclineVote);
 
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }

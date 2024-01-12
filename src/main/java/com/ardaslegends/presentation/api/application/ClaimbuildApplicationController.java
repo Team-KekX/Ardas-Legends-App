@@ -26,8 +26,8 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     private static final String FIND_ACTIVE = "/active";
     private static final String ADD_VOTE = "/vote/accept";
     private static final String REMOVE_VOTE = "/vote/remove";
-
     private static final String ADD_DECLINE_VOTE = "/vote/decline";
+
     private final ClaimbuildApplicationService cbbAppService;
 
     @Operation(summary = "Creates a Claimbuild Application")
