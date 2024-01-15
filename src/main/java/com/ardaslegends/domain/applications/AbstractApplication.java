@@ -2,6 +2,7 @@ package com.ardaslegends.domain.applications;
 
 import com.ardaslegends.domain.AbstractEntity;
 import com.ardaslegends.domain.Player;
+import com.ardaslegends.service.exceptions.logic.applications.ApplicationException;
 import com.ardaslegends.service.exceptions.logic.applications.RoleplayApplicationServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -24,7 +26,6 @@ import java.util.Set;
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class AbstractApplication<T> extends AbstractEntity {
-    private static final short REQUIRED_VOTES = 1;
 
     @ManyToOne
     @NotNull
@@ -35,9 +36,6 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     @PastOrPresent
     private LocalDateTime appliedAt;
 
-    @NotNull
-    @Setter(value = AccessLevel.PROTECTED)
-    private URL discordApplicationMessageLink;
 
     @Getter
     @NotNull
@@ -47,8 +45,10 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     private LocalDateTime lastVoteAt;
 
     @OneToMany
-    @NotNull
     private Set<Player> acceptedBy = new HashSet<>();
+
+    @OneToMany
+    private Set<Player> declinedBy = new HashSet<>();
 
     @PastOrPresent
     private LocalDateTime resolvedAt;
@@ -59,7 +59,16 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     protected ApplicationState state;
 
     @Setter(value = AccessLevel.PROTECTED)
+    private URL discordApplicationMessageLink;
+
+    @Setter(value = AccessLevel.PROTECTED)
+    private Long discordApplicationMessageId;
+
+    @Setter(value = AccessLevel.PROTECTED)
     private URL discordAcceptedMessageLink;
+
+    @Setter(value = AccessLevel.PROTECTED)
+    private Long discordAcceptedMessageId;
 
     protected AbstractApplication(Player applicant) {
         this.applicant = applicant;
@@ -68,7 +77,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         lastVoteAt = LocalDateTime.now();
         state = ApplicationState.OPEN;
 
-        acceptedBy = new HashSet<>(3);
+        acceptedBy = HashSet.newHashSet(3);
     }
 
     protected abstract EmbedBuilder buildApplicationMessage();
@@ -76,45 +85,88 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         val embed = buildApplicationMessage();
         val message = channel.sendMessage(embed).join();
         this.discordApplicationMessageLink = message.getLink();
+        this.discordApplicationMessageId = message.getId();
         return message;
+    }
+    public void updateApplicationMessage(TextChannel channel) {
+        val message = channel.getMessageById(this.discordApplicationMessageId).join();
+        message.edit(buildApplicationMessage());
     }
     protected abstract EmbedBuilder buildAcceptedMessage();
     public Message sendAcceptedMessage(TextChannel channel) {
         val embed = buildAcceptedMessage();
         val message = channel.sendMessage(embed).join();
         this.discordAcceptedMessageLink = message.getLink();
+        this.discordAcceptedMessageId = message.getId();
         return message;
     }
     public Set<Player> getAcceptedBy() {
         return Collections.unmodifiableSet(acceptedBy);
     }
 
-    public void addAcceptor(Player player) {
-        if(Boolean.FALSE.equals(player.getIsStaff())) {
-            log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
-            throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
-        }
+    public Set<Player> getDeclinedB() {
+        return Collections.unmodifiableSet(declinedBy);
+    }
 
+    public void addAcceptor(Player player) {
+        Objects.requireNonNull(player, "Player must not be null to vote");
+
+        isStaffElseThrow(player);
+
+        declinedBy.remove(player);
         val success = acceptedBy.add(player);
-        if(!success){
-            log.warn("Player [{}] already added their vote to the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerAlreadyVoted(player.getIgn());
-        }
+
+        isVoteSuccessfulElseThrow(player, success);
         voteCount = (short) acceptedBy.size();
         lastVoteAt = LocalDateTime.now();
     }
 
-    public void removeAccept(Player player) {
-        val success = acceptedBy.remove(player);
-        if(!success) {
-            log.warn("Player [{}] did not vote on the application", player.getIgn());
-            throw RoleplayApplicationServiceException.playerDidNotVote(player.getIgn());
+    public void addDecline(Player player) {
+        Objects.requireNonNull(player, "Player must not be null to vote");
+        isStaffElseThrow(player);
+
+        acceptedBy.remove(player);
+        val success = declinedBy.add(player);
+
+        isVoteSuccessfulElseThrow(player, success);
+
+        if(voteCount != acceptedBy.size()) {
+            voteCount = (short) acceptedBy.size();
+            lastVoteAt = LocalDateTime.now();
         }
-        voteCount = (short) acceptedBy.size();
+    }
+
+    public void removeVote(Player player) {
+        Objects.requireNonNull(player);
+
+        if (acceptedBy.contains(player)) {
+            acceptedBy.remove(player);
+        }
+        else if (declinedBy.contains(player)) {
+            declinedBy.remove(player);
+        }
+        else {
+            throw ApplicationException.noVoteNeededToBeRemoved(player.getIgn());
+        }
+    }
+
+    private static void isVoteSuccessfulElseThrow(Player player, boolean success) {
+        if(!success) {
+            val staffIgn = player.getIgn();
+            log.warn("Player [{}] already added their vote to the application", staffIgn);
+            throw RoleplayApplicationServiceException.playerAlreadyVoted(staffIgn);
+        }
+    }
+
+    private static void isStaffElseThrow(Player player) {
+        if(Boolean.FALSE.equals(player.getIsStaff())) {
+            log.warn("Player [{}] cannot vote because they are not staff", player.getIgn());
+            throw RoleplayApplicationServiceException.playerIsNotStaff(player.getIgn());
+        }
     }
 
     public boolean acceptable() {
-        return voteCount >= REQUIRED_VOTES;
+        return declinedBy.isEmpty() && voteCount >= getRequiredVoteCount();
     }
     public T accept() {
         resolvedAt = LocalDateTime.now();
@@ -123,4 +175,5 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     }
 
     protected abstract T finishApplication();
+    protected abstract Short getRequiredVoteCount();
 }

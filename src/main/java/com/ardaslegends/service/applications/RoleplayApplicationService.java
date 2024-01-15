@@ -14,6 +14,7 @@ import com.ardaslegends.service.exceptions.logic.faction.FactionServiceException
 import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.exceptions.logic.applications.RoleplayApplicationServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -112,10 +113,8 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication addVote(ApplicationVoteDto dto) {
-        log.debug("Adding Vote to roleplay application [{}]", dto);
-        Objects.requireNonNull(dto);
-
+    public RoleplayApplication addAcceptVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Adding accept Vote to roleplay application [{}]", dto);
         ServiceUtils.checkAllNulls(dto);
 
         var application = getRoleplayApplication(dto);
@@ -124,25 +123,48 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
         application.addAcceptor(player);
 
         application = secureSave(application, rpRepository);
-        log.info("Added vote to roleplay application [{}]", application);
+        log.info("Added accept vote to roleplay application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getRpAppsChannel());
 
         return application;
     }
 
     @Transactional(readOnly = false)
-    public RoleplayApplication removeVote(ApplicationVoteDto dto) {
-        log.debug("Removing vote from roleplay application [{}]", dto);
-        Objects.requireNonNull(dto);
-
+    public RoleplayApplication addDeclineVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Adding decline vote to roleplay application [{}]", dto);
         ServiceUtils.checkAllNulls(dto);
 
         var application = getRoleplayApplication(dto);
         val player = getPlayer(dto);
 
-        application.removeAccept(player);
+        application.addDecline(player);
+
+        application = secureSave(application, rpRepository);
+        log.info("Added decline vote to roleplay application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getRpAppsChannel());
+
+        return application;
+    }
+
+    @Transactional(readOnly = false)
+    public RoleplayApplication removeVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Removing vote from roleplay application [{}]", dto);
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = getRoleplayApplication(dto);
+        val player = getPlayer(dto);
+
+        application.removeVote(player);
 
         application = secureSave(application, rpRepository);
         log.info("Removed vote from roleplay application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getRpAppsChannel());
 
         return application;
     }
