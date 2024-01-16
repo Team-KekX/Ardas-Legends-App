@@ -37,7 +37,7 @@ public record MovementResponse(
                 movement.getIsCurrentlyActive(),
                 movement.getHoursUntilComplete(),
                 movement.getHoursMoved(),
-                movement.getHoursUntilComplete()
+                movement.getHoursUntilNextRegion()
         );
         log.debug("Created MovementResponse {}", this);
     }

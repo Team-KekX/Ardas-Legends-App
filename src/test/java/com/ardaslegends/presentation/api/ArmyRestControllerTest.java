@@ -7,6 +7,7 @@ import com.ardaslegends.service.dto.army.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -148,6 +149,7 @@ public class ArmyRestControllerTest {
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer();
 
@@ -240,7 +242,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController unstation works properly with correct values");
 
         // Assign
-        StationDto dto = new StationDto("Kek", "kek", "kek");
+        UnstationDto dto = new UnstationDto("Kek", "kek");
 
         when(mockArmyService.unstation(dto)).thenReturn(army);
 
