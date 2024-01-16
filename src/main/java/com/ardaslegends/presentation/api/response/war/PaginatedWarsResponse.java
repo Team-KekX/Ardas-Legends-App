@@ -3,7 +3,7 @@ package com.ardaslegends.presentation.api.response.war;
 import com.ardaslegends.domain.war.War;
 
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public record PaginatedWarsResponse(
@@ -11,7 +11,7 @@ public record PaginatedWarsResponse(
         String nameOfWar,
         String nameOfAttacker,
         String nameOfDefender,
-        LocalDateTime startDate
+        OffsetDateTime startDate
 ) {
     public PaginatedWarsResponse(War war) {
         this(

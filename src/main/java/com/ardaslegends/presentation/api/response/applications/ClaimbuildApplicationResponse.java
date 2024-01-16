@@ -8,7 +8,7 @@ import com.ardaslegends.domain.applications.ClaimbuildApplication;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 import com.ardaslegends.service.dto.productionSite.ProductionSiteDto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record ClaimbuildApplicationResponse(
         long id,
@@ -24,7 +24,7 @@ public record ClaimbuildApplicationResponse(
         String siege,
         String houses,
         PlayerResponse[] builtBy,
-        LocalDateTime appliedAt,
+        OffsetDateTime appliedAt,
         PlayerResponse[] acceptedBy,
         short voteCount
 ) {

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -193,7 +193,7 @@ public class RoleplayApplicationService extends AbstractService<RoleplayApplicat
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
     public void handleOpenRoleplayApplications() {
-        val startDateTime = LocalDateTime.now(clock);
+        val startDateTime = OffsetDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.debug("Starting scheduled handling of open roleplay applications - System time: [{}]", startDateTime);
 

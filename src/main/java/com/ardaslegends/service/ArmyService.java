@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,7 +136,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
                 0,
                 0,
                 inputClaimBuild,
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 isPaid);
 
         log.trace("Adding the army to each unit");
@@ -202,7 +202,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         int hoursHeal = army.getAmountOfHealHours();
         log.debug("Army needs to heal for [{}] hours", hoursHeal);
 
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
 
         army.setIsHealing(true);
         army.setHealStart(now);

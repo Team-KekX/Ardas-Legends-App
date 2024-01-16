@@ -14,7 +14,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
 
     @NotNull
     @PastOrPresent
-    private LocalDateTime appliedAt;
+    private OffsetDateTime appliedAt;
 
 
     @Getter
@@ -42,7 +42,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     private Short voteCount;
 
     @NotNull
-    private LocalDateTime lastVoteAt;
+    private OffsetDateTime lastVoteAt;
 
     @OneToMany
     private Set<Player> acceptedBy = new HashSet<>();
@@ -51,7 +51,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     private Set<Player> declinedBy = new HashSet<>();
 
     @PastOrPresent
-    private LocalDateTime resolvedAt;
+    private OffsetDateTime resolvedAt;
 
     @Getter
     @NotNull
@@ -73,8 +73,8 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
     protected AbstractApplication(Player applicant) {
         this.applicant = applicant;
         voteCount = 0;
-        appliedAt = LocalDateTime.now();
-        lastVoteAt = LocalDateTime.now();
+        appliedAt = OffsetDateTime.now();
+        lastVoteAt = OffsetDateTime.now();
         state = ApplicationState.OPEN;
 
         acceptedBy = HashSet.newHashSet(3);
@@ -118,7 +118,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
 
         isVoteSuccessfulElseThrow(player, success);
         voteCount = (short) acceptedBy.size();
-        lastVoteAt = LocalDateTime.now();
+        lastVoteAt = OffsetDateTime.now();
     }
 
     public void addDecline(Player player) {
@@ -132,7 +132,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
 
         if(voteCount != acceptedBy.size()) {
             voteCount = (short) acceptedBy.size();
-            lastVoteAt = LocalDateTime.now();
+            lastVoteAt = OffsetDateTime.now();
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractApplication<T> extends AbstractEntity {
         return declinedBy.isEmpty() && voteCount >= getRequiredVoteCount();
     }
     public T accept() {
-        resolvedAt = LocalDateTime.now();
+        resolvedAt = OffsetDateTime.now();
         state = ApplicationState.ACCEPTED;
         return finishApplication();
     }

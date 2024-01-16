@@ -2,7 +2,7 @@ package com.ardaslegends.presentation.api.response.war;
 
 import com.ardaslegends.domain.war.War;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record ActiveWarResponse(
         String warName,
@@ -11,7 +11,7 @@ public record ActiveWarResponse(
 
         WarParticipantResponse[] defenders,
 
-        LocalDateTime startDate,
+        OffsetDateTime startDate,
 
         BattleResponse[] battles
 ) {

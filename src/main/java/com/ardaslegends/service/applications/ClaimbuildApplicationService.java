@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -210,7 +210,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
     public void handleOpenClaimbuildApplications() {
-        val startDateTime = LocalDateTime.now(clock);
+        val startDateTime = OffsetDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.debug("Starting scheduled handling of open claimbuild applications - System time: [{}]", startDateTime);
 

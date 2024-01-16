@@ -5,7 +5,7 @@ import com.ardaslegends.domain.Unit;
 import com.ardaslegends.presentation.api.response.unit.UnitResponse;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 public record ArmyResponse(
@@ -20,12 +20,12 @@ public record ArmyResponse(
         String claimbuildName,
         Double freeTokens,
         Boolean isHealing,
-        LocalDateTime healStart,
-        LocalDateTime healEnd,
+        OffsetDateTime healStart,
+        OffsetDateTime healEnd,
         Integer hoursHealed,
         Integer hoursLeftHealing,
         String originalClaimbuild,
-        LocalDateTime createdAt
+        OffsetDateTime createdAt
 
 ) {
     public ArmyResponse(Army army) {

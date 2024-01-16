@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ArmyRestControllerTest {
         val originalClaimbuild = ClaimBuild.builder().name("Nimheria").build();
         army = new Army(1L, "Army Name", ArmyType.ARMY, faction, region, null,
                 new ArrayList<Unit>(), new ArrayList<String>(), null, 0.0, false, null, null, 0, 0,
-                originalClaimbuild, LocalDateTime.now(), new ArrayList<Movement>(), true);
+                originalClaimbuild, OffsetDateTime.now(), new ArrayList<Movement>(), true);
         mockArmyService = mock(ArmyService.class);
         armyRestController = new ArmyRestController(mockArmyService);
         mockMvc = MockMvcBuilders.standaloneSetup(armyRestController).build();
