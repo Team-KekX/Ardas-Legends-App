@@ -158,7 +158,7 @@ public class ArmyRestController extends AbstractRestController {
     }
 
     @PatchMapping(PATH_UNSTATION)
-    public HttpEntity<ArmyResponse> unstation(@RequestBody StationDto dto) {
+    public HttpEntity<ArmyResponse> unstation(@RequestBody UnstationDto dto) {
         log.debug("Incoming station request: Data [{}]", dto);
 
         log.debug("Calling unstation()");
