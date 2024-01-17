@@ -46,7 +46,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement createArmyMovement(MoveArmyDto dto) {
         log.debug("Trying to move Army [{}] executed by [{}] to Region [{}]", dto.armyName(), dto.executorDiscordId(), dto.toRegion());
 
-        Movement movement = calculateMovement(dto);
+        Movement movement = calculateArmyMovement(dto);
 
         log.debug("Saving Movement to database");
         secureSave(movement, movementRepository);
@@ -55,7 +55,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    public Movement calculateMovement(MoveArmyDto dto) {
+    public Movement calculateArmyMovement(MoveArmyDto dto) {
         ServiceUtils.checkAllNulls(dto);
         ServiceUtils.checkAllBlanks(dto);
 
@@ -158,8 +158,16 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
 
-        //Validating data
+        var movement = calculateRpCharMovement(dto);
 
+        log.trace("Saving the new movement");
+        movement = secureSave(movement, movementRepository);
+
+        log.info("Successfully created new Movement for the RPChar '{}'", movement.getRpChar().getName());
+        return movement;
+    }
+
+    public Movement calculateRpCharMovement(MoveRpCharDto dto) {
         log.trace("Validating Data");
         ServiceUtils.checkAllNulls(dto);
         ServiceUtils.checkAllBlanks(dto);
@@ -231,10 +239,6 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         int hoursUntilNextRegion = path.get(1).getActualCost();
         Movement movement = new Movement(rpChar, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
-        log.trace("Saving the new movement");
-        movement = secureSave(movement, movementRepository);
-
-        log.info("Successfully created new Movement for the RPChar '{}' of Player '{}'", rpChar.getName(), player);
         return movement;
     }
 
