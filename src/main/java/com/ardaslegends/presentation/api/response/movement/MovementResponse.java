@@ -6,7 +6,7 @@ import com.ardaslegends.presentation.api.response.movement.path.PathResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Slf4j
@@ -16,8 +16,8 @@ public record MovementResponse(
     ArmyResponse army,
     Boolean isCharMovement,
     List<PathResponse> path,
-    LocalDateTime startTime,
-    LocalDateTime endTime,
+    OffsetDateTime startTime,
+    OffsetDateTime endTime,
     Boolean isCurrentlyActive,
     Integer hoursUntilComplete,
     Integer hoursAlreadyMoved,

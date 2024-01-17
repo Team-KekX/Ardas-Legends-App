@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,8 +40,8 @@ public final class Movement extends AbstractDomainObject {
     @ElementCollection
     private List<PathElement> path;
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
 
     private Boolean isCurrentlyActive;
     private Integer hoursUntilComplete;
@@ -51,7 +51,7 @@ public final class Movement extends AbstractDomainObject {
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, LocalDateTime startTime, LocalDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, OffsetDateTime startTime, OffsetDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
         this.rpChar = rpChar;
         this.army = army;
         this.isCharMovement = isCharMovement;

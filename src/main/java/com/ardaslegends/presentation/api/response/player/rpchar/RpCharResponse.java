@@ -4,7 +4,7 @@ import com.ardaslegends.domain.RPChar;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Slf4j
 @Schema(name = "RpChar", description = "RpChar response containing all RpChar information")
@@ -26,9 +26,9 @@ public record RpCharResponse(
         @Schema(description = "States if the character is currently healing in a House of Healing", example = "true")
         Boolean isHealing,
         @Schema(description = "Timestamp when the character started healing. Null when not healing", nullable = true)
-        LocalDateTime startedHeal,
+        OffsetDateTime startedHeal,
         @Schema(description = "Timestamp when healing of the character ends. Null when not healing", nullable = true)
-        LocalDateTime healEnds
+        OffsetDateTime healEnds
 ) {
 
     public RpCharResponse(RPChar rpChar) {

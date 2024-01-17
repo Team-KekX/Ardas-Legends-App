@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class ScheduleService {
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
     public void handleMovements() {
-        LocalDateTime startDateTime = LocalDateTime.now(clock);
+        OffsetDateTime startDateTime = OffsetDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.info("Starting scheduled handling of movement - System time: [{}]", startDateTime);
 
@@ -62,7 +62,7 @@ public class ScheduleService {
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
     public void handleHealings() {
-        LocalDateTime startDateTime = LocalDateTime.now(clock);
+        OffsetDateTime startDateTime = OffsetDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.info("Starting scheduled handling of healings - System time: [{}]", startDateTime);
 
@@ -90,9 +90,9 @@ public class ScheduleService {
         log.info("Finished handling healing. Updated armies: [{}], updated chars: [{}] - finished in {} seconds", healingArmies.size(), healingPlayers.size(), neededTime.toPlainString());
     }
 
-    private void handleSingleMovement(Movement movement, LocalDateTime now) {
+    private void handleSingleMovement(Movement movement, OffsetDateTime now) {
         log.debug("Handling movement [{}]", movement);
-        LocalDateTime endTime = movement.getEndTime();
+        OffsetDateTime endTime = movement.getEndTime();
 
         log.debug("Getting the hours between current time [{}] and end date [{}]", now, endTime);
 
@@ -266,9 +266,9 @@ public class ScheduleService {
         log.trace("Exited while loop");
     }
 
-    private void handleHealingArmy(Army army, LocalDateTime now) {
+    private void handleHealingArmy(Army army, OffsetDateTime now) {
         log.debug("Handling healing army [{}]", army);
-        LocalDateTime endTime = army.getHealEnd();
+        OffsetDateTime endTime = army.getHealEnd();
 
         log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
 
@@ -404,11 +404,11 @@ public class ScheduleService {
         }
     }
 
-    private void handleHealingPlayer(Player player, LocalDateTime now) {
+    private void handleHealingPlayer(Player player, OffsetDateTime now) {
         log.debug("Handling healing player [{}]", player);
         RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         log.trace("Got player's rpchar [{}]", rpChar);
-        LocalDateTime endTime = rpChar.getHealEnds();
+        OffsetDateTime endTime = rpChar.getHealEnds();
 
         log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
 

@@ -5,7 +5,7 @@ class War <<Entity>> {
     name: String
     aggressors: List<WarParticipants>
     defenders: List<WarParticipants>
-    startDate: LocalDateTime
+    startDate: OffsetDateTime
     battles: List<Battle>
 }
 
@@ -14,15 +14,15 @@ class WarParticipant <<Entity>> {
     war_key: Long
     warParticipant: Faction
     initialParty: Boolean
-    joiningDate: LocalDateTime
+    joiningDate: OffsetDateTime
 }
 
 class Battle <<Entity>> {
     id_Key: Long
-    declaredDate: LocalDateTime
-    timeFrozenFrom: LocalDateTime
-    timeFrozenUntil: LocalDateTime
-    agreedBattleDate: LocalDateTime
+    declaredDate: OffsetDateTime
+    timeFrozenFrom: OffsetDateTime
+    timeFrozenUntil: OffsetDateTime
+    agreedBattleDate: OffsetDateTime
     attackers: List<BattleParticipant>
     defenders: List<BattleParticipant>
     battleLocation: BattleLocation

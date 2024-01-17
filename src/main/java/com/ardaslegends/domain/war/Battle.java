@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,18 +42,18 @@ public class Battle extends AbstractDomainObject {
             inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_defendingArmy")) })
     private Set<Army> defendingArmies = new HashSet<>();
 
-    private LocalDateTime declaredDate;
+    private OffsetDateTime declaredDate;
 
-    private LocalDateTime timeFrozenFrom;
+    private OffsetDateTime timeFrozenFrom;
 
-    private LocalDateTime timeFrozenUntil;
+    private OffsetDateTime timeFrozenUntil;
 
-    private LocalDateTime agreedBattleDate;
+    private OffsetDateTime agreedBattleDate;
 
     @Embedded
     private BattleLocation battleLocation;
 
-    public Battle(War war, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, LocalDateTime declaredDate, LocalDateTime timeFrozenFrom, LocalDateTime timeFrozenUntil, LocalDateTime agreedBattleDate, BattleLocation battleLocation) {
+    public Battle(War war, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, OffsetDateTime declaredDate, OffsetDateTime timeFrozenFrom, OffsetDateTime timeFrozenUntil, OffsetDateTime agreedBattleDate, BattleLocation battleLocation) {
         this.war = war;
         this.name = name;
         this.attackingArmies = new HashSet<>(attackingArmies);

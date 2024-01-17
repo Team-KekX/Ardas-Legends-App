@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +79,9 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if army is older than 24h");
-        if(LocalDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
+        if(OffsetDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
             log.warn("Army [{}] is younger than 24h and therefore cannot move!", army);
-            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), LocalDateTime.now()).toHours();
+            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), OffsetDateTime.now()).toHours();
             log.debug("Army can move again in [{}] hours", hoursUntilMove);
             throw ArmyServiceException.cannotMoveArmyWasCreatedRecently(army.getName(), hoursUntilMove);
         }
@@ -100,7 +100,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Removing movement cost from faction stockpile");
         army.getFaction().subtractFoodFromStockpile(ServiceUtils.getFoodCost(path));
 
-        var currentTime = LocalDateTime.now();
+        var currentTime = OffsetDateTime.now();
         log.debug("Creating movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
@@ -219,7 +219,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         List<PathElement> path = pathfinder.findShortestWay(fromRegion, toRegion, player, true);
 
         log.trace("Getting the current time");
-        LocalDateTime currentTime = LocalDateTime.now();
+        OffsetDateTime currentTime = OffsetDateTime.now();
 
         log.trace("Building the movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);

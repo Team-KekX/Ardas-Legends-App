@@ -5,7 +5,7 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,15 +63,15 @@ public final class Army extends AbstractDomainObject {
     private Double freeTokens; //how many free unit tokens this army has left
 
     private Boolean isHealing = false;
-    private LocalDateTime healStart;
-    private LocalDateTime healEnd;
+    private OffsetDateTime healStart;
+    private OffsetDateTime healEnd;
     private Integer hoursHealed;
     private Integer hoursLeftHealing;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_armies_origin_claimbuild"))
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @JsonIgnore
     @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
@@ -79,8 +79,8 @@ public final class Army extends AbstractDomainObject {
 
     private Boolean isPaid;
 
-    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, RPChar boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, LocalDateTime healStart, LocalDateTime healEnd,
-                Integer hoursHealed, Integer hoursLeftHealing, ClaimBuild originalClaimbuild, LocalDateTime createdAt, boolean isPaid) {
+    public Army(String name, ArmyType armyType, Faction faction, Region currentRegion, RPChar boundTo, List<Unit> units, List<String> sieges, ClaimBuild stationedAt, Double freeTokens, boolean isHealing, OffsetDateTime healStart, OffsetDateTime healEnd,
+                Integer hoursHealed, Integer hoursLeftHealing, ClaimBuild originalClaimbuild, OffsetDateTime createdAt, boolean isPaid) {
         this.name = name;
         this.armyType = armyType;
         this.faction = faction;

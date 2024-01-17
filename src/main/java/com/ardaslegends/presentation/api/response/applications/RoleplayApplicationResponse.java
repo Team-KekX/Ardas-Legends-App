@@ -3,7 +3,7 @@ package com.ardaslegends.presentation.api.response.applications;
 import com.ardaslegends.domain.applications.RoleplayApplication;
 import com.ardaslegends.presentation.api.response.player.PlayerResponse;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ public record RoleplayApplicationResponse(
         String characterReason,
         String gear,
         String linkToLore,
-        LocalDateTime appliedAt,
+        OffsetDateTime appliedAt,
         PlayerResponse[] acceptedBy,
         short voteCount
 ) {
