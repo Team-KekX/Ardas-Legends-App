@@ -45,6 +45,19 @@ public class MovementRestController extends AbstractRestController {
         log.info("Successfully handled request - calculated army movement!");
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(PATH_CALCULATE_CHAR_MOVEMENT)
+    public HttpEntity<MovementResponse> calculateCharMove(MoveRpCharDto dto) {
+        log.debug("Incoming get request for char movement calculation [{}]", dto);
+
+        log.trace("WrappedServiceExecution of calculateRpCharMovement function");
+        val movement = wrappedServiceExecution(dto, movementService::calculateRpCharMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
+
+        log.info("Successfully handled request - calculated char movement!");
+        return ResponseEntity.ok(response);
+    }
     @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<MovementResponse> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
 
