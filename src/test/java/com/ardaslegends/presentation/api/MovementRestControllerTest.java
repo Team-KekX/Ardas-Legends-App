@@ -4,6 +4,7 @@ import com.ardaslegends.domain.Movement;
 import com.ardaslegends.domain.PathElement;
 import com.ardaslegends.domain.Region;
 import com.ardaslegends.domain.RegionType;
+import com.ardaslegends.presentation.abstraction.ControllerUnitTest;
 import com.ardaslegends.service.MovementService;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.hc.core5.net.URIBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -22,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,7 +43,6 @@ public class MovementRestControllerTest {
     private PathElement pathElement;
     private PathElement pathElement2;
     private List<PathElement> path;
-
 
     @BeforeEach
     void setup() {
@@ -77,6 +80,47 @@ public class MovementRestControllerTest {
                         .post("http://localhost:8080/api/movement/move-char")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void ensureCalculateArmyMovementRouteExists() throws Exception {
+        log.debug("Testing if calculateArmyMovement Route exists");
+
+        log.trace("Initializing Dto");
+        MoveArmyDto dto = new MoveArmyDto("RandoId", "test","12.S");
+
+        log.trace("Initialize return movement");
+        Movement movement = Movement.builder().path(path).build();
+
+        when(mockMovementService.calculateArmyMovement(dto)).thenReturn(movement);
+        val pathUri = new URIBuilder("https://localhost:8080/api/movement" + MovementRestController.PATH_CALCULATE_ARMY_MOVEMENT)
+                .addParameter("executorDiscordId", dto.executorDiscordId())
+                .addParameter("armyName", dto.armyName())
+                .addParameter("toRegion", dto.toRegion());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(pathUri.build()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void ensureCalculateCharMovementRouteExists() throws Exception {
+        log.debug("Testing if calculateCharMovement Route exists");
+
+        log.trace("Initializing Dto");
+        MoveRpCharDto dto = new MoveRpCharDto("RandoId","12.S");
+
+        log.trace("Initialize return movement");
+        Movement movement = Movement.builder().path(path).build();
+
+        when(mockMovementService.calculateRpCharMovement(dto)).thenReturn(movement);
+        val pathUri = new URIBuilder("https://localhost:8080/api/movement" + MovementRestController.PATH_CALCULATE_CHAR_MOVEMENT)
+                .addParameter("discordId", dto.discordId())
+                .addParameter("toRegion", dto.toRegion());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(pathUri.build()))
                 .andExpect(status().isOk());
     }
 
