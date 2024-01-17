@@ -46,6 +46,16 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement createArmyMovement(MoveArmyDto dto) {
         log.debug("Trying to move Army [{}] executed by [{}] to Region [{}]", dto.armyName(), dto.executorDiscordId(), dto.toRegion());
 
+        Movement movement = calculateMovement(dto);
+
+        log.debug("Saving Movement to database");
+        secureSave(movement, movementRepository);
+
+        log.info("Successfully saved movement [{}]", movement);
+        return movement;
+    }
+
+    public Movement calculateMovement(MoveArmyDto dto) {
         ServiceUtils.checkAllNulls(dto);
         ServiceUtils.checkAllBlanks(dto);
 
@@ -69,7 +79,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if army is already in the desired region");
         if(dto.toRegion().equals(army.getCurrentRegion().getId())) {
             log.warn("Army is already in desired region [{}], no movement required", dto.toRegion());
-            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(),dto.toRegion());
+            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(), dto.toRegion());
         }
 
         log.debug("Checking if army is currently performing a movement");
@@ -102,16 +112,11 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
         var currentTime = OffsetDateTime.now();
         log.debug("Creating movement object");
-        int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
+        int hoursUntilDone = ServiceUtils.getTotalPathCost(path);  //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
         val character = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         Movement movement = new Movement(character, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
-
-        log.debug("Saving Movement to database");
-        secureSave(movement, movementRepository);
-
-        log.info("Successfully saved movement [{}]", movement);
         return movement;
     }
 
