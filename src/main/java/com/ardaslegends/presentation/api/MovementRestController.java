@@ -9,6 +9,7 @@ import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.player.rpchar.MoveRpCharDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,21 @@ public class MovementRestController extends AbstractRestController {
     public static final String PATH_CANCEL_CHAR_MOVEMENT = "/cancel-char-move";
     public static final String PATH_CANCEL_ARMY_MOVEMENT = "/cancel-army-move";
 
+    public static final String PATH_CALCULATE_ARMY_MOVEMENT = "/calculate/army";
+    public static final String PATH_CALCULATE_CHAR_MOVEMENT = "/calculate/char";
 
+    @GetMapping(PATH_CALCULATE_ARMY_MOVEMENT)
+    public HttpEntity<MovementResponse> calculateArmyMove(MoveArmyDto dto) {
+        log.debug("Incoming get request for army movement calculation [{}]", dto);
+
+        log.trace("WrappedServiceExecution of calculateArmyMovement function");
+        val movement = wrappedServiceExecution(dto, movementService::calculateArmyMovement);
+        log.debug("Creating MovementResponse");
+        MovementResponse response = new MovementResponse(movement);
+
+        log.info("Successfully handled request - calculated army movement!");
+        return ResponseEntity.ok(response);
+    }
     @PostMapping(PATH_MOVE_CHAR)
     public HttpEntity<MovementResponse> moveRoleplayCharacter(@RequestBody MoveRpCharDto dto) {
 
