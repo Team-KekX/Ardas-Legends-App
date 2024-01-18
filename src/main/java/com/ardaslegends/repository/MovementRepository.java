@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface MovementRepository extends JpaRepository<Movement, Long> {
     //TODO add Test
     public List<Movement> findMovementsByRpChar(RPChar rpChar);
+    public List<Movement> findMovementByArmyAndIsCurrentlyActiveFalse(Army army);
     public Optional<Movement> findMovementByArmyAndIsCurrentlyActiveTrue(Army army);
     public Optional<Movement> findMovementByRpCharAndIsCurrentlyActiveTrue(RPChar rpChar);
     public List<Movement> findMovementsByIsCurrentlyActive(Boolean isActive);
