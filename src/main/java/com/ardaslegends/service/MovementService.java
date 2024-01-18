@@ -14,6 +14,7 @@ import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.movement.MovementServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -278,14 +279,11 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         return movement;
     }
 
-    public Pair<Optional<Movement>, List<Movement>> getArmyMovements(GetArmyMovementsDto dto) {
-        ServiceUtils.checkAllNulls(dto);
-        ServiceUtils.checkAllBlanks(dto);
+    public Pair<Optional<Movement>, List<Movement>> getArmyMovements(@NonNull String armyName) {
+        log.debug("Trying to get movements for army [{}]", armyName);
 
-        log.debug("Trying to get movements for army [{}]", dto.armyName());
-
-        log.trace("Fetching Army with name [{}]", dto.armyName());
-        val army = armyService.getArmyByName(dto.armyName());
+        log.trace("Fetching Army with name [{}]", armyName);
+        val army = armyService.getArmyByName(armyName);
 
         log.trace("Fetching current movement for army [{}]", army.getName());
         val currentMovement = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue);
