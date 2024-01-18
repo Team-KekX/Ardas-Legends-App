@@ -2,11 +2,13 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.Movement;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.api.response.movement.CurrentAndPastMovementResponse;
 import com.ardaslegends.presentation.api.response.movement.MovementResponse;
 import com.ardaslegends.service.MovementService;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.player.rpchar.MoveRpCharDto;
+import com.mysema.commons.lang.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -24,6 +26,8 @@ public class MovementRestController extends AbstractRestController {
     private final MovementService movementService;
 
     public static final String BASE_URL = "/api/movement";
+    public static final String PATH_GET_ARMY_MOVEMENTS = "/army";
+    public static final String PATH_GET_CHAR_MOVEMENTS = "/char";
 
     public static final String PATH_MOVE_CHAR = "/move-char";
     public static final String PATH_MOVE_ARMY = "/move-army-or-company";
@@ -32,6 +36,19 @@ public class MovementRestController extends AbstractRestController {
 
     public static final String PATH_CALCULATE_ARMY_MOVEMENT = "/calculate/army";
     public static final String PATH_CALCULATE_CHAR_MOVEMENT = "/calculate/char";
+
+    @GetMapping(PATH_GET_ARMY_MOVEMENTS)
+    public HttpEntity<CurrentAndPastMovementResponse> getArmyMovements(String armyName) {
+        log.debug("Incoming get request for previous army movements [{}]", armyName);
+
+        val movements = wrappedServiceExecution(armyName, movementService::getArmyMovements);
+
+        log.debug("Building response");
+        val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
+
+        log.info("Successfully handled request, getArmyMovements");
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping(PATH_CALCULATE_ARMY_MOVEMENT)
     public HttpEntity<MovementResponse> calculateArmyMove(MoveArmyDto dto) {

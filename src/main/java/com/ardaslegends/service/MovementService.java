@@ -5,7 +5,6 @@ import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.region.RegionRepository;
-import com.ardaslegends.service.dto.army.GetArmyMovementsDto;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.player.rpchar.MoveRpCharDto;
