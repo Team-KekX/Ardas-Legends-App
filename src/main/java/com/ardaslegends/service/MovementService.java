@@ -5,6 +5,7 @@ import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.region.RegionRepository;
+import com.ardaslegends.service.dto.army.GetArmyMovementsDto;
 import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.player.rpchar.MoveRpCharDto;
@@ -16,6 +17,7 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -274,6 +276,24 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         movement = secureSave(movement, movementRepository);
 
         return movement;
+    }
+
+    public Pair<Optional<Movement>, List<Movement>> getArmyMovements(GetArmyMovementsDto dto) {
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.debug("Trying to get movements for army [{}]", dto.armyName());
+
+        log.trace("Fetching Army with name [{}]", dto.armyName());
+        val army = armyService.getArmyByName(dto.armyName());
+
+        log.trace("Fetching current movement for army [{}]", army.getName());
+        val currentMovement = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue);
+
+        log.trace("Fetching past movements of army [{}]", army.getName());
+        val pastMovements = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveFalse);
+
+        return Pair.of(currentMovement, pastMovements);
     }
 
     public Movement getActiveMovementByArmy(Army army) {
