@@ -40,6 +40,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final PlayerRepository playerRepository;
     private final PlayerService playerService;
     private final Pathfinder pathfinder;
+    private final RpCharService rpCharService;
 
     // TODO: Check if time is frozen -> if yes, cancel request
     // TODO: Check if army is in a battle -> if yes, cancel request
@@ -289,6 +290,21 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
 
         log.trace("Fetching past movements of army [{}]", army.getName());
         val pastMovements = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveFalse);
+
+        return Pair.of(currentMovement, pastMovements);
+    }
+
+    public Pair<Optional<Movement>, List<Movement>> getCharMovements(@NonNull String charName) {
+        log.debug("Trying to get movements for char [{}]", charName);
+
+        log.trace("Fetching char with name [{}]", charName);
+        val character = rpCharService.getRpCharByName(charName)
+
+        log.trace("Fetching current movement for char [{}]", charName);
+        val currentMovement = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
+
+        log.trace("Fetching past movements of char [{}]", character.getName());
+        val pastMovements = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveFalse);
 
         return Pair.of(currentMovement, pastMovements);
     }
