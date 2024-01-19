@@ -298,7 +298,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Trying to get movements for char [{}]", charName);
 
         log.trace("Fetching char with name [{}]", charName);
-        val character = rpCharService.getRpCharByName(charName)
+        val character = rpCharService.getRpCharByName(charName);
 
         log.trace("Fetching current movement for char [{}]", charName);
         val currentMovement = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
