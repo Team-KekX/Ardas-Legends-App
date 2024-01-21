@@ -50,6 +50,19 @@ public class MovementRestController extends AbstractRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(PATH_GET_ARMY_MOVEMENTS)
+    public HttpEntity<CurrentAndPastMovementResponse> getCharMovements(String charName) {
+        log.debug("Incoming get request for previous rpChar movements [{}]", charName);
+
+        val movements = wrappedServiceExecution(charName, movementService::getCharMovements);
+
+        log.debug("Building response");
+        val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
+
+        log.info("Successfully handled request, getCharMovements");
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping(PATH_CALCULATE_ARMY_MOVEMENT)
     public HttpEntity<MovementResponse> calculateArmyMove(MoveArmyDto dto) {
         log.debug("Incoming get request for army movement calculation [{}]", dto);
