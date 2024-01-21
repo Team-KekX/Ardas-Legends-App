@@ -50,7 +50,7 @@ public class MovementRestController extends AbstractRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(PATH_GET_ARMY_MOVEMENTS)
+    @GetMapping(PATH_GET_CHAR_MOVEMENTS)
     public HttpEntity<CurrentAndPastMovementResponse> getCharMovements(String charName) {
         log.debug("Incoming get request for previous rpChar movements [{}]", charName);
 
