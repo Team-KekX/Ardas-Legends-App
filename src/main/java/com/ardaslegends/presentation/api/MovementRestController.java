@@ -38,10 +38,10 @@ public class MovementRestController extends AbstractRestController {
     public static final String PATH_CALCULATE_CHAR_MOVEMENT = "/calculate/char";
 
     @GetMapping(PATH_GET_ARMY_MOVEMENTS)
-    public HttpEntity<CurrentAndPastMovementResponse> getArmyMovements(String armyName) {
-        log.debug("Incoming get request for previous army movements [{}]", armyName);
+    public HttpEntity<CurrentAndPastMovementResponse> getArmyMovements(String name) {
+        log.debug("Incoming get request for previous army movements [{}]", name);
 
-        val movements = wrappedServiceExecution(armyName, movementService::getArmyMovements);
+        val movements = wrappedServiceExecution(name, movementService::getArmyMovements);
 
         log.debug("Building response");
         val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
@@ -51,10 +51,10 @@ public class MovementRestController extends AbstractRestController {
     }
 
     @GetMapping(PATH_GET_CHAR_MOVEMENTS)
-    public HttpEntity<CurrentAndPastMovementResponse> getCharMovements(String charName) {
-        log.debug("Incoming get request for previous rpChar movements [{}]", charName);
+    public HttpEntity<CurrentAndPastMovementResponse> getCharMovements(String name) {
+        log.debug("Incoming get request for previous rpChar movements [{}]", name);
 
-        val movements = wrappedServiceExecution(charName, movementService::getCharMovements);
+        val movements = wrappedServiceExecution(name, movementService::getCharMovements);
 
         log.debug("Building response");
         val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
