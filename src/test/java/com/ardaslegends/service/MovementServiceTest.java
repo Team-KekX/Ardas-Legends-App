@@ -38,6 +38,7 @@ public class MovementServiceTest {
     private PlayerRepository mockPlayerRepository;
     private PlayerService mockPlayerService;
     private Pathfinder mockPathfinder;
+    private RpCharService mockRpCharService;
 
     private MovementService movementService;
 
@@ -64,7 +65,8 @@ public class MovementServiceTest {
         mockArmyRepository = mock(ArmyRepository.class);
         mockArmyService = mock(ArmyService.class);
         mockPathfinder = mock(Pathfinder.class);
-        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder);
+        mockRpCharService = mock(RpCharService.class);
+        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder, mockRpCharService);
 
         region1 = Region.builder().id("90").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("91").regionType(RegionType.LAND).build();
