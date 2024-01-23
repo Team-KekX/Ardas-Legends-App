@@ -4,8 +4,10 @@ import com.ardaslegends.domain.RPChar;
 import com.ardaslegends.repository.rpchar.RpcharRepository;
 import com.ardaslegends.service.exceptions.logic.rpchar.RpCharServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -45,5 +47,18 @@ public class RpCharService extends AbstractService<RPChar, RpcharRepository>{
         return fetchedChars;
     }
 
+    public RPChar getRpCharByName(@NonNull String name) {
+        log.debug("Getting RpChar with name [{}]", name);
 
+        log.debug("Fetching Rpchar with name [{}]", name);
+        val character = rpcharRepository.findRpcharByName(name);
+
+        if(character.isEmpty()) {
+            log.warn("No RpChar found with name [{}]", name);
+            throw RpCharServiceException.noRpCharFound(name);
+        }
+
+        log.debug("Successfully returning RpChar with name [{}]", name);
+        return character.get();
+    }
 }
