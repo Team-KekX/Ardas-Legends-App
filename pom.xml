@@ -10,9 +10,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.version>3.1.1</spring.version>
+        <spring.version>3.2.2</spring.version>
         <java.version>19</java.version>
-        <selenium.version>4.1.2</selenium.version>
         <testcontainers.version>1.17.6</testcontainers.version>
 
         <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
@@ -29,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.2</version>
     </parent>
 
     <repositories>
