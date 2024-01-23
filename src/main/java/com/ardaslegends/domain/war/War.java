@@ -46,6 +46,7 @@ public class War extends AbstractDomainObject {
 
     private OffsetDateTime endDate;
 
+    @Setter
     @NotNull
     private Boolean isActive;
 
