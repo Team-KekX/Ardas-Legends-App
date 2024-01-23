@@ -12,7 +12,6 @@
     <properties>
         <spring.version>3.2.2</spring.version>
         <java.version>19</java.version>
-        <selenium.version>4.1.2</selenium.version>
         <testcontainers.version>1.17.6</testcontainers.version>
 
         <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
