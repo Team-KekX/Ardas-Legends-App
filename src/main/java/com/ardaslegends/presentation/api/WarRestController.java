@@ -6,6 +6,7 @@ import com.ardaslegends.presentation.api.response.war.ActiveWarResponse;
 import com.ardaslegends.presentation.api.response.war.PaginatedWarsResponse;
 import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.war.CreateWarDto;
+import com.ardaslegends.service.dto.war.EndWarDto;
 import com.ardaslegends.service.war.WarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,15 +65,15 @@ public class WarRestController extends AbstractRestController {
 
     //TODO: remove the body as soon as Oauth is done and we have authentication
     @DeleteMapping(FORCE_END)
-    public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam String warName, @RequestParam DiscordIdDto discordId) {
-        log.debug("Incoming force end war Request: Data [{}]", discordId);
+    public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam EndWarDto dto) {
+        log.debug("Incoming force end war Request: Data [{}]", dto);
 
-        War createWarResult = wrappedServiceExecution(discordId, warService::createWar);
+        War createWarResult = wrappedServiceExecution(dto, warService::createWar);
         ActiveWarResponse response = new ActiveWarResponse(createWarResult);
 
         log.debug("Result from service is [{}]", response);
 
-        log.info("Sending successful createWar Request for [{}]", discordId.nameOfWar());
+        log.info("Sending successful createWar Request for [{}]", dto.warName());
         return ResponseEntity.ok(response);
         return null;
     }
