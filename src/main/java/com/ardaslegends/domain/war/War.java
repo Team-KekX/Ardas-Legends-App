@@ -46,6 +46,9 @@ public class War extends AbstractDomainObject {
 
     private OffsetDateTime endDate;
 
+    @NotNull
+    private Boolean isActive;
+
     @OneToMany(mappedBy = "war")
     private Set<Battle> battles = new HashSet<>(4);
 
@@ -68,6 +71,7 @@ public class War extends AbstractDomainObject {
         this.defenders.add(defenderWarParticipant);
 
         this.startDate = warDeclarationDate;
+        this.isActive = true;
     }
 
     @NotNull
