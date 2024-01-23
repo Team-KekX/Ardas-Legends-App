@@ -62,17 +62,18 @@ public class WarRestController extends AbstractRestController {
         return ResponseEntity.ok(response);
     }
 
+    //TODO: remove the body as soon as Oauth is done and we have authentication
     @DeleteMapping(FORCE_END)
-    public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam String warName, @RequestBody DiscordIdDto dto) {
-        log.debug("Incoming declareWar Request: Data [{}]", dto);
+    public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam String warName, @RequestParam DiscordIdDto discordId) {
+        log.debug("Incoming force end war Request: Data [{}]", discordId);
 
-//        War createWarResult = wrappedServiceExecution(dto, warService::createWar);
-//        ActiveWarResponse response = new ActiveWarResponse(createWarResult);
-//
-//        log.debug("Result from service is [{}]", response);
-//
-//        log.info("Sending successful createWar Request for [{}]", dto.nameOfWar());
-//        return ResponseEntity.ok(response);
+        War createWarResult = wrappedServiceExecution(discordId, warService::createWar);
+        ActiveWarResponse response = new ActiveWarResponse(createWarResult);
+
+        log.debug("Result from service is [{}]", response);
+
+        log.info("Sending successful createWar Request for [{}]", discordId.nameOfWar());
+        return ResponseEntity.ok(response);
         return null;
     }
 }
