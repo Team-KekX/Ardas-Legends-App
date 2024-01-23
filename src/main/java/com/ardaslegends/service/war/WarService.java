@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -126,6 +127,46 @@ public class WarService extends AbstractService<War, WarRepository> {
         return wars;
     }
 
+    @Transactional(readOnly = false)
+    public War forceEndWar(EndWarDto dto) {
+        log.debug("Player with discord id [{}] is trying to force end war [{}]", dto.executorDiscordId(), dto.warName());
+
+        log.debug("Checking nulls and blanks");
+        ServiceUtils.checkAllNulls(dto);
+        ServiceUtils.checkAllBlanks(dto);
+
+        log.trace("Fetching player with discord id [{}]", dto.executorDiscordId());
+        val foundPlayer = playerRepository.findByDiscordID(dto.executorDiscordId());
+
+        if(foundPlayer.isEmpty()) {
+            log.warn("Player with id [{}] could not be found", dto.executorDiscordId());
+            throw PlayerServiceException.noPlayerFound(dto.executorDiscordId());
+        }
+
+        val player = foundPlayer.get();
+        log.debug("DiscordId [{}] belongs to player [{}]", dto.executorDiscordId(), player.getIgn());
+
+        log.debug("Player [{}] is staff: {}", player.getIgn(), player.getIsStaff());
+        if(!player.getIsStaff()) {
+            log.warn("Player [{}] is not a staff member and does not have the permission to force end wars!", player.getIgn());
+            throw StaffPermissionException.noStaffPermission();
+        }
+
+        val war = getWarByName(dto.warName());
+        log.debug("Found war with name [{}]", war.getName());
+
+        log.debug("Setting war to inactive");
+        war.setIsActive(false);
+
+        val endDate = OffsetDateTime.now();
+        log.debug("Setting war end date to [{}]", endDate);
+        war.setEndDate(endDate);
+
+        //TODO: send Discord message notification
+
+        log.info("War [{}] between attacker [{}] and defender [{}] has succesfully been ended by staff member [{}]", war.getName(), war.getInitialAttacker().getName(), war.getInitialDefender().getName(), player.getIgn());
+        return war;
+    }
 
     public War getWarByName(String name) {
         log.debug("Getting war with name [{}]", name);
