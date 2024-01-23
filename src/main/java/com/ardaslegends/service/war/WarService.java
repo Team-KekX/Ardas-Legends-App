@@ -8,11 +8,15 @@ import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.dto.war.CreateWarDto;
+import com.ardaslegends.service.dto.war.EndWarDto;
 import com.ardaslegends.service.exceptions.logic.faction.FactionServiceException;
 import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.exceptions.logic.war.WarServiceException;
+import com.ardaslegends.service.exceptions.permission.StaffPermissionException;
+import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.permission.Role;
 import org.springframework.data.domain.Page;
@@ -120,6 +124,26 @@ public class WarService extends AbstractService<War, WarRepository> {
     public Set<War> getWarsOfFaction(Faction faction) {
         Set<War> wars = secureFind(faction, warRepository::findAllWarsWithFaction);
         return wars;
+    }
+
+
+    public War getWarByName(String name) {
+        log.debug("Getting war with name [{}]", name);
+
+        Objects.requireNonNull(name, "War name must not be null!");
+        ServiceUtils.checkBlankString(name, "name");
+
+        log.debug("Fetching war with name [{}]", name);
+        val foundWar = warRepository.findByName(name);
+
+        if(foundWar.isEmpty()) {
+            log.warn("Found no war with name [{}]", name);
+            throw WarServiceException.noWarWithNameFound(name);
+        }
+        val war = foundWar.get();
+
+        log.info("Found war [{}] between attacker [{}] and defender [{}]", war.getName(), war.getInitialAttacker().getWarParticipant().getName(), war.getInitialDefender().getWarParticipant().getName());
+        return war;
     }
 
     private Role fetchFactionRole(Faction faction) {
