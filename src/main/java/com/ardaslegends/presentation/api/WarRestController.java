@@ -68,13 +68,12 @@ public class WarRestController extends AbstractRestController {
     public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam EndWarDto dto) {
         log.debug("Incoming force end war Request: Data [{}]", dto);
 
-        War createWarResult = wrappedServiceExecution(dto, warService::createWar);
+        War createWarResult = wrappedServiceExecution(dto, warService::forceEndWar);
         ActiveWarResponse response = new ActiveWarResponse(createWarResult);
 
         log.debug("Result from service is [{}]", response);
 
         log.info("Sending successful createWar Request for [{}]", dto.warName());
         return ResponseEntity.ok(response);
-        return null;
     }
 }
