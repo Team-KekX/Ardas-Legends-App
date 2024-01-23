@@ -44,6 +44,7 @@ public class War extends AbstractDomainObject {
     @NotNull
     private OffsetDateTime startDate;
 
+    @Setter
     private OffsetDateTime endDate;
 
     @Setter
