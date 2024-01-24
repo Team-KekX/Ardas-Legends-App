@@ -7,13 +7,13 @@ import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.AbstractService;
+import com.ardaslegends.service.discord.DiscordService;
 import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.exceptions.logic.faction.FactionServiceException;
 import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.exceptions.logic.war.WarServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.permission.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +34,7 @@ public class WarService extends AbstractService<War, WarRepository> {
     private final WarRepository warRepository;
     private final FactionRepository factionRepository;
     private final PlayerRepository playerRepository;
-    private final DiscordApi discordApi;
+    private final DiscordService discordService;
 
     public Page<War> getWars(Pageable pageable) {
         Objects.requireNonNull(pageable, "Pageable getWarsBody must not be null");
@@ -129,7 +129,7 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw new IllegalArgumentException("CONTACT STAFF -> Faction '%s' does not have a faction role set!".formatted(faction.getName()));
         }
 
-        return discordApi.getRoleById(roleId)
+        return discordService.getRoleById(roleId)
                 .orElseThrow(() -> new IllegalArgumentException("CONTACT STAFF -> Faction '%s' has a broken roleId! [%s]"
                                 .formatted(faction.getName(), faction.getFactionRoleId())));
     }
