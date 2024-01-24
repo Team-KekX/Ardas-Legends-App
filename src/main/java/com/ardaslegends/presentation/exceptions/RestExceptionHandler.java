@@ -17,43 +17,26 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-
-    /*
-    ----------- PERSISTENCE LAYER
-     */
     @ExceptionHandler({DataAccessException.class})
-    public ResponseEntity<Object> handleDataAccessException(DataAccessException exception, WebRequest request) {
+    public ResponseEntity<Object> handleInternalServerErrorRequest(DataAccessException exception, WebRequest request) {
         return handleException(exception, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException exception, WebRequest request) {
+    public ResponseEntity<Object> handleNotFoundRequest(NotFoundException exception, WebRequest request) {
         return handleException(exception, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler({NullPointerException.class})
-    public ResponseEntity<Object> handleNullPointerException(NullPointerException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request);
-    }
-
-    /*
-    ----------- SERVICE LAYER
-     */
-
-    @ExceptionHandler({LogicException.class})
-    public ResponseEntity<Object> handleLogicException(LogicException exception, WebRequest request) {
+    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class, LogicException.class})
+    public ResponseEntity<Object> handleBadRequest(NullPointerException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler({PermissionException.class})
-    public ResponseEntity<Object> handlePermissionException(PermissionException exception, WebRequest request) {
+    public ResponseEntity<Object> handleForbiddenRequest(PermissionException exception, WebRequest request) {
         return handleException(exception, HttpStatus.FORBIDDEN, request);
     }
+
 
     private ResponseEntity<Object> handleException(Exception exception, HttpStatus httpStatus, WebRequest request) {
         return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
