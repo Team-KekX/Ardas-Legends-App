@@ -8,6 +8,7 @@ import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.AbstractService;
 import com.ardaslegends.service.discord.DiscordService;
+import com.ardaslegends.service.discord.messages.war.WarMessages;
 import com.ardaslegends.service.dto.war.CreateWarDto;
 import com.ardaslegends.service.dto.war.EndWarDto;
 import com.ardaslegends.service.exceptions.logic.faction.FactionServiceException;
@@ -162,7 +163,20 @@ public class WarService extends AbstractService<War, WarRepository> {
         log.debug("Setting war end date to [{}]", endDate);
         war.setEndDate(endDate);
 
-        //TODO: send Discord message notification
+        war.getAggressors().forEach(attacker -> {
+            if(attacker.getWarParticipant().getFactionRole() == null) {
+                attacker.getWarParticipant().setFactionRole(fetchFactionRole(attacker.getWarParticipant()));
+            }
+        });
+
+        war.getDefenders().forEach(defender -> {
+            if(defender.getWarParticipant().getFactionRole() == null) {
+                defender.getWarParticipant().setFactionRole(fetchFactionRole(defender.getWarParticipant()));
+            }
+        });
+
+        val staffDiscordUser = discordService.getUserById(player.getDiscordID());
+        discordService.sendMessageToRpChannel(WarMessages.forceEndWar(war, staffDiscordUser));
 
         log.info("War [{}] between attacker [{}] and defender [{}] has succesfully been ended by staff member [{}]", war.getName(), war.getInitialAttacker().getName(), war.getInitialDefender().getName(), player.getIgn());
         return war;
