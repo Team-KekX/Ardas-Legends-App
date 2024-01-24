@@ -6,7 +6,9 @@ import lombok.val;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
+import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,6 +20,11 @@ public class ArdaConfiguration {
         var executor = Executors.newFixedThreadPool(4);
         log.info("Initialized asyncExecutorService");
         return executor;
+    }
+
+    @Bean
+    public RestClient restClient() {
+        return RestClient.create();
     }
 
     @Bean
