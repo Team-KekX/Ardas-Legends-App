@@ -24,6 +24,12 @@ import java.util.stream.Collectors;
 @Configuration
 public class BotProperties {
 
+    @Value("${ardaslgends.discord.client.id")
+    private String clientId;
+
+    @Value("${ardaslgends.discord.client.secret")
+    private String clientSecret;
+
     @Value("${ardaslegends.bot.token}")
     private String token;
     @Value("${ardaslegends.bot.server}")
@@ -42,6 +48,7 @@ public class BotProperties {
     private Set<Role> discordStaffRoles;
 
     private final DiscordApi api;
+
 
     public String getToken() {
         return token;
