@@ -40,6 +40,16 @@ public class DiscordService {
         return sendMessage(message, botProperties.getGeneralRpCommandsChannel());
     }
 
+    public Message sendMessageToClaimbuildAppChannel(ALMessage message) {
+        log.debug("Trying to send message [{}] to Claimbuild Application Channel", message);
+        return sendMessage(message, botProperties.getClaimbuildAppsChannel());
+    }
+
+    public Message sendMessageToRpCharAppChannel(ALMessage message) {
+        log.debug("Trying to send message [{}] to RpChar Application Channel", message);
+        return sendMessage(message, botProperties.getRpAppsChannel());
+    }
+
     private Message sendMessage(ALMessage message, TextChannel channel) {
         log.debug("Trying to send message [{}] to channel [{}]", message, channel.getIdAsString());
 
