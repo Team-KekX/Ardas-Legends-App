@@ -27,7 +27,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(exception, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class, LogicException.class})
+    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class, LogicException.class, AuthException.class})
     public ResponseEntity<Object> handleBadRequest(NullPointerException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request);
     }
