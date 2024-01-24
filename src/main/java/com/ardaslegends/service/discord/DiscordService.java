@@ -10,6 +10,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -33,6 +34,11 @@ public class DiscordService {
         else
             log.debug("No role with id [{}] found", roleId);
         return foundRole;
+    }
+
+    public User getUserById(String discordId) {
+        log.debug("Getting discord user with id [{}]", discordId);
+        return discordApi.getUserById(discordId).join();
     }
 
     public Message sendMessageToRpChannel(ALMessage message) {
