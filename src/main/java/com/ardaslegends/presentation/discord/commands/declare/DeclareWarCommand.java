@@ -62,7 +62,7 @@ public class DeclareWarCommand implements ALCommandExecutor {
         MessageBuilder messageBuilder = new MessageBuilder()
                 .setAllowedMentions(mentions)
                 .append(attackerRole.getMentionTag())
-                .append(" declared a War against")
+                .append(" declared a War against ")
                 .append(defenderRole.getMentionTag())
                 .append("!");
 
