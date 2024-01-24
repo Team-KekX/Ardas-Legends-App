@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -63,9 +64,9 @@ public class WarRestController extends AbstractRestController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO: remove the body as soon as Oauth is done and we have authentication
     @DeleteMapping(FORCE_END)
-    public ResponseEntity<ActiveWarResponse> forceEndWar(@RequestParam EndWarDto dto) {
+    public ResponseEntity<ActiveWarResponse> forceEndWar(String warName, String executorDiscordId) {
+        val dto = new EndWarDto(warName, executorDiscordId);
         log.debug("Incoming force end war Request: Data [{}]", dto);
 
         War createWarResult = wrappedServiceExecution(dto, warService::forceEndWar);
