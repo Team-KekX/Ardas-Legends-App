@@ -1,5 +1,6 @@
 package com.ardaslegends.service.discord.messages.war;
 
+import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
@@ -19,6 +20,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WarMessages {
+
+    public static ALMessage declareWar(War war, DiscordService discordService) {
+
+        val attacker = war.getInitialAttacker().getWarParticipant();
+        val defender = war.getInitialDefender().getWarParticipant();
+
+        val attackerRole = discordService.getRoleByIdOrElseThrow(attacker.getFactionRoleId());
+        val defenderRole = discordService.getRoleByIdOrElseThrow(defender.getFactionRoleId());
+
+        AllowedMentions mentions = new AllowedMentionsBuilder()
+                .setMentionRoles(true)
+                .build();
+
+        MessageBuilder message = new MessageBuilder()
+                .setAllowedMentions(mentions)
+                .append(attackerRole.getMentionTag())
+                .append(" declared a War against ")
+                .append(defenderRole.getMentionTag())
+                .append("!");
+
+
+        EmbedBuilder embed = new EmbedBuilder()
+                .setTitle(war.getName())
+                .setDescription(message.getStringBuilder().toString())
+                .addInlineField("Attacker", attacker.getName())
+                .addInlineField("Defender", defender.getName())
+                .setColor(ALColor.GREEN)
+                .setThumbnail(FactionBanners.getBannerUrl(attacker.getName()))
+                .setTimestampToNow();
+
+        return new ALMessage(message, List.of(embed));
+    }
 
     public static ALMessage forceEndWar(War war, Player warEndedByPlayer, DiscordService discordService) {
         AllowedMentions mentions = new AllowedMentionsBuilder()
