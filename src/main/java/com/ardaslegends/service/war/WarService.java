@@ -201,16 +201,4 @@ public class WarService extends AbstractService<War, WarRepository> {
         return war;
     }
 
-    private Role fetchFactionRole(Faction faction) {
-        Long roleId = faction.getFactionRoleId();
-
-        if(roleId == null) {
-            throw new IllegalArgumentException("CONTACT STAFF -> Faction '%s' does not have a faction role set!".formatted(faction.getName()));
-        }
-
-        return discordService.getRoleById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("CONTACT STAFF -> Faction '%s' has a broken roleId! [%s]"
-                                .formatted(faction.getName(), faction.getFactionRoleId())));
-    }
-
 }

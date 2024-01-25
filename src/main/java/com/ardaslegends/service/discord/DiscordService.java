@@ -1,8 +1,10 @@
 package com.ardaslegends.service.discord;
 
+import com.ardaslegends.domain.Faction;
 import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.service.discord.messages.ALMessage;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -73,5 +75,17 @@ public class DiscordService {
         }
 
         return returnMessage;
+    }
+
+    public Role fetchFactionRole(@NotNull Faction faction) {
+        Long roleId = faction.getFactionRoleId();
+
+        if(roleId == null) {
+            throw new IllegalArgumentException("CONTACT STAFF -> Faction '%s' does not have a faction role set!".formatted(faction.getName()));
+        }
+
+        return getRoleById(roleId)
+                .orElseThrow(() -> new IllegalArgumentException("CONTACT STAFF -> Faction '%s' has a broken roleId! [%s]"
+                        .formatted(faction.getName(), faction.getFactionRoleId())));
     }
 }
