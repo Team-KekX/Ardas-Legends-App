@@ -6,6 +6,7 @@ import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.presentation.discord.utils.ALColor;
 import com.ardaslegends.presentation.discord.utils.FactionBanners;
 import com.ardaslegends.presentation.discord.utils.Thumbnails;
+import com.ardaslegends.service.discord.DiscordService;
 import com.ardaslegends.service.discord.messages.ALMessage;
 import lombok.val;
 import org.javacord.api.entity.message.MessageBuilder;
@@ -19,13 +20,18 @@ import java.util.stream.Collectors;
 
 public class WarMessages {
 
-    public static ALMessage forceEndWar(War war, User warEndedBy) {
+    public static ALMessage forceEndWar(War war, Player warEndedByPlayer, DiscordService discordService) {
         AllowedMentions mentions = new AllowedMentionsBuilder()
                 .setMentionRoles(true)
                 .build();
 
-        val attackerRole = war.getInitialAttacker().getWarParticipant().getFactionRole();
-        val defenderRole = war.getInitialDefender().getWarParticipant().getFactionRole();
+        val warEndedByUser = discordService.getUserById(warEndedByPlayer.getDiscordID());
+
+        val attacker = war.getInitialAttacker().getWarParticipant();
+        val defender = war.getInitialDefender().getWarParticipant();
+
+        val attackerRole = discordService.getRoleByIdOrElseThrow(attacker.getFactionRoleId());
+        val defenderRole = discordService.getRoleByIdOrElseThrow(defender.getFactionRoleId());
 
         val message = new MessageBuilder()
                 .setAllowedMentions(mentions)
@@ -34,16 +40,16 @@ public class WarMessages {
                 .append(" and ")
                 .append(defenderRole.getMentionTag())
                 .append(" was ended by ")
-                .append(warEndedBy.getMentionTag())
+                .append(warEndedByUser.getMentionTag())
                 .append("!");
 
         val embed = new EmbedBuilder()
                 .setTitle(war.getName() + " was ended by staff!")
                 .setColor(ALColor.YELLOW)
-                .setDescription("The attacking war of %s against %s was ended by staff member %s!".formatted(attackerRole.getMentionTag(), defenderRole.getMentionTag(), warEndedBy.getMentionTag()))
+                .setDescription("The attacking war of %s against %s was ended by staff member %s!".formatted(attackerRole.getMentionTag(), defenderRole.getMentionTag(), warEndedByUser.getMentionTag()))
                 .addInlineField("Attackers", war.getAggressors().stream().map(WarParticipant::getName).collect(Collectors.joining("\n")))
                 .addInlineField("Defenders", war.getDefenders().stream().map(WarParticipant::getName).collect(Collectors.joining("\n")))
-                .addField("War ended by", warEndedBy.getMentionTag())
+                .addField("War ended by", warEndedByUser.getMentionTag())
                 .setThumbnail(Thumbnails.END_WAR.getUrl())
                 .setTimestampToNow();
 
