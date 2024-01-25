@@ -39,7 +39,7 @@ public class Pathfinder {
             throw PathfinderServiceException.alreadyInRegion();
         }
 
-        var wars = warService.getWarsOfFaction(player.getFaction());
+        var wars = warService.getActiveWarsOfFaction(player.getFaction());
 
         log.debug("Initializing data for Pathfinding...");
         //smallest weights between startRegion and all the other nodes

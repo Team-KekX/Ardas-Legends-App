@@ -19,13 +19,11 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.javacord.api.entity.permission.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -112,13 +110,13 @@ public class WarService extends AbstractService<War, WarRepository> {
         return war;
     }
 
-    public Set<War> getWarsOfFaction(String factionName) {
+    public Set<War> getActiveWarsOfFaction(String factionName) {
         // TODO, not yet implemented
         return null;
     }
 
-    public Set<War> getWarsOfFaction(Faction faction) {
-        Set<War> wars = secureFind(faction, warRepository::findAllWarsWithFaction);
+    public Set<War> getActiveWarsOfFaction(Faction faction) {
+        Set<War> wars = secureFind(faction, warRepository::findAllActiveWarsWithFaction);
         return wars;
     }
 
