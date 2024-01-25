@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 @Configuration
 public class BotProperties {
 
-    @Value("${ardaslgends.discord.client.id")
+    @Value("${ardaslegends.discord.client.id}")
     private String clientId;
 
-    @Value("${ardaslgends.discord.client.secret")
+    @Value("${ardaslegends.discord.client.secret}")
     private String clientSecret;
 
     @Value("${ardaslegends.bot.token}")
