@@ -18,22 +18,22 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({DataAccessException.class})
-    public ResponseEntity<Object> handleInternalServerErrorRequest(DataAccessException exception, WebRequest request) {
+    public ResponseEntity<Object> handleInternalServerErrorRequest(Exception exception, WebRequest request) {
         return handleException(exception, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<Object> handleNotFoundRequest(NotFoundException exception, WebRequest request) {
+    public ResponseEntity<Object> handleNotFoundRequest(Exception exception, WebRequest request) {
         return handleException(exception, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class, LogicException.class, AuthException.class})
-    public ResponseEntity<Object> handleBadRequest(NullPointerException exception, WebRequest request) {
+    public ResponseEntity<Object> handleBadRequest(Exception exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler({PermissionException.class})
-    public ResponseEntity<Object> handleForbiddenRequest(PermissionException exception, WebRequest request) {
+    public ResponseEntity<Object> handleForbiddenRequest(Exception exception, WebRequest request) {
         return handleException(exception, HttpStatus.FORBIDDEN, request);
     }
 
