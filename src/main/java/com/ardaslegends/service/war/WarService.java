@@ -147,7 +147,7 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw StaffPermissionException.noStaffPermission();
         }
 
-        val war = getWarByName(dto.warName());
+        val war = getActiveWarByName(dto.warName());
         log.debug("Found war with name [{}]", war.getName());
 
         log.debug("Ending war");
@@ -174,7 +174,20 @@ public class WarService extends AbstractService<War, WarRepository> {
         }
         val war = foundWar.get();
 
-        log.info("Found war [{}] between attacker [{}] and defender [{}]", war.getName(), war.getInitialAttacker().getWarParticipant().getName(), war.getInitialDefender().getWarParticipant().getName());
+        log.debug("Found war [{}] between attacker [{}] and defender [{}]", war.getName(), war.getInitialAttacker().getWarParticipant().getName(), war.getInitialDefender().getWarParticipant().getName());
+        return war;
+    }
+
+    public War getActiveWarByName(String name) {
+        log.debug("Getting active war with name [{}]", name);
+        val war = getWarByName(name);
+
+        if(!war.getIsActive()) {
+            log.warn("War [{}] is not active!", name);
+            throw WarServiceException.warNotActive(name);
+        }
+
+        log.info("Found active war [{}] between attacker [{}] and defender [{}]", war.getName(), war.getInitialAttacker().getWarParticipant().getName(), war.getInitialDefender().getWarParticipant().getName());
         return war;
     }
 
