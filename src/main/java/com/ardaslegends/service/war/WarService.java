@@ -150,12 +150,8 @@ public class WarService extends AbstractService<War, WarRepository> {
         val war = getWarByName(dto.warName());
         log.debug("Found war with name [{}]", war.getName());
 
-        log.debug("Setting war to inactive");
-        war.setIsActive(false);
-
-        val endDate = OffsetDateTime.now();
-        log.debug("Setting war end date to [{}]", endDate);
-        war.setEndDate(endDate);
+        log.debug("Ending war");
+        war.end();
 
         discordService.sendMessageToRpChannel(WarMessages.forceEndWar(war, player, discordService));
 

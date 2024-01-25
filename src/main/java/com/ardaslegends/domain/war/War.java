@@ -133,6 +133,15 @@ public class War extends AbstractDomainObject {
         addToSet(this.battles, battle, WarServiceException.battleAlreadyListed(battle.getName()));
     }
 
+    public void end() {
+        log.debug("Setting war to inactive");
+        setIsActive(false);
+
+        val endDate = OffsetDateTime.now();
+        log.debug("Setting war end date to [{}]", endDate);
+        setEndDate(endDate);
+    }
+
     public Set<WarParticipant> getAggressors() {
         return Collections.unmodifiableSet(this.aggressors);
     }
