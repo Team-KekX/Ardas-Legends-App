@@ -106,6 +106,8 @@ public class WarService extends AbstractService<War, WarRepository> {
         log.debug("Saving War Entity");
         war = secureSave(war, warRepository);
 
+        discordService.sendMessageToRpChannel(WarMessages.declareWar(war, discordService));
+
         log.info("Successfully executed and saved new war {}", war.getName());
         return war;
     }
