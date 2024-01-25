@@ -101,14 +101,6 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.alreadyAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
 
-        // Get Roles
-        if(attackingFaction.getFactionRole() == null) {
-            attackingFaction.setFactionRole(fetchFactionRole(attackingFaction));
-        }
-        if(defendingFaction.getFactionRole() == null) {
-            defendingFaction.setFactionRole(fetchFactionRole(defendingFaction));
-        }
-
         War war = new War(createWarDto.nameOfWar(), attackingFaction, defendingFaction);
 
         log.debug("Saving War Entity");
@@ -163,20 +155,7 @@ public class WarService extends AbstractService<War, WarRepository> {
         log.debug("Setting war end date to [{}]", endDate);
         war.setEndDate(endDate);
 
-        war.getAggressors().forEach(attacker -> {
-            if(attacker.getWarParticipant().getFactionRole() == null) {
-                attacker.getWarParticipant().setFactionRole(fetchFactionRole(attacker.getWarParticipant()));
-            }
-        });
-
-        war.getDefenders().forEach(defender -> {
-            if(defender.getWarParticipant().getFactionRole() == null) {
-                defender.getWarParticipant().setFactionRole(fetchFactionRole(defender.getWarParticipant()));
-            }
-        });
-
-        val staffDiscordUser = discordService.getUserById(player.getDiscordID());
-        discordService.sendMessageToRpChannel(WarMessages.forceEndWar(war, staffDiscordUser));
+        discordService.sendMessageToRpChannel(WarMessages.forceEndWar(war, player, discordService));
 
         log.info("War [{}] between attacker [{}] and defender [{}] has succesfully been ended by staff member [{}]", war.getName(), war.getInitialAttacker().getName(), war.getInitialDefender().getName(), player.getIgn());
         return war;
