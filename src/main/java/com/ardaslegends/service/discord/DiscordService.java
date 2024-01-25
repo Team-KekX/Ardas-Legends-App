@@ -94,16 +94,4 @@ public class DiscordService {
 
         return returnMessage;
     }
-
-    public Role fetchFactionRole(@NotNull Faction faction) {
-        Long roleId = faction.getFactionRoleId();
-
-        if(roleId == null) {
-            throw new IllegalArgumentException("CONTACT STAFF -> Faction '%s' does not have a faction role set!".formatted(faction.getName()));
-        }
-
-        return getRoleById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("CONTACT STAFF -> Faction '%s' has a broken roleId! [%s]"
-                        .formatted(faction.getName(), faction.getFactionRoleId())));
-    }
 }
