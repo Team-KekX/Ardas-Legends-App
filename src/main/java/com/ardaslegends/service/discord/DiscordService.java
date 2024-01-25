@@ -3,6 +3,7 @@ package com.ardaslegends.service.discord;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
+import com.ardaslegends.repository.exceptions.NotFoundException;
 import com.ardaslegends.service.discord.messages.ALMessage;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,23 @@ public class DiscordService {
         else
             log.debug("No role with id [{}] found", roleId);
         return foundRole;
+    }
+
+    /**
+     * The same as getRoleById() but throws an exception when the role was not found
+     * @param roleId
+     * @throws NotFoundException
+     * @return the found discord role
+     */
+    public Role getRoleByIdOrElseThrow(Long roleId) {
+        log.debug("Getting discord role with id [{}]", roleId);
+        val foundRole = discordApi.getRoleById(roleId);
+
+        if(foundRole.isEmpty()) {
+            log.warn("Could not find discord role [{}]", roleId);
+            throw NotFoundException.genericNotFound("discord role", "id", roleId.toString());
+        }
+        return foundRole.get();
     }
 
     public User getUserById(String discordId) {
