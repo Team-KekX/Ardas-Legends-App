@@ -4,13 +4,16 @@ import com.ardaslegends.domain.war.War;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.war.ActiveWarResponse;
 import com.ardaslegends.presentation.api.response.war.PaginatedWarsResponse;
+import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.war.CreateWarDto;
+import com.ardaslegends.service.dto.war.EndWarDto;
 import com.ardaslegends.service.war.WarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,8 @@ import java.util.stream.Collectors;
 public class WarRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/wars";
     public static final String CREATE_WAR = "/declare";
+    public static final String END = "/end"; //Will be used later on when faction leaders can end war
+    public static final String FORCE_END = END + "/force"; //Staff only
 
     private final WarService warService;
 
@@ -56,6 +61,20 @@ public class WarRestController extends AbstractRestController {
         log.debug("Result from service is [{}]", response);
 
         log.info("Sending successful createWar Request for [{}]", dto.nameOfWar());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(FORCE_END)
+    public ResponseEntity<ActiveWarResponse> forceEndWar(String warName, String executorDiscordId) {
+        val dto = new EndWarDto(warName, executorDiscordId);
+        log.debug("Incoming force end war Request: Data [{}]", dto);
+
+        War createWarResult = wrappedServiceExecution(dto, warService::forceEndWar);
+        ActiveWarResponse response = new ActiveWarResponse(createWarResult);
+
+        log.debug("Result from service is [{}]", response);
+
+        log.info("Sending successful createWar Request for [{}]", dto.warName());
         return ResponseEntity.ok(response);
     }
 }

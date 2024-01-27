@@ -1,8 +1,11 @@
 package com.ardaslegends.service.discord;
 
+import com.ardaslegends.domain.Faction;
 import com.ardaslegends.presentation.discord.commands.ALMessageResponse;
 import com.ardaslegends.presentation.discord.config.BotProperties;
+import com.ardaslegends.repository.exceptions.NotFoundException;
 import com.ardaslegends.service.discord.messages.ALMessage;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -10,6 +13,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -33,6 +37,28 @@ public class DiscordService {
         else
             log.debug("No role with id [{}] found", roleId);
         return foundRole;
+    }
+
+    /**
+     * The same as getRoleById() but throws an exception when the role was not found
+     * @param roleId
+     * @throws NotFoundException
+     * @return the found discord role
+     */
+    public Role getRoleByIdOrElseThrow(Long roleId) {
+        log.debug("Getting discord role with id [{}]", roleId);
+        val foundRole = discordApi.getRoleById(roleId);
+
+        if(foundRole.isEmpty()) {
+            log.warn("Could not find discord role [{}]", roleId);
+            throw NotFoundException.genericNotFound("discord role", "id", roleId.toString());
+        }
+        return foundRole.get();
+    }
+
+    public User getUserById(String discordId) {
+        log.debug("Getting discord user with id [{}]", discordId);
+        return discordApi.getUserById(discordId).join();
     }
 
     public Message sendMessageToRpChannel(ALMessage message) {

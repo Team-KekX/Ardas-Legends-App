@@ -119,6 +119,22 @@ public class Commands implements DiscordUtils {
                     log.trace("Calling command execution function");
                     response = executions.get(fullname).execute(interaction, options, properties);
 
+                    if(response == null) {
+                        responseUpdater.delete();
+                        return;
+                    }
+
+                    if (response.hasMessage()) {
+                        responseUpdater.delete();
+
+                        response.message()
+                                // TODO Change to war channel
+                                .send(rpCommandsChannel);
+                    }
+                    else {
+                        responseUpdater.addEmbed(response.embed()).update().join();
+                    }
+
                     log.info("Finished handling '/{}' command", fullname);
                 } catch (BotException exception) {
                     log.warn("Encountered ServiceException while executing, msg: {}", exception.getMessage());
@@ -132,20 +148,7 @@ public class Commands implements DiscordUtils {
                     responseUpdater.addEmbed(embed).update().join();
                 }
 
-                if(response == null) {
-                    return;
-                }
 
-                if (response.hasMessage()) {
-                    responseUpdater.delete();
-
-                    response.message()
-                            // TODO Change to war channel
-                            .send(rpCommandsChannel);
-                }
-                else {
-                    responseUpdater.addEmbed(response.embed()).update().join();
-                }
 
                 log.debug("Updating response to new embed");
                 // The join() is important so that the exceptions go into the catch blocks

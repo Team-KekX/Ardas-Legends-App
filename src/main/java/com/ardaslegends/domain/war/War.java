@@ -44,7 +44,12 @@ public class War extends AbstractDomainObject {
     @NotNull
     private OffsetDateTime startDate;
 
+    @Setter(AccessLevel.PRIVATE)
     private OffsetDateTime endDate;
+
+    @Setter(AccessLevel.PRIVATE)
+    @NotNull
+    private Boolean isActive;
 
     @OneToMany(mappedBy = "war")
     private Set<Battle> battles = new HashSet<>(4);
@@ -68,6 +73,7 @@ public class War extends AbstractDomainObject {
         this.defenders.add(defenderWarParticipant);
 
         this.startDate = warDeclarationDate;
+        this.isActive = true;
     }
 
     @NotNull
@@ -125,6 +131,15 @@ public class War extends AbstractDomainObject {
 
     public void addToBattles(Battle battle) {
         addToSet(this.battles, battle, WarServiceException.battleAlreadyListed(battle.getName()));
+    }
+
+    public void end() {
+        log.debug("Setting war [{}] to inactive", name);
+        setIsActive(false);
+
+        val endDate = OffsetDateTime.now();
+        log.debug("Setting war [{}] end date to [{}]",name, endDate);
+        setEndDate(endDate);
     }
 
     public Set<WarParticipant> getAggressors() {
