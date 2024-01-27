@@ -8,6 +8,7 @@ import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
 import com.ardaslegends.service.AbstractService;
+import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.discord.DiscordService;
 import com.ardaslegends.service.discord.messages.war.WarMessages;
 import com.ardaslegends.service.dto.war.CreateWarDto;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 public class WarService extends AbstractService<War, WarRepository> {
     private final WarRepository warRepository;
     private final FactionRepository factionRepository;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
     private final DiscordService discordService;
 
     public Page<War> getWars(Pageable pageable) {
@@ -57,14 +58,7 @@ public class WarService extends AbstractService<War, WarRepository> {
         Objects.requireNonNull(createWarDto.defendingFactionName(), "Defending Faction Name must not be null");
 
         log.trace("Fetching player with discordId [{}]", createWarDto.executorDiscordId());
-        var fetchedPlayer = secureFind(createWarDto.executorDiscordId(), playerRepository::findByDiscordID);
-
-        if(fetchedPlayer.isEmpty()) {
-            log.warn("Player with discordID [{}] does not exist", createWarDto.executorDiscordId());
-            throw PlayerServiceException.noPlayerFound(createWarDto.executorDiscordId());
-        }
-
-        Player executorPlayer = fetchedPlayer.get();
+        var executorPlayer = playerService.getPlayerByDiscordId(createWarDto.executorDiscordId());
 
         Faction attackingFaction = executorPlayer.getFaction();
         log.trace("Attacking faction is [{}]", attackingFaction.getName());
@@ -130,14 +124,8 @@ public class WarService extends AbstractService<War, WarRepository> {
         ServiceUtils.checkAllBlanks(dto);
 
         log.trace("Fetching player with discord id [{}]", dto.executorDiscordId());
-        val foundPlayer = playerRepository.findByDiscordID(dto.executorDiscordId());
+        val player = playerService.getPlayerByDiscordId(dto.executorDiscordId());
 
-        if(foundPlayer.isEmpty()) {
-            log.warn("Player with id [{}] could not be found", dto.executorDiscordId());
-            throw PlayerServiceException.noPlayerFound(dto.executorDiscordId());
-        }
-
-        val player = foundPlayer.get();
         log.debug("DiscordId [{}] belongs to player [{}]", dto.executorDiscordId(), player.getIgn());
 
         log.debug("Player [{}] is staff: {}", player.getIgn(), player.getIsStaff());
