@@ -134,11 +134,11 @@ public class War extends AbstractDomainObject {
     }
 
     public void end() {
-        log.debug("Setting war to inactive");
+        log.debug("Setting war [{}] to inactive", name);
         setIsActive(false);
 
         val endDate = OffsetDateTime.now();
-        log.debug("Setting war end date to [{}]", endDate);
+        log.debug("Setting war [{}] end date to [{}]",name, endDate);
         setEndDate(endDate);
     }
 
