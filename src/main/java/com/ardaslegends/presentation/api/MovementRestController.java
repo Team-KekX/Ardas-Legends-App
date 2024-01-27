@@ -77,8 +77,9 @@ public class MovementRestController extends AbstractRestController {
     }
 
     @GetMapping(PATH_CALCULATE_CHAR_MOVEMENT)
-    public HttpEntity<MovementResponse> calculateCharMove(MoveRpCharDto dto) {
-        log.debug("Incoming get request for char movement calculation [{}]", dto);
+    public HttpEntity<MovementResponse> calculateCharMove(String discordId, String toRegion) {
+        val dto = new MoveRpCharDto(discordId, toRegion);
+        log.debug("Incoming get request for char movement calculation [{}, {}]", dto);
 
         log.trace("WrappedServiceExecution of calculateRpCharMovement function");
         val movement = wrappedServiceExecution(dto, movementService::calculateRpCharMovement);
