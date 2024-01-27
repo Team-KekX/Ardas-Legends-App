@@ -44,10 +44,10 @@ public class War extends AbstractDomainObject {
     @NotNull
     private OffsetDateTime startDate;
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     private OffsetDateTime endDate;
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     @NotNull
     private Boolean isActive;
 
