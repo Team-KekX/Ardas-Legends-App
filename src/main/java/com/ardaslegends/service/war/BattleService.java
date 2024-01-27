@@ -122,6 +122,12 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             battleRegion = attackedClaimbuild.getRegion();
             List<Army> stationedArmies = attackedClaimbuild.getStationedArmies();
 
+            log.debug("Checking if claimbuild [{}] is starter hamlet of faction [{}]", attackedClaimbuild.getName(), defendingFaction.getName());
+            if(attackedClaimbuild.getName().endsWith("Starter Hamlet")) {
+                log.warn("Cannot declare battle on clamibuild [{}] because it is the starter hamlet of faction [{}]", attackedClaimbuild.getName(), defendingFaction.getName());
+                throw BattleServiceException.cannotAttackStarterHamlet();
+            }
+
             log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
             path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
             log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
