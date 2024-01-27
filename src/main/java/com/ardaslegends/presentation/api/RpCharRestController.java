@@ -39,7 +39,7 @@ public class RpCharRestController extends AbstractRestController {
         log.info("Incoming get all rpchars Request");
 
         log.debug("Calling rpCharService.getAll...");
-        Slice<RPChar> rpChars = wrappedServiceExecution(pageable, rpCharService::getAll);
+        Slice<RPChar> rpChars = rpCharService.getAll(pageable);
         log.debug("Received slice of RpChars from service");
 
         log.debug("Building RpChar response");
@@ -55,7 +55,7 @@ public class RpCharRestController extends AbstractRestController {
     public ResponseEntity<RpCharOwnerResponse[]> getRpCharsByNames(@RequestParam(name = "name") String[] names) {
         log.debug("Incoming getRpCharsByNames Request, parameter names: [{}]", (Object) names);
 
-        List<RPChar> rpchars = wrappedServiceExecution(names, rpCharService::getRpCharsByNames);
+        List<RPChar> rpchars = rpCharService.getRpCharsByNames(names);
 
         log.debug("Building RpCharOwnerResponse with rpchars [{}]", rpchars);
         RpCharOwnerResponse[] response = rpchars.stream().map(RpCharOwnerResponse::new).toArray(RpCharOwnerResponse[]::new);
