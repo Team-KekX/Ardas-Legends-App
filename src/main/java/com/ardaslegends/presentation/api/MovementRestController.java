@@ -64,7 +64,8 @@ public class MovementRestController extends AbstractRestController {
     }
 
     @GetMapping(PATH_CALCULATE_ARMY_MOVEMENT)
-    public HttpEntity<MovementResponse> calculateArmyMove(MoveArmyDto dto) {
+    public HttpEntity<MovementResponse> calculateArmyMove(String executorDiscordId, String armyName, String toRegion) {
+        val dto = new MoveArmyDto(executorDiscordId, armyName, toRegion);
         log.debug("Incoming get request for army movement calculation [{}]", dto);
 
         log.trace("WrappedServiceExecution of calculateArmyMovement function");
