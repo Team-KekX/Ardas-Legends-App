@@ -24,6 +24,6 @@ public class WarDataAccess extends AbstractDataAccess<War, WarRepository> {
         log.debug("Finding all wars for faction {}", faction);
         requireParameterNonNull(faction, "faction", "findAllWarsWithFaction");
 
-        return secureFind(faction, warRepository::findAllWarsWithFaction);
+        return secureFind(faction, warRepository::findAllActiveWarsWithFaction);
     }
 }

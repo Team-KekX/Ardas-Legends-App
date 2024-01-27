@@ -17,8 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -151,8 +154,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         //ToDo: Add proper BattleLocation when the 24h check is available
 
-        WarParticipant aggressors = WarParticipant.builder().warParticipant(attackingFaction).joiningDate(LocalDateTime.now()).initialParty(false).build();
-        WarParticipant defenders = WarParticipant.builder().warParticipant(defendingFaction).joiningDate(LocalDateTime.now()).initialParty(false).build();
+        WarParticipant aggressors = WarParticipant.builder().warParticipant(attackingFaction).joiningDate(OffsetDateTime.now()).initialParty(false).build();
+        WarParticipant defenders = WarParticipant.builder().warParticipant(defendingFaction).joiningDate(OffsetDateTime.now()).initialParty(false).build();
 
         Set<WarParticipant> aggressorsSet = new HashSet<>();
         Set<WarParticipant> defendersSet = new HashSet<>();
@@ -172,7 +175,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 null,
                 null,
                 null,

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +38,7 @@ public class MovementServiceTest {
     private PlayerRepository mockPlayerRepository;
     private PlayerService mockPlayerService;
     private Pathfinder mockPathfinder;
+    private RpCharService mockRpCharService;
 
     private MovementService movementService;
 
@@ -64,7 +65,8 @@ public class MovementServiceTest {
         mockArmyRepository = mock(ArmyRepository.class);
         mockArmyService = mock(ArmyService.class);
         mockPathfinder = mock(Pathfinder.class);
-        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder);
+        mockRpCharService = mock(RpCharService.class);
+        movementService = new MovementService(mockMovementRepository, mockRegionRepository, mockArmyRepository, mockArmyService, mockPlayerRepository, mockPlayerService, mockPathfinder, mockRpCharService);
 
         region1 = Region.builder().id("90").regionType(RegionType.LAND).build();
         region2 = Region.builder().id("91").regionType(RegionType.LAND).build();
@@ -75,7 +77,7 @@ public class MovementServiceTest {
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).currentRegion(region1).build();
         player = Player.builder().discordID("1234").faction(faction).build();
         player.addActiveRpChar(rpchar);
-        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player.getActiveCharacter().get()).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
+        army = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction).freeTokens(30 - unit.getCount() * unitType.getTokenCost()).currentRegion(region1).boundTo(player.getActiveCharacter().get()).stationedAt(claimBuild).sieges(new ArrayList<>()).createdAt(OffsetDateTime.now().minusDays(3)).build();
         pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(region1.getCost()).build();
         pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
         path = List.of(pathElement1, pathElement2);
@@ -295,7 +297,7 @@ public class MovementServiceTest {
         Player player = Player.builder().discordID("1234").ign("Lüktrönic").uuid("huehue").build();
         player.addActiveRpChar(rpChar);
         Movement movement = Movement.builder().isCharMovement(true)
-                .startTime(LocalDateTime.now()).endTime(LocalDateTime.now()).isCurrentlyActive(true).rpChar(player.getActiveCharacter().get()).build();
+                .startTime(OffsetDateTime.now()).endTime(OffsetDateTime.now()).isCurrentlyActive(true).rpChar(player.getActiveCharacter().get()).build();
 
         log.trace("Initializing Dto");
         MoveRpCharDto dto = new MoveRpCharDto("1234", toRegion.getId());
@@ -469,8 +471,8 @@ public class MovementServiceTest {
     void ensureCreateArmyMovementThrowsSEWhenArmyCreatedLessThan24hAgo() {
         log.debug("Testing if createArmyMovement throws ASE when army was created less than 24h ago!");
 
-        army.setCreatedAt(LocalDateTime.now().minusMinutes(59).minusHours(23));
-        log.debug("Now: [{}]", LocalDateTime.now());
+        army.setCreatedAt(OffsetDateTime.now().minusMinutes(59).minusHours(23));
+        log.debug("Now: [{}]", OffsetDateTime.now());
         log.debug("Created: [{}]", army.getCreatedAt());
 
 

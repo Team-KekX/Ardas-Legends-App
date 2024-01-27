@@ -18,7 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -102,13 +103,13 @@ public class BattleServiceTest {
         Player player2 = Player.builder().discordID("4321").ign("mirak").faction(faction2).build();
         player2.addActiveRpChar(rpchar2);
 
-        army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region2).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
-        army2 = Army.builder().name("Knights of Isengard").armyType(ArmyType.ARMY).faction(faction2).freeTokens(30 - unit2.getCount() * unitType2.getTokenCost()).currentRegion(region2).boundTo(player2.getActiveCharacter().get()).stationedAt(claimBuild2).sieges(new ArrayList<>()).createdAt(LocalDateTime.now().minusDays(3)).build();
+        army1 = Army.builder().name("Knights of Gondor").armyType(ArmyType.ARMY).faction(faction1).freeTokens(30 - unit1.getCount() * unitType1.getTokenCost()).currentRegion(region2).boundTo(player1.getActiveCharacter().get()).stationedAt(claimBuild1).sieges(new ArrayList<>()).createdAt(OffsetDateTime.now().minusDays(3)).build();
+        army2 = Army.builder().name("Knights of Isengard").armyType(ArmyType.ARMY).faction(faction2).freeTokens(30 - unit2.getCount() * unitType2.getTokenCost()).currentRegion(region2).boundTo(player2.getActiveCharacter().get()).stationedAt(claimBuild2).sieges(new ArrayList<>()).createdAt(OffsetDateTime.now().minusDays(3)).build();
 
         army2.setMovements(new ArrayList<>());
         army1.setMovements(new ArrayList<>());
-        WarParticipant warParticipant1 = WarParticipant.builder().warParticipant(faction1).initialParty(true).joiningDate(LocalDateTime.now()).build();
-        warParticipant1 = WarParticipant.builder().warParticipant(faction2).initialParty(true).joiningDate(LocalDateTime.now()).build();
+        WarParticipant warParticipant1 = WarParticipant.builder().warParticipant(faction1).initialParty(true).joiningDate(OffsetDateTime.now()).build();
+        warParticipant1 = WarParticipant.builder().warParticipant(faction2).initialParty(true).joiningDate(OffsetDateTime.now()).build();
 
         Set<WarParticipant> attacker = new HashSet<>();
         Set<WarParticipant> defender = new HashSet<>();
@@ -116,7 +117,7 @@ public class BattleServiceTest {
         attacker.add(warParticipant1);
         defender.add(warParticipant2);
 
-        war = War.builder().name("War of Gondor").aggressors(attacker).defenders(defender).startDate(LocalDateTime.now()).build();
+        war = War.builder().name("War of Gondor").aggressors(attacker).defenders(defender).startDate(OffsetDateTime.now()).build();
 
         attackingArmies = new HashSet<>();
         attackingArmies.add(army1);
@@ -125,7 +126,7 @@ public class BattleServiceTest {
 
         battleLocation = new BattleLocation(region2,true, null);
 
-        Battle battle = new Battle(war, "Battle of Gondor", attackingArmies, defendingArmies, LocalDateTime.now(), LocalDateTime.of(2023, 9, 20, 0, 0), LocalDateTime.of(2023, 9, 30, 0, 0), LocalDateTime.of(2023, 9, 20, 0, 0), battleLocation);
+        Battle battle = new Battle(war, "Battle of Gondor", attackingArmies, defendingArmies, OffsetDateTime.now(), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 30, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), battleLocation);
 
         PathElement pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(0).build();
         PathElement pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();

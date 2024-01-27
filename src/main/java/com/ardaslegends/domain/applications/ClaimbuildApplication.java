@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @Table(name = "claimbuild_apps")
 public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
 
-
     @NotBlank
     private String claimbuildName;
 
@@ -98,6 +97,8 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
                 .addInlineField("Coordinates", coordinate.toString())
                 .addField("Built by", builtByString)
                 .setThumbnail(FactionBanners.getBannerUrl(ownedBy.getName()))
+                .addField("Upvoted By", getAcceptedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")))
+                .addInlineField("Downvoted By", getDeclinedBy().stream().map(Player::getIgn).collect(Collectors.joining(", ")))
                 .setTimestampToNow();
     }
 
@@ -133,6 +134,11 @@ public class ClaimbuildApplication extends AbstractApplication<ClaimBuild> {
         val cb = new ClaimBuild(claimbuildName, region, claimBuildType, ownedBy, coordinate, specialBuildings, traders, siege, numberOfHouses, builtBy);
         cb.setProductionSites(mapProductionSites(cb));
         return cb;
+    }
+
+    @Override
+    protected Short getRequiredVoteCount() {
+        return 2;
     }
 
     public List<ProductionClaimbuild> mapProductionSites(ClaimBuild claimBuild) {

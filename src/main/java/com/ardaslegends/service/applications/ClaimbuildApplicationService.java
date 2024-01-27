@@ -15,6 +15,7 @@ import com.ardaslegends.service.dto.applications.CreateClaimbuildApplicationDto;
 import com.ardaslegends.service.dto.applications.ApplicationVoteDto;
 import com.ardaslegends.service.exceptions.logic.applications.ClaimbuildApplicationException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -145,7 +146,7 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     }
 
     @Transactional(readOnly = false)
-    public ClaimbuildApplication addVote(ApplicationVoteDto dto) {
+    public ClaimbuildApplication addAcceptVote(ApplicationVoteDto dto) {
         log.debug("Adding Vote to  claimbuild application [{}]", dto);
         Objects.requireNonNull(dto);
 
@@ -158,6 +159,28 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
 
         application = secureSave(application, cbAppRepository);
         log.info("Added vote to claimbuild application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
+
+        return application;
+    }
+
+    @Transactional(readOnly = false)
+    public ClaimbuildApplication addDeclineVote(@NonNull ApplicationVoteDto dto) {
+        log.debug("Adding decline vote to claimbuild application with data [{}]", dto);
+        ServiceUtils.checkAllNulls(dto);
+
+        var application = cbAppRepository.queryById(dto.applicationId());
+        val player = playerRepository.queryByDiscordId(dto.discordId());
+
+        application.addDecline(player);
+
+        application = secureSave(application, cbAppRepository);
+        log.info("Added decline vote to claimbuild application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
 
         return application;
     }
@@ -172,10 +195,13 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         var application = cbAppRepository.queryById(dto.applicationId());
         val player = playerRepository.queryByDiscordId(dto.discordId());
 
-        application.removeAccept(player);
+        application.removeVote(player);
 
         application = secureSave(application, cbAppRepository);
         log.info("Removed vote from claimbuild application [{}]", application);
+
+        // Updates the embed so players can see the current votes
+        application.updateApplicationMessage(botProperties.getClaimbuildAppsChannel());
 
         return application;
     }
@@ -183,8 +209,8 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
     @Async
     @Scheduled(cron = "0 */15 * ? * *")
     @Transactional(readOnly = false)
-    public void handleOpenRoleplayApplications() {
-        val startDateTime = LocalDateTime.now(clock);
+    public void handleOpenClaimbuildApplications() {
+        val startDateTime = OffsetDateTime.now(clock);
         long startNanos = System.nanoTime();
         log.debug("Starting scheduled handling of open claimbuild applications - System time: [{}]", startDateTime);
 

@@ -11,7 +11,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Getter
@@ -31,7 +31,7 @@ public class WarParticipant  {
     private Boolean initialParty;
 
     @NotNull
-    private LocalDateTime joiningDate;
+    private OffsetDateTime joiningDate;
 
     @Override
     public boolean equals(Object o) {
@@ -53,5 +53,13 @@ public class WarParticipant  {
                 ", initialParty=" + initialParty +
                 ", joiningDate=" + joiningDate +
                 '}';
+    }
+
+    /**
+     * Returns the name of the war participant faction. Added so you don't have to do .getWarParticipant().getName()
+     * @return The name of the faction
+     */
+    public String getName() {
+       return warParticipant.getName();
     }
 }

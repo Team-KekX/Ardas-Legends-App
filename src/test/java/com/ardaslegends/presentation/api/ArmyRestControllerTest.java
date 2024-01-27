@@ -7,6 +7,7 @@ import com.ardaslegends.service.dto.army.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,14 +44,14 @@ public class ArmyRestControllerTest {
         val originalClaimbuild = ClaimBuild.builder().name("Nimheria").build();
         army = new Army(1L, "Army Name", ArmyType.ARMY, faction, region, null,
                 new ArrayList<Unit>(), new ArrayList<String>(), null, 0.0, false, null, null, 0, 0,
-                originalClaimbuild, LocalDateTime.now(), new ArrayList<Movement>(), true);
+                originalClaimbuild, OffsetDateTime.now(), new ArrayList<Movement>(), true);
         mockArmyService = mock(ArmyService.class);
         armyRestController = new ArmyRestController(mockArmyService);
         mockMvc = MockMvcBuilders.standaloneSetup(armyRestController).build();
     }
 
     @Test
-    void ensureCreateArmyRequestWorksProperly() throws Exception{
+    void ensureCreateArmyRequestWorksProperly() throws Exception {
         log.debug("Testing if ArmyRestController createArmy works properly with correct values");
 
         // Assign
@@ -148,6 +149,7 @@ public class ArmyRestControllerTest {
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer();
 
@@ -240,7 +242,7 @@ public class ArmyRestControllerTest {
         log.debug("Testing if ArmyRestController unstation works properly with correct values");
 
         // Assign
-        StationDto dto = new StationDto("Kek", "kek", "kek");
+        UnstationDto dto = new UnstationDto("Kek", "kek");
 
         when(mockArmyService.unstation(dto)).thenReturn(army);
 

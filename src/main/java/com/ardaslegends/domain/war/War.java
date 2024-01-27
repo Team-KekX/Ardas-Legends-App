@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -42,9 +42,14 @@ public class War extends AbstractDomainObject {
     private Set<WarParticipant> defenders = new HashSet<>(2);
 
     @NotNull
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
-    private LocalDateTime endDate;
+    @Setter(AccessLevel.PRIVATE)
+    private OffsetDateTime endDate;
+
+    @Setter(AccessLevel.PRIVATE)
+    @NotNull
+    private Boolean isActive;
 
     @OneToMany(mappedBy = "war")
     private Set<Battle> battles = new HashSet<>(4);
@@ -55,7 +60,7 @@ public class War extends AbstractDomainObject {
         Objects.requireNonNull(aggressor, "WarConstructor: Aggressor must not be null");
         Objects.requireNonNull(defender, "WarConstructor: Defender must not be null");
 
-        var warDeclarationDate = LocalDateTime.now();
+        var warDeclarationDate = OffsetDateTime.now();
 
         log.trace("Creating Aggressor WarParticipantObject");
         WarParticipant aggressorWarParticipant = new WarParticipant(aggressor, true, warDeclarationDate);
@@ -68,6 +73,7 @@ public class War extends AbstractDomainObject {
         this.defenders.add(defenderWarParticipant);
 
         this.startDate = warDeclarationDate;
+        this.isActive = true;
     }
 
     @NotNull
@@ -125,6 +131,15 @@ public class War extends AbstractDomainObject {
 
     public void addToBattles(Battle battle) {
         addToSet(this.battles, battle, WarServiceException.battleAlreadyListed(battle.getName()));
+    }
+
+    public void end() {
+        log.debug("Setting war [{}] to inactive", name);
+        setIsActive(false);
+
+        val endDate = OffsetDateTime.now();
+        log.debug("Setting war [{}] end date to [{}]",name, endDate);
+        setEndDate(endDate);
     }
 
     public Set<WarParticipant> getAggressors() {

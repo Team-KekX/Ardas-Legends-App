@@ -13,14 +13,16 @@ import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.movement.MovementServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +40,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     private final PlayerRepository playerRepository;
     private final PlayerService playerService;
     private final Pathfinder pathfinder;
+    private final RpCharService rpCharService;
 
     // TODO: Check if time is frozen -> if yes, cancel request
     // TODO: Check if army is in a battle -> if yes, cancel request
@@ -46,6 +49,16 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement createArmyMovement(MoveArmyDto dto) {
         log.debug("Trying to move Army [{}] executed by [{}] to Region [{}]", dto.armyName(), dto.executorDiscordId(), dto.toRegion());
 
+        Movement movement = calculateArmyMovement(dto);
+
+        log.debug("Saving Movement to database");
+        secureSave(movement, movementRepository);
+
+        log.info("Successfully saved movement [{}]", movement);
+        return movement;
+    }
+
+    public Movement calculateArmyMovement(MoveArmyDto dto) {
         ServiceUtils.checkAllNulls(dto);
         ServiceUtils.checkAllBlanks(dto);
 
@@ -69,7 +82,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Checking if army is already in the desired region");
         if(dto.toRegion().equals(army.getCurrentRegion().getId())) {
             log.warn("Army is already in desired region [{}], no movement required", dto.toRegion());
-            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(),dto.toRegion());
+            throw ArmyServiceException.cannotMoveArmyAlreadyInRegion(army.getArmyType(),army.toString(), dto.toRegion());
         }
 
         log.debug("Checking if army is currently performing a movement");
@@ -79,9 +92,9 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if army is older than 24h");
-        if(LocalDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
+        if(OffsetDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
             log.warn("Army [{}] is younger than 24h and therefore cannot move!", army);
-            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), LocalDateTime.now()).toHours();
+            long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), OffsetDateTime.now()).toHours();
             log.debug("Army can move again in [{}] hours", hoursUntilMove);
             throw ArmyServiceException.cannotMoveArmyWasCreatedRecently(army.getName(), hoursUntilMove);
         }
@@ -100,18 +113,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         log.debug("Removing movement cost from faction stockpile");
         army.getFaction().subtractFoodFromStockpile(ServiceUtils.getFoodCost(path));
 
-        var currentTime = LocalDateTime.now();
+        var currentTime = OffsetDateTime.now();
         log.debug("Creating movement object");
-        int hoursUntilDone = ServiceUtils.getTotalPathCost(path); //Gets a sum of all the
+        int hoursUntilDone = ServiceUtils.getTotalPathCost(path);  //Gets a sum of all the
         Region secondRegion = path.get(1).getRegion();
         int hoursUntilNextRegion = secondRegion.getCost();
         val character = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         Movement movement = new Movement(character, army, false, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
-
-        log.debug("Saving Movement to database");
-        secureSave(movement, movementRepository);
-
-        log.info("Successfully saved movement [{}]", movement);
         return movement;
     }
 
@@ -153,8 +161,16 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
     public Movement createRpCharMovement(MoveRpCharDto dto) {
         log.debug("Moving RpChar of player {} to Region {}", dto.discordId(), dto.toRegion());
 
-        //Validating data
+        var movement = calculateRpCharMovement(dto);
 
+        log.trace("Saving the new movement");
+        movement = secureSave(movement, movementRepository);
+
+        log.info("Successfully created new Movement for the RPChar '{}'", movement.getRpChar().getName());
+        return movement;
+    }
+
+    public Movement calculateRpCharMovement(MoveRpCharDto dto) {
         log.trace("Validating Data");
         ServiceUtils.checkAllNulls(dto);
         ServiceUtils.checkAllBlanks(dto);
@@ -219,17 +235,13 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         List<PathElement> path = pathfinder.findShortestWay(fromRegion, toRegion, player, true);
 
         log.trace("Getting the current time");
-        LocalDateTime currentTime = LocalDateTime.now();
+        OffsetDateTime currentTime = OffsetDateTime.now();
 
         log.trace("Building the movement object");
         int hoursUntilDone = ServiceUtils.getTotalPathCost(path);
         int hoursUntilNextRegion = path.get(1).getActualCost();
         Movement movement = new Movement(rpChar, null, true, path, currentTime, currentTime.plusHours(hoursUntilDone), true, hoursUntilDone, hoursUntilNextRegion, 0);
 
-        log.trace("Saving the new movement");
-        movement = secureSave(movement, movementRepository);
-
-        log.info("Successfully created new Movement for the RPChar '{}' of Player '{}'", rpChar.getName(), player);
         return movement;
     }
 
@@ -265,6 +277,36 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         movement = secureSave(movement, movementRepository);
 
         return movement;
+    }
+
+    public Pair<Optional<Movement>, List<Movement>> getArmyMovements(@NonNull String armyName) {
+        log.debug("Trying to get movements for army [{}]", armyName);
+
+        log.trace("Fetching Army with name [{}]", armyName);
+        val army = armyService.getArmyByName(armyName);
+
+        log.trace("Fetching current movement for army [{}]", army.getName());
+        val currentMovement = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveTrue);
+
+        log.trace("Fetching past movements of army [{}]", army.getName());
+        val pastMovements = secureFind(army, movementRepository::findMovementByArmyAndIsCurrentlyActiveFalse);
+
+        return Pair.of(currentMovement, pastMovements);
+    }
+
+    public Pair<Optional<Movement>, List<Movement>> getCharMovements(@NonNull String charName) {
+        log.debug("Trying to get movements for char [{}]", charName);
+
+        log.trace("Fetching char with name [{}]", charName);
+        val character = rpCharService.getRpCharByName(charName);
+
+        log.trace("Fetching current movement for char [{}]", charName);
+        val currentMovement = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveTrue);
+
+        log.trace("Fetching past movements of char [{}]", character.getName());
+        val pastMovements = secureFind(character, movementRepository::findMovementByRpCharAndIsCurrentlyActiveFalse);
+
+        return Pair.of(currentMovement, pastMovements);
     }
 
     public Movement getActiveMovementByArmy(Army army) {

@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,10 +51,10 @@ public class ScheduleServiceTest {
     private Movement movement3;
     private ClaimBuild claimBuild;
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private LocalDateTime endTime2;
-    private LocalDateTime endTime3;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
+    private OffsetDateTime endTime2;
+    private OffsetDateTime endTime3;
     private UnitType unitType;
     private UnitType unitType2;
     private UnitType unitType3;
@@ -101,7 +99,7 @@ public class ScheduleServiceTest {
         path = List.of(pathElement, pathElement2, pathElement3, pathElement4);
         path2 = List.of(pathElement4, pathElement3, pathElement2);
         path3 = List.of(pathElement2, pathElement3);
-        startTime = LocalDateTime.of(2022, 8, 31, 0, 0, 0);
+        startTime = OffsetDateTime.of(2022, 8, 31, 0, 0, 0, 0, ZoneOffset.UTC);
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
@@ -117,7 +115,7 @@ public class ScheduleServiceTest {
         claimBuild = ClaimBuild.builder().type(ClaimBuildType.CASTLE).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).region(region).build();
 
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(List.of(movement, movement2, movement3));
-        fixedClock = Clock.fixed(startTime.plusDays(1).plusSeconds(1).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        fixedClock = Clock.fixed(startTime.plusDays(1).plusSeconds(1).toInstant(), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
     }
@@ -170,7 +168,7 @@ public class ScheduleServiceTest {
     void ensureHandleMovementsExitsWhenHourHasNotPassed() {
         log.debug("Testing if handleMovements works properly!");
 
-        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(startTime)), ZoneId.systemDefault());
+        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
 
@@ -202,7 +200,7 @@ public class ScheduleServiceTest {
         rpChar2.setStartedHeal(startTime.minusDays(1));
         rpChar2.setHealEnds(startTime.plusDays(1));
 
-        log.info("Current time: [{}] - start time: [{}] - end time: [{}]", LocalDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
+        log.info("Current time: [{}] - start time: [{}] - end time: [{}]", OffsetDateTime.now(mockClock), startTime.minusDays(1), startTime.plusDays(1));
 
         List<Player> players = List.of(player, player2);
         when(mockPlayerRepository.queryPlayersWithHealingRpchars()).thenReturn(players);
@@ -319,7 +317,7 @@ public class ScheduleServiceTest {
         List<Army> armies = List.of(army);
         when(mockArmyRepository.findArmyByIsHealingTrue()).thenReturn(armies);
         when(mockArmyService.saveArmies(armies)).thenReturn(armies);
-        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())), ZoneId.systemDefault());
+        fixedClock = Clock.fixed(startTime.plusMinutes(50).toInstant(), ZoneId.systemDefault());
         when(mockClock.instant()).thenReturn(fixedClock.instant());
         when(mockClock.getZone()).thenReturn(fixedClock.getZone());
         scheduleService.handleHealings();

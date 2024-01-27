@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Getter
@@ -47,8 +47,8 @@ public class RPChar extends AbstractEntity {
 
     private Boolean injured;
     private Boolean isHealing;
-    private LocalDateTime startedHeal;
-    private LocalDateTime healEnds;
+    private OffsetDateTime startedHeal;
+    private OffsetDateTime healEnds;
     private String linkToLore;
 
     private Boolean active;
@@ -102,7 +102,7 @@ public class RPChar extends AbstractEntity {
     }
 
     public void startHealing() {
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         setIsHealing(true);
         setStartedHeal(now);
         setHealEnds(now.plusDays(2));
