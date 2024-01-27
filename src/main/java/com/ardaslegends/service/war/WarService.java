@@ -153,7 +153,7 @@ public class WarService extends AbstractService<War, WarRepository> {
         ServiceUtils.checkBlankString(name, "name");
 
         log.debug("Fetching war with name [{}]", name);
-        val foundWar = warRepository.findByName(name);
+        val foundWar = secureFind(name, warRepository::findByName);
 
         if(foundWar.isEmpty()) {
             log.warn("Found no war with name [{}]", name);
