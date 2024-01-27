@@ -1,6 +1,5 @@
 package com.ardaslegends.service.discord.messages.war;
 
-import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
@@ -14,14 +13,16 @@ import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
-import org.javacord.api.entity.user.User;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class WarMessages {
 
     public static ALMessage declareWar(War war, DiscordService discordService) {
+        Objects.requireNonNull(war, "Declare war error discord message got passed null value for war");
+        Objects.requireNonNull(discordService, "Declare war error discord message got passed null value for discordService");
 
         val attacker = war.getInitialAttacker().getWarParticipant();
         val defender = war.getInitialDefender().getWarParticipant();
@@ -54,6 +55,10 @@ public class WarMessages {
     }
 
     public static ALMessage forceEndWar(War war, Player warEndedByPlayer, DiscordService discordService) {
+        Objects.requireNonNull(war, "Force end war error discord message got passed null value for war");
+        Objects.requireNonNull(warEndedByPlayer, "Force end war error discord message got passed null value for player that ended war");
+        Objects.requireNonNull(discordService, "Force end war error discord message got passed null value for discordService");
+
         AllowedMentions mentions = new AllowedMentionsBuilder()
                 .setMentionRoles(true)
                 .build();
