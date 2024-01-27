@@ -64,7 +64,8 @@ public class MovementRestController extends AbstractRestController {
     }
 
     @GetMapping(PATH_CALCULATE_ARMY_MOVEMENT)
-    public HttpEntity<MovementResponse> calculateArmyMove(MoveArmyDto dto) {
+    public HttpEntity<MovementResponse> calculateArmyMove(String executorDiscordId, String armyName, String toRegion) {
+        val dto = new MoveArmyDto(executorDiscordId, armyName, toRegion);
         log.debug("Incoming get request for army movement calculation [{}]", dto);
 
         log.trace("WrappedServiceExecution of calculateArmyMovement function");
@@ -77,8 +78,9 @@ public class MovementRestController extends AbstractRestController {
     }
 
     @GetMapping(PATH_CALCULATE_CHAR_MOVEMENT)
-    public HttpEntity<MovementResponse> calculateCharMove(MoveRpCharDto dto) {
-        log.debug("Incoming get request for char movement calculation [{}]", dto);
+    public HttpEntity<MovementResponse> calculateCharMove(String discordId, String toRegion) {
+        val dto = new MoveRpCharDto(discordId, toRegion);
+        log.debug("Incoming get request for char movement calculation [{}, {}]", dto);
 
         log.trace("WrappedServiceExecution of calculateRpCharMovement function");
         val movement = wrappedServiceExecution(dto, movementService::calculateRpCharMovement);
