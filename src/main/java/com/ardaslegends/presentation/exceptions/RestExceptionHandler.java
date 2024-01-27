@@ -1,8 +1,7 @@
 package com.ardaslegends.presentation.exceptions;
 
-import com.ardaslegends.repository.exceptions.DataAccessException;
+import com.ardaslegends.repository.exceptions.RepositoryException;
 import com.ardaslegends.repository.exceptions.NotFoundException;
-import com.ardaslegends.service.exceptions.ServiceException;
 import com.ardaslegends.service.exceptions.logic.LogicException;
 import com.ardaslegends.service.exceptions.permission.PermissionException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     /*
     ----------- PERSISTENCE LAYER
      */
-    @ExceptionHandler({DataAccessException.class})
-    public ResponseEntity<Object> handleDataAccessException(DataAccessException exception, WebRequest request) {
+    @ExceptionHandler({RepositoryException.class})
+    public ResponseEntity<Object> handleDataAccessException(RepositoryException exception, WebRequest request) {
         return handleException(exception, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 

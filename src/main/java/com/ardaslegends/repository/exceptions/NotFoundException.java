@@ -1,8 +1,6 @@
 package com.ardaslegends.repository.exceptions;
 
-import com.ardaslegends.service.exceptions.logic.war.WarServiceException;
-
-public class NotFoundException extends DataAccessException{
+public class NotFoundException extends RepositoryException {
 
 
     private static final String GENERIC_COULD_NOT_FIND = "Could not find %s with %s %s!";
