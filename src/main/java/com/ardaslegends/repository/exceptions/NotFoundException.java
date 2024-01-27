@@ -1,9 +1,12 @@
 package com.ardaslegends.repository.exceptions;
 
+import com.ardaslegends.service.exceptions.logic.war.WarServiceException;
+
 public class NotFoundException extends DataAccessException{
 
 
     private static final String GENERIC_COULD_NOT_FIND = "Could not find %s with %s %s!";
+    private static final String NO_WAR_WITH_NAME = "No war with name '%s' found!";
 
     protected NotFoundException(String message) {
         super(message);
@@ -19,5 +22,7 @@ public class NotFoundException extends DataAccessException{
     public static NotFoundException genericNotFound(String couldNotFind, String with, String value) {
         return new NotFoundException(GENERIC_COULD_NOT_FIND.formatted(couldNotFind, with, value));
     }
+    public static NotFoundException noWarWithNameFound(String name) {return new NotFoundException(NO_WAR_WITH_NAME.formatted(name));}
+
 
 }

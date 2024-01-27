@@ -3,6 +3,7 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.war.War;
+import com.ardaslegends.repository.exceptions.NotFoundException;
 import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.repository.WarRepository;
@@ -168,7 +169,7 @@ public class WarService extends AbstractService<War, WarRepository> {
 
         if(foundWar.isEmpty()) {
             log.warn("Found no war with name [{}]", name);
-            throw WarServiceException.noWarWithNameFound(name);
+            throw NotFoundException.noWarWithNameFound(name);
         }
         val war = foundWar.get();
 
