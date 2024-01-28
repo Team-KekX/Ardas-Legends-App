@@ -34,6 +34,4 @@ public interface WarRepository extends JpaRepository<War, Long> {
     boolean isFactionAtWarWithOtherFaction(Faction faction, Faction otherFaction);
 
     War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors, Set<WarParticipant> defenders);
-
-
 }

@@ -7,6 +7,7 @@ import com.ardaslegends.domain.war.WarParticipant;
 import java.util.Set;
 
 public interface WarRepositoryCustom {
+    Set<War> queryActiveWarsByFaction(Faction faction);
     War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors, Set<WarParticipant> defenders);
 
 }
