@@ -35,7 +35,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<RoleplayApplicationResponse> createRoleplayApplication(@RequestBody CreateRpApplicatonDto applicationDto) {
         log.debug("Incoming createRoleplayApplication Request: Data [{}]", applicationDto);
 
-        val application = wrappedServiceExecution(applicationDto, rpService::createRpApplication);
+        val application = rpService.createRpApplication(applicationDto);
 
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }
@@ -45,7 +45,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<Slice<RoleplayApplicationResponse>> findAllSliced(Pageable pageable) {
         log.debug("Incoming findAllApplications Request: Data [{}]", pageable.toString());
 
-        Slice<RoleplayApplication> originalSlice = wrappedServiceExecution(pageable, rpService::findAll);
+        Slice<RoleplayApplication> originalSlice = rpService.findAll(pageable);
         Slice<RoleplayApplicationResponse> appsResponse = originalSlice.map(RoleplayApplicationResponse::new);
 
         return ResponseEntity.ok(appsResponse);
@@ -55,7 +55,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<Slice<RoleplayApplicationResponse>> findAllActiveAppsSliced(Pageable pageable) {
         log.debug("Incoming findAllActiveApplications Request: Data [{}]", pageable.toString());
 
-        val roleplayAppSlice = wrappedServiceExecution(pageable, rpService::findAllActive);
+        val roleplayAppSlice = rpService.findAllActive(pageable);
         val roleplayAppResponseSlice = roleplayAppSlice.map(RoleplayApplicationResponse::new);
 
         return ResponseEntity.ok(roleplayAppResponseSlice);
@@ -66,7 +66,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<RoleplayApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming accept-vote to application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, rpService::addAcceptVote);
+        val application = rpService.addAcceptVote(voteDto);
 
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }
@@ -76,7 +76,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<RoleplayApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming decline-vote to application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, rpService::addDeclineVote);
+        val application = rpService.addDeclineVote(voteDto);
 
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }
@@ -86,7 +86,7 @@ public class RoleplayApplicationController extends AbstractRestController {
     public HttpEntity<RoleplayApplicationResponse> removeVoteFromApplication(ApplicationVoteDto voteDto) {
         log.debug("Incoming remove-vote from application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, rpService::removeVote);
+        val application = rpService.removeVote(voteDto);
 
         return ResponseEntity.ok(new RoleplayApplicationResponse(application));
     }

@@ -62,7 +62,7 @@ public class PlayerRestController extends AbstractRestController {
     public HttpEntity<Page<PaginatedPlayerResponse>> getPlayersPaginated(Pageable pageable) {
         log.debug("Incoming getPlayersPaginated Request");
 
-        Page<Player> pageDomain = wrappedServiceExecution(pageable, playerService::getPlayersPaginated);
+        Page<Player> pageDomain = playerService.getPlayersPaginated(pageable);
         var pageResponse = pageDomain.map(PaginatedPlayerResponse::new);
 
         return ResponseEntity.ok(pageResponse);
@@ -75,7 +75,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming getByIgn Request. Ign: {}", ign);
 
         log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
-        val playerFound = wrappedServiceExecution(ign, playerService::getPlayerByIgn);
+        val playerFound = playerService.getPlayerByIgn(ign);
         val response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by ign ({})", playerFound, playerFound.getIgn());
@@ -88,7 +88,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming getByDiscordId Request. DiscordId: {}", discId);
 
         log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
-        val playerFound = wrappedServiceExecution(discId, playerService::getPlayerByDiscordId);
+        val playerFound = playerService.getPlayerByDiscordId(discId);
         val response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by DiscordId ({})", playerFound, playerFound.getDiscordID());
@@ -101,7 +101,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming createPlayer Request. Data [{}]", createPlayerDto);
 
         log.debug("Calling PlayerService.createPlayer. Data {}" ,createPlayerDto);
-        Player createdPlayer = wrappedServiceExecution(createPlayerDto, playerService::createPlayer);
+        Player createdPlayer = playerService.createPlayer(createPlayerDto);
         var response = new PlayerResponse(createdPlayer);
 
         URI self = UriComponentsBuilder.fromPath(BASE_URL + PATH_GET_BY_IGN)
@@ -119,7 +119,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming createRpChar Request. Data [{}]", createRPCharDto);
 
         log.debug("Calling PlayerService.createRoleplayCharacter. Data [{}]", createRPCharDto);
-        RPChar createdRpChar = wrappedServiceExecution(createRPCharDto, playerService::createRoleplayCharacter);
+        RPChar createdRpChar = playerService.createRoleplayCharacter(createRPCharDto);
         var response = new RpCharResponse(createdRpChar);
 
         log.info("Sending HttpResponse with successfully created Player {}", createdRpChar);
@@ -133,7 +133,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updatePlayerFaction Request. Data {}", updatePlayerFactionDto);
 
         log.trace("Trying to update the player's faction");
-        Player player = wrappedServiceExecution(updatePlayerFactionDto, playerService::updatePlayerFaction);
+        Player player = playerService.updatePlayerFaction(updatePlayerFactionDto);
         log.debug("Successfully updated faction without encountering any errors");
         var response = new PlayerResponse(player);
 
@@ -156,7 +156,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updatePlayerIgn Request: Data [{}]", dto);
 
         log.trace("Trying to update the player's ingame name");
-        Player player = wrappedServiceExecution(dto, playerService::updateIgn);
+        Player player = playerService.updateIgn(dto);
         log.debug("Successfully updated faction without encountering any errors");
         var response = new PlayerResponse(player);
 
@@ -170,7 +170,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updateDiscordId Request: Data [{}]", dto);
 
         log.trace("Trying to update the player's executorDiscordId");
-        Player player = wrappedServiceExecution(dto, playerService::updateDiscordId);
+        Player player = playerService.updateDiscordId(dto);
         log.debug("Successfully updated executorDiscordId without encountering any errors");
         var response = new PlayerUpdateDiscordIdResponse(player, dto.oldDiscordId());
 
@@ -185,7 +185,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updateCharacterName Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterName");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterName);
+        RPChar rpChar = playerService.updateCharacterName(dto);
         log.debug("Successfully updated character name without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -200,7 +200,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updateCharacterTitle Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterTitle");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterTitle);
+        RPChar rpChar = playerService.updateCharacterTitle(dto);
         log.debug("Successfully updated character title without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -215,7 +215,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updateCharacterGear Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterGear");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterGear);
+        RPChar rpChar = playerService.updateCharacterGear(dto);
         log.debug("Successfully updated character Gear without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -231,7 +231,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming updateCharacterPvP Request: Data [{}]", dto);
 
         log.trace("Executing playerService.updateCharacterPvP");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::updateCharacterPvp);
+        RPChar rpChar = playerService.updateCharacterPvp(dto);
         log.debug("Successfully updated character PvP without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -246,7 +246,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming deletePlayer Request: Data [{}]", dto);
 
         log.trace("Executing playerService.deletePlayer");
-        Player player = wrappedServiceExecution(dto, playerService::deletePlayer);
+        Player player = playerService.deletePlayer(dto);
         var response = new PlayerResponse(player);
         log.debug("Successfully deleted player, [{}]", player);
 
@@ -261,7 +261,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming deleteRpChar Request: Data [{}]", dto);
 
         log.trace("Executing playerService.deleteRpChar");
-        RPChar rpChar = wrappedServiceExecution(dto,playerService::deleteRpChar);
+        RPChar rpChar = playerService.deleteRpChar(dto);
         log.debug("Successfully deleted rpchar, [{}]", rpChar);
         var response = new RpCharResponse(rpChar);
 
@@ -276,7 +276,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming injureChar Request: Data [{}]", dto);
 
         log.trace("Executing playerService.injureChar");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::injureChar);
+        RPChar rpChar = playerService.injureChar(dto);
         log.debug("Successfully injured character without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -291,7 +291,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming healStart Request: Data [{}]", dto);
 
         log.trace("Executing playerService.healStart");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::healStart);
+        RPChar rpChar = playerService.healStart(dto);
         log.debug("Successfully started healing of character without encountering any errors");
         var response = new RpCharResponse(rpChar);
 
@@ -306,7 +306,7 @@ public class PlayerRestController extends AbstractRestController {
         log.debug("Incoming healStop Request: Data [{}]", dto);
 
         log.trace("Executing playerService.healStop");
-        RPChar rpChar = wrappedServiceExecution(dto, playerService::healStop);
+        RPChar rpChar = playerService.healStop(dto);
         var response = new RpCharResponse(rpChar);
         log.debug("Successfully started healing of character without encountering any errors");
 

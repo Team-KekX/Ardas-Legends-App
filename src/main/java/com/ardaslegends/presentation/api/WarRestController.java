@@ -42,7 +42,7 @@ public class WarRestController extends AbstractRestController {
     public ResponseEntity<Page<PaginatedWarsResponse>> getWarsPaginated(Pageable pageable) {
         log.debug("Incoming getWarsPaginated Request, paginated data [{}]", pageable);
 
-        Page<War> page = wrappedServiceExecution(pageable, warService::getWars);
+        Page<War> page = warService.getWars(pageable);
         log.debug(page.toString());
 
         Page<PaginatedWarsResponse> response = page.map(PaginatedWarsResponse::new);
@@ -55,7 +55,7 @@ public class WarRestController extends AbstractRestController {
     public ResponseEntity<ActiveWarResponse> createWar(@RequestBody CreateWarDto dto) {
         log.debug("Incoming declareWar Request: Data [{}]", dto);
 
-        War createWarResult = wrappedServiceExecution(dto, warService::createWar);
+        War createWarResult = warService.createWar(dto);
         ActiveWarResponse response = new ActiveWarResponse(createWarResult);
 
         log.debug("Result from service is [{}]", response);
@@ -69,7 +69,7 @@ public class WarRestController extends AbstractRestController {
         val dto = new EndWarDto(warName, executorDiscordId);
         log.debug("Incoming force end war Request: Data [{}]", dto);
 
-        War createWarResult = wrappedServiceExecution(dto, warService::forceEndWar);
+        War createWarResult = warService.forceEndWar(dto);
         ActiveWarResponse response = new ActiveWarResponse(createWarResult);
 
         log.debug("Result from service is [{}]", response);
