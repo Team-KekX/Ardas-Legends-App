@@ -19,7 +19,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         super(War.class);
     }
 
-    public Set<War> queryWarsByFaction(Faction faction, boolean onlyActive) {
+    public Set<War> queryWarsByFaction(Faction faction, boolean isActive) {
         Objects.requireNonNull(faction, "Faction must not be null!");
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
@@ -32,14 +32,14 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .where(
                         qAggressors.warParticipant.name.eq(faction.getName())
                         .or(qDefenders.warParticipant.name.eq(faction.getName()))
-                        .and(qWar.isActive.eq(onlyActive)))
+                        .and(qWar.isActive.eq(isActive)))
                 .fetch();
 
         return new HashSet<>(result);
     }
 
     @Override
-    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean onlyActive) {
+    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean isActive) {
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
         QWarParticipant qDefenders = QWarParticipant.warParticipant1;
@@ -50,7 +50,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .where(
                         qAggressors.warParticipant.name.eq(faction1.getName()).and(qDefenders.warParticipant.name.eq(faction2.getName()))
                         .or(qAggressors.warParticipant.name.eq(faction2.getName()).and(qDefenders.warParticipant.name.eq(faction1.getName())))
-                        .and(qWar.isActive.eq(onlyActive)))
+                        .and(qWar.isActive.eq(isActive)))
                 .fetch();
 
         return new HashSet<>(result);
