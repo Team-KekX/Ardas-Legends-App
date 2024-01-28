@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarRepositoryCustom{
@@ -18,7 +19,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         super(War.class);
     }
 
-    public Set<War> queryActiveWarsByFaction(Faction faction) {
+    public Set<War> queryWarsByFaction(Faction faction, boolean onlyActive) {
         Objects.requireNonNull(faction, "Faction must not be null!");
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
@@ -31,7 +32,25 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .where(
                         qAggressors.warParticipant.name.eq(faction.getName())
                         .or(qDefenders.warParticipant.name.eq(faction.getName()))
-                        .and(qWar.isActive.isTrue()))
+                        .and(qWar.isActive.eq(onlyActive)))
+                .fetch();
+
+        return new HashSet<>(result);
+    }
+
+    @Override
+    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean onlyActive) {
+        QWar qWar = QWar.war;
+        QWarParticipant qAggressors = QWarParticipant.warParticipant1;
+        QWarParticipant qDefenders = QWarParticipant.warParticipant1;
+
+        val result = from(qWar)
+                .leftJoin(qWar.aggressors, qAggressors)
+                .leftJoin(qWar.defenders, qDefenders)
+                .where(
+                        qAggressors.warParticipant.name.eq(faction1.getName()).and(qDefenders.warParticipant.name.eq(faction2.getName()))
+                        .or(qAggressors.warParticipant.name.eq(faction2.getName()).and(qDefenders.warParticipant.name.eq(faction1.getName())))
+                        .and(qWar.isActive.eq(onlyActive)))
                 .fetch();
 
         return new HashSet<>(result);
