@@ -35,7 +35,7 @@ public class RegionController extends AbstractRestController {
     public ResponseEntity<RegionResponse[]> getAll() {
         log.info("Incoming getAll Request");
 
-        val regions = wrappedServiceExecution(regionService::getAll);
+        val regions = regionService.getAll();
         val regionsResponse = regions.stream()
                 .map(RegionResponse::new)
                 .toArray(RegionResponse[]::new);
@@ -48,7 +48,7 @@ public class RegionController extends AbstractRestController {
         log.debug("Incoming getRegion Request with regionId path variable [{}]", regionId);
 
         log.debug("Calling RegionService getRegion()");
-        Region region = wrappedServiceExecution(regionId, regionService::getRegion);
+        Region region = regionService.getRegion(regionId);
         log.debug("Got region [{}]", region);
 
         log.trace("Building RegionResponse");
@@ -64,7 +64,7 @@ public class RegionController extends AbstractRestController {
     public ResponseEntity<RegionResponseDetailed[]> getAllDetailed() {
         log.info("Incoming getAllDetailed Request");
 
-        val regions = wrappedServiceExecution(regionService::getAll);
+        val regions = regionService.getAll();
         val regionsResponse = regions.stream()
                 .map(RegionResponseDetailed::new)
                 .toArray(RegionResponseDetailed[]::new);
@@ -88,7 +88,7 @@ public class RegionController extends AbstractRestController {
         log.info("Incoming reset ownership-changed request");
 
         log.debug("Calling wrappedServiceExecution regionService.resetOwnership");
-        wrappedServiceExecution(regionService::resetHasOwnership);
+        regionService.resetHasOwnership();
 
         log.debug("Returning status code ok for reset-ownership");
         return ResponseEntity.ok(null);

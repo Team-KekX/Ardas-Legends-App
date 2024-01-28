@@ -28,7 +28,7 @@ public class ProductionSiteController extends AbstractRestController {
     public HttpEntity<ProductionSiteResponse[]> getAll() {
         log.debug("Incoming getAll productionSites request");
 
-        val productionSiteSet = wrappedServiceExecution(productionSiteService::getAll).stream()
+        val productionSiteSet = productionSiteService.getAll().stream()
                 .map(ProductionSiteResponse::new)
                 .toArray(ProductionSiteResponse[]::new);
 

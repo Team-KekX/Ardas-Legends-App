@@ -57,7 +57,7 @@ public class ClaimbuildRestController extends AbstractRestController {
     public ResponseEntity<Page<ClaimbuildResponse>> getClaimbuildsPaginated(Pageable pageable) {
         log.debug("Incoming getClaimbuildsPaginated Request, paginated data [{}]", pageable);
 
-        Page<ClaimBuild> pageDomain = wrappedServiceExecution(pageable, claimBuildService::getClaimbuildsPaginated);
+        Page<ClaimBuild> pageDomain = claimBuildService.getClaimbuildsPaginated(pageable);
         var pageResponse = pageDomain.map(ClaimbuildResponse::new);
 
         return ResponseEntity.ok(pageResponse);
@@ -68,7 +68,7 @@ public class ClaimbuildRestController extends AbstractRestController {
     public ResponseEntity<ClaimbuildResponse[]> getClaimbuildsByNames(@RequestParam(name = "name") String[] names) {
         log.debug("Incoming getClaimbuildsByName Request, parameter names: [{}]", (Object) names);
 
-        List<ClaimBuild> claimBuilds = wrappedServiceExecution(names, claimBuildService::getClaimBuildsByNames);
+        List<ClaimBuild> claimBuilds = claimBuildService.getClaimBuildsByNames(names);
 
         log.debug("Building ClaimbuildResponses with claimbuilds [{}]", claimBuilds);
         ClaimbuildResponse[] response = claimBuilds.stream().map(ClaimbuildResponse::new).toArray(ClaimbuildResponse[]::new);
@@ -92,7 +92,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming createClaimbuild Request: Data [{}]", dto);
 
         log.debug("Calling claimBuildService.createClaimbuild");
-        ClaimBuild claimBuild = wrappedServiceExecution(dto, true, claimBuildService::createClaimbuild);
+        ClaimBuild claimBuild = claimBuildService.createClaimbuild(dto, true);
 
         log.info("Sending successful createClaimbuild Request for [{}]", claimBuild.getName());
         return ResponseEntity.ok(claimBuild);
@@ -103,7 +103,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming updateClaimbuild Request: Data [{}]", dto);
 
         log.debug("Calling claimBuildService.createClaimbuild");
-        ClaimBuild claimBuild = wrappedServiceExecution(dto, false, claimBuildService::createClaimbuild);
+        ClaimBuild claimBuild = claimBuildService.createClaimbuild(dto, false);
 
         log.info("Sending successful updateClaimbuild Request for [{}]", claimBuild.getName());
         return ResponseEntity.ok(claimBuild);
@@ -114,7 +114,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming update Claimbuild Owner Request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution of setOwnerFaction");
-        var result = wrappedServiceExecution(dto, claimBuildService::setOwnerFaction);
+        var result = claimBuildService.setOwnerFaction(dto);
 
         log.trace("Building response Dto");
         UpdateClaimbuildOwnerDto response = new UpdateClaimbuildOwnerDto(result.getName(), result.getOwnedBy().getName());
@@ -128,7 +128,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming delete Claimbuild Request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution of deleteClaimbuild");
-        var result = wrappedServiceExecution(dto, claimBuildService::deleteClaimbuild);
+        var result = claimBuildService.deleteClaimbuild(dto);
 
 
         log.trace("Building body Dto");
