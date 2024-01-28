@@ -55,11 +55,4 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
 
         return new HashSet<>(result);
     }
-
-    @Override
-    public War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors,Set<WarParticipant> defenders) {
-        //QWar war
-
-        return new War();
-    }
 }

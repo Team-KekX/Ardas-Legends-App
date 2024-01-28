@@ -9,6 +9,4 @@ import java.util.Set;
 public interface WarRepositoryCustom {
     Set<War> queryWarsByFaction(Faction faction, boolean onlyActive);
     Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean onlyActive);
-    War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors, Set<WarParticipant> defenders);
-
 }
