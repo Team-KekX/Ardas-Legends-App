@@ -21,8 +21,8 @@ public record PlayerRpCharResponse (
     Boolean isStaff
 ) {
 
-    public PlayerRpCharResponse(Player player, boolean isStaff) {
-        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getActiveCharacter().isEmpty() ? null : new RpCharResponse(player.getActiveCharacter().get())), isStaff);
+    public PlayerRpCharResponse(Player player) {
+        this(player.getDiscordID(), player.getIgn(), player.getFaction().getName(), (player.getActiveCharacter().isEmpty() ? null : new RpCharResponse(player.getActiveCharacter().get())), player.getIsStaff());
         log.debug("Created PlayerResponse: '{}'", this);
     }
 }

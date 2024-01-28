@@ -4437,8 +4437,8 @@ INSERT INTO unit_types(unit_name, token_cost)
 VALUES (''Huorn'', 5);
 
 
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (1, ''261173268365443074'', ''Luktronic'', false, ''cefabe13fda44d378c5d7292724f1514'', 10);
-INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (2, ''244463773052567553'', ''mirak441'', false, ''4cd6b222b3894fd59d85ac90aa2c2c46'', 10);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (1, ''261173268365443074'', ''Luktronic'', true, ''cefabe13fda44d378c5d7292724f1514'', 10);
+INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (2, ''244463773052567553'', ''mirak441'', true, ''4cd6b222b3894fd59d85ac90aa2c2c46'', 10);
 INSERT INTO public.players (id, discord_id, ign, is_staff, uuid, faction) VALUES (3, ''323522559096258582'', ''HabKeinTeammate'', false, ''84b6a14958ec4b2bb9b479328526651d'', 10);
 
 
