@@ -4,6 +4,7 @@ import com.ardaslegends.repository.exceptions.RepositoryException;
 import com.ardaslegends.repository.exceptions.NotFoundException;
 import com.ardaslegends.service.exceptions.logic.LogicException;
 import com.ardaslegends.service.exceptions.permission.PermissionException;
+import com.querydsl.core.QueryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     /*
     ----------- PERSISTENCE LAYER
      */
-    @ExceptionHandler({RepositoryException.class})
+    @ExceptionHandler({RepositoryException.class, QueryException.class})
     public ResponseEntity<Object> handleDataAccessException(RepositoryException exception, WebRequest request) {
         return handleException(exception, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
