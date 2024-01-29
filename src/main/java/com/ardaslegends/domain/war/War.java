@@ -51,7 +51,7 @@ public class War extends AbstractDomainObject {
     @NotNull
     private Boolean isActive;
 
-    @OneToMany(mappedBy = "war")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Battle> battles = new HashSet<>(4);
 
     // TODO: Test worthy
