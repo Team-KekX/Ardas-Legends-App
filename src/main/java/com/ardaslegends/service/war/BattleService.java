@@ -154,21 +154,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         }
 
         //ToDo: Add proper War object when query exists that fetches a specific wars between two factions
-
-
-
         //ToDo: Add 24h in reach check, if the attacking army is in reach of the defending army / CB
-
         //ToDo: Add proper BattleLocation when the 24h check is available
-
-        WarParticipant aggressors = WarParticipant.builder().warParticipant(attackingFaction).joiningDate(OffsetDateTime.now()).initialParty(false).build();
-        WarParticipant defenders = WarParticipant.builder().warParticipant(defendingFaction).joiningDate(OffsetDateTime.now()).initialParty(false).build();
-
-        Set<WarParticipant> aggressorsSet = new HashSet<>();
-        Set<WarParticipant> defendersSet = new HashSet<>();
-
-        aggressorsSet.add(aggressors);
-        defendersSet.add(defenders);
 
         log.debug("Creating BattleLocation");
         BattleLocation battleLocation = new BattleLocation(battleRegion, createBattleDto.isFieldBattle(), attackedClaimbuild);
