@@ -87,12 +87,10 @@ public class WarService extends AbstractService<War, WarRepository> {
             throw WarServiceException.cannotDeclareWarOnYourFaction();
         }
 
-        boolean alreadyAtWar = secureFind(attackingFaction, defendingFaction, warRepository::isFactionAtWarWithOtherFaction);
-
-        if(alreadyAtWar) {
+        warRepository.queryActiveInitialWarBetween(attackingFaction, defendingFaction).ifPresent(war -> {
             log.warn("The factions '{}' and '{}' are already at war!", attackingFaction.getName(), defendingFaction.getName());
             throw WarServiceException.alreadyAtWar(attackingFaction.getName(), defendingFaction.getName());
-        }
+        });
 
         War war = new War(createWarDto.nameOfWar(), attackingFaction, defendingFaction);
 
