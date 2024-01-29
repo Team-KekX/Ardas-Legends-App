@@ -55,7 +55,7 @@ public class AuthController extends AbstractRestController {
     }
 
     private TokenAuthResponse getAuthToken(@NonNull String code,@NonNull String redirectUrl) {
-        log.debug("Executing oauth2/token request [code: {}]", code);
+        log.debug("Executing oauth2/token request [code: {}, redirectUrl: {}]", code, redirectUrl);
         try {
             log.trace("Building Request Body");
 
