@@ -22,15 +22,4 @@ public interface WarRepository extends JpaRepository<War, Long>, WarRepositoryCu
             or defenders.warParticipant = ?1)
             and isActive = true""")
     Set<War> findAllActiveWarsWithFaction(Faction faction);
-
-    @Query("""
-            select (count(w) > 0) from War w 
-                left join w.aggressors aggressors 
-                left join w.defenders defenders
-            where ((aggressors.warParticipant = ?1 and defenders.warParticipant = ?2)
-            or (aggressors.warParticipant = ?2 and defenders.warParticipant = ?1))
-            and (isActive = true)
-            and (endDate is null)""")
-    boolean isFactionAtWarWithOtherFaction(Faction faction, Faction otherFaction);
-
 }
