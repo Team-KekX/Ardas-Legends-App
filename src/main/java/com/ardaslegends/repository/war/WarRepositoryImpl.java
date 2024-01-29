@@ -55,4 +55,22 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
 
         return new HashSet<>(result);
     }
+
+    @Override
+    public Optional<War> queryActiveInitialWarBetween(Faction faction1, Faction faction2) {
+        QWar qWar = QWar.war;
+        QWarParticipant qAggressors = QWarParticipant.warParticipant1;
+        QWarParticipant qDefenders = QWarParticipant.warParticipant1;
+
+        val result = from(qWar)
+                .leftJoin(qWar.aggressors, qAggressors)
+                .leftJoin(qWar.defenders, qDefenders)
+                .where(
+                        qAggressors.warParticipant.name.eq(faction1.getName()).and(qDefenders.warParticipant.name.eq(faction2.getName()))
+                        .or(qAggressors.warParticipant.name.eq(faction2.getName()).and(qDefenders.warParticipant.name.eq(faction1.getName())))
+                        .and(qWar.isActive.isTrue()))
+                .fetchFirst();
+
+        return Optional.ofNullable(result);
+    }
 }
