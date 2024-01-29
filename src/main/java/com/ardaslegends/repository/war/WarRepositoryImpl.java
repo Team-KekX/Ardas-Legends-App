@@ -4,7 +4,8 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.war.QWar;
 import com.ardaslegends.domain.war.QWarParticipant;
 import com.ardaslegends.domain.war.War;
-import com.ardaslegends.domain.war.WarParticipant;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -19,7 +20,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         super(War.class);
     }
 
-    public Set<War> queryWarsByFaction(Faction faction, boolean isActive) {
+    public Set<War> queryWarsByFaction(Faction faction, WarStatus warStatus) {
         Objects.requireNonNull(faction, "Faction must not be null!");
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
@@ -32,14 +33,14 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .where(
                         qAggressors.warParticipant.name.eq(faction.getName())
                         .or(qDefenders.warParticipant.name.eq(faction.getName()))
-                        .and(qWar.isActive.eq(isActive)))
+                        .and(activePredicate(warStatus)))
                 .fetch();
 
         return new HashSet<>(result);
     }
 
     @Override
-    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean isActive) {
+    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, WarStatus warStatus) {
         Objects.requireNonNull(faction1, "Faction must not be null");
         Objects.requireNonNull(faction2, "Faction must not be null");
 
@@ -53,7 +54,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .where(
                         qAggressors.warParticipant.name.eq(faction1.getName()).and(qDefenders.warParticipant.name.eq(faction2.getName()))
                         .or(qAggressors.warParticipant.name.eq(faction2.getName()).and(qDefenders.warParticipant.name.eq(faction1.getName())))
-                        .and(qWar.isActive.eq(isActive)))
+                        .and(activePredicate(warStatus)))
                 .fetch();
 
         return new HashSet<>(result);
@@ -78,5 +79,15 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
                 .fetchFirst();
 
         return Optional.ofNullable(result);
+    }
+
+    private BooleanExpression activePredicate(WarStatus warStatus) {
+        Objects.requireNonNull(warStatus, "WarStatus must not be null");
+        val war = QWar.war;
+        return switch (warStatus) {
+            case ALL_ACTIVE -> war.isActive.isTrue();
+            case ALL_INACTIVE -> war.isActive.isFalse();
+            case BOTH -> Expressions.TRUE;
+        };
     }
 }

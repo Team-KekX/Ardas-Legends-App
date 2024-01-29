@@ -7,6 +7,7 @@ import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.BattleRepository;
 import com.ardaslegends.repository.war.WarRepository;
+import com.ardaslegends.repository.war.WarStatus;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
@@ -139,7 +140,7 @@ public class BattleServiceTest {
         when(mockClaimBuildService.getClaimBuildByName(claimBuild2.getName())).thenReturn(claimBuild2);
         when(mockClaimBuildService.getClaimBuildByName(claimBuild3.getName())).thenReturn(claimBuild3);
         when(mockWarRepository.queryActiveInitialWarBetween(any(),any())).thenReturn(Optional.of(war));
-        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), anyBoolean())).thenReturn(Set.of(war));
+        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), any())).thenReturn(Set.of(war));
         when(mockBattleRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
         when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
@@ -256,7 +257,7 @@ public class BattleServiceTest {
         log.debug("Testing if createBattle throws exception when factions are not at war!");
 
         war = null;
-        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), eq(true))).thenReturn(new HashSet<>());
+        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), WarStatus.ALL_ACTIVE)).thenReturn(new HashSet<>());
 
 
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));

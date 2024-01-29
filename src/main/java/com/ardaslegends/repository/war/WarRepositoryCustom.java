@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface WarRepositoryCustom {
-    Set<War> queryWarsByFaction(Faction faction, boolean onlyActive);
-    Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean onlyActive);
+    Set<War> queryWarsByFaction(Faction faction, WarStatus warStatus);
+    Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, WarStatus warStatus);
     Optional<War> queryActiveInitialWarBetween(Faction faction1, Faction faction2);
 }
