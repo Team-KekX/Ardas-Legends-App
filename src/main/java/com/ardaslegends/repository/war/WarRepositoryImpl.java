@@ -40,6 +40,9 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
 
     @Override
     public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, boolean isActive) {
+        Objects.requireNonNull(faction1, "Faction must not be null");
+        Objects.requireNonNull(faction2, "Faction must not be null");
+
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
         QWarParticipant qDefenders = QWarParticipant.warParticipant1;
@@ -58,6 +61,9 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
 
     @Override
     public Optional<War> queryActiveInitialWarBetween(Faction faction1, Faction faction2) {
+        Objects.requireNonNull(faction1, "Faction must not be null");
+        Objects.requireNonNull(faction2, "Faction must not be null");
+
         QWar qWar = QWar.war;
         QWarParticipant qAggressors = QWarParticipant.warParticipant1;
         QWarParticipant qDefenders = QWarParticipant.warParticipant1;

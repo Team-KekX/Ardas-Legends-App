@@ -9,6 +9,7 @@ import com.ardaslegends.repository.war.WarRepository;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,5 +56,10 @@ public class WarRepositoryTest {
         war4.end();
 
         warRepository.saveAll(List.of(war1, war2, war3, war4));
+    }
+
+    @Test
+    void ensureQueryWarsByFactionWorksProperly() {
+
     }
 }
