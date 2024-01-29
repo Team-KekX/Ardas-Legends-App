@@ -126,11 +126,13 @@ public class War extends AbstractDomainObject {
         return new WarParticipant(faction, false, OffsetDateTime.now());
     }
 
-    public void addToAggressors(WarParticipant participant) {
+    public void addToAggressors(Faction faction) {
+        val participant = buildWarParticipant(faction);
         addToSet(this.aggressors, participant, WarServiceException.factionAlreadyJoinedTheWarAsAttacker(participant.getWarParticipant().getName()));
     }
 
-    public void addToDefenders(WarParticipant participant) {
+    public void addToDefenders(Faction faction) {
+        val participant = buildWarParticipant(faction);
         addToSet(this.defenders, participant, WarServiceException.factionAlreadyJoinedTheWarAsDefender(participant.getWarParticipant().getName()));
     }
 
