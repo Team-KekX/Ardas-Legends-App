@@ -6,13 +6,10 @@ import com.ardaslegends.domain.war.BattleLocation;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.BattleRepository;
-import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.war.WarRepository;
-import com.ardaslegends.service.dto.army.MoveArmyDto;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
-import com.ardaslegends.service.utils.ServiceUtils;
 import com.ardaslegends.service.war.BattleService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +25,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -165,7 +161,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getWars()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
         assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
@@ -186,7 +182,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getWars()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
     }
@@ -201,7 +197,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getWars()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
     }
@@ -218,7 +214,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWar()).isEqualTo(war);
+        assertThat(newBattle.getWars()).isEqualTo(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
     }

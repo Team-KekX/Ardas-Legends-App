@@ -24,9 +24,10 @@ public class Battle extends AbstractDomainObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_battle_war_id"))
-    private War war;
+    private Set<War> wars;
 
     private String name;
 
@@ -53,8 +54,8 @@ public class Battle extends AbstractDomainObject {
     @Embedded
     private BattleLocation battleLocation;
 
-    public Battle(War war, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, OffsetDateTime declaredDate, OffsetDateTime timeFrozenFrom, OffsetDateTime timeFrozenUntil, OffsetDateTime agreedBattleDate, BattleLocation battleLocation) {
-        this.war = war;
+    public Battle(Set<War> wars, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, OffsetDateTime declaredDate, OffsetDateTime timeFrozenFrom, OffsetDateTime timeFrozenUntil, OffsetDateTime agreedBattleDate, BattleLocation battleLocation) {
+        this.wars = new HashSet<>(wars);
         this.name = name;
         this.attackingArmies = new HashSet<>(attackingArmies);
         this.defendingArmies = new HashSet<>(defendingArmies);
