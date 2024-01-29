@@ -14,6 +14,7 @@ import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,8 +147,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             }
         }
 
-        boolean factionsAreAtWar = warRepository.isFactionAtWarWithOtherFaction(attackingFaction, defendingFaction);
-        if(!factionsAreAtWar){
+        val wars = warRepository.queryWarsBetweenFactions(attackingFaction, defendingFaction, true);
+        if(wars.isEmpty()){
             log.warn("Cannot create battle: The attacking faction [{}] and the defending faction [{}] are not at war with each other", attackingFaction.getName(), defendingFaction.getName());
             throw BattleServiceException.factionsNotAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
@@ -172,12 +173,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Creating BattleLocation");
         BattleLocation battleLocation = new BattleLocation(battleRegion, createBattleDto.isFieldBattle(), attackedClaimbuild);
         log.debug("Created BattleLocation [{}]", battleLocation);
-        War war = warRepository.findWarByAggressorsAndDefenders(aggressorsSet,defendersSet);
 
-        log.debug("War inforamtion: " + war);
+        log.debug("War inforamtion: " + wars);
 
         log.trace("Assembling Battle Object");
-        Battle battle = new Battle(war,
+        Battle battle = new Battle(wars,
                 createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,

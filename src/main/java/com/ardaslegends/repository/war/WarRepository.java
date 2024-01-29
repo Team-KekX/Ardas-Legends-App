@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface WarRepository extends JpaRepository<War, Long> {
+public interface WarRepository extends JpaRepository<War, Long>, WarRepositoryCustom {
     public Optional<War> findByName(String name);
 
     @Query("""
@@ -33,5 +33,4 @@ public interface WarRepository extends JpaRepository<War, Long> {
             and (endDate is null)""")
     boolean isFactionAtWarWithOtherFaction(Faction faction, Faction otherFaction);
 
-    War findWarByAggressorsAndDefenders(Set<WarParticipant> aggressors, Set<WarParticipant> defenders);
 }
