@@ -121,6 +121,11 @@ public class War extends AbstractDomainObject {
         }
     }
 
+    private WarParticipant buildWarParticipant(Faction faction) {
+        Objects.requireNonNull(faction, "Faction must not be null!");
+        return new WarParticipant(faction, false, OffsetDateTime.now());
+    }
+
     public void addToAggressors(WarParticipant participant) {
         addToSet(this.aggressors, participant, WarServiceException.factionAlreadyJoinedTheWarAsAttacker(participant.getWarParticipant().getName()));
     }
