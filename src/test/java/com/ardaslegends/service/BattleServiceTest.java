@@ -17,14 +17,11 @@ import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -122,7 +119,7 @@ public class BattleServiceTest {
 
         battleLocation = new BattleLocation(region2,true, null);
 
-        Battle battle = new Battle(war, "Battle of Gondor", attackingArmies, defendingArmies, OffsetDateTime.now(), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 30, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), battleLocation);
+        Battle battle = new Battle(new HashSet<>(Set.of(war)), "Battle of Gondor", attackingArmies, defendingArmies, OffsetDateTime.now(), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 30, 0, 0, 0, 0, ZoneOffset.UTC), OffsetDateTime.of(2023, 9, 20, 0, 0, 0, 0, ZoneOffset.UTC), battleLocation);
 
         PathElement pathElement1 = PathElement.builder().region(region1).baseCost(region1.getCost()).actualCost(0).build();
         PathElement pathElement2 = PathElement.builder().region(region2).baseCost(region2.getCost()).actualCost(region2.getCost()).build();
@@ -141,8 +138,8 @@ public class BattleServiceTest {
         when(mockClaimBuildService.getClaimBuildByName(claimBuild1.getName())).thenReturn(claimBuild1);
         when(mockClaimBuildService.getClaimBuildByName(claimBuild2.getName())).thenReturn(claimBuild2);
         when(mockClaimBuildService.getClaimBuildByName(claimBuild3.getName())).thenReturn(claimBuild3);
-        when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(true);
-        when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
+        when(mockWarRepository.queryActiveInitialWarBetween(any(),any())).thenReturn(Optional.of(war));
+        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), anyBoolean())).thenReturn(Set.of(war));
         when(mockBattleRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
         when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
@@ -161,7 +158,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWars()).isEqualTo(war);
+        assertThat(newBattle.getWars()).contains(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
         assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
@@ -182,7 +179,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWars()).isEqualTo(war);
+        assertThat(newBattle.getWars()).contains(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getBattleLocation()).isEqualTo(battleLocation);
     }
@@ -197,7 +194,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWars()).isEqualTo(war);
+        assertThat(newBattle.getWars()).contains(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
     }
@@ -214,7 +211,7 @@ public class BattleServiceTest {
         log.debug(newBattle.getName());
         assertThat(newBattle).isNotNull();
         assertThat(newBattle.getName()).isEqualTo("Battle of Gondor");
-        assertThat(newBattle.getWars()).isEqualTo(war);
+        assertThat(newBattle.getWars()).contains(war);
         assertThat(newBattle.getAttackingArmies()).isEqualTo(attackingArmies);
         assertThat(newBattle.getDefendingArmies()).isEqualTo(defendingArmies);
     }
@@ -259,8 +256,7 @@ public class BattleServiceTest {
         log.debug("Testing if createBattle throws exception when factions are not at war!");
 
         war = null;
-        when(mockWarRepository.isFactionAtWarWithOtherFaction(any(),any())).thenReturn(false);
-        when(mockWarRepository.findWarByAggressorsAndDefenders(any(),any())).thenReturn(war);
+        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), eq(true))).thenReturn(new HashSet<>());
 
 
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
