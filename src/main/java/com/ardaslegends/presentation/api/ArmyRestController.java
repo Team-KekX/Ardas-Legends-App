@@ -46,7 +46,7 @@ public class ArmyRestController extends AbstractRestController {
     public HttpEntity<Page<ArmyResponse>> getArmiesPaginated(Pageable pageable) {
         log.debug("Incoming getArmiesPaginated: Data [{}]", pageable.toString());
 
-        Page<Army> pageDomain = wrappedServiceExecution(pageable, armyService::getArmiesPaginated);
+        Page<Army> pageDomain = armyService.getArmiesPaginated(pageable);
         Page<ArmyResponse> pageResponse = pageDomain.map(ArmyResponse::new);
 
         return ResponseEntity.ok(pageResponse);
@@ -58,7 +58,7 @@ public class ArmyRestController extends AbstractRestController {
         var units = armyService.convertUnitInputIntoUnits(dto.unitString());
         CreateArmyDto dtoWithUnits = new CreateArmyDto(dto.executorDiscordId(), dto.name(), dto.armyType(), dto.claimBuildName(), units);
         log.debug("Calling ArmyService.createArmy");
-        Army createdArmy = wrappedServiceExecution(dtoWithUnits, armyService::createArmy);
+        Army createdArmy = armyService.createArmy(dtoWithUnits);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(createdArmy);
 
@@ -71,7 +71,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming bindArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.bind()");
-        Army boundArmy = wrappedServiceExecution(dto, armyService::bind);
+        Army boundArmy = armyService.bind(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(boundArmy);
 
@@ -84,7 +84,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming unbindArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
-        Army unboundArmy = wrappedServiceExecution(dto, armyService::unbind);
+        Army unboundArmy = armyService.unbind(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(unboundArmy);
 
@@ -97,7 +97,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming disbandArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
-        Army disbandedArmy = wrappedServiceExecution(dto, false, armyService::disband);
+        Army disbandedArmy = armyService.disband(dto, false);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(disbandedArmy);
 
@@ -110,7 +110,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming deleteArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.disband()");
-        Army deletedArmy = wrappedServiceExecution(dto, true, armyService::disband);
+        Army deletedArmy = armyService.disband(dto, true);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(deletedArmy);
 
@@ -123,7 +123,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming start healing Request: Data [{}]", dto);
 
         log.debug("Calling healStart()");
-        Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStart);
+        Army modifiedArmy = armyService.healStart(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(modifiedArmy);
 
@@ -136,7 +136,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming stop healing Request: Data [{}]", dto);
 
         log.debug("Calling healStop()");
-        Army modifiedArmy = wrappedServiceExecution(dto, armyService::healStop);
+        Army modifiedArmy = armyService.healStop(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(modifiedArmy);
 
@@ -149,7 +149,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming station request: Data [{}]", dto);
 
         log.debug("Calling station()");
-        Army modifiedArmy = wrappedServiceExecution(dto, armyService::station);
+        Army modifiedArmy = armyService.station(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(modifiedArmy);
 
@@ -162,7 +162,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming station request: Data [{}]", dto);
 
         log.debug("Calling unstation()");
-        Army modifiedArmy = wrappedServiceExecution(dto, armyService::unstation);
+        Army modifiedArmy = armyService.unstation(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(modifiedArmy);
 
@@ -175,7 +175,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming setFreeArmyTokens Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.setFreeArmyTokens()");
-        Army deletedArmy = wrappedServiceExecution(dto, armyService::setFreeArmyTokens);
+        Army deletedArmy = armyService.setFreeArmyTokens(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(deletedArmy);
 
@@ -188,7 +188,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming pickSiege Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.pickSiege()");
-        Army army = wrappedServiceExecution(dto, armyService::pickSiege);
+        Army army = armyService.pickSiege(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(army);
 
@@ -201,7 +201,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming upkeep request");
 
         log.debug("Calling ArmyService.upkeep()");
-        var upkeepList = wrappedServiceExecution(armyService::upkeep);
+        var upkeepList = armyService.upkeep();
 
         log.info("Sending successful upkeep request");
         return ResponseEntity.ok(upkeepList);
@@ -212,7 +212,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming upkeep per faction request for faction: [{}]", factionName);
 
         log.debug("Calling ArmyService.upkeepPerFaction()");
-        UpkeepDto result = wrappedServiceExecution(factionName, armyService::getUpkeepOfFaction);
+        UpkeepDto result = armyService.getUpkeepOfFaction(factionName);
 
         log.info("Sending successful upkeepPerFaction Request for faction: [{}]", factionName);
         return ResponseEntity.ok(result);
@@ -223,7 +223,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming setIsPaid Request for army or company [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution armyService.setIsPaid");
-        var result = wrappedServiceExecution(dto, armyService::setIsPaid);
+        var result = armyService.setIsPaid(dto);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(result);
 
@@ -236,7 +236,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming getUnpaid Request");
 
         log.trace("Calling wrappedServiceExecution, armyService.getUnpaid");
-        var result = wrappedServiceExecution(armyService::getUnpaid);
+        var result = armyService.getUnpaid();
         log.debug("Converting to ArmyResponse");
         var response = result.stream().map(ArmyResponse::new).toList();
 

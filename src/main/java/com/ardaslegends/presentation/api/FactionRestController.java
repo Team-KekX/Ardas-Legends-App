@@ -32,7 +32,7 @@ public class FactionRestController extends AbstractRestController {
     public ResponseEntity<Page<PaginatedFactionResponse>> getFactionsPaginated(Pageable pageable) {
         log.debug("Incoming getFactionsPaginated request, paginated data [{}]", pageable);
 
-        Page<Faction> pageDomain = wrappedServiceExecution(pageable, factionService::getFactionsPaginated);
+        Page<Faction> pageDomain = factionService.getFactionsPaginated(pageable);
         var pageResponse = pageDomain.map(PaginatedFactionResponse::new);
 
         return ResponseEntity.ok(pageResponse);
@@ -43,7 +43,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming update faction-leader request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution setFactionLeader");
-        var result = wrappedServiceExecution(dto, factionService::setFactionLeader);
+        var result = factionService.setFactionLeader(dto);
 
         log.trace("Result: [faction:{}] and new leader [discId:{}]. Dto discId [{}]", result.getName(), result.getLeader().getDiscordID(), dto.targetDiscordId());
         log.trace("Building response body");
@@ -60,7 +60,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming add to stockpile request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution addToStockpile");
-        var result = wrappedServiceExecution(dto, factionService::addToStockpile);
+        var result = factionService.addToStockpile(dto);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful update add to stockpile request to bot! Body:[{}]", body);
@@ -71,7 +71,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming remove from stockpile request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution removeFromStockpile");
-        var result = wrappedServiceExecution(dto, factionService::removeFromStockpile);
+        var result = factionService.removeFromStockpile(dto);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful update remove from stockpile request to bot! Body:[{}]", body);
@@ -83,7 +83,7 @@ public class FactionRestController extends AbstractRestController {
         log.debug("Incoming getStockpile info request with data [{}]", faction);
 
         log.trace("Calling wrappedServiceExecution getFactionByName");
-        var result = wrappedServiceExecution(faction, factionService::getFactionByName);
+        var result = factionService.getFactionByName(faction);
 
         UpdateStockpileDto body = getUpdateStockpileDto(result);
         log.info("Sending successful get stockpile info request to bot! Body:[{}]", body);

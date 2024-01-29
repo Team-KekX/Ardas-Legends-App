@@ -45,4 +45,12 @@ public class WarParticipant  {
     public int hashCode() {
         return Objects.hash(warParticipant);
     }
+
+    /**
+     * Returns the name of the war participant faction. Added so you don't have to do .getWarParticipant().getName()
+     * @return The name of the faction
+     */
+    public String getName() {
+       return warParticipant.getName();
+    }
 }

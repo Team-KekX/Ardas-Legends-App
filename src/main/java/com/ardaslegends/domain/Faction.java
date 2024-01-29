@@ -56,9 +56,6 @@ public final class Faction extends AbstractDomainObject {
     @Column(name = "role_id", unique = true)
     private Long factionRoleId; // The roleId of the factionRole so that it can be pinged
 
-    @Transient // Not persisted into DB, only for runtime
-    private Role factionRole;
-
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Region homeRegion; //Homeregion of the faction
 
