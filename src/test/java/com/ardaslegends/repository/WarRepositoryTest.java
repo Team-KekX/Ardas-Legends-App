@@ -6,6 +6,7 @@ import com.ardaslegends.domain.RegionType;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.war.WarRepository;
+import com.ardaslegends.repository.war.WarStatus;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest(properties = {"spring.sql.init.mode=never"})
 @ActiveProfiles("test")
@@ -37,6 +40,7 @@ public class WarRepositoryTest {
 
         /*
         Gondor = 3 (2 active, 1 inactive)
+        Mordor = 4 (2 active, 2 inactive)
          */
 
         War war1 = new War("Minas Ithil", gondor, mordor);
@@ -59,7 +63,11 @@ public class WarRepositoryTest {
     }
 
     @Test
-    void ensureQueryWarsByFactionWorksProperly() {
+    void ensureQueryWarsByFactionWorksProperlyWithOnlyActiveWars() {
 
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_ACTIVE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
     }
 }
