@@ -257,7 +257,7 @@ public class BattleServiceTest {
         log.debug("Testing if createBattle throws exception when factions are not at war!");
 
         war = null;
-        when(mockWarRepository.queryWarsBetweenFactions(any(),any(), WarStatus.ALL_ACTIVE)).thenReturn(new HashSet<>());
+        when(mockWarRepository.queryWarsBetweenFactions(any(),any(),any())).thenReturn(new HashSet<>());
 
 
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
