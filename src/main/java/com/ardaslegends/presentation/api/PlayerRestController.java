@@ -76,8 +76,7 @@ public class PlayerRestController extends AbstractRestController {
 
         log.debug("Calling PlayerService.getPlayerByIgn, Ign: {}", ign);
         val playerFound = playerService.getPlayerByIgn(ign);
-        val isStaff = playerService.checkIsStaff(playerFound.getDiscordID());
-        val response = new PlayerRpCharResponse(playerFound, isStaff);
+        val response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by ign ({})", playerFound, playerFound.getIgn());
         return ResponseEntity.ok(response);
@@ -90,8 +89,7 @@ public class PlayerRestController extends AbstractRestController {
 
         log.debug("Calling PlayerService.getPlayerByDiscordId, DiscordId: {}", discId);
         val playerFound = playerService.getPlayerByDiscordId(discId);
-        val isStaff = playerService.checkIsStaff(discId);
-        val response = new PlayerRpCharResponse(playerFound, isStaff);
+        val response = new PlayerRpCharResponse(playerFound);
 
         log.info("Successfully fetched player ({}) by DiscordId ({})", playerFound, playerFound.getDiscordID());
         return ResponseEntity.ok(response);
