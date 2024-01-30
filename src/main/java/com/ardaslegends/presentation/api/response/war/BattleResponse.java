@@ -1,10 +1,10 @@
 package com.ardaslegends.presentation.api.response.war;
 
 import com.ardaslegends.domain.war.Battle;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.ardaslegends.domain.war.War;
 
 public record BattleResponse(
-        String nameOfWar,
+        String[] wars,
         String nameOfBattle,
 
         BattleArmyResponse[] attackingArmies,
@@ -14,7 +14,7 @@ public record BattleResponse(
 ) {
     public BattleResponse(Battle battle) {
         this(
-               battle.getWar().getName(),
+               battle.getWars().stream().map(War::getName).toArray(String[]::new),
                battle.getName(),
 
                battle.getAttackingArmies().stream()

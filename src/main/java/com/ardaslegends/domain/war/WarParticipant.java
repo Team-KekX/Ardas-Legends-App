@@ -46,6 +46,15 @@ public class WarParticipant  {
         return Objects.hash(warParticipant);
     }
 
+    @Override
+    public String toString() {
+        return "WarParticipant{" +
+                "warParticipant=" + warParticipant +
+                ", initialParty=" + initialParty +
+                ", joiningDate=" + joiningDate +
+                '}';
+    }
+
     /**
      * Returns the name of the war participant faction. Added so you don't have to do .getWarParticipant().getName()
      * @return The name of the faction

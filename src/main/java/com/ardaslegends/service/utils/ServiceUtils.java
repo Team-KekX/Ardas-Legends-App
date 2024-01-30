@@ -73,9 +73,11 @@ public class ServiceUtils {
         log.debug("Checking if bound - lord - leader permission is fulfilled for Army [{}, Faction: {}], Player [{}, Faction:{}]", army.getName(), army.getFaction(), player.getIgn(), player.getFaction());
 
         if(player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar).equals(army.getBoundTo())) {
-            log.debug("Player [{}] is bound to army, allowed action", player.getIgn());
-            return true;
-        }
+            //if(player.getActiveCharacter().get().getName().equals(army.getBoundTo().getName())) {
+                log.debug("Player [{}] is bound to army, allowed action", player.getIgn());
+                return true;
+            }
+
 
         // TODO: Implement Lordship Permissions
 

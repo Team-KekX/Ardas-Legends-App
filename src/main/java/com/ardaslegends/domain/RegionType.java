@@ -20,7 +20,7 @@ public enum RegionType {
     JUNGLE("Jungle", 5),
     MOUNTAIN("Mountain", 6);
 
-    private final int cost;
+    private final int cost; //in days
 
     @Getter
     private final String name;
