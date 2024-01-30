@@ -66,4 +66,6 @@ public class Battle extends AbstractDomainObject {
         this.agreedBattleDate = agreedBattleDate;
         this.battleLocation = battleLocation;
     }
+    
+    public boolean isOver() { return BattlePhase.CONCLUDED.equals(this.battlePhase); }
 }
