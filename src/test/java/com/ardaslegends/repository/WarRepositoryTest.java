@@ -4,10 +4,9 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.Region;
 import com.ardaslegends.domain.RegionType;
 import com.ardaslegends.domain.war.War;
-import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.war.WarRepository;
-import com.ardaslegends.repository.war.WarStatus;
+import com.ardaslegends.repository.war.QueryWarStatus;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +66,7 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionReturnsEmptySetWhenNoWarIsFound() {
-        var result = warRepository.queryWarsByFaction(Faction.builder().name("Umbar").build(), WarStatus.ALL_ACTIVE);
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Umbar").build(), QueryWarStatus.ACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(0);
@@ -75,7 +74,7 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlyWithOnlyActiveWars() {
-        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_ACTIVE);
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), QueryWarStatus.ACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);
@@ -84,7 +83,7 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlyActiveAndInactiveWars() {
-        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.BOTH);
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), QueryWarStatus.ALL);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(3);
@@ -93,7 +92,7 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlyWithInactiveWars() {
-        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_INACTIVE);
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), QueryWarStatus.INACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
@@ -106,7 +105,7 @@ public class WarRepositoryTest {
         val f1 = Faction.builder().name("Arnor").build();
         val f2 = Faction.builder().name("Gondor").build();
 
-        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.BOTH);
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, QueryWarStatus.ALL);
 
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isTrue();
@@ -117,7 +116,7 @@ public class WarRepositoryTest {
         val f1 = Faction.builder().name("Mordor").build();
         val f2 = Faction.builder().name("Gondor").build();
 
-        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.ALL_ACTIVE);
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, QueryWarStatus.ACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);
@@ -129,7 +128,7 @@ public class WarRepositoryTest {
         val f1 = Faction.builder().name("Mordor").build();
         val f2 = Faction.builder().name("Gondor").build();
 
-        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.ALL_INACTIVE);
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, QueryWarStatus.INACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
@@ -141,7 +140,7 @@ public class WarRepositoryTest {
         val f1 = Faction.builder().name("Mordor").build();
         val f2 = Faction.builder().name("Gondor").build();
 
-        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.BOTH);
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, QueryWarStatus.ALL);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(3);

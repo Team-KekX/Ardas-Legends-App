@@ -20,7 +20,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         super(War.class);
     }
 
-    public Set<War> queryWarsByFaction(Faction faction, WarStatus warStatus) {
+    public Set<War> queryWarsByFaction(Faction faction, QueryWarStatus warStatus) {
         Objects.requireNonNull(faction, "Faction must not be null!");
         QWar qWar = QWar.war;
         //this way we create the instances with alias
@@ -40,7 +40,7 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
     }
 
     @Override
-    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, WarStatus warStatus) {
+    public Set<War> queryWarsBetweenFactions(Faction faction1, Faction faction2, QueryWarStatus warStatus) {
         Objects.requireNonNull(faction1, "Faction must not be null");
         Objects.requireNonNull(faction2, "Faction must not be null");
 
@@ -83,13 +83,13 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         return Optional.ofNullable(result);
     }
 
-    private BooleanExpression activePredicate(WarStatus warStatus) {
+    private BooleanExpression activePredicate(QueryWarStatus warStatus) {
         Objects.requireNonNull(warStatus, "WarStatus must not be null");
         val war = QWar.war;
         return switch (warStatus) {
-            case ALL_ACTIVE -> war.isActive.isTrue();
-            case ALL_INACTIVE -> war.isActive.isFalse();
-            case BOTH -> Expressions.TRUE;
+            case ACTIVE -> war.isActive.isTrue();
+            case INACTIVE -> war.isActive.isFalse();
+            case ALL -> Expressions.TRUE;
         };
     }
 }

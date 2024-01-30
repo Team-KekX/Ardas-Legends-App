@@ -3,11 +3,9 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.Battle;
 import com.ardaslegends.domain.war.BattleLocation;
-import com.ardaslegends.domain.war.War;
-import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
-import com.ardaslegends.repository.war.WarStatus;
+import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.service.*;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
@@ -148,7 +146,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             }
         }
 
-        val wars = warRepository.queryWarsBetweenFactions(attackingFaction, defendingFaction, WarStatus.ALL_ACTIVE);
+        val wars = warRepository.queryWarsBetweenFactions(attackingFaction, defendingFaction, QueryWarStatus.ACTIVE);
         if(wars.isEmpty()){
             log.warn("Cannot create battle: The attacking faction [{}] and the defending faction [{}] are not at war with each other", attackingFaction.getName(), defendingFaction.getName());
             throw BattleServiceException.factionsNotAtWar(attackingFaction.getName(), defendingFaction.getName());
