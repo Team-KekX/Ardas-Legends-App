@@ -68,7 +68,6 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlyWithOnlyActiveWars() {
-
         var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_ACTIVE);
 
         assertThat(result).isNotNull();
@@ -77,7 +76,6 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlyActiveAndInactiveWars() {
-
         var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.BOTH);
 
         assertThat(result).isNotNull();
@@ -86,10 +84,30 @@ public class WarRepositoryTest {
 
     @Test
     void ensureQueryWarsByFactionWorksProperlWithInactiveWars() {
-
         var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_INACTIVE);
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    void ensureQueryActiveInitialWarBetweenWorksProperlyWhenNoWarIsFound() {
+        val f1 = Faction.builder().name("Umbar").build();
+        val f2 = Faction.builder().name("Mordor").build();
+
+        var result = warRepository.queryActiveInitialWarBetween(f1, f2);
+
+        assertThat(result).isNotNull();
+        assertThat(result.isPresent()).isFalse();
+    }
+
+    @Test
+    void ensureQueryActiveInitialWarBetweenWorksProperlyWhenAWarIsFound() {
+        var result = warRepository.queryActiveInitialWarBetween(Faction.builder().name("Gondor").build(), Faction.builder().name("Mordor").build());
+
+        assertThat(result).isNotNull();
+        assertThat(result.isPresent()).isTrue();
+        val war = result.get();
+        assertThat(war.getName()).isEqualTo("Minas Ithil");
     }
 }
