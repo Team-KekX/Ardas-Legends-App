@@ -152,15 +152,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             throw BattleServiceException.factionsNotAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
 
-        //ToDo: Add proper War object when query exists that fetches a specific wars between two factions
-        //ToDo: Add 24h in reach check, if the attacking army is in reach of the defending army / CB
-        //ToDo: Add proper BattleLocation when the 24h check is available
-
         log.debug("Creating BattleLocation");
         BattleLocation battleLocation = new BattleLocation(battleRegion, createBattleDto.isFieldBattle(), attackedClaimbuild);
         log.debug("Created BattleLocation [{}]", battleLocation);
 
-        log.debug("War inforamtion: " + wars);
+        log.debug("War information: " + wars);
 
         log.trace("Assembling Battle Object");
         Battle battle = new Battle(wars,
