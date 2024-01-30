@@ -51,7 +51,7 @@ public class War extends AbstractDomainObject {
     @NotNull
     private Boolean isActive;
 
-    @OneToMany(mappedBy = "war")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Battle> battles = new HashSet<>(4);
 
     // TODO: Test worthy
@@ -121,11 +121,18 @@ public class War extends AbstractDomainObject {
         }
     }
 
-    public void addToAggressors(WarParticipant participant) {
+    private WarParticipant buildWarParticipant(Faction faction) {
+        Objects.requireNonNull(faction, "Faction must not be null!");
+        return new WarParticipant(faction, false, OffsetDateTime.now());
+    }
+
+    public void addToAggressors(Faction faction) {
+        val participant = buildWarParticipant(faction);
         addToSet(this.aggressors, participant, WarServiceException.factionAlreadyJoinedTheWarAsAttacker(participant.getWarParticipant().getName()));
     }
 
-    public void addToDefenders(WarParticipant participant) {
+    public void addToDefenders(Faction faction) {
+        val participant = buildWarParticipant(faction);
         addToSet(this.defenders, participant, WarServiceException.factionAlreadyJoinedTheWarAsDefender(participant.getWarParticipant().getName()));
     }
 
@@ -152,5 +159,18 @@ public class War extends AbstractDomainObject {
 
     public Set<Battle> getBattles() {
         return Collections.unmodifiableSet(this.battles);
+    }
+
+    @Override
+    public String toString() {
+        return "War{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", aggressors=" + aggressors +
+                ", defenders=" + defenders +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", battles=" + battles +
+                '}';
     }
 }

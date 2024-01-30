@@ -5,7 +5,7 @@ public record CreateBattleDto(
         String battleName,
         String attackingArmyName,
         String defendingArmyName,
-        boolean FieldBattle,
-        String ClaimBuildName
+        boolean isFieldBattle,
+        String claimBuildName
 ) {
 }

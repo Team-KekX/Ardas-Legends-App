@@ -78,18 +78,24 @@ public class ClaimbuildApplicationService extends AbstractService<ClaimbuildAppl
         Objects.requireNonNull(dto);
         ServiceUtils.checkAllNulls(dto);
 
+        log.debug("Check if claimbuild's name [{}] ends with 'starter hamlet'");
+        if(dto.claimbuildName().toLowerCase().endsWith("starter hamlet")) {
+            log.warn("Applied claimbuild name [{}] ends with 'starter hamlet'", dto.claimbuildName());
+            throw ClaimbuildApplicationException.nameEndsWithStarterHamlet();
+        }
+
         val applicantPlayer = playerRepository.queryByDiscordId(dto.applicant().discordId());
 
         // Check if CB with Name already exists, throw if so
         if (claimBuildRepository.existsByNameIgnoreCase(dto.claimbuildName())) {
             log.warn("Claimbuild with name [{}] already exists", dto.claimbuildName());
-            throw ClaimbuildApplicationException.claibuildWithNameAlreadyExists(dto.claimbuildName());
+            throw ClaimbuildApplicationException.claimbuildWithNameAlreadyExists(dto.claimbuildName());
         }
 
         // Check if CBApp with Name already exists that is active, throw if so
         if (cbAppRepository.existsByNameIgnoreCaseAndState(dto.claimbuildName(), ApplicationState.OPEN)) {
             log.warn("Claimbuild Application with name [{}] already exists", dto.claimbuildName());
-            throw ClaimbuildApplicationException.claibuildApplicationWithNameAlreadyExists(dto.claimbuildName());
+            throw ClaimbuildApplicationException.claimbuildApplicationWithNameAlreadyExists(dto.claimbuildName());
         }
 
         // Fetching all builders
