@@ -72,6 +72,7 @@ public class WarRepositoryTest {
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);
+        assertThat(result.stream().map(War::getName)).containsOnly("Minas Ithil", "Another thing");
     }
 
     @Test
@@ -80,6 +81,7 @@ public class WarRepositoryTest {
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(3);
+        assertThat(result.stream().map(War::getName)).containsOnly("Minas Ithil", "Another thing", "Keke");
     }
 
     @Test
@@ -88,7 +90,9 @@ public class WarRepositoryTest {
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
+        assertThat(result.stream().map(War::getName)).containsOnly("Keke");
     }
+
 
     @Test
     void ensureQueryActiveInitialWarBetweenWorksProperlyWhenNoWarIsFound() {
