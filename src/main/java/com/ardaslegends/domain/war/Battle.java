@@ -41,6 +41,7 @@ public class Battle extends AbstractDomainObject {
             joinColumns = { @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_battle"))},
             inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_defendingArmy")) })
     private Set<Army> defendingArmies = new HashSet<>();
+    private BattlePhase battlePhase;
 
     private OffsetDateTime declaredDate;
 
@@ -59,6 +60,7 @@ public class Battle extends AbstractDomainObject {
         this.attackingArmies = new HashSet<>(attackingArmies);
         this.defendingArmies = new HashSet<>(defendingArmies);
         this.declaredDate = declaredDate;
+        this.battlePhase = BattlePhase.PRE_BATTLE;
         this.timeFrozenFrom = timeFrozenFrom;
         this.timeFrozenUntil = timeFrozenUntil;
         this.agreedBattleDate = agreedBattleDate;
