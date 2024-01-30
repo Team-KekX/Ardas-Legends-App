@@ -48,7 +48,6 @@ public class WarRepositoryTest {
 
         War war1 = new War("Minas Ithil", gondor, mordor);
         war1.addToAggressors(arnor);
-        war1.addToDefenders(umbar);
 
         var war2 = new War("Something else", mordor, rivendell);
         war2.addToDefenders(arnor);
@@ -64,6 +63,14 @@ public class WarRepositoryTest {
 
         factionRepository.saveAll(List.of(gondor, mordor, arnor, rivendell, umbar));
         warRepository.saveAll(List.of(war1, war2, war3, war4));
+    }
+
+    @Test
+    void ensureQueryWarsByFactionReturnsEmptySetWhenNoWarIsFound() {
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Umbar").build(), WarStatus.ALL_ACTIVE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(0);
     }
 
     @Test
