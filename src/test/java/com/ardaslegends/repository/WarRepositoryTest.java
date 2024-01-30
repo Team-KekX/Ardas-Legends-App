@@ -83,4 +83,13 @@ public class WarRepositoryTest {
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(3);
     }
+
+    @Test
+    void ensureQueryWarsByFactionWorksProperlWithInactiveWars() {
+
+        var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_INACTIVE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(1);
+    }
 }
