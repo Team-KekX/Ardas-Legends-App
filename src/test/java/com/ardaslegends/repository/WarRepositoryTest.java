@@ -85,7 +85,7 @@ public class WarRepositoryTest {
     }
 
     @Test
-    void ensureQueryWarsByFactionWorksProperlWithInactiveWars() {
+    void ensureQueryWarsByFactionWorksProperlyWithInactiveWars() {
         var result = warRepository.queryWarsByFaction(Faction.builder().name("Gondor").build(), WarStatus.ALL_INACTIVE);
 
         assertThat(result).isNotNull();
@@ -93,6 +93,53 @@ public class WarRepositoryTest {
         assertThat(result.stream().map(War::getName)).containsOnly("Keke");
     }
 
+
+    @Test
+    void ensureQueryWarsBetweenFactionsReturnsEmptySetWhenNoWarsAreFound() {
+        val f1 = Faction.builder().name("Arnor").build();
+        val f2 = Faction.builder().name("Gondor").build();
+
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.BOTH);
+
+        assertThat(result).isNotNull();
+        assertThat(result.isEmpty()).isTrue();
+    }
+
+    @Test
+    void ensureQueryWarsBetweenFactionsWorksProperlyWithActiveWars() {
+        val f1 = Faction.builder().name("Mordor").build();
+        val f2 = Faction.builder().name("Gondor").build();
+
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.ALL_ACTIVE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.stream().map(War::getName)).containsOnly("Minas Ithil", "Another thing");
+    }
+
+    @Test
+    void ensureQueryWarsBetweenFactionsWorksProperlyWithInactiveWars() {
+        val f1 = Faction.builder().name("Mordor").build();
+        val f2 = Faction.builder().name("Gondor").build();
+
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.ALL_INACTIVE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.stream().map(War::getName)).containsOnly("Keke");
+    }
+
+    @Test
+    void ensureQueryWarsBetweenFactionsWorksProperlyWhenQueryingForAllWars() {
+        val f1 = Faction.builder().name("Mordor").build();
+        val f2 = Faction.builder().name("Gondor").build();
+
+        var result = warRepository.queryWarsBetweenFactions(f1, f2, WarStatus.BOTH);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.stream().map(War::getName)).containsOnly("Minas Ithil", "Another thing", "Keke");
+    }
 
     @Test
     void ensureQueryActiveInitialWarBetweenWorksProperlyWhenNoWarIsFound() {
