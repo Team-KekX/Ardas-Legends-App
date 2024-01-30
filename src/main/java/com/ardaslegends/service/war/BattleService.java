@@ -164,7 +164,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 Set.of(attackingArmy),
                 defendingArmies,
                 OffsetDateTime.now(),
-                null,
+                OffsetDateTime.now().plusHours(24),
                 null,
                 null,
                 battleLocation);
