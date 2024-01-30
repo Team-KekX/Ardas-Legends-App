@@ -41,7 +41,7 @@ public class MovementRestController extends AbstractRestController {
     public HttpEntity<CurrentAndPastMovementResponse> getArmyMovements(String name) {
         log.debug("Incoming get request for previous army movements [{}]", name);
 
-        val movements = wrappedServiceExecution(name, movementService::getArmyMovements);
+        val movements = movementService.getArmyMovements(name);
 
         log.debug("Building response");
         val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
@@ -54,7 +54,7 @@ public class MovementRestController extends AbstractRestController {
     public HttpEntity<CurrentAndPastMovementResponse> getCharMovements(String name) {
         log.debug("Incoming get request for previous rpChar movements [{}]", name);
 
-        val movements = wrappedServiceExecution(name, movementService::getCharMovements);
+        val movements = movementService.getCharMovements(name);
 
         log.debug("Building response");
         val response = new CurrentAndPastMovementResponse(movements.getFirst().orElse(null), movements.getSecond());
@@ -69,7 +69,7 @@ public class MovementRestController extends AbstractRestController {
         log.debug("Incoming get request for army movement calculation [{}]", dto);
 
         log.trace("WrappedServiceExecution of calculateArmyMovement function");
-        val movement = wrappedServiceExecution(dto, movementService::calculateArmyMovement);
+        val movement = movementService.calculateArmyMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 
@@ -83,7 +83,7 @@ public class MovementRestController extends AbstractRestController {
         log.debug("Incoming get request for char movement calculation [{}, {}]", dto);
 
         log.trace("WrappedServiceExecution of calculateRpCharMovement function");
-        val movement = wrappedServiceExecution(dto, movementService::calculateRpCharMovement);
+        val movement = movementService.calculateRpCharMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 
@@ -95,7 +95,7 @@ public class MovementRestController extends AbstractRestController {
 
         log.debug("Incoming Post Request to create rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of createRpCharMovement function");
-        Movement movement = wrappedServiceExecution(dto, movementService::createRpCharMovement);
+        Movement movement = movementService.createRpCharMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 
@@ -108,7 +108,7 @@ public class MovementRestController extends AbstractRestController {
 
         log.debug("Incoming Post Request to cancel rp char movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of cancelRpCharMovement function");
-        Movement movement = wrappedServiceExecution(dto, movementService::cancelRpCharMovement);
+        Movement movement = movementService.cancelRpCharMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 
@@ -121,7 +121,7 @@ public class MovementRestController extends AbstractRestController {
         log.debug("Incoming Post Request to create army movement, data [{}]", dto);
 
         log.trace("WrappedServiceExecution of createArmyMovement function");
-        Movement movement = wrappedServiceExecution(dto, movementService::createArmyMovement);
+        Movement movement = movementService.createArmyMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 
@@ -134,7 +134,7 @@ public class MovementRestController extends AbstractRestController {
 
         log.debug("Incoming Post Request to cancel army movement, data [{}]", dto);
         log.trace("WrappedServiceExecution of cancelArmyMovement function");
-        Movement movement = wrappedServiceExecution(dto, movementService::cancelArmyMovement);
+        Movement movement = movementService.cancelArmyMovement(dto);
         log.debug("Creating MovementResponse");
         MovementResponse response = new MovementResponse(movement);
 

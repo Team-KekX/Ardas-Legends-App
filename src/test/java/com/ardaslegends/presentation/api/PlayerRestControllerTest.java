@@ -56,7 +56,7 @@ public class PlayerRestControllerTest extends AbstractIntegrationTest {
         player3 = TestDataFactory.playerHabKeinTeammate(gondor);
 
         expectedPlayerResponse = new PlayerResponse(player);
-        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player, true);
+        expectedPlayerRpCharResponse = new PlayerRpCharResponse(player);
         expectedRpCharResponse = new RpCharResponse(rpChar);
         discordIdDto = new DiscordIdDto(player.getDiscordID());
 

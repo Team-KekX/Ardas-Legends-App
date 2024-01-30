@@ -35,7 +35,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<ClaimbuildApplicationResponse> createClaimbuildApplication(@RequestBody CreateClaimbuildApplicationDto applicationDto) {
         log.debug("Incoming createClaimbuildApplication Request: Data [{}]", applicationDto);
 
-        val application = wrappedServiceExecution(applicationDto, cbbAppService::createClaimbuildApplication);
+        val application = cbbAppService.createClaimbuildApplication(applicationDto);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
@@ -45,7 +45,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<Slice<ClaimbuildApplicationResponse>> findAllSliced(Pageable pageable) {
         log.debug("Incoming findAllCbApplications Request: Data [{}]", pageable.toString());
 
-        val originalSlice = wrappedServiceExecution(pageable, cbbAppService::findAll);
+        val originalSlice = cbbAppService.findAll(pageable);
         val appsResponse = originalSlice.map(ClaimbuildApplicationResponse::new);
 
         return ResponseEntity.ok(appsResponse);
@@ -55,7 +55,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<Slice<ClaimbuildApplicationResponse>> findAllActiveAppsSliced(Pageable pageable) {
         log.debug("Incoming findAllActiveApplications Request: Data [{}]", pageable.toString());
 
-        val roleplayAppSlice = wrappedServiceExecution(pageable, cbbAppService::findAllActive);
+        val roleplayAppSlice = cbbAppService.findAllActive(pageable);
         val roleplayAppResponseSlice = roleplayAppSlice.map(ClaimbuildApplicationResponse::new);
 
         return ResponseEntity.ok(roleplayAppResponseSlice);
@@ -66,7 +66,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<ClaimbuildApplicationResponse> addAcceptVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::addAcceptVote);
+        val application = cbbAppService.addAcceptVote(voteDto);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
@@ -77,7 +77,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<ClaimbuildApplicationResponse> addDeclineVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming add-vote to claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::addDeclineVote);
+        val application = cbbAppService.addDeclineVote(voteDto);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
@@ -87,7 +87,7 @@ public class ClaimbuildApplicationController extends AbstractRestController {
     public HttpEntity<ClaimbuildApplicationResponse> removeVote(ApplicationVoteDto voteDto) {
         log.debug("Incoming remove-vote from claimbuild application Request: Data [{}]", voteDto);
 
-        val application = wrappedServiceExecution(voteDto, cbbAppService::removeVote);
+        val application = cbbAppService.removeVote(voteDto);
 
         return ResponseEntity.ok(new ClaimbuildApplicationResponse(application));
     }
