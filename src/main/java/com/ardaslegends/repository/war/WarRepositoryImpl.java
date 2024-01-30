@@ -23,9 +23,9 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
     public Set<War> queryWarsByFaction(Faction faction, WarStatus warStatus) {
         Objects.requireNonNull(faction, "Faction must not be null!");
         QWar qWar = QWar.war;
-        QWarParticipant qAggressors = QWarParticipant.warParticipant1;
-        QWarParticipant qDefenders = QWarParticipant.warParticipant1;
-
+        //this way we create the instances with alias
+        QWarParticipant qAggressors = new QWarParticipant("aggressors");
+        QWarParticipant qDefenders = new QWarParticipant("defenders");
 
         val result = from(qWar)
                 .leftJoin(qWar.aggressors, qAggressors)
@@ -45,8 +45,9 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         Objects.requireNonNull(faction2, "Faction must not be null");
 
         QWar qWar = QWar.war;
-        QWarParticipant qAggressors = QWarParticipant.warParticipant1;
-        QWarParticipant qDefenders = QWarParticipant.warParticipant1;
+        //this way we create the instances with alias
+        QWarParticipant qAggressors = new QWarParticipant("aggressors");
+        QWarParticipant qDefenders = new QWarParticipant("defenders");
 
         val result = from(qWar)
                 .leftJoin(qWar.aggressors, qAggressors)
@@ -66,8 +67,9 @@ public class WarRepositoryImpl extends QuerydslRepositorySupport implements WarR
         Objects.requireNonNull(faction2, "Faction must not be null");
 
         QWar qWar = QWar.war;
-        QWarParticipant qAggressors = QWarParticipant.warParticipant1;
-        QWarParticipant qDefenders = QWarParticipant.warParticipant1;
+        //this way we create the instances with alias
+        QWarParticipant qAggressors = new QWarParticipant("aggressors");
+        QWarParticipant qDefenders = new QWarParticipant("defenders");
 
         val result = from(qWar)
                 .leftJoin(qWar.aggressors, qAggressors)

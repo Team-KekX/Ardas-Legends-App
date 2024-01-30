@@ -5,6 +5,7 @@ import com.ardaslegends.domain.Region;
 import com.ardaslegends.domain.RegionType;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
+import com.ardaslegends.repository.faction.FactionRepository;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.WarStatus;
 import io.vavr.collection.List;
@@ -23,6 +24,8 @@ public class WarRepositoryTest {
 
     @Autowired
     WarRepository warRepository;
+    @Autowired
+    FactionRepository factionRepository;
 
     @BeforeEach
     void setup() {
@@ -59,6 +62,7 @@ public class WarRepositoryTest {
         var war4 = new War("Keke", mordor, gondor);
         war4.end();
 
+        factionRepository.saveAll(List.of(gondor, mordor, arnor, rivendell, umbar));
         warRepository.saveAll(List.of(war1, war2, war3, war4));
     }
 
