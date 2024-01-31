@@ -23,6 +23,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <spring.profiles.active>dev</spring.profiles.active>
+
+        <junit.enable.parallel>true</junit.enable.parallel>
+        <junit.parallel.mode.class>concurrent</junit.parallel.mode.class>
+        <junit.parallel.mode.method>concurrent</junit.parallel.mode.method>
     </properties>
 
     <parent>
@@ -236,9 +240,9 @@
                 <configuration>
                     <properties>
                         <configurationParameters>
-                            junit.jupiter.execution.parallel.enabled = true
-                            junit.jupiter.execution.parallel.mode.default = concurrent
-                            junit.jupiter.execution.parallel.mode.classes.default = concurrent
+                            junit.jupiter.execution.parallel.enabled = ${junit.enable.parallel}
+                            junit.jupiter.execution.parallel.mode.default = ${junit.parallel.mode.method}
+                            junit.jupiter.execution.parallel.mode.classes.default = ${junit.parallel.mode.class}
                         </configurationParameters>
                     </properties>
                 </configuration>
