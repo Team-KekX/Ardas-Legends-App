@@ -42,8 +42,7 @@ public class ProductionSiteRepositoryTest {
     @Test
     void ensurefindProductionSiteByTypeAndProducedResourceNameWorksProperly() {
         log.info("Fetching");
-        val prodSite = productionSiteRepository.findProductionSiteByTypeAndProducedResource_ResourceName(ProductionSiteType.LUMBER_CAMP, "Oak");
-
+        val prodSite = productionSiteRepository.queryByTypeAndResourceOptional(ProductionSiteType.LUMBER_CAMP, "Oak");
         assertThat(prodSite).isPresent();
         assertThat(prodSite.get().getProducedResource().getResourceName()).isEqualTo("Oak");
         assertThat(prodSite.get().getProducedResource().getResourceType()).isEqualTo(ResourceType.MINERAL);
