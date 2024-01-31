@@ -15,4 +15,8 @@ public class TimeFreezeService {
     public void freezeTime() {
         isTimeFrozen = true;
     }
+    
+    public boolean isTimeFrozen() {
+        return isTimeFrozen;
+    }
 }
