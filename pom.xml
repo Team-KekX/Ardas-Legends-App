@@ -236,8 +236,7 @@
                 <configuration>
                     <properties>
                         <configurationParameters>
-                            junit.jupiter.execution.parallel.enabled = false
-                            junit.jupiter.execution.parallel.mode.default = concurrent
+                            junit.jupiter.execution.parallel.enabled = true
                         </configurationParameters>
                     </properties>
                 </configuration>
