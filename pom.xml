@@ -236,7 +236,7 @@
                 <configuration>
                     <properties>
                         <configurationParameters>
-                            junit.jupiter.execution.parallel.enabled = true
+                            junit.jupiter.execution.parallel.enabled = false
                             junit.jupiter.execution.parallel.mode.default = concurrent
                         </configurationParameters>
                     </properties>
@@ -324,8 +324,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>19</source>
-                    <target>19</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>
