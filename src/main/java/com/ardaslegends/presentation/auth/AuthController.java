@@ -7,24 +7,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.hc.client5.http.utils.Base64;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -64,9 +56,7 @@ public class AuthController extends AbstractRestController {
             requestBody.add("redirect_uri", redirectUrl);
             requestBody.add("code", code);
 
-            String authCreds = botProperties.getClientId() + ":" + botProperties.getClientSecret();
-            byte[] authCredsBytes64 = Base64.encodeBase64(authCreds.getBytes());
-            String authCreds64 = new String(authCredsBytes64);
+            String authCreds64 = encodeBase64(botProperties.getClientId() + ":" + botProperties.getClientSecret());
 
             val response = restClient.post()
                     .uri("https://discord.com/api/oauth2/token")
@@ -84,4 +74,9 @@ public class AuthController extends AbstractRestController {
         }
     }
 
+    private String encodeBase64(String toEncode) {
+        byte[] base64EncodedInBytes = Base64.encodeBase64(toEncode.getBytes());
+        String base64String = new String(base64EncodedInBytes);
+        return base64String;
+    }
 }
