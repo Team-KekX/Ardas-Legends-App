@@ -9,5 +9,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class TimeFreezeService {
-    
+
+    private boolean isTimeFrozen = false;
+
+    public void freezeTime() {
+        isTimeFrozen = true;
+    }
 }
