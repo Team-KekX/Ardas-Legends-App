@@ -1,9 +1,12 @@
-package com.ardaslegends.service;
+package com.ardaslegends.service.time;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
+import com.ardaslegends.service.ArmyService;
+import com.ardaslegends.service.MovementService;
+import com.ardaslegends.service.PlayerService;
 import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
