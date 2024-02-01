@@ -158,20 +158,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.debug("War information: " + wars);
 
+        val now = OffsetDateTime.now();
+
         log.trace("Assembling Battle Object");
         Battle battle = new Battle(wars,
                 createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,
                 OffsetDateTime.now(),
-                OffsetDateTime.now().plusHours(24),
+                now.plusHours(24),
                 null,
                 null,
                 battleLocation);
 
         log.debug("Trying to persist the battle object");
         battle = secureSave(battle, battleRepository);
-
+        
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
     }
