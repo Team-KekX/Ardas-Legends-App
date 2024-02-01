@@ -40,6 +40,7 @@ public class TimeFreezeService implements Sleep {
     }
 
     public void freezeTime() {
+        log.info("Freezing time at [{}]", OffsetDateTime.now());
         isTimeFrozen = true;
     }
 

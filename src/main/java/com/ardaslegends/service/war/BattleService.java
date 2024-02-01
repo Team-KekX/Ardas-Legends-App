@@ -3,6 +3,7 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.Battle;
 import com.ardaslegends.domain.war.BattleLocation;
+import com.ardaslegends.domain.war.BattlePhase;
 import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
@@ -10,6 +11,7 @@ import com.ardaslegends.service.*;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
+import com.ardaslegends.service.time.TimeFreezeService;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final ClaimBuildService claimBuildService;
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
+    private final TimeFreezeService timeFreezeService;
 
     public Battle createBattle(CreateBattleDto createBattleDto) {
         log.debug("Creating battle with data {}", createBattleDto);
@@ -173,8 +176,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.debug("Trying to persist the battle object");
         battle = secureSave(battle, battleRepository);
-        
+
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
+    }
+
+    private void startBattle(Battle battle) {
+        log.debug("Starting battle [{}]", battle);
+
+        Objects.requireNonNull(battle, "battle in startBattle() must not be null!");
+
+        log.debug("Setting BattlePhase to {}", BattlePhase.ONGOING);
+        battle.setBattlePhase(BattlePhase.ONGOING);
+
+        log.debug("Calling freezeTime()");
+        timeFreezeService.freezeTime();
+
+        //TODO: teleport all aiding armies to battle location
     }
 }
