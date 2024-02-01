@@ -47,12 +47,10 @@ public class TimeFreezeServiceTest {
         val list = new ArrayList<Integer>();
 
         Mockito.doAnswer(invocation -> {
-            val arg = invocation.getArgument(0);
-            assertThat(arg).isEqualTo(Duration.ofHours(24));
-            Thread.sleep(Duration.ofSeconds(2));
+            timeFreezeService.sleep(Duration.ofMillis(200));
             return null;
         })
-        .when(timeFreezeService).sleep(Mockito.any(Duration.class));
+        .when(timeFreezeService).sleep(Duration.ofHours(24));
 
         val result = timeFreezeService.start24hTimer(() -> list.add(1));
 
@@ -60,7 +58,7 @@ public class TimeFreezeServiceTest {
         assertThat(result.isDone()).isFalse();
         assertThat(result.state()).isEqualTo(Future.State.RUNNING);
 
-        Thread.sleep(Duration.ofSeconds(2));
+        timeFreezeService.sleep(Duration.ofMillis(200));
 
         log.debug("Thread state after waiting 24h: {}", result.state().name());
         assertThat(result.isDone()).isTrue();
