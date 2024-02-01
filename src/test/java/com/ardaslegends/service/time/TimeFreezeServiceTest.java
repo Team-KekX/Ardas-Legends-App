@@ -23,8 +23,24 @@ public class TimeFreezeServiceTest {
     }
 
     @Test
-    public void ensureStart24hTimerWorks() throws InterruptedException {
+    public void ensureStarting24hTimerWorks() throws InterruptedException {
         log.debug("Testing if starting a 24h timer works");
+        log.debug("Current Thread: {}", Thread.currentThread());
+        val list = new ArrayList<Integer>();
+
+        val result = timeFreezeService.start24hTimer(() -> list.add(1));
+
+        log.debug("Thread state after starting timer: {}", result.state().name());
+        assertThat(result.isDone()).isFalse();
+        assertThat(result.state()).isEqualTo(Future.State.RUNNING);
+        result.cancel(true);
+
+        log.info("Test passed: ensureStarting24hTimerWorks");
+    }
+
+    @Test
+    public void ensure24hTimerFinishesProperly() throws InterruptedException {
+        log.debug("Testing if 24h timer ends properly");
         log.debug("Current Thread: {}", Thread.currentThread());
         val list = new ArrayList<Integer>();
 
@@ -40,6 +56,6 @@ public class TimeFreezeServiceTest {
         assertThat(result.isDone()).isTrue();
         assertThat(list.size()).isEqualTo(1);
         assertThat(list.get(0)).isEqualTo(1);
-        log.info("Test passed: ensureStart24hTimerWorks");
+        log.info("Test passed: ensure24hTimerFinishesProperly");
     }
 }
