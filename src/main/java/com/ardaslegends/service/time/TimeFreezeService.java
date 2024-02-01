@@ -21,7 +21,7 @@ public class TimeFreezeService implements Sleep {
         this.virtualExecutorService = virtualExecutorService;
     }
 
-    public <T> ActiveTimer<T> start24hTimer(Callable<T> callback) {
+    public <T> Timer<T> start24hTimer(Callable<T> callback) {
         log.debug("Call of start24hTimer, Thread before timer: [{}]", Thread.currentThread());
         val now = OffsetDateTime.now();
         val result = virtualExecutorService.submit(() -> {
@@ -36,7 +36,7 @@ public class TimeFreezeService implements Sleep {
             }
         });
 
-        return new ActiveTimer<T>(result, now.plusHours(24));
+        return new Timer<T>(result, now.plusHours(24));
     }
 
     public void freezeTime() {
