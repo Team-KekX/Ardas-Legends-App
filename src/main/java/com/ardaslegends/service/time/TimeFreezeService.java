@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 @Slf4j
 @Service
-public class TimeFreezeService {
+public class TimeFreezeService implements Sleep {
 
     private boolean isTimeFrozen;
 
@@ -25,7 +25,7 @@ public class TimeFreezeService {
         return virtualExecutorService.submit(() -> {
             log.info("Starting new 24h timer on thread [{}]", Thread.currentThread());
             try {
-                Thread.sleep(Duration.ofSeconds(5));
+                sleep(Duration.ofHours(24));
                 log.info("Timer is over - calling callback [{}]", callback.toString());
                 return callback.call();
             } catch (InterruptedException e) {
