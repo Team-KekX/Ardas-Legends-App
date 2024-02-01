@@ -161,27 +161,38 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.debug("War information: " + wars);
 
-        val now = OffsetDateTime.now();
-
         log.trace("Assembling Battle Object");
-        Battle battle = new Battle(wars,
+        final Battle createdBattle = new Battle(wars,
                 createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,
                 OffsetDateTime.now(),
-                now.plusHours(24),
+                null,
                 null,
                 null,
                 battleLocation);
 
+        log.debug("Calling start24hTimer()");
+        val timer = timeFreezeService.start24hTimer(() -> startBattle(createdBattle));
+        log.debug("Setting battle.timeFrozenFrom to end date of 24h timer");
+        createdBattle.setTimeFrozenFrom(timer.finishesAt());
+
+        Battle battle;
         log.debug("Trying to persist the battle object");
-        battle = secureSave(battle, battleRepository);
+        try {
+            battle = secureSave(createdBattle, battleRepository);
+        }
+        catch (Exception e) {
+            log.warn("Cancelling 24h timer since there was an error while persisting battle [{}]", createdBattle);
+            timer.future().cancel(true);
+            throw e;
+        }
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
     }
 
-    private void startBattle(Battle battle) {
+    private Battle startBattle(Battle battle) {
         log.debug("Starting battle [{}]", battle);
 
         Objects.requireNonNull(battle, "battle in startBattle() must not be null!");
@@ -193,5 +204,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         timeFreezeService.freezeTime();
 
         //TODO: teleport all aiding armies to battle location
+
+        return battle;
     }
 }

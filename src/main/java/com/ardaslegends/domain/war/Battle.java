@@ -49,6 +49,7 @@ public class Battle extends AbstractDomainObject {
 
     private OffsetDateTime declaredDate;
 
+    @Setter
     private OffsetDateTime timeFrozenFrom;
 
     private OffsetDateTime timeFrozenUntil;
