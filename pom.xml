@@ -11,7 +11,7 @@
 
     <properties>
         <spring.version>3.2.2</spring.version>
-        <java.version>19</java.version>
+        <java.version>21</java.version>
         <testcontainers.version>1.17.6</testcontainers.version>
 
         <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
@@ -23,6 +23,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <spring.profiles.active>dev</spring.profiles.active>
+
+        <junit.enable.parallel>true</junit.enable.parallel>
+        <junit.parallel.mode.class>concurrent</junit.parallel.mode.class>
+        <junit.parallel.mode.method>concurrent</junit.parallel.mode.method>
     </properties>
 
     <parent>
@@ -236,8 +240,9 @@
                 <configuration>
                     <properties>
                         <configurationParameters>
-                            junit.jupiter.execution.parallel.enabled = true
-                            junit.jupiter.execution.parallel.mode.default = concurrent
+                            junit.jupiter.execution.parallel.enabled = ${junit.enable.parallel}
+                            junit.jupiter.execution.parallel.mode.default = ${junit.parallel.mode.method}
+                            junit.jupiter.execution.parallel.mode.classes.default = ${junit.parallel.mode.class}
                         </configurationParameters>
                     </properties>
                 </configuration>
@@ -324,8 +329,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>19</source>
-                    <target>19</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>

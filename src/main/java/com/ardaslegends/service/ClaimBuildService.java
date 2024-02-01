@@ -303,7 +303,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
             }
 
             log.debug("Fetching Production Site with type [{}] and resource [{}]", type, resource);
-            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::findProductionSiteByTypeAndProducedResource_ResourceName);
+            Optional<ProductionSite> fetchedProdSite = secureFind(type, resource, productionSiteRepository::queryByTypeAndResourceOptional);
 
             if(fetchedProdSite.isEmpty()) {
                 log.warn("No Production Site found for type [{}] and resource [{}]!", type, resource);
