@@ -32,10 +32,10 @@ public class TimeFreezeServiceTest {
 
         val result = timeFreezeService.start24hTimer(() -> list.add(1));
 
-        log.debug("Thread state after starting timer: {}", result.state().name());
-        assertThat(result.isDone()).isFalse();
-        assertThat(result.state()).isEqualTo(Future.State.RUNNING);
-        result.cancel(true);
+        log.debug("Thread state after starting timer: {}", result.future().state().name());
+        assertThat(result.future().isDone()).isFalse();
+        assertThat(result.future().state()).isEqualTo(Future.State.RUNNING);
+        result.future().cancel(true);
 
         log.info("Test passed: ensureStarting24hTimerWorks");
     }
@@ -54,14 +54,14 @@ public class TimeFreezeServiceTest {
 
         val result = timeFreezeService.start24hTimer(() -> list.add(1));
 
-        log.debug("Thread state after starting timer: {}", result.state().name());
-        assertThat(result.isDone()).isFalse();
-        assertThat(result.state()).isEqualTo(Future.State.RUNNING);
+        log.debug("Thread state after starting timer: {}", result.future().state().name());
+        assertThat(result.future().isDone()).isFalse();
+        assertThat(result.future().state()).isEqualTo(Future.State.RUNNING);
 
         timeFreezeService.sleep(Duration.ofMillis(200));
 
-        log.debug("Thread state after waiting 24h: {}", result.state().name());
-        assertThat(result.isDone()).isTrue();
+        log.debug("Thread state after waiting 24h: {}", result.future().state().name());
+        assertThat(result.future().isDone()).isTrue();
         assertThat(list.size()).isEqualTo(1);
         assertThat(list.get(0)).isEqualTo(1);
         log.info("Test passed: ensure24hTimerFinishesProperly");

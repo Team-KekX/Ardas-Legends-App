@@ -1,9 +1,11 @@
 package com.ardaslegends.service.time;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.concurrent.*;
 
 @Slf4j
@@ -19,13 +21,13 @@ public class TimeFreezeService implements Sleep {
         this.virtualExecutorService = virtualExecutorService;
     }
 
-    public <T> Future<T> start24hTimer(Callable<T> callback) {
+    public <T> ActiveTimer<T> start24hTimer(Callable<T> callback) {
         log.debug("Call of start24hTimer, Thread before timer: [{}]", Thread.currentThread());
-
-        return virtualExecutorService.submit(() -> {
+        val now = OffsetDateTime.now();
+        val result = virtualExecutorService.submit(() -> {
             log.info("Starting new 24h timer on thread [{}]", Thread.currentThread());
             try {
-                sleep(Duration.ofHours(24));
+                sleep(Duration.between(now, now.plusHours(24)));
                 log.info("Timer is over - calling callback [{}]", callback.toString());
                 return callback.call();
             } catch (InterruptedException e) {
@@ -34,6 +36,7 @@ public class TimeFreezeService implements Sleep {
             }
         });
 
+        return new ActiveTimer<T>(result, now.plusHours(24));
     }
 
     public void freezeTime() {
