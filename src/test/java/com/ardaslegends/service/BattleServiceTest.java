@@ -11,6 +11,7 @@ import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.time.TimeFreezeService;
+import com.ardaslegends.service.time.Timer;
 import com.ardaslegends.service.war.BattleService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,8 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -147,10 +150,7 @@ public class BattleServiceTest {
         when(mockBattleRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
         when(mockArmyService.getArmyByName("Knights of Gondor")).thenReturn(army1);
         when(mockArmyService.getArmyByName("Knights of Isengard")).thenReturn(army2);
-        Mockito.doAnswer(invocation -> {
-            mockTimeFreezeService.sleep(Duration.ofMillis(200));
-            return null;
-        }).when(mockTimeFreezeService).sleep(Duration.ofSeconds(1));
+        when(mockTimeFreezeService.start24hTimer(any(Callable.class))).thenReturn(new Timer<>(CompletableFuture.completedFuture(battle), OffsetDateTime.now().plusHours(24)));
     }
 
     @Test

@@ -24,7 +24,7 @@ public class TimeFreezeServiceTest {
     }
 
     @Test
-    public void ensureStarting24hTimerWorks() throws InterruptedException {
+    public void ensureStarting24hTimerWorks() {
         log.debug("Testing if starting a 24h timer works");
         log.debug("Current Thread: {}", Thread.currentThread());
         val list = new ArrayList<Integer>();
@@ -41,7 +41,7 @@ public class TimeFreezeServiceTest {
     }
 
     @Test
-    public void ensure24hTimerFinishesProperly() throws InterruptedException {
+    public void ensure24hTimerFinishesProperly() {
         log.debug("Testing if 24h timer ends properly");
         log.debug("Current Thread: {}", Thread.currentThread());
         val list = new ArrayList<Integer>();
