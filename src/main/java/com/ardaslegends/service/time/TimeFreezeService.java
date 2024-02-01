@@ -32,7 +32,7 @@ public class TimeFreezeService implements Sleep {
                 return callback.call();
             } catch (InterruptedException e) {
                 log.warn("Thread [{}] got interrupted during 24h timer", Thread.currentThread());
-                throw new RuntimeException(e);
+                return null;
             }
         });
 
