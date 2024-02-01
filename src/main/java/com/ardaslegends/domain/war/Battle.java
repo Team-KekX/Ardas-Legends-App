@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +43,8 @@ public class Battle extends AbstractDomainObject {
             joinColumns = { @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_battle"))},
             inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_defendingArmy")) })
     private Set<Army> defendingArmies = new HashSet<>();
+
+    @Setter
     private BattlePhase battlePhase;
 
     private OffsetDateTime declaredDate;
