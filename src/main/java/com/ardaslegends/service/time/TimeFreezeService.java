@@ -19,15 +19,17 @@ public class TimeFreezeService {
         this.virtualExecutorService = virtualExecutorService;
     }
 
-    public Future<?> start24hTimer() {
+    public <T> Future<T> start24hTimer(Callable<T> callback) {
+        log.debug("Call of start24hTimer, Thread before timer: [{}]", Thread.currentThread());
 
-        log.debug("Starting new 24h timer {}", Thread.currentThread());
         return virtualExecutorService.submit(() -> {
-            log.info("HEELLLOO FROM {}", Thread.currentThread());
+            log.info("Starting new 24h timer on thread [{}]", Thread.currentThread());
             try {
                 Thread.sleep(Duration.ofSeconds(5));
-                log.info("Timer is over");
+                log.info("Timer is over - calling callback [{}]", callback.toString());
+                return callback.call();
             } catch (InterruptedException e) {
+                log.warn("Thread [{}] got interrupted during 24h timer", Thread.currentThread());
                 throw new RuntimeException(e);
             }
         });
