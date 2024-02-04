@@ -128,15 +128,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 throw BattleServiceException.cannotAttackStarterHamlet();
             }
 
-            log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
-            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
-            log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
 
-            log.debug("Checking if claimbuild is reachable in 24 hours");
-            if(ServiceUtils.getTotalPathCost(path) > 24){
-                log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
-                throw BattleServiceException.battleNotAbleDueHours();
+            if(!attackingArmy.getCurrentRegion().equals(attackedClaimbuild.getRegion())) {
+                log.debug("Army is not in region of claimbuild");
+                log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
+                path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
+                log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
+
+                log.debug("Checking if claimbuild is reachable in 24 hours");
+                if(ServiceUtils.getTotalPathCost(path) > 24){
+                    log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
+                    throw BattleServiceException.battleNotAbleDueHours();
+                }
             }
+            else
+                log.debug("Army [{}] is already in region [{}] of Claimbuild [{}]", attackingArmy.getName(), attackingArmy.getCurrentRegion().getId(), attackedClaimbuild.getName());
+
 
             if(stationedArmies.isEmpty())
                 log.debug("No armies stationed at claim build with name: [{}]", createBattleDto.claimBuildName());
