@@ -34,32 +34,32 @@ public class ArmyRepositoryTest {
     private RPChar rpChar;
     private ClaimBuild claimbuild;
 
-//    @BeforeEach
-//    void setup() {
-//        region1 = Region.builder().name("").id("1").regionType(RegionType.DESERT).build();
-//        val region2 = Region.builder().name("").id("2").regionType(RegionType.DESERT).build();
-//        val region3 = Region.builder().name("").id("3").regionType(RegionType.DESERT).build();
-//        val region4 = Region.builder().name("").id("4").regionType(RegionType.DESERT).build();
-//        val region5 = Region.builder().name("").id("5").regionType(RegionType.DESERT).build();
-//
-//        gondor = Faction.builder().name("Gondor").homeRegion(region1).build();
-//        rpChar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
-//        var mordor = Faction.builder().name("Mordor").homeRegion(region2).build();
-//        claimbuild = ClaimBuild.builder().name("Nimheria").coordinates(new Coordinate(0,0,0)).ownedBy(gondor)
-//                .region(region1).type(ClaimBuildType.CASTLE).build();
-//
-//        factionRepository.saveAll(List.of(gondor, mordor));
-//    }
+    @BeforeEach
+    void setup() {
+        region1 = Region.builder().name("").id("1").regionType(RegionType.DESERT).build();
+        val region2 = Region.builder().name("").id("2").regionType(RegionType.DESERT).build();
+        val region3 = Region.builder().name("").id("3").regionType(RegionType.DESERT).build();
+        val region4 = Region.builder().name("").id("4").regionType(RegionType.DESERT).build();
+        val region5 = Region.builder().name("").id("5").regionType(RegionType.DESERT).build();
 
-//    @Test
-//    void ensureSaveArmyWorks() {
-//        val army = new Army("Army", ArmyType.ARMY, gondor, region1, rpChar, new ArrayList<>(),
-//                new ArrayList<>(), null, 0.0, false, null, null, 0, 0, claimbuild,
-//                OffsetDateTime.now(), true);
-//
-//        val result = armyRepository.save(army);
-//
-//        assertThat(result).isNotNull();
-//    }
+        gondor = Faction.builder().name("Gondor").homeRegion(region1).build();
+        rpChar = RPChar.builder().name("Belegorn").currentRegion(region1).build();
+        var mordor = Faction.builder().name("Mordor").homeRegion(region2).build();
+        claimbuild = ClaimBuild.builder().name("Nimheria").coordinates(new Coordinate(0,0,0)).ownedBy(gondor)
+                .region(region1).type(ClaimBuildType.CASTLE).build();
+
+        factionRepository.saveAll(List.of(gondor, mordor));
+    }
+
+    @Test
+    void ensureSaveArmyWorks() {
+        val army = new Army("Army", ArmyType.ARMY, gondor, region1, rpChar, new ArrayList<>(),
+                new ArrayList<>(), null, 0.0, false, null, null, 0, 0, claimbuild,
+                OffsetDateTime.now(), true);
+
+        val result = armyRepository.save(army);
+
+        assertThat(result).isNotNull();
+    }
 
 }
