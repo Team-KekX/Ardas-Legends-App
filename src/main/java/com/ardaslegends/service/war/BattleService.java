@@ -35,6 +35,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
 
+    @Transactional(readOnly = false)
     public Battle createBattle(CreateBattleDto createBattleDto) {
         log.debug("Creating battle with data {}", createBattleDto);
         Objects.requireNonNull(createBattleDto, "CreateBattleDto must not be null");
@@ -52,6 +53,12 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         if (!ServiceUtils.boundLordLeaderPermission(executorPlayer, attackingArmy)) {
             log.warn("Player [{}] does not have the permission to start a battle with the army [{}]!", executorPlayer.getIgn(), createBattleDto.attackingArmyName());
             throw ArmyServiceException.noPermissionToPerformThisAction();
+        }
+
+        log.debug("Checking if army has a player bound to it");
+        if(attackingArmy.getBoundTo() == null) {
+            log.warn("Cannot declare battle because attacking army [{}] is not bound to a player", attackingArmy.getName());
+            throw BattleServiceException.noPlayerBound(attackingArmy.getName());
         }
 
         log.debug("Checking if army has enough health to start the battle");
