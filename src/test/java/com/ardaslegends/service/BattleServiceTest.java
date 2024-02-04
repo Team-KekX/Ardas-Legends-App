@@ -7,6 +7,8 @@ import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.BattleRepository;
 import com.ardaslegends.repository.war.WarRepository;
+import com.ardaslegends.service.discord.DiscordService;
+import com.ardaslegends.service.discord.messages.ALMessage;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
@@ -69,7 +71,8 @@ public class BattleServiceTest {
         PlayerService mockPlayerService = mock(PlayerService.class);
         ClaimBuildService mockClaimBuildService = mock(ClaimBuildService.class);
         TimeFreezeService mockTimeFreezeService = mock(TimeFreezeService.class);
-        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockClaimBuildService,mockWarRepository, pathfinder, mockTimeFreezeService);
+        DiscordService mockDiscordService = mock(DiscordService.class);
+        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockClaimBuildService,mockWarRepository, pathfinder, mockTimeFreezeService, mockDiscordService);
 
         region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
         region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();
