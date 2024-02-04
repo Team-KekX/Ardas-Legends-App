@@ -8,6 +8,8 @@ import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.service.*;
+import com.ardaslegends.service.discord.DiscordService;
+import com.ardaslegends.service.discord.messages.war.BattleMessages;
 import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
@@ -37,7 +39,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
     private final TimeFreezeService timeFreezeService;
+    private final DiscordService discordService;
 
+    @Transactional(readOnly = false)
     public Battle createBattle(CreateBattleDto createBattleDto) {
         log.debug("Creating battle with data {}", createBattleDto);
         Objects.requireNonNull(createBattleDto, "CreateBattleDto must not be null");
@@ -187,6 +191,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             timer.future().cancel(true);
             throw e;
         }
+
+        discordService.sendMessageToRpChannel(BattleMessages.declareBattle(battle, discordService));
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
