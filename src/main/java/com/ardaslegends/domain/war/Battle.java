@@ -71,6 +71,15 @@ public class Battle extends AbstractDomainObject {
         this.agreedBattleDate = agreedBattleDate;
         this.battleLocation = battleLocation;
     }
-    
+
+    public Army getInitialAttacker() {
+        return attackingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no initial attacking army in battle at location %s".formatted(battleLocation.toString())));
+    }
+
+    public Army getFirstDefender() {
+        return defendingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no defending armies in battle at location %s".formatted(battleLocation.toString())));
+    }
     public boolean isOver() { return BattlePhase.CONCLUDED.equals(this.battlePhase); }
 }
