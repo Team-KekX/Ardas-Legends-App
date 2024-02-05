@@ -49,6 +49,12 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Calling getArmyByName with name: [{}]", createBattleDto.attackingArmyName());
         Army attackingArmy = armyService.getArmyByName(createBattleDto.attackingArmyName());
 
+        log.debug("Checking if army is older than 24h");
+        if(attackingArmy.isYoungerThan24h()) {
+            log.warn("Army [{}] cannot declare battle because it was created less than 24h ago!", attackingArmy.getName());
+            throw BattleServiceException.armyYoungerThan24h(attackingArmy.getName());
+        }
+
         log.debug("Checking if player has permission to start the battle");
         if (!ServiceUtils.boundLordLeaderPermission(executorPlayer, attackingArmy)) {
             log.warn("Player [{}] does not have the permission to start a battle with the army [{}]!", executorPlayer.getIgn(), createBattleDto.attackingArmyName());
