@@ -92,7 +92,7 @@ public class MovementService extends AbstractService<Movement, MovementRepositor
         }
 
         log.debug("Checking if army is older than 24h");
-        if(OffsetDateTime.now().isBefore(army.getCreatedAt().plusDays(1))) {
+        if(army.isYoungerThan24h()) {
             log.warn("Army [{}] is younger than 24h and therefore cannot move!", army);
             long hoursUntilMove = 24 - Duration.between(army.getCreatedAt(), OffsetDateTime.now()).toHours();
             log.debug("Army can move again in [{}] hours", hoursUntilMove);

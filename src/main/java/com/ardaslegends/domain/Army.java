@@ -151,4 +151,8 @@ public final class Army extends AbstractDomainObject {
         this.setHoursHealed(0);
         this.setHoursLeftHealing(0);
     }
+
+    public boolean isYoungerThan24h() {
+        return OffsetDateTime.now().isBefore(this.createdAt.plusHours(24));
+    }
 }
