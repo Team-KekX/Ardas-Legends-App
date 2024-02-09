@@ -99,7 +99,7 @@ public class ScheduleServiceTest {
         path = List.of(pathElement, pathElement2, pathElement3, pathElement4);
         path2 = List.of(pathElement4, pathElement3, pathElement2);
         path3 = List.of(pathElement2, pathElement3);
-        startTime = OffsetDateTime.of(2022, 8, 31, 0, 0, 0, 0, ZoneOffset.UTC);
+        startTime = OffsetDateTime.now();
         endTime = startTime.plusHours(ServiceUtils.getTotalPathCost(path));
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
