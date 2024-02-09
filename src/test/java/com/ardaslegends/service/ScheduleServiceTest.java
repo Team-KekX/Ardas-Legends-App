@@ -104,13 +104,13 @@ public class ScheduleServiceTest {
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         endTime3 = startTime.plusHours(ServiceUtils.getTotalPathCost(path3));
         movement = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army).rpChar(player.getActiveCharacter().get()).path(path)
-                .startTime(startTime).endTime(endTime).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path)).hoursUntilNextRegion(path.get(1).getActualCost())
+                .startTime(startTime).endTime(endTime).reachesNextRegionAt(startTime.plusHours(path.get(1).getActualCost()))
                 .build();
         movement2 = Movement.builder().isCharMovement(true).isCurrentlyActive(true).army(null).rpChar(player2.getActiveCharacter().get()).path(path2)
-                .startTime(startTime).endTime(endTime2).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path2)).hoursUntilNextRegion(path2.get(1).getActualCost())
+                .startTime(startTime).endTime(endTime2).reachesNextRegionAt(startTime.plusHours(path2.get(1).getActualCost()))
                 .build();
         movement3 = Movement.builder().isCharMovement(false).isCurrentlyActive(true).army(army2).rpChar(null).path(path3)
-                .startTime(startTime).endTime(endTime3).hoursMoved(0).hoursUntilComplete(ServiceUtils.getTotalPathCost(path3)).hoursUntilNextRegion(path3.get(1).getActualCost())
+                .startTime(startTime).endTime(endTime3).reachesNextRegionAt(startTime.plusHours(path3.get(1).getActualCost()))
                 .build();
         claimBuild = ClaimBuild.builder().type(ClaimBuildType.CASTLE).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).region(region).build();
 
@@ -151,8 +151,7 @@ public class ScheduleServiceTest {
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         movement2.setStartTime(startTime);
         movement2.setEndTime(endTime2);
-        movement2.setHoursUntilComplete(ServiceUtils.getTotalPathCost(path2));
-        movement2.setHoursUntilNextRegion(pathElement3.getActualCost());
+        movement2.setReachesNextRegionAt(startTime.plusHours(pathElement2.getActualCost() + pathElement3.getActualCost()));
 
         List<Movement> movements = List.of(movement2);
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(movements);
