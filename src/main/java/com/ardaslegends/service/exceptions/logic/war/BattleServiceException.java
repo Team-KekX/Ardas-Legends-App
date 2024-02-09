@@ -3,6 +3,7 @@ package com.ardaslegends.service.exceptions.logic.war;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.service.exceptions.logic.LogicException;
 import com.ardaslegends.service.war.BattleService;
+import lombok.val;
 
 public class BattleServiceException extends LogicException {
     private static final String FACTIONS_NOT_AT_WAR = "Cannot declare a battle because %s and %s are not at war with each other!";
@@ -19,7 +20,7 @@ public class BattleServiceException extends LogicException {
 
     public static BattleServiceException battleNotAbleDueHours (){ return  new BattleServiceException(BATTLE_NOT_ABLE_DUE_HOURS.formatted());}
     public static BattleServiceException defendingArmyIsMovingAway (Army armyMovingAway){
-        int hoursUntilNextRegion = armyMovingAway.getActiveMovement().orElseThrow(() -> new IllegalArgumentException("Army %s has no movement! PLEASE CONTACT DEVS".formatted(armyMovingAway.getName()))).getHoursUntilNextRegion();
+        val hoursUntilNextRegion = armyMovingAway.getActiveMovement().orElseThrow(() -> new IllegalArgumentException("Army %s has no movement! PLEASE CONTACT DEVS".formatted(armyMovingAway.getName()))).getHoursUntilNextRegion();
         return new BattleServiceException(DEFENDING_ARMY_IS_MOVING_AWAY.formatted(hoursUntilNextRegion));}
     public static BattleServiceException attackingArmyHasAnotherMovement(){return new BattleServiceException(ATTACKING_ARMY_HAS_ANOTHER_MOVEMENT.formatted());}
     public static BattleServiceException notEnoughHealth(){ return new BattleServiceException(NOT_ENOUGH_HEALTH.formatted());}
