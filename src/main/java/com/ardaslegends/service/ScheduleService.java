@@ -260,6 +260,7 @@ public class ScheduleService {
 
                 val oldReachesNextRegionAt = movement.getReachesNextRegionAt();
                 movement.setReachesNextRegionAt(oldReachesNextRegionAt.plusHours(nextPathRegion.getActualCost()));
+                hoursUntilNextRegion += nextPathRegion.getActualCost();
                 log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 
