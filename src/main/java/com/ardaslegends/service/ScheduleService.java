@@ -135,7 +135,7 @@ public class ScheduleService {
         with the last hours left (the value that was last stored in the movement)
          */
 
-        long hoursMovedSinceLastTime = movement.getHoursUntilComplete() - hoursLeft;
+        long hoursMovedSinceLastTime = movement.getHoursUntilComplete() + 1 - hoursLeft;
         log.debug("Hours moved since last time: [{}]", hoursMovedSinceLastTime);
 
         //If we didn't move an hour since last time, exit function
@@ -176,7 +176,7 @@ public class ScheduleService {
         We keep doing this until we have arrived in the region that the army/char should be at
          */
 
-        long hoursUntilNextRegion = movement.getHoursUntilNextRegion() - hoursMovedSinceLastTime;
+        long hoursUntilNextRegion = movement.getHoursUntilNextRegion() + 1 - hoursMovedSinceLastTime;
         log.trace("Hours until next region: [{}] - [{}] = [{}]", movement.getHoursUntilNextRegion(), hoursMovedSinceLastTime, hoursUntilNextRegion);
 
         log.trace("Entering while loop as long as hoursUntilNextRegion is negative");
