@@ -8,6 +8,7 @@ import com.ardaslegends.service.exceptions.logic.player.PlayerServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,7 +135,7 @@ public class ScheduleService {
         with the last hours left (the value that was last stored in the movement)
          */
 
-        int hoursMovedSinceLastTime = movement.getHoursUntilComplete() - hoursLeft;
+        long hoursMovedSinceLastTime = movement.getHoursUntilComplete() - hoursLeft;
         log.debug("Hours moved since last time: [{}]", hoursMovedSinceLastTime);
 
         //If we didn't move an hour since last time, exit function
@@ -148,13 +149,13 @@ public class ScheduleService {
         log.debug("Updating movement data");
 
         //Get the amount of hours a movement has been going on by getting the last hoursMoved and adding hoursMovedSinceLastTime
-        int newHoursMoved = movement.getHoursMoved() + hoursMovedSinceLastTime;
-        log.trace("Incrementing hoursMoved from [{}] to [{}]", movement.getHoursMoved(), newHoursMoved);
-        movement.setHoursMoved(newHoursMoved);
+        long newHoursMoved = movement.getHoursAlreadyMoved() + hoursMovedSinceLastTime;
+        log.trace("Incrementing hoursMoved from [{}] to [{}]", movement.getHoursAlreadyMoved(), newHoursMoved);
+//        movement.setHoursMoved(newHoursMoved);
 
         //Set the old hoursUntilComplete to the newly calculated value
         log.trace("Setting hoursUntilComplete from [{}] to [{}]", movement.getHoursUntilComplete(), hoursLeft);
-        movement.setHoursUntilComplete(hoursLeft);
+//        movement.setHoursUntilComplete(hoursLeft);
 
         /*
         Now we have to get the current region of the army/character. We have to check if the movement is a character movement.
@@ -175,7 +176,7 @@ public class ScheduleService {
         We keep doing this until we have arrived in the region that the army/char should be at
          */
 
-        int hoursUntilNextRegion = movement.getHoursUntilNextRegion() - hoursMovedSinceLastTime;
+        long hoursUntilNextRegion = movement.getHoursUntilNextRegion() - hoursMovedSinceLastTime;
         log.trace("Hours until next region: [{}] - [{}] = [{}]", movement.getHoursUntilNextRegion(), hoursMovedSinceLastTime, hoursUntilNextRegion);
 
         log.trace("Entering while loop as long as hoursUntilNextRegion is negative");
@@ -257,8 +258,8 @@ public class ScheduleService {
 
                 log.trace("Calculating new hoursUntilNextRegion");
 
-                hoursUntilNextRegion = hoursUntilNextRegion + nextPathRegion.getActualCost();
-                movement.setHoursUntilNextRegion(hoursUntilNextRegion);
+                val oldReachesNextRegionAt = movement.getReachesNextRegionAt();
+                movement.setReachesNextRegionAt(oldReachesNextRegionAt.plusHours(nextPathRegion.getActualCost()));
                 log.trace("New hoursUntilNextRegion: [{}]", hoursUntilNextRegion);
             }
 
