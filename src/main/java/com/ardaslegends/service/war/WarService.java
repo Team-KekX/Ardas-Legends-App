@@ -54,8 +54,11 @@ public class WarService extends AbstractService<War, WarRepository> {
         Objects.requireNonNull(createWarDto.nameOfWar(), "Name of War must not be null");
         Objects.requireNonNull(createWarDto.defendingFactionName(), "Defending Faction Name must not be null");
 
-        val warWithName = warRepository.find
-        if()
+        val activeWarWithName = warRepository.queryActiveWarByName(createWarDto.nameOfWar());
+        if(activeWarWithName.isPresent()) {
+            log.warn("Cannot create war because active war with name [{}] already exists!", createWarDto.nameOfWar());
+            throw WarServiceException.activeWarAlreadyExists(createWarDto.nameOfWar());
+        }
 
         log.trace("Fetching player with discordId [{}]", createWarDto.executorDiscordId());
         var executorPlayer = playerService.getPlayerByDiscordId(createWarDto.executorDiscordId());
