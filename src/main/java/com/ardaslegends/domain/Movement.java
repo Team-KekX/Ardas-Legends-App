@@ -46,14 +46,14 @@ public final class Movement extends AbstractDomainObject {
     private OffsetDateTime endTime;
 
     private Boolean isCurrentlyActive;
-    private Integer hoursUntilComplete;
-    private Integer hoursMoved;
-    private Integer hoursUntilNextRegion;
+
+    private OffsetDateTime endsAt;
+    private OffsetDateTime reachesNextRegionAt;
 
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, OffsetDateTime startTime, OffsetDateTime endTime, Boolean isCurrentlyActive, Integer hoursUntilComplete, Integer hoursUntilNextRegion, Integer hoursMoved) {
+    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, OffsetDateTime startTime, OffsetDateTime endTime, Boolean isCurrentlyActive, OffsetDateTime endsAt, OffsetDateTime reachesNextRegionAt) {
         this.rpChar = rpChar;
         this.army = army;
         this.isCharMovement = isCharMovement;
@@ -61,9 +61,8 @@ public final class Movement extends AbstractDomainObject {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isCurrentlyActive = isCurrentlyActive;
-        this.hoursUntilComplete = hoursUntilComplete;
-        this.hoursUntilNextRegion = hoursUntilNextRegion;
-        this.hoursMoved = hoursMoved;
+        this.endsAt = endsAt;
+        this.reachesNextRegionAt = reachesNextRegionAt;
     }
 
     public Integer getCost() {
