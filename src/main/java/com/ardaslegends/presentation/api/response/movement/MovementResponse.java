@@ -21,6 +21,7 @@ public record MovementResponse(
     Boolean isCurrentlyActive,
     Long hoursUntilComplete,
     Long hoursAlreadyMoved,
+    OffsetDateTime reachesNextRegionAt,
     Long hoursUntilNextRegion
 
 ) {
@@ -37,6 +38,7 @@ public record MovementResponse(
                 movement.getIsCurrentlyActive(),
                 movement.getHoursUntilComplete(),
                 movement.getHoursAlreadyMoved(),
+                movement.getReachesNextRegionAt(),
                 movement.getHoursUntilNextRegion()
         );
         log.debug("Created MovementResponse {}", this);
