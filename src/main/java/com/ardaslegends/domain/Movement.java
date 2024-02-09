@@ -7,6 +7,8 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -47,13 +49,12 @@ public final class Movement extends AbstractDomainObject {
 
     private Boolean isCurrentlyActive;
 
-    private OffsetDateTime endsAt;
     private OffsetDateTime reachesNextRegionAt;
 
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
 
-    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, OffsetDateTime startTime, OffsetDateTime endTime, Boolean isCurrentlyActive, OffsetDateTime endsAt, OffsetDateTime reachesNextRegionAt) {
+    public Movement(RPChar rpChar, Army army, Boolean isCharMovement, List<PathElement> path, OffsetDateTime startTime, OffsetDateTime endTime, Boolean isCurrentlyActive, OffsetDateTime reachesNextRegionAt) {
         this.rpChar = rpChar;
         this.army = army;
         this.isCharMovement = isCharMovement;
@@ -61,7 +62,6 @@ public final class Movement extends AbstractDomainObject {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isCurrentlyActive = isCurrentlyActive;
-        this.endsAt = endsAt;
         this.reachesNextRegionAt = reachesNextRegionAt;
     }
 
@@ -104,6 +104,23 @@ public final class Movement extends AbstractDomainObject {
         if(nextRegionIndex >= path.size())
             return null;
         return path.get(nextRegionIndex);
+    }
+
+    public long getHoursUntilNextRegion() {
+        if(reachesNextRegionAt == null)
+            return 0;
+        else
+            return Duration.between(OffsetDateTime.now(), reachesNextRegionAt).toHours();
+    }
+
+    public long getHoursUntilComplete() {
+        val now = OffsetDateTime.now();
+        return Duration.between(now, endTime).toHours();
+    }
+
+    public long getHoursAlreadyMoved() {
+        val now = OffsetDateTime.now();
+        return Duration.between(startTime, now).toHours();
     }
 
     @Override

@@ -19,9 +19,9 @@ public record MovementResponse(
     OffsetDateTime startTime,
     OffsetDateTime endTime,
     Boolean isCurrentlyActive,
-    Integer hoursUntilComplete,
-    Integer hoursAlreadyMoved,
-    Integer hoursUntilNextRegion
+    Long hoursUntilComplete,
+    Long hoursAlreadyMoved,
+    Long hoursUntilNextRegion
 
 ) {
 
@@ -36,7 +36,7 @@ public record MovementResponse(
                 movement.getEndTime(),
                 movement.getIsCurrentlyActive(),
                 movement.getHoursUntilComplete(),
-                movement.getHoursMoved(),
+                movement.getHoursAlreadyMoved(),
                 movement.getHoursUntilNextRegion()
         );
         log.debug("Created MovementResponse {}", this);
