@@ -145,18 +145,6 @@ public class ScheduleService {
             return;
         }
 
-
-        log.debug("Updating movement data");
-
-        //Get the amount of hours a movement has been going on by getting the last hoursMoved and adding hoursMovedSinceLastTime
-        long newHoursMoved = movement.getHoursAlreadyMoved() + hoursMovedSinceLastTime;
-        log.trace("Incrementing hoursMoved from [{}] to [{}]", movement.getHoursAlreadyMoved(), newHoursMoved);
-//        movement.setHoursMoved(newHoursMoved);
-
-        //Set the old hoursUntilComplete to the newly calculated value
-        log.trace("Setting hoursUntilComplete from [{}] to [{}]", movement.getHoursUntilComplete(), hoursLeft);
-//        movement.setHoursUntilComplete(hoursLeft);
-
         /*
         Now we have to get the current region of the army/character. We have to check if the movement is a character movement.
         If yes, get the region of the player's rpchar
