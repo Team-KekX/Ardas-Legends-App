@@ -151,7 +151,7 @@ public class ScheduleServiceTest {
         endTime2 = startTime.plusHours(ServiceUtils.getTotalPathCost(path2));
         movement2.setStartTime(startTime);
         movement2.setEndTime(endTime2);
-        movement2.setReachesNextRegionAt(startTime.plusHours(pathElement2.getActualCost() + pathElement3.getActualCost()));
+        movement2.setReachesNextRegionAt(startTime.plusHours(pathElement3.getActualCost()));
 
         List<Movement> movements = List.of(movement2);
         when(mockMovementRepository.findMovementsByIsCurrentlyActive(true)).thenReturn(movements);
