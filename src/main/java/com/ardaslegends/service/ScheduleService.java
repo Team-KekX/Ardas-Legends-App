@@ -117,6 +117,10 @@ public class ScheduleService {
             movement.setReachesNextRegionAt(reachesNewRegionAt);
         }
         log.trace("Exited while loop");
+
+        log.trace("Setting movement lastUpdatedAt to now [{}]", now);
+        movement.setLastUpdatedAt(now);
+
         log.debug("Finished handling movement of {} {} with path {}", movement.getMovingEntity(), movement.getMovingEntityName(),
                 ServiceUtils.buildPathStringWithCurrentRegion(movement.getPath(), movement.getCurrentRegion()));
     }
