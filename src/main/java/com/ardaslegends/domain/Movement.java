@@ -144,21 +144,21 @@ public final class Movement extends AbstractDomainObject {
         return path.get(nextRegionIndex);
     }
 
-    public long getHoursUntilNextRegion() {
+    public Duration getDurationUntilNextRegion() {
         if(reachesNextRegionAt == null)
-            return 0;
+            return Duration.ZERO;
         else
-            return Duration.between(OffsetDateTime.now(), reachesNextRegionAt).toHours();
+            return Duration.between(OffsetDateTime.now(), reachesNextRegionAt);
     }
 
-    public long getHoursUntilComplete() {
+    public Duration getDurationUntilComplete() {
         val now = OffsetDateTime.now();
-        return Duration.between(now, endTime).toHours();
+        return Duration.between(now, endTime);
     }
 
-    public long getHoursAlreadyMoved() {
+    public Duration getDurationAlreadyMoved() {
         val now = OffsetDateTime.now();
-        return Duration.between(startTime, now).toHours();
+        return Duration.between(startTime, now);
     }
 
     @Override

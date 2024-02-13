@@ -17,6 +17,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -110,11 +111,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             if(defendingArmy.getActiveMovement().isPresent()) {
                 var activeMovement = defendingArmy.getActiveMovement().get();
                 log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
-                log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getHoursUntilNextRegion());
+                log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getDurationUntilNextRegion().toHours());
 
-                if(activeMovement.getHoursUntilNextRegion() <= 24) {
+                if(activeMovement.getDurationUntilNextRegion().minusHours(24).isNegative()) {
                     log.debug("Next region is reached in <= 24h");
-                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
+                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getDurationUntilNextRegion().toHours());
                     throw BattleServiceException.defendingArmyIsMovingAway(defendingArmy);
                 }
                 log.debug("Defending army is moving but is still in the region for the next 24h");

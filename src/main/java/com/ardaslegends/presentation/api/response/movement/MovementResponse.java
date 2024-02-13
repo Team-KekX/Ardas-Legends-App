@@ -6,6 +6,7 @@ import com.ardaslegends.presentation.api.response.movement.path.PathResponse;
 import com.ardaslegends.presentation.api.response.player.rpchar.RpCharResponse;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -19,10 +20,10 @@ public record MovementResponse(
     OffsetDateTime startTime,
     OffsetDateTime endTime,
     Boolean isCurrentlyActive,
-    Long hoursUntilComplete,
-    Long hoursAlreadyMoved,
+    Duration durationUntilComplete,
+    Duration durationAlreadyMoved,
     OffsetDateTime reachesNextRegionAt,
-    Long hoursUntilNextRegion
+    Duration durationUntilNextRegion
 
 ) {
 
@@ -36,10 +37,10 @@ public record MovementResponse(
                 movement.getStartTime(),
                 movement.getEndTime(),
                 movement.getIsCurrentlyActive(),
-                movement.getHoursUntilComplete(),
-                movement.getHoursAlreadyMoved(),
+                movement.getDurationUntilComplete(),
+                movement.getDurationAlreadyMoved(),
                 movement.getReachesNextRegionAt(),
-                movement.getHoursUntilNextRegion()
+                movement.getDurationUntilNextRegion()
         );
         log.debug("Created MovementResponse {}", this);
     }
