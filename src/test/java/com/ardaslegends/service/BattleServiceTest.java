@@ -243,7 +243,9 @@ public class BattleServiceTest {
     @Test
     void ensureCreateBattleThrowsExceptionWhenDefendingArmyIsMovingAway(){
         log.debug("Testing if createBattle throws exception when defending army is moving away and cannot be caught!");
-
+        
+        movement.setEndTime(movement.getStartTime().plusHours(22));
+        movement.setReachesNextRegionAt(movement.getStartTime().plusHours(22));
         army2.getMovements().add(movement);
 
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));
