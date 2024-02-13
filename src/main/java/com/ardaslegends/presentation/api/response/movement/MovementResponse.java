@@ -23,7 +23,8 @@ public record MovementResponse(
     Duration durationUntilComplete,
     Duration durationAlreadyMoved,
     OffsetDateTime reachesNextRegionAt,
-    Duration durationUntilNextRegion
+    Duration durationUntilNextRegion,
+    OffsetDateTime lastUpdatedAt
 
 ) {
 
@@ -40,7 +41,8 @@ public record MovementResponse(
                 movement.getDurationUntilComplete(),
                 movement.getDurationAlreadyMoved(),
                 movement.getReachesNextRegionAt(),
-                movement.getDurationUntilNextRegion()
+                movement.getDurationUntilNextRegion(),
+                movement.getLastUpdatedAt()
         );
         log.debug("Created MovementResponse {}", this);
     }
