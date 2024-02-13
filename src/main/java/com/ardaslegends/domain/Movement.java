@@ -50,6 +50,7 @@ public final class Movement extends AbstractDomainObject {
     private Boolean isCurrentlyActive;
 
     private OffsetDateTime reachesNextRegionAt;
+    private OffsetDateTime lastUpdatedAt;
 
     public String getStartRegionId() { return path.get(0).getRegion().getId(); }
     public String getDestinationRegionId() { return path.get(path.size()-1).getRegion().getId(); }
