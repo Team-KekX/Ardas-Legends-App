@@ -66,6 +66,29 @@ public final class Movement extends AbstractDomainObject {
         this.reachesNextRegionAt = reachesNextRegionAt;
     }
 
+    /**
+     * Sets the movement to inactive and sets reachesNextRegionAt to null.
+     */
+    public void end() {
+        log.debug("Ending movement of {} {} with path {}", getMovingEntity(), getMovingEntityName(), ServiceUtils.buildPathString(path));
+        isCurrentlyActive = false;
+        reachesNextRegionAt = null;
+    }
+
+    /**
+     * @return Either "army" or "character", depending on the kind of entity that is moving.
+     */
+    public String getMovingEntity() {
+        return isCharMovement ? "character" : "army";
+    }
+
+    /**
+     * @return The name of the army/character that is moving
+     */
+    public String getMovingEntityName() {
+        return isCharMovement ? rpChar.getName() : army.getName();
+    }
+
     public Integer getCost() {
         return ServiceUtils.getTotalPathCost(path);
     }
