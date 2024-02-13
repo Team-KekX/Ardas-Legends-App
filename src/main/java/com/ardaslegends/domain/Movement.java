@@ -74,6 +74,20 @@ public final class Movement extends AbstractDomainObject {
     public Region getCurrentRegion() {
         return isCharMovement ? rpChar.getCurrentRegion() : army.getCurrentRegion();
     }
+    public void setCurrentRegion(Region region) {
+        if(isCharMovement) {
+            log.trace("Movement is char movement, setting current region to [{}]", region);
+            rpChar.setCurrentRegion(region);
+        }
+        else {
+            log.trace("Movement is army movement, setting current region to [{}]", region);
+            army.setCurrentRegion(region);
+            if(army.getBoundTo() != null) {
+                log.trace("Army is bound to a character, setting the character's region to [{}]", region);
+                army.getBoundTo().setCurrentRegion(region);
+            }
+        }
+    }
 
     /**
      * Returns the next region in the path
