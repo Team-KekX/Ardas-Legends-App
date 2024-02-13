@@ -111,11 +111,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             if(defendingArmy.getActiveMovement().isPresent()) {
                 var activeMovement = defendingArmy.getActiveMovement().get();
                 log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
-                log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getDurationUntilNextRegion().toHours());
+                log.debug("Next region: [{}] - Duration until next region: [{}]", activeMovement.getNextRegion(), ServiceUtils.formatDuration(activeMovement.getDurationUntilNextRegion()));
 
                 if(activeMovement.getDurationUntilNextRegion().minusHours(24).isNegative()) {
                     log.debug("Next region is reached in <= 24h");
-                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getDurationUntilNextRegion().toHours());
+                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}]!", ServiceUtils.formatDuration(activeMovement.getDurationUntilNextRegion()));
                     throw BattleServiceException.defendingArmyIsMovingAway(defendingArmy);
                 }
                 log.debug("Defending army is moving but is still in the region for the next 24h");

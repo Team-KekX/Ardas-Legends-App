@@ -2,6 +2,7 @@ package com.ardaslegends.service.exceptions.logic.war;
 
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.service.exceptions.logic.LogicException;
+import com.ardaslegends.service.utils.ServiceUtils;
 import com.ardaslegends.service.war.BattleService;
 import lombok.val;
 
@@ -21,7 +22,7 @@ public class BattleServiceException extends LogicException {
     public static BattleServiceException battleNotAbleDueHours (){ return  new BattleServiceException(BATTLE_NOT_ABLE_DUE_HOURS.formatted());}
     public static BattleServiceException defendingArmyIsMovingAway (Army armyMovingAway){
         val durationUntilNextRegion = armyMovingAway.getActiveMovement().orElseThrow(() -> new IllegalArgumentException("Army %s has no movement! PLEASE CONTACT DEVS".formatted(armyMovingAway.getName()))).getDurationUntilNextRegion();
-        return new BattleServiceException(DEFENDING_ARMY_IS_MOVING_AWAY.formatted(durationUntilNextRegion));}
+        return new BattleServiceException(DEFENDING_ARMY_IS_MOVING_AWAY.formatted(ServiceUtils.formatDuration(durationUntilNextRegion)));}
     public static BattleServiceException attackingArmyHasAnotherMovement(){return new BattleServiceException(ATTACKING_ARMY_HAS_ANOTHER_MOVEMENT.formatted());}
     public static BattleServiceException notEnoughHealth(){ return new BattleServiceException(NOT_ENOUGH_HEALTH.formatted());}
     public static BattleServiceException notInSameRegion(Army attacker, Army defender){ return new BattleServiceException(NOT_IN_SAME_REGION.formatted(defender.getName(), attacker.getName()));}
