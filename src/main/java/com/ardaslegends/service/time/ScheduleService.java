@@ -12,12 +12,14 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -38,6 +40,7 @@ public class ScheduleService {
     private final MovementService movementService;
     private final ArmyService armyService;
     private final PlayerService playerService;
+    private final TimeFreezeService timeFreezeService;
     private final Clock clock;
 
     @Scheduled(cron = "0 */15 * ? * *")
@@ -98,6 +101,19 @@ public class ScheduleService {
         log.debug("Handling movement of {} {} with path {}", movement.getMovingEntity(), movement.getMovingEntityName(),
                 ServiceUtils.buildPathStringWithCurrentRegion(movement.getPath(), movement.getCurrentRegion()));
         log.debug("Movement data: {}", movement);
+
+        if(timeFreezeService.isTimeFrozen()) {
+            log.debug("Time is frozen - delaying movement");
+            val timeSinceLastUpdate = Duration.between(movement.getLastUpdatedAt(), now);
+            log.trace("Duration since last movement update: [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Delaying movement by [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Old ReachesNextRegionAt: [{}]", movement.getReachesNextRegionAt());
+            movement.setReachesNextRegionAt(movement.getReachesNextRegionAt().plus(timeSinceLastUpdate));
+            log.debug("New ReachesNextRegionAt: [{}]", movement.getReachesNextRegionAt());
+            log.debug("Old EndsAt: [{}]", movement.getEndTime());
+            movement.setEndTime(movement.getEndTime().plus(timeSinceLastUpdate));
+            log.debug("New EndsAt: [{}]", movement.getEndTime());
+        }
 
         log.trace("Entering loop while now [{}] is after reachesNextRegionAt [{}]", now, movement.getReachesNextRegionAt());
         while(now.isAfter(movement.getReachesNextRegionAt())) {
