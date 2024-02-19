@@ -16,6 +16,7 @@ import com.ardaslegends.service.time.TimeFreezeService;
 import com.ardaslegends.service.time.Timer;
 import com.ardaslegends.service.war.BattleService;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -136,7 +137,8 @@ public class BattleServiceTest {
         PathElement pathElement3 = PathElement.builder().region(region3).baseCost(region3.getCost()).actualCost(region3.getCost()).build();
         List<PathElement> path = List.of(pathElement2, pathElement1);
 
-        movement =  Movement.builder().isCharMovement(false).hoursMoved(2).hoursUntilNextRegion(46).hoursUntilComplete(46).isCurrentlyActive(true).army(army1).path(path).build();
+        val now = OffsetDateTime.now();
+        movement =  Movement.builder().isCharMovement(false).startTime(now.minusHours(2)).reachesNextRegionAt(now.plusHours(46)).endTime(now.plusHours(46)).isCurrentlyActive(true).army(army1).path(path).build();
 
         createBattleDto = new CreateBattleDto("1234","Battle of Gondor","Knights of Gondor",
                 "Knights of Isengard",true,null);
@@ -251,9 +253,9 @@ public class BattleServiceTest {
     @Test
     void ensureCreateBattleThrowsExceptionWhenDefendingArmyIsMovingAway(){
         log.debug("Testing if createBattle throws exception when defending army is moving away and cannot be caught!");
-
-        movement.setHoursUntilComplete(22);
-        movement.setHoursUntilNextRegion(22);
+        
+        movement.setEndTime(movement.getStartTime().plusHours(22));
+        movement.setReachesNextRegionAt(movement.getStartTime().plusHours(22));
         army2.getMovements().add(movement);
 
         var exception = assertThrows(BattleServiceException.class, ()-> battleService.createBattle(createBattleDto));

@@ -21,6 +21,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -55,10 +56,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Calling getArmyByName with name: [{}]", createBattleDto.attackingArmyName());
         Army attackingArmy = armyService.getArmyByName(createBattleDto.attackingArmyName());
 
+        log.debug("Checking if army is older than 24h");
+        if(attackingArmy.isYoungerThan24h()) {
+            log.warn("Army [{}] cannot declare battle because it was created less than 24h ago!", attackingArmy.getName());
+            throw BattleServiceException.armyYoungerThan24h(attackingArmy.getName());
+        }
+
         log.debug("Checking if player has permission to start the battle");
         if (!ServiceUtils.boundLordLeaderPermission(executorPlayer, attackingArmy)) {
             log.warn("Player [{}] does not have the permission to start a battle with the army [{}]!", executorPlayer.getIgn(), createBattleDto.attackingArmyName());
             throw ArmyServiceException.noPermissionToPerformThisAction();
+        }
+
+        log.debug("Checking if army has a player bound to it");
+        if(attackingArmy.getBoundTo() == null) {
+            log.warn("Cannot declare battle because attacking army [{}] is not bound to a player", attackingArmy.getName());
+            throw BattleServiceException.noPlayerBound(attackingArmy.getName());
         }
 
         log.debug("Checking if army has enough health to start the battle");
@@ -104,11 +117,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             if(defendingArmy.getActiveMovement().isPresent()) {
                 var activeMovement = defendingArmy.getActiveMovement().get();
                 log.debug("Defending army [{}] is moving [{}]", defendingArmy, activeMovement);
-                log.debug("Next region: [{}] - Hours until next region: [{}]", activeMovement.getNextRegion(), activeMovement.getHoursUntilNextRegion());
+                log.debug("Next region: [{}] - Duration until next region: [{}]", activeMovement.getNextRegion(), ServiceUtils.formatDuration(activeMovement.getDurationUntilNextRegion()));
 
-                if(activeMovement.getHoursUntilNextRegion() <= 24) {
+                if(activeMovement.getDurationUntilNextRegion().minusHours(24).isNegative()) {
                     log.debug("Next region is reached in <= 24h");
-                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}] hours!", activeMovement.getHoursUntilNextRegion());
+                    log.warn("Cannot declare battle - defending army cannot be reached because it is moving away in [{}]!", ServiceUtils.formatDuration(activeMovement.getDurationUntilNextRegion()));
                     throw BattleServiceException.defendingArmyIsMovingAway(defendingArmy);
                 }
                 log.debug("Defending army is moving but is still in the region for the next 24h");
@@ -135,15 +148,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 throw BattleServiceException.cannotAttackStarterHamlet();
             }
 
-            log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
-            path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
-            log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
 
-            log.debug("Checking if claimbuild is reachable in 24 hours");
-            if(ServiceUtils.getTotalPathCost(path) > 24){
-                log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
-                throw BattleServiceException.battleNotAbleDueHours();
+            if(!attackingArmy.getCurrentRegion().equals(attackedClaimbuild.getRegion())) {
+                log.debug("Army is not in region of claimbuild");
+                log.debug("Calling pathfinder to find shortest way from regions [{}] to [{}]", attackingArmy.getCurrentRegion(), battleRegion);
+                path = pathfinder.findShortestWay(attackingArmy.getCurrentRegion(), attackedClaimbuild.getRegion(),executorPlayer,true);
+                log.debug("Path: [{}], duration: [{} days]", ServiceUtils.buildPathString(path), ServiceUtils.getTotalPathCost(path));
+
+                log.debug("Checking if claimbuild is reachable in 24 hours");
+                if(ServiceUtils.getTotalPathCost(path) > 24){
+                    log.warn("Cannot declare battle - Claimbuild [{}] is not in 24 hour reach of attacking army [{}]", attackedClaimbuild.getName(), attackingArmy.getName());
+                    throw BattleServiceException.battleNotAbleDueHours();
+                }
             }
+            else
+                log.debug("Army [{}] is already in region [{}] of Claimbuild [{}]", attackingArmy.getName(), attackingArmy.getCurrentRegion().getId(), attackedClaimbuild.getName());
+
 
             if(stationedArmies.isEmpty())
                 log.debug("No armies stationed at claim build with name: [{}]", createBattleDto.claimBuildName());
