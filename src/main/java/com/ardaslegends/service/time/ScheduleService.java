@@ -150,7 +150,7 @@ public class ScheduleService {
 
         if(timeFreezeService.isTimeFrozen()) {
             log.debug("Time is frozen - delaying army healing");
-            val timeSinceLastUpdate = Duration.between(army.getHealingLastUpdatedAt(), now);
+            val timeSinceLastUpdate = Duration.between(army.getHealLastUpdatedAt(), now);
             log.trace("Duration since last army healing update: [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
             log.debug("Delaying army healing by [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
             log.debug("Old HealEnd: [{}]", army.getHealEnd());
@@ -159,7 +159,7 @@ public class ScheduleService {
         }
 
         log.debug("Setting HealingLastUpdatedAt to now [{}]", now);
-        army.setHealingLastUpdatedAt(now);
+        army.setHealLastUpdatedAt(now);
 
         log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
 
@@ -300,6 +300,19 @@ public class ScheduleService {
         RPChar rpChar = player.getActiveCharacter().orElseThrow(PlayerServiceException::noRpChar);
         log.trace("Got player's rpchar [{}]", rpChar);
         OffsetDateTime endTime = rpChar.getHealEnds();
+
+        if(timeFreezeService.isTimeFrozen()) {
+            log.debug("Time is frozen - delaying army healing");
+            val timeSinceLastUpdate = Duration.between(rpChar.getHealLastUpdatedAt(), now);
+            log.trace("Duration since last rpChar healing update: [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Delaying rpChar healing by [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Old HealEnd: [{}]", rpChar.getHealEnds());
+            rpChar.setHealEnds(rpChar.getHealEnds().plus(timeSinceLastUpdate));
+            log.debug("New HealEnd: [{}]", rpChar.getHealEnds());
+        }
+
+        log.debug("Setting HealingLastUpdatedAt to now [{}]", now);
+        rpChar.setHealLastUpdatedAt(now);
 
         log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
 

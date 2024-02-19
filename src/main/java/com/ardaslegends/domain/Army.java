@@ -68,7 +68,7 @@ public final class Army extends AbstractDomainObject {
     private OffsetDateTime healEnd;
     private Integer hoursHealed;
     private Integer hoursLeftHealing;
-    private OffsetDateTime healingLastUpdatedAt;
+    private OffsetDateTime healLastUpdatedAt;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "origin_claimbuild", foreignKey = @ForeignKey(name = "fk_armies_origin_claimbuild"))
     private ClaimBuild originalClaimbuild; //claimbuild where this army was created from
