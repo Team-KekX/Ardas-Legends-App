@@ -148,6 +148,19 @@ public class ScheduleService {
         log.debug("Handling healing army [{}]", army);
         OffsetDateTime endTime = army.getHealEnd();
 
+        if(timeFreezeService.isTimeFrozen()) {
+            log.debug("Time is frozen - delaying army healing");
+            val timeSinceLastUpdate = Duration.between(army.getHealingLastUpdatedAt(), now);
+            log.trace("Duration since last army healing update: [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Delaying army healing by [{}]", ServiceUtils.formatDuration(timeSinceLastUpdate));
+            log.debug("Old HealEnd: [{}]", army.getHealEnd());
+            army.setHealEnd(army.getHealEnd().plus(timeSinceLastUpdate));
+            log.debug("New HealEnd: [{}]", army.getHealEnd());
+        }
+
+        log.debug("Setting HealingLastUpdatedAt to now [{}]", now);
+        army.setHealingLastUpdatedAt(now);
+
         log.debug("Getting the hours between end date [{}] and current time [{}]", endTime, now);
 
         /*
@@ -180,7 +193,7 @@ public class ScheduleService {
         int hoursHealedSinceLastTime = army.getHoursLeftHealing() - hoursLeft;
         log.debug("Hours healed since last time: [{}]", hoursHealedSinceLastTime);
 
-        //If we didn't move an hour since last time, exit function
+        //If we didn't heal an hour since last time, exit function
 
         if(hoursHealedSinceLastTime == 0 && hoursLeft != 0) {
             log.debug("No hour has passed for this healing - exiting function");
