@@ -47,7 +47,7 @@ public class TimeFreezeServiceTest {
         val list = new ArrayList<Integer>();
 
         Mockito.doAnswer(invocation -> {
-            timeFreezeService.sleep(Duration.ofMillis(200));
+            timeFreezeService.sleep(Duration.ofMillis(100));
             return null;
         })
         .when(timeFreezeService).sleep(Duration.ofHours(24));
