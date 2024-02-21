@@ -3,6 +3,7 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.domain.war.battle.BattleLocation;
+import com.ardaslegends.domain.war.battle.BattleResult;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.repository.war.battle.BattleRepository;
@@ -32,6 +33,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final ClaimBuildService claimBuildService;
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
+    private final FactionService factionService;
 
     @Transactional(readOnly = false)
     public Battle createBattle(CreateBattleDto createBattleDto) {
@@ -215,6 +217,44 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                     ServiceUtils.checkAllBlanks(unitsDto);
                 });
 
-        return null;
+        log.debug("Finding battle with id [{}]", concludeBattleDto.battleId());
+        val battle = battleRepository.findByIdOrElseThrow(concludeBattleDto.battleId());
+
+        log.debug("Trying to find winner faction [{}]", concludeBattleDto.winnerFaction());
+        val winnerFaction = factionService.getFactionByName(concludeBattleDto.winnerFaction());
+        log.debug("Found faction [{}]", winnerFaction);
+
+        log.debug("Looking if winner faction [{}] is on attacking side", winnerFaction.getName());
+        val isWinnerOnAttackerSide = battle.getAttackingArmies().stream()
+                .map(Army::getFaction)
+                .anyMatch(faction -> faction.equals(winnerFaction));
+        log.debug("Winner is on attacking side: [{}]", isWinnerOnAttackerSide);
+
+        if(!isWinnerOnAttackerSide) {
+            log.debug("Looking if winner faction [{}] is on defending side", winnerFaction.getName());
+            val isWinnerOnDefendingSide = battle.getDefendingArmies().stream()
+                    .map(Army::getFaction)
+                    .anyMatch(faction -> faction.equals(winnerFaction));
+            log.debug("Winner is on defending side: [{}]", isWinnerOnDefendingSide);
+
+            if(!isWinnerOnDefendingSide) {
+                log.warn("Faction [{}] is not part of battle [{}]", winnerFaction.getName(), battle.getId());
+                throw BattleServiceException.factionNotPartOfBattle(winnerFaction.getName(), battle.getId());
+            }
+        }
+
+        log.debug("Getting the initial faction of the winner side");
+        val winnerInitialFaction = isWinnerOnAttackerSide ? battle.getInitialAttacker().getFaction() : battle.getInitialDefender();
+        log.debug("Initial faction of winner side is [{}]", winnerInitialFaction.getName());
+
+        //TODO calculate unit casualties
+        //TODO calculate player casualties
+
+        //TODO create and set BattleResult
+
+        //TODO set BattleStatus to COMPLETE
+        //TODO unfreeze time
+
+        return battle;
     }
 }
