@@ -23,7 +23,7 @@ public class RpCharCasualty {
     private RPChar rpChar;
 
     @ManyToOne
-    @JoinColumn(name = "rpchar_id", foreignKey = @ForeignKey(name = "fk_battle_char_casualties_char_id"))
+    @JoinColumn(name = "slain_by_id", foreignKey = @ForeignKey(name = "fk_battle_char_casualties_slain_by_id"))
     private RPChar slainByChar;
 
     private String slainByWeapon;
