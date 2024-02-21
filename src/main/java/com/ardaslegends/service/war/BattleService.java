@@ -7,6 +7,7 @@ import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.service.*;
+import com.ardaslegends.service.dto.war.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
@@ -18,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -198,5 +196,25 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
+    }
+
+    @Transactional(readOnly = false)
+    public Battle concludeBattle(ConcludeBattleDto concludeBattleDto) {
+        log.debug("Concluding battle with data {}", concludeBattleDto);
+        Objects.requireNonNull(concludeBattleDto, "ConcludeBattleDto must not be null!");
+        ServiceUtils.checkAllNulls(concludeBattleDto);
+        Arrays.stream(concludeBattleDto.playersKilled())
+                .forEach(discordIdDto -> {
+                    ServiceUtils.checkAllNulls(discordIdDto);
+                    ServiceUtils.checkAllBlanks(discordIdDto);
+                });
+
+        Arrays.stream(concludeBattleDto.survivingUnits())
+                .forEach(unitsDto -> {
+                    ServiceUtils.checkAllNulls(unitsDto);
+                    ServiceUtils.checkAllBlanks(unitsDto);
+                });
+
+        return null;
     }
 }
