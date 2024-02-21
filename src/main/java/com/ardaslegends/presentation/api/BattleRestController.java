@@ -1,6 +1,6 @@
 package com.ardaslegends.presentation.api;
 
-import com.ardaslegends.domain.war.Battle;
+import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.presentation.api.response.war.BattleResponse;
 import com.ardaslegends.service.dto.war.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;

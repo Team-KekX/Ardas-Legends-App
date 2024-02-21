@@ -1,8 +1,10 @@
-package com.ardaslegends.domain.war;
+package com.ardaslegends.domain.war.battle;
 
 
 import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Army;
+import com.ardaslegends.domain.war.War;
+import com.ardaslegends.domain.war.battle.BattleLocation;
 import com.ardaslegends.domain.war.battle.BattleResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

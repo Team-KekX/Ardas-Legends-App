@@ -1,11 +1,7 @@
 package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.domain.war.Battle;
-import com.ardaslegends.domain.war.War;
 import com.ardaslegends.repository.faction.FactionRepository;
-import com.ardaslegends.repository.war.QueryWarStatus;
-import com.ardaslegends.repository.war.WarRepository;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

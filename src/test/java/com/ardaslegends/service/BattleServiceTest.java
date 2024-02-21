@@ -1,8 +1,8 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.domain.war.Battle;
-import com.ardaslegends.domain.war.BattleLocation;
+import com.ardaslegends.domain.war.battle.Battle;
+import com.ardaslegends.domain.war.battle.BattleLocation;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
 import com.ardaslegends.repository.BattleRepository;

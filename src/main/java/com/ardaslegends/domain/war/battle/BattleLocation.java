@@ -1,4 +1,4 @@
-package com.ardaslegends.domain.war;
+package com.ardaslegends.domain.war.battle;
 
 import com.ardaslegends.domain.ClaimBuild;
 import com.ardaslegends.domain.Region;

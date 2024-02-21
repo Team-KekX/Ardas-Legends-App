@@ -2,6 +2,7 @@ package com.ardaslegends.domain.war;
 
 import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.service.exceptions.logic.war.WarServiceException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
