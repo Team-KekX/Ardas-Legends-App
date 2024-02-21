@@ -3,11 +3,14 @@ package com.ardaslegends.domain.war;
 
 import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Army;
+import com.ardaslegends.domain.war.battle.BattleResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,6 +55,10 @@ public class Battle extends AbstractDomainObject {
 
     @Embedded
     private BattleLocation battleLocation;
+
+    @Setter
+    @Embedded
+    private BattleResult battleResult;
 
     public Battle(Set<War> wars, String name, Set<Army> attackingArmies, Set<Army> defendingArmies, OffsetDateTime declaredDate, OffsetDateTime timeFrozenFrom, OffsetDateTime timeFrozenUntil, OffsetDateTime agreedBattleDate, BattleLocation battleLocation) {
         this.wars = new HashSet<>(wars);
