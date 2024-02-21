@@ -7,7 +7,7 @@ import com.ardaslegends.repository.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.service.*;
-import com.ardaslegends.service.dto.war.CreateBattleDto;
+import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
@@ -17,7 +17,6 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
