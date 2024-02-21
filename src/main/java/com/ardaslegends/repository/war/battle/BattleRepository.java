@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.war.battle;
 
 import com.ardaslegends.domain.war.battle.Battle;
 import org.springframework.data.jpa.repository.JpaRepository;

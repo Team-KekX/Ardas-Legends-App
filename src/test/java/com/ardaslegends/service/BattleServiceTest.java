@@ -5,7 +5,7 @@ import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.domain.war.battle.BattleLocation;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
-import com.ardaslegends.repository.BattleRepository;
+import com.ardaslegends.repository.war.battle.BattleRepository;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
