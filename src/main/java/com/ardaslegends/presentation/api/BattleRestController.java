@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.war.Battle;
 import com.ardaslegends.presentation.api.response.war.BattleResponse;
+import com.ardaslegends.service.dto.war.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.war.BattleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(BattleRestController.BASE_URL)
 public class BattleRestController {
     public static final String BASE_URL = "/api/battles";
+    public static final String CONCLUDE = "/conclude";
 
     private final BattleService battleService;
 
@@ -38,6 +40,21 @@ public class BattleRestController {
         val battleResponse = new BattleResponse(battle);
 
         log.info("Sending successful createBattle response [{}]", battleResponse);
+        return ResponseEntity.ok(battleResponse);
+    }
+
+    @Operation(summary = "Conclude Battle", description = "Concludes a battle with the passed result")
+    @PostMapping
+    public ResponseEntity<BattleResponse> concludeBattle(@RequestBody ConcludeBattleDto dto) {
+        log.debug("Incoming concludeBattle Request, dto [{}]", dto);
+
+        log.debug("Calling battleService.concludeBattle");
+        Battle battle = battleService.concludeBattle(dto);
+
+        log.debug("Building response");
+        val battleResponse = new BattleResponse(battle);
+
+        log.info("Sending successful concludeBattle response [{}]", battleResponse);
         return ResponseEntity.ok(battleResponse);
     }
 }
