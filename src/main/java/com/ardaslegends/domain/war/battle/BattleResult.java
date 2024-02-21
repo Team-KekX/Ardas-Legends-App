@@ -29,14 +29,14 @@ public class BattleResult {
     @ElementCollection
     @CollectionTable(name = "battle_char_casualties",
             joinColumns = @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_battle_char_casualties_battle_id")))
-    private Set<UnitCasualty> rpCharCasualties = new HashSet<>(2);
+    private Set<RpCharCasualty> rpCharCasualties = new HashSet<>(2);
 
     public BattleResult(Faction winner) {
         Objects.requireNonNull(winner, "BattleResult constructor: winner was null!");
         this.winner = winner;
     }
 
-    public BattleResult(Faction winner, Set<UnitCasualty> unitCasualties, Set<UnitCasualty> rpCharCasualties) {
+    public BattleResult(Faction winner, Set<UnitCasualty> unitCasualties, Set<RpCharCasualty> rpCharCasualties) {
         Objects.requireNonNull(winner, "BattleResult constructor: winner was null!");
         this.winner = winner;
         this.unitCasualties = unitCasualties;
@@ -45,7 +45,7 @@ public class BattleResult {
 
     public Set<UnitCasualty> getUnitCasualties() { return Collections.unmodifiableSet(unitCasualties); }
 
-    public Set<UnitCasualty> getRpCharCasualties() { return Collections.unmodifiableSet(rpCharCasualties); }
+    public Set<RpCharCasualty> getRpCharCasualties() { return Collections.unmodifiableSet(rpCharCasualties); }
 
     @Override
     public String toString() {
