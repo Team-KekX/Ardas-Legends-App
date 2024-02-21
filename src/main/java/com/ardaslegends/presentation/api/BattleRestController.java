@@ -44,7 +44,7 @@ public class BattleRestController {
     }
 
     @Operation(summary = "Conclude Battle", description = "Concludes a battle with the passed result")
-    @PostMapping
+    @PostMapping(CONCLUDE)
     public ResponseEntity<BattleResponse> concludeBattle(@RequestBody ConcludeBattleDto dto) {
         log.debug("Incoming concludeBattle Request, dto [{}]", dto);
 
