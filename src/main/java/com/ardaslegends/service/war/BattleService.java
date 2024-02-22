@@ -220,6 +220,11 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Finding battle with id [{}]", concludeBattleDto.battleId());
         val battle = battleRepository.findByIdOrElseThrow(concludeBattleDto.battleId());
 
+        if(battle.getBattleResult() != null) {
+            log.warn("Battle [{}] already has a result [{}]", battle.getId(), battle.getBattleResult());
+            throw BattleServiceException.battleAlreadyConcluded();
+        }
+        
         log.debug("Trying to find winner faction [{}]", concludeBattleDto.winnerFaction());
         val winnerFaction = factionService.getFactionByName(concludeBattleDto.winnerFaction());
         log.debug("Found faction [{}]", winnerFaction);

@@ -16,6 +16,7 @@ public class BattleServiceException extends LogicException {
     private static final String NO_PLAYER_BOUND = "The army '%s' must have a player bound to it in order to attack!";
     private static final String ARMY_YOUNGER_THAN_24H = "The army '%s' was created less than 24 hours ago!";
     private static final String FACTION_NOT_PART_IN_BATTLE = "The Faction '%s' is not partaking in battle with id %d!";
+    private static final String BATTLE_ALREADY_CONCLUDED = "This battle is already concluded!";
 
     public static BattleServiceException factionsNotAtWar(String factionName1, String factionName2) { return new BattleServiceException(FACTIONS_NOT_AT_WAR.formatted(factionName1, factionName2)); }
 
@@ -30,6 +31,7 @@ public class BattleServiceException extends LogicException {
     public static BattleServiceException noPlayerBound(String armyName) {return new BattleServiceException(NO_PLAYER_BOUND.formatted(armyName));}
     public static BattleServiceException armyYoungerThan24h(String armyName) {return new BattleServiceException(ARMY_YOUNGER_THAN_24H.formatted(armyName));}
     public static BattleServiceException factionNotPartOfBattle(String factionName, Long battleId) {return new BattleServiceException(FACTION_NOT_PART_IN_BATTLE.formatted(factionName, battleId));}
+    public static BattleServiceException battleAlreadyConcluded() {return new BattleServiceException(BATTLE_ALREADY_CONCLUDED);}
     protected BattleServiceException(String message, Throwable rootCause) {
         super(message, rootCause);
     }
