@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,8 +44,12 @@ public class Battle extends AbstractDomainObject {
             inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_defendingArmy")) })
     private Set<Army> defendingArmies = new HashSet<>();
 
+    @Setter
+    private BattlePhase battlePhase;
+
     private OffsetDateTime declaredDate;
 
+    @Setter
     private OffsetDateTime timeFrozenFrom;
 
     private OffsetDateTime timeFrozenUntil;
@@ -59,9 +65,21 @@ public class Battle extends AbstractDomainObject {
         this.attackingArmies = new HashSet<>(attackingArmies);
         this.defendingArmies = new HashSet<>(defendingArmies);
         this.declaredDate = declaredDate;
+        this.battlePhase = BattlePhase.PRE_BATTLE;
         this.timeFrozenFrom = timeFrozenFrom;
         this.timeFrozenUntil = timeFrozenUntil;
         this.agreedBattleDate = agreedBattleDate;
         this.battleLocation = battleLocation;
     }
+
+    public Army getInitialAttacker() {
+        return attackingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no initial attacking army in battle at location %s".formatted(battleLocation.toString())));
+    }
+
+    public Army getFirstDefender() {
+        return defendingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no defending armies in battle at location %s".formatted(battleLocation.toString())));
+    }
+    public boolean isOver() { return BattlePhase.CONCLUDED.equals(this.battlePhase); }
 }

@@ -4,6 +4,8 @@ import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.ArmyRepository;
 import com.ardaslegends.repository.MovementRepository;
 import com.ardaslegends.repository.player.PlayerRepository;
+import com.ardaslegends.service.time.ScheduleService;
+import com.ardaslegends.service.time.TimeFreezeService;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +28,7 @@ public class ScheduleServiceTest {
     private MovementService mockMovementService;
     private ArmyService mockArmyService;
     private PlayerService mockPlayerService;
+    private TimeFreezeService mockTimeFreezeService;
     private Clock mockClock;
     private Clock fixedClock;
 
@@ -71,8 +74,9 @@ public class ScheduleServiceTest {
         mockArmyService = mock(ArmyService.class);
         mockPlayerService = mock(PlayerService.class);
         mockClock = mock(Clock.class);
+        mockTimeFreezeService = mock(TimeFreezeService.class);
 
-        scheduleService = new ScheduleService(mockMovementRepository, mockArmyRepository, mockPlayerRepository, mockMovementService, mockArmyService, mockPlayerService, mockClock);
+        scheduleService = new ScheduleService(mockMovementRepository, mockArmyRepository, mockPlayerRepository, mockMovementService, mockArmyService, mockPlayerService, mockTimeFreezeService, mockClock);
 
         unitType = UnitType.builder().unitName("Gondor Soldier").tokenCost(1.0).build();
         unitType2 = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();

@@ -43,7 +43,7 @@ public class ArmyRestControllerTest {
         val region = Region.builder().id("10").neighboringRegions(new HashSet<>()).build();
         val originalClaimbuild = ClaimBuild.builder().name("Nimheria").build();
         army = new Army(1L, "Army Name", ArmyType.ARMY, faction, region, null,
-                new ArrayList<Unit>(), new ArrayList<String>(), null, 0.0, false, null, null, 0, 0,
+                new ArrayList<Unit>(), new ArrayList<String>(), null, 0.0, false, null, null, 0, 0, null,
                 originalClaimbuild, OffsetDateTime.now(), new ArrayList<Movement>(), true);
         mockArmyService = mock(ArmyService.class);
         armyRestController = new ArmyRestController(mockArmyService);
