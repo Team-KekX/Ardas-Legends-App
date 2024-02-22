@@ -12,6 +12,7 @@ import com.ardaslegends.service.exceptions.logic.claimbuild.ClaimBuildServiceExc
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -245,6 +246,27 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
         }
 
         log.debug("Successfully returning Claimbuilds found with names [{}]", (Object) names);
+        return fetchedClaimbuilds;
+    }
+
+    public List<ClaimBuild> getClaimBuildsByFaction(String factionName) {
+        log.debug("Getting Claimbuilds of faction [{}]", factionName);
+
+        Objects.requireNonNull(factionName, "FactionName must not be null");
+        ServiceUtils.checkBlankString(factionName, "faction");
+
+        log.debug("Getting faction [{}]", factionName);
+        val faction = factionService.getFactionByName(factionName);
+
+        log.debug("Fetching claimbuilds of faction [{}]", factionName);
+        List<ClaimBuild> fetchedClaimbuilds = secureFind(faction, claimbuildRepository::findClaimBuildsByFaction);
+
+        if(fetchedClaimbuilds.isEmpty()) {
+            log.warn("No Claimbuild found for faction [{}]", faction);
+            throw ClaimBuildServiceException.factionHasNoCbs(factionName);
+        }
+
+        log.debug("Successfully returning Claimbuilds found for faction [{}]", faction);
         return fetchedClaimbuilds;
     }
 

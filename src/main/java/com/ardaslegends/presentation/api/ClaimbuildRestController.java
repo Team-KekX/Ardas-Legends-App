@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 public class ClaimbuildRestController extends AbstractRestController {
     public static final String BASE_URL = "/api/claimbuild";
     public static final String NAME = "/name";
+    public static final String FACTION = "/faction";
     public static final String GET_TYPES = "/types";
     public static final String GET_SPECIAL_BUILDINGS = "/specialbuildings";
     public static final String PATH_CREATE_CLAIMBUILD = "/create";
@@ -69,6 +70,19 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming getClaimbuildsByName Request, parameter names: [{}]", (Object) names);
 
         List<ClaimBuild> claimBuilds = claimBuildService.getClaimBuildsByNames(names);
+
+        log.debug("Building ClaimbuildResponses with claimbuilds [{}]", claimBuilds);
+        ClaimbuildResponse[] response = claimBuilds.stream().map(ClaimbuildResponse::new).toArray(ClaimbuildResponse[]::new);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get Claimbuilds By Faction", description = "Returns an array of claimbuilds of the specified faction")
+    @GetMapping(FACTION)
+    public ResponseEntity<ClaimbuildResponse[]> getClaimbuildsByFaction(@RequestParam String faction) {
+        log.debug("Incoming getClaimbuildsByFaction Request, parameter faction: [{}]", faction);
+
+        List<ClaimBuild> claimBuilds = claimBuildService.getClaimBuildsByFaction(faction);
 
         log.debug("Building ClaimbuildResponses with claimbuilds [{}]", claimBuilds);
         ClaimbuildResponse[] response = claimBuilds.stream().map(ClaimbuildResponse::new).toArray(ClaimbuildResponse[]::new);

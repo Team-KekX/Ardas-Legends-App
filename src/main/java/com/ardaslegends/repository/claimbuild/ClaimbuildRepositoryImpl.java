@@ -1,8 +1,10 @@
 package com.ardaslegends.repository.claimbuild;
 
 import com.ardaslegends.domain.ClaimBuild;
+import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.QClaimBuild;
 import com.ardaslegends.repository.exceptions.ClaimbuildRepositoryException;
+import com.ardaslegends.repository.exceptions.RepositoryNullPointerException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -60,6 +62,24 @@ public class ClaimbuildRepositoryImpl extends QuerydslRepositorySupport implemen
 
         log.debug("Queried claimbuilds: [{}]", fetchedClaimbuilds);
 
+        return fetchedClaimbuilds;
+    }
+
+    @Override
+    public List<ClaimBuild> findClaimBuildsByFaction(Faction faction) {
+        log.debug("Querying claimbuilds of faction [{}]", faction);
+        if(faction == null) {
+            log.warn("Faction was null in findClaimBuildsByFaction!");
+            throw RepositoryNullPointerException.queryMethodParameterWasNull("faction", "findClaimBuildsByFaction");
+        }
+
+        QClaimBuild qClaimBuild = QClaimBuild.claimBuild;
+
+        val fetchedClaimbuilds = from(qClaimBuild)
+                .where(qClaimBuild.ownedBy.name.eq(faction.getName()))
+                .stream().toList();
+
+        log.debug("Queried claimbuilds: [{}]", fetchedClaimbuilds);
         return fetchedClaimbuilds;
     }
 
