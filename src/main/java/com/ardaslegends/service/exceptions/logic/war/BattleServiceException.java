@@ -16,7 +16,11 @@ public class BattleServiceException extends LogicException {
     private static final String NO_PLAYER_BOUND = "The army '%s' must have a player bound to it in order to attack!";
     private static final String ARMY_YOUNGER_THAN_24H = "The army '%s' was created less than 24 hours ago!";
     private static final String FACTION_NOT_PART_IN_BATTLE = "The Faction '%s' is not partaking in battle with id %d!";
+    private static final String ARMY_NOT_PART_IN_BATTLE = "The Army '%s' is not partaking in battle with id %d!";
     private static final String BATTLE_ALREADY_CONCLUDED = "This battle is already concluded!";
+    private static final String ARMY_DOES_NOT_CONTAIN_UNIT = "Army '%s' does not contain unit '%s'!";
+    private static final String UNIT_NEW_AMOUNT_TOO_LARGE = "Army '%s' only had %d '%s' before the battle!";
+    private static final String UNIT_NEW_AMOUNT_NEGATIVE = "New '%s' amount cannot be negative (%d)!";
 
     public static BattleServiceException factionsNotAtWar(String factionName1, String factionName2) { return new BattleServiceException(FACTIONS_NOT_AT_WAR.formatted(factionName1, factionName2)); }
 
@@ -31,7 +35,11 @@ public class BattleServiceException extends LogicException {
     public static BattleServiceException noPlayerBound(String armyName) {return new BattleServiceException(NO_PLAYER_BOUND.formatted(armyName));}
     public static BattleServiceException armyYoungerThan24h(String armyName) {return new BattleServiceException(ARMY_YOUNGER_THAN_24H.formatted(armyName));}
     public static BattleServiceException factionNotPartOfBattle(String factionName, Long battleId) {return new BattleServiceException(FACTION_NOT_PART_IN_BATTLE.formatted(factionName, battleId));}
+    public static BattleServiceException armyNotPartOfBattle(String armyName, Long battleId) {return new BattleServiceException(ARMY_NOT_PART_IN_BATTLE.formatted(armyName, battleId));}
     public static BattleServiceException battleAlreadyConcluded() {return new BattleServiceException(BATTLE_ALREADY_CONCLUDED);}
+    public static BattleServiceException armyDoesNotContainUnit(String armyName, String unitName) {return new BattleServiceException(ARMY_DOES_NOT_CONTAIN_UNIT.formatted(armyName, unitName));}
+    public static BattleServiceException newUnitAmountTooLarge(String armyName, Integer amountBeforeBattle, String unitName) {return new BattleServiceException(UNIT_NEW_AMOUNT_TOO_LARGE.formatted(armyName, amountBeforeBattle, unitName));}
+    public static BattleServiceException newUnitAmountNegative(String unitName, Integer newAmount) {return new BattleServiceException(UNIT_NEW_AMOUNT_NEGATIVE.formatted(unitName, newAmount));}
     protected BattleServiceException(String message, Throwable rootCause) {
         super(message, rootCause);
     }

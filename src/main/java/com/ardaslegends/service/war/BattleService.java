@@ -4,11 +4,13 @@ import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.domain.war.battle.BattleLocation;
 import com.ardaslegends.domain.war.battle.BattleResult;
+import com.ardaslegends.domain.war.battle.UnitCasualty;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.repository.war.battle.BattleRepository;
 import com.ardaslegends.service.*;
 import com.ardaslegends.service.dto.war.ConcludeBattleDto;
+import com.ardaslegends.service.dto.war.SurvivingUnitsDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
@@ -224,7 +226,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             log.warn("Battle [{}] already has a result [{}]", battle.getId(), battle.getBattleResult());
             throw BattleServiceException.battleAlreadyConcluded();
         }
-        
+
         log.debug("Trying to find winner faction [{}]", concludeBattleDto.winnerFaction());
         val winnerFaction = factionService.getFactionByName(concludeBattleDto.winnerFaction());
         log.debug("Found faction [{}]", winnerFaction);
@@ -261,5 +263,80 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         //TODO unfreeze time
 
         return battle;
+    }
+
+    /**
+     * Updates the units of the army specified in the SurvivingUnitsDto to only include the surviving
+     * units also specified in the dto
+     * @param dto Dto which contains the army and its surviving units
+     * @param battle The battle which the casualties happened in
+     * @return A UnitCasualty object of the units that died in the battle. Returns null if no casualties happened
+     */
+    private Set<UnitCasualty> updateSurvivingUnits(SurvivingUnitsDto dto, Battle battle) {
+        log.debug("Updating the surviving units of army [{}]", dto.army());
+
+        log.debug("Finding army [{}] in battle [{}]", dto.army(), battle);
+        val foundArmy = battle.getPartakingArmies().stream()
+                .filter(army -> army.getName().equals(dto.army()))
+                .findFirst();
+
+        if(foundArmy.isEmpty()) {
+            log.warn("No army with name [{}] found in battle [{}]!", dto.army(), battle);
+            throw BattleServiceException.armyNotPartOfBattle(dto.army(), battle.getId());
+        }
+
+        val army = foundArmy.get();
+        log.debug("Found army [{}]", army);
+        val units = army.getUnits();
+
+        val unitCasualties = new HashSet<UnitCasualty>();
+
+        log.debug("Starting to loop through units");
+        Arrays.stream(dto.survivingUnits()).forEach(unitDto -> {
+            log.debug("Starting calculation for dto [{}]", unitDto);
+            log.debug("Checking if unit [{}] is present in army [{}]", unitDto.unitTypeName(), army.getName());
+            val foundUnit = units.stream().filter(unit -> unit.getUnitType().getUnitName().equals(unitDto.unitTypeName())).findFirst();
+
+            if(foundUnit.isEmpty()) {
+                log.warn("Army [{}] does not contain unit [{}]!", army.getName(), unitDto.unitTypeName());
+                throw BattleServiceException.armyDoesNotContainUnit(army.getName(), unitDto.unitTypeName());
+            }
+
+            log.debug("Unit [{}] is present in army [{}]", unitDto.unitTypeName(), army.getName());
+            val unit = foundUnit.get();
+            val oldAmount = unit.getAmountAlive();
+            log.debug("Old amount alive of [{}]: [{}]", unitDto.unitTypeName(), oldAmount);
+            val newAmount = unitDto.amount();
+            log.debug("New amount alive of [{}]: [{}]", unitDto.unitTypeName(), newAmount);
+
+            if(newAmount < 0) {
+                log.warn("New amount [{}] is <0", newAmount);
+                throw BattleServiceException.newUnitAmountNegative(unitDto.unitTypeName(), newAmount);
+            }
+
+            if(newAmount > oldAmount) {
+                log.warn("New amount alive [{}] is larger than old amount alive [{}] for unit [{}]!", newAmount, oldAmount, unitDto.unitTypeName());
+                throw BattleServiceException.newUnitAmountTooLarge(army.getName(), oldAmount, unitDto.unitTypeName());
+            }
+
+            val unitsLost = (long) (oldAmount - newAmount);
+            log.debug("Amount of [{}] lost in battle: [{}]", unitDto.unitTypeName(), unitsLost);
+
+            if(unitsLost > 0) {
+                log.debug("Amount lost is >0 -> creating UnitCasualty");
+                val unitCasualty = new UnitCasualty(unit, unitsLost);
+
+                log.debug("Setting amountAlive of unit [{}] from [{}] to [{}]", unitDto.unitTypeName(), oldAmount, newAmount);
+                unit.setAmountAlive(newAmount);
+
+                unitCasualties.add(unitCasualty);
+                log.debug("Added UnitCasualty {}", unitCasualty);
+            }
+        });
+
+        log.debug("Finished updating units");
+        log.debug("Created [{}] UnitCasualties", unitCasualties.size());
+
+        return Collections.unmodifiableSet(unitCasualties);
     }
 }
