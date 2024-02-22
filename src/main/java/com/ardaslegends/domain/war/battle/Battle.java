@@ -15,8 +15,11 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import lombok.Setter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -89,5 +92,12 @@ public class Battle extends AbstractDomainObject {
             this.initialDefender = defendingArmies.stream().findFirst().orElseThrow(() -> new IllegalArgumentException("CONTACT DEVS: No initial defender in Battle %s!".formatted(name))).getFaction();
         else
             this.initialDefender = battleLocation.getClaimBuild().getOwnedBy();
+    }
+
+    public Set<Army> getPartakingArmies() {
+        HashSet<Army> allArmies = new HashSet<>(attackingArmies.size() + defendingArmies.size());
+        allArmies.addAll(attackingArmies);
+        allArmies.addAll(defendingArmies);
+        return Collections.unmodifiableSet(allArmies);
     }
 }
