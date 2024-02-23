@@ -299,9 +299,15 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Updating all player casualties");
         val rpCharCasualties = updateKilledPlayers(concludeBattleDto.playersKilled());
 
-        //TODO create and set BattleResult
+        log.debug("Creating BattleResult");
+        val battleResult = new BattleResult(winnerInitialFaction, unitCasualties, rpCharCasualties);
+        log.debug("Created BattleResult [{}]", battleResult);
 
-        //TODO set BattleStatus to COMPLETE
+        log.debug("Adding result to battle [{}]", battle);
+        battle.setBattleResult(battleResult);
+        log.debug("Setting BattlePhase to [{}]", BattlePhase.CONCLUDED);
+        battle.setBattlePhase(BattlePhase.CONCLUDED);
+        
         //TODO unfreeze time
 
         return battle;
