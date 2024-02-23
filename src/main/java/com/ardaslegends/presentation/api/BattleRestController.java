@@ -2,7 +2,7 @@ package com.ardaslegends.presentation.api;
 
 import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.presentation.api.response.war.BattleResponse;
-import com.ardaslegends.service.dto.war.ConcludeBattleDto;
+import com.ardaslegends.service.dto.war.battle.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.war.BattleService;
 import io.swagger.v3.oas.annotations.Operation;
