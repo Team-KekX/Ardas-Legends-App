@@ -1,5 +1,6 @@
 package com.ardaslegends.domain.war.battle;
 
+import com.ardaslegends.domain.Player;
 import com.ardaslegends.domain.RPChar;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ForeignKey;
@@ -24,7 +25,7 @@ public class RpCharCasualty {
 
     @ManyToOne
     @JoinColumn(name = "slain_by_id", foreignKey = @ForeignKey(name = "fk_battle_char_casualties_slain_by_id"))
-    private RPChar slainByChar;
+    private Player slainByChar;
 
     private String slainByWeapon;
 
@@ -36,7 +37,7 @@ public class RpCharCasualty {
         this.rpChar = rpChar;
     }
 
-    public RpCharCasualty(RPChar rpChar, RPChar slainByChar, String slainByWeapon) {
+    public RpCharCasualty(RPChar rpChar, Player slainByChar, String slainByWeapon) {
         Objects.requireNonNull(rpChar, "RpCharCasualty constructor: rpChar was null!");
         this.rpChar = rpChar;
         this.slainByChar = slainByChar;

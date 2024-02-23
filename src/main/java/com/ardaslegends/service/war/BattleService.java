@@ -1,19 +1,19 @@
 package com.ardaslegends.service.war;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.domain.war.battle.Battle;
-import com.ardaslegends.domain.war.battle.BattleLocation;
-import com.ardaslegends.domain.war.battle.UnitCasualty;
-import com.ardaslegends.domain.war.battle.BattlePhase;
+import com.ardaslegends.domain.war.battle.*;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.repository.war.battle.BattleRepository;
 import com.ardaslegends.service.*;
-import com.ardaslegends.service.dto.war.ConcludeBattleDto;
-import com.ardaslegends.service.dto.war.SurvivingUnitsDto;
+import com.ardaslegends.service.dto.player.DiscordIdDto;
+import com.ardaslegends.service.dto.war.battle.ConcludeBattleDto;
+import com.ardaslegends.service.dto.war.battle.RpCharCasualtyDto;
+import com.ardaslegends.service.dto.war.battle.SurvivingUnitsDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.discord.DiscordService;
 import com.ardaslegends.service.discord.messages.war.BattleMessages;
+import com.ardaslegends.service.exceptions.logic.rpchar.RpCharServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.time.TimeFreezeService;
@@ -21,6 +21,8 @@ import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -286,8 +288,16 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         val winnerInitialFaction = isWinnerOnAttackerSide ? battle.getInitialAttacker().getFaction() : battle.getInitialDefender();
         log.debug("Initial faction of winner side is [{}]", winnerInitialFaction.getName());
 
-        //TODO calculate unit casualties
-        //TODO calculate player casualties
+        log.debug("Updating all army casualties");
+        val unitCasualties = new HashSet<UnitCasualty>();
+        Arrays.stream(concludeBattleDto.survivingUnits())
+                .forEach(survivingUnitsDto -> {
+                    val casualties = updateSurvivingUnits(survivingUnitsDto, battle);
+                    unitCasualties.addAll(casualties);
+                });
+
+        log.debug("Updating all player casualties");
+        val rpCharCasualties = updateKilledPlayers(concludeBattleDto.playersKilled());
 
         //TODO create and set BattleResult
 
@@ -370,5 +380,65 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Created [{}] UnitCasualties", unitCasualties.size());
 
         return Collections.unmodifiableSet(unitCasualties);
+    }
+
+    /**
+     * Injures every RpChar of the players passed in the DiscordIdDto array.
+     * @param dtos Array of discord id dtos of the players that died in the battle
+     * @return A Set of RpCharCasualties for every injured RpChar
+     * @throws RpCharServiceException noActiveRpChar When player has no RpChar
+     */
+    private Set<RpCharCasualty> updateKilledPlayers(RpCharCasualtyDto[] dtos) {
+        log.debug("Injuring the characters of players: {}", (Object) dtos);
+
+        val allCasualties = new HashSet<RpCharCasualty>();
+        Arrays.stream(dtos).forEach(dto -> {
+            log.debug("Handling injury of player [{}]", dto.discordId());
+            log.debug("Searching player with id [{}]", dto.discordId());
+            val player = playerService.getPlayerByDiscordId(dto.discordId());
+            val activeChar = player.getActiveCharacter();
+
+            if(activeChar.isEmpty()) {
+                log.warn("Player [{}] has no active rpChar that can be injured!", player.getIgn());
+                throw RpCharServiceException.noActiveRpChar(player.getIgn());
+            }
+            val rpChar = activeChar.get();
+            log.debug("Found rpChar [{}] for player [{}]", rpChar.getName(), player.getIgn());
+
+            log.debug("Injuring character [{}]", rpChar.getName());
+            rpChar.setInjured(true);
+
+            log.debug("Creating RpCharCasualty");
+            RpCharCasualty casualty;
+            if(StringUtils.isNotBlank((dto.slainByPlayer()))) {
+                log.debug("dto.slainByPlayer is set to [{} - fetching slainByPlayer]", dto.slainByPlayer());
+                val slainByPlayer = playerService.getPlayerByDiscordId(dto.slainByPlayer());
+
+                String weapon = null;
+                if(StringUtils.isNotBlank(dto.slainByWeapon())) {
+                    log.debug("dto.slainByWeapon is set to [{}] - additionally adding weapon", dto.slainByWeapon());
+                    weapon = dto.slainByWeapon();
+                }
+
+                casualty = new RpCharCasualty(rpChar, slainByPlayer, weapon);
+            }
+            else if (StringUtils.isNotBlank(dto.optionalCause())) {
+                log.debug("No slainByPlayer set - using optionalCause");
+                casualty = new RpCharCasualty(rpChar, dto.optionalCause());
+            }
+            else {
+                log.debug("No death cause specified");
+                casualty = new RpCharCasualty(rpChar);
+            }
+
+            log.debug("Adding casualty to list");
+            allCasualties.add(casualty);
+            log.debug("Finished handling player [{}] ({})", dto.discordId(), player.getIgn());
+        });
+
+        log.debug("Finished creating playerCasualties");
+        log.debug("Created [{}] casualties", allCasualties.size());
+
+        return Collections.unmodifiableSet(allCasualties);
     }
 }
