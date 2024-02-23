@@ -101,11 +101,6 @@ public class Battle extends AbstractDomainObject {
         return Collections.unmodifiableSet(allArmies);
     }
 
-    public Army getInitialAttacker() {
-        return attackingArmies.stream().findFirst()
-                .orElseThrow(() -> new NullPointerException("Found no initial attacking army in battle at location %s".formatted(battleLocation.toString())));
-    }
-
     public Army getFirstDefender() {
         return defendingArmies.stream().findFirst()
                 .orElseThrow(() -> new NullPointerException("Found no defending armies in battle at location %s".formatted(battleLocation.toString())));
