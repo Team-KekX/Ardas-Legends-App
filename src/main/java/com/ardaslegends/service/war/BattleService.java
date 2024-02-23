@@ -218,6 +218,22 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         return battle;
     }
 
+    private Battle startBattle(Battle battle) {
+        log.debug("Starting battle [{}]", battle);
+
+        Objects.requireNonNull(battle, "battle in startBattle() must not be null!");
+
+        log.debug("Setting BattlePhase to {}", BattlePhase.ONGOING);
+        battle.setBattlePhase(BattlePhase.ONGOING);
+
+        log.debug("Calling freezeTime()");
+        timeFreezeService.freezeTime();
+
+        //TODO: teleport all aiding armies to battle location
+
+        return battle;
+    }
+
     @Transactional(readOnly = false)
     public Battle concludeBattle(ConcludeBattleDto concludeBattleDto) {
         log.debug("Concluding battle with data {}", concludeBattleDto);
@@ -354,21 +370,5 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Created [{}] UnitCasualties", unitCasualties.size());
 
         return Collections.unmodifiableSet(unitCasualties);
-    }
-
-    private Battle startBattle(Battle battle) {
-        log.debug("Starting battle [{}]", battle);
-
-        Objects.requireNonNull(battle, "battle in startBattle() must not be null!");
-
-        log.debug("Setting BattlePhase to {}", BattlePhase.ONGOING);
-        battle.setBattlePhase(BattlePhase.ONGOING);
-
-        log.debug("Calling freezeTime()");
-        timeFreezeService.freezeTime();
-
-        //TODO: teleport all aiding armies to battle location
-
-        return battle;
     }
 }
