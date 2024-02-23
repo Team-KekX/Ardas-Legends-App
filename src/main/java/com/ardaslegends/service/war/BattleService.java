@@ -37,6 +37,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final BattleRepository battleRepository;
     private final ArmyService armyService;
     private final PlayerService playerService;
+    private final RpCharService rpCharService;
     private final ClaimBuildService claimBuildService;
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
@@ -307,8 +308,23 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         battle.setBattleResult(battleResult);
         log.debug("Setting BattlePhase to [{}]", BattlePhase.CONCLUDED);
         battle.setBattlePhase(BattlePhase.CONCLUDED);
-        
-        //TODO unfreeze time
+
+        log.debug("Persisting data");
+        val armies = unitCasualties.stream().map(UnitCasualty::getUnit)
+                .map(Unit::getArmy).toList();
+        val rpChars = rpCharCasualties.stream().map(RpCharCasualty::getRpChar).toList();
+
+        log.debug("Saving armies");
+        armyService.saveArmies(armies);
+        log.debug("Saving chars");
+        rpCharService.saveRpChars(rpChars);
+        log.debug("Saving battle");
+        val savedBattle = secureSave(battle, battleRepository);
+
+        //TODO send discord message
+
+        log.debug("All entities saved - unfreezing time");
+        timeFreezeService.unfreezeTime();
 
         return battle;
     }
