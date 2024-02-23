@@ -3,8 +3,8 @@ package com.ardaslegends.service.war;
 import com.ardaslegends.domain.*;
 import com.ardaslegends.domain.war.battle.Battle;
 import com.ardaslegends.domain.war.battle.BattleLocation;
-import com.ardaslegends.domain.war.battle.BattleResult;
 import com.ardaslegends.domain.war.battle.UnitCasualty;
+import com.ardaslegends.domain.war.battle.BattlePhase;
 import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.repository.war.battle.BattleRepository;
@@ -12,8 +12,11 @@ import com.ardaslegends.service.*;
 import com.ardaslegends.service.dto.war.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.SurvivingUnitsDto;
 import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
+import com.ardaslegends.service.discord.DiscordService;
+import com.ardaslegends.service.discord.messages.war.BattleMessages;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
+import com.ardaslegends.service.time.TimeFreezeService;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,8 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
     private final WarRepository warRepository;
     private final Pathfinder pathfinder;
     private final FactionService factionService;
+    private final TimeFreezeService timeFreezeService;
+    private final DiscordService discordService;
 
     @Transactional(readOnly = false)
     public Battle createBattle(CreateBattleDto createBattleDto) {
@@ -174,18 +179,14 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             throw BattleServiceException.factionsNotAtWar(attackingFaction.getName(), defendingFaction.getName());
         }
 
-        //ToDo: Add proper War object when query exists that fetches a specific wars between two factions
-        //ToDo: Add 24h in reach check, if the attacking army is in reach of the defending army / CB
-        //ToDo: Add proper BattleLocation when the 24h check is available
-
         log.debug("Creating BattleLocation");
         BattleLocation battleLocation = new BattleLocation(battleRegion, createBattleDto.isFieldBattle(), attackedClaimbuild);
         log.debug("Created BattleLocation [{}]", battleLocation);
 
-        log.debug("War inforamtion: " + wars);
+        log.debug("War information: " + wars);
 
         log.trace("Assembling Battle Object");
-        Battle battle = new Battle(wars,
+        final Battle createdBattle = new Battle(wars,
                 createBattleDto.battleName(),
                 Set.of(attackingArmy),
                 defendingArmies,
@@ -195,8 +196,23 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 null,
                 battleLocation);
 
+        log.debug("Calling start24hTimer()");
+        val timer = timeFreezeService.start24hTimer(() -> startBattle(createdBattle));
+        log.debug("Setting battle.timeFrozenFrom to end date of 24h timer");
+        createdBattle.setTimeFrozenFrom(timer.finishesAt());
+
+        Battle battle;
         log.debug("Trying to persist the battle object");
-        battle = secureSave(battle, battleRepository);
+        try {
+            battle = secureSave(createdBattle, battleRepository);
+        }
+        catch (Exception e) {
+            log.warn("Cancelling 24h timer since there was an error while persisting battle [{}]", createdBattle);
+            timer.future().cancel(true);
+            throw e;
+        }
+
+        discordService.sendMessageToRpChannel(BattleMessages.declareBattle(battle, discordService));
 
         log.info("Successfully created battle [{}]!", battle.getName());
         return battle;
@@ -338,5 +354,21 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Created [{}] UnitCasualties", unitCasualties.size());
 
         return Collections.unmodifiableSet(unitCasualties);
+    }
+
+    private Battle startBattle(Battle battle) {
+        log.debug("Starting battle [{}]", battle);
+
+        Objects.requireNonNull(battle, "battle in startBattle() must not be null!");
+
+        log.debug("Setting BattlePhase to {}", BattlePhase.ONGOING);
+        battle.setBattlePhase(BattlePhase.ONGOING);
+
+        log.debug("Calling freezeTime()");
+        timeFreezeService.freezeTime();
+
+        //TODO: teleport all aiding armies to battle location
+
+        return battle;
     }
 }

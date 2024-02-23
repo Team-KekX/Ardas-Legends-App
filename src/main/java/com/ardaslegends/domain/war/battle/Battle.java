@@ -5,9 +5,6 @@ import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.war.War;
-import com.ardaslegends.domain.war.battle.BattleLocation;
-import com.ardaslegends.domain.war.battle.BattleResult;
-import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,8 +12,6 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import lombok.Setter;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.SetUtils;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -62,8 +57,12 @@ public class Battle extends AbstractDomainObject {
             inverseJoinColumns = { @JoinColumn(name = "defendingArmy_id", foreignKey = @ForeignKey(name = "fk_battle_defendingArmies_defendingArmy")) })
     private Set<Army> defendingArmies = new HashSet<>();
 
+    @Setter
+    private BattlePhase battlePhase;
+
     private OffsetDateTime declaredDate;
 
+    @Setter
     private OffsetDateTime timeFrozenFrom;
 
     private OffsetDateTime timeFrozenUntil;
@@ -83,6 +82,7 @@ public class Battle extends AbstractDomainObject {
         this.attackingArmies = new HashSet<>(attackingArmies);
         this.defendingArmies = new HashSet<>(defendingArmies);
         this.declaredDate = declaredDate;
+        this.battlePhase = BattlePhase.PRE_BATTLE;
         this.timeFrozenFrom = timeFrozenFrom;
         this.timeFrozenUntil = timeFrozenUntil;
         this.agreedBattleDate = agreedBattleDate;
@@ -100,4 +100,15 @@ public class Battle extends AbstractDomainObject {
         allArmies.addAll(defendingArmies);
         return Collections.unmodifiableSet(allArmies);
     }
+
+    public Army getInitialAttacker() {
+        return attackingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no initial attacking army in battle at location %s".formatted(battleLocation.toString())));
+    }
+
+    public Army getFirstDefender() {
+        return defendingArmies.stream().findFirst()
+                .orElseThrow(() -> new NullPointerException("Found no defending armies in battle at location %s".formatted(battleLocation.toString())));
+    }
+    public boolean isOver() { return BattlePhase.CONCLUDED.equals(this.battlePhase); }
 }
