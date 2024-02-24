@@ -70,13 +70,14 @@ public class BattleServiceTest {
         ArmyService mockArmyService = mock(ArmyService.class);
         PlayerService mockPlayerService = mock(PlayerService.class);
         ClaimBuildService mockClaimBuildService = mock(ClaimBuildService.class);
+        RpCharService mockRpCharService = mock(RpCharService.class);
         TimeFreezeService mockTimeFreezeService = mock(TimeFreezeService.class);
         DiscordService mockDiscordService = mock(DiscordService.class);
         FactionService mockFactionService = mock(FactionService.class);
         User mockUser1 = mock(User.class);
         User mockUser2 = mock(User.class);
         Role mockRole = mock(Role.class);
-        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockClaimBuildService,mockWarRepository, pathfinder, mockFactionService, mockTimeFreezeService, mockDiscordService);
+        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockRpCharService, mockClaimBuildService,mockWarRepository, pathfinder, mockFactionService, mockTimeFreezeService, mockDiscordService);
 
         region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
         region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();
