@@ -39,7 +39,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
     }
 
     @Transactional(readOnly = false)
-    public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
+    public ClaimBuild changeOwnerFromDto(UpdateClaimbuildOwnerDto dto) {
         log.debug("Trying to set the controlling faction of Claimbuild [{}] to [{}]", dto.claimbuildName(), dto.newFaction());
 
         ServiceUtils.checkNulls(dto, List.of("claimbuildName", "newFaction"));
