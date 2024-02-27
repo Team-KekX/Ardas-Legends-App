@@ -8,9 +8,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+@NoArgsConstructor
 @Getter
 
 @Embeddable
@@ -19,10 +21,10 @@ public class UnitCasualty {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "unit_id", foreignKey = @ForeignKey(name = "fk_battle_unit_casualties_unit_id"))
-    private final Unit unit;
+    private Unit unit;
 
     @NotNull
-    private final Long amount;
+    private Long amount;
 
     public UnitCasualty(Unit unit, Long amount) {
         Objects.requireNonNull(unit, "UnitCasualty constructor: unit was null!");

@@ -6,7 +6,6 @@ import com.ardaslegends.repository.war.WarRepository;
 import com.ardaslegends.repository.war.QueryWarStatus;
 import com.ardaslegends.repository.war.battle.BattleRepository;
 import com.ardaslegends.service.*;
-import com.ardaslegends.service.dto.player.DiscordIdDto;
 import com.ardaslegends.service.dto.war.battle.ConcludeBattleDto;
 import com.ardaslegends.service.dto.war.battle.RpCharCasualtyDto;
 import com.ardaslegends.service.dto.war.battle.SurvivingUnitsDto;
@@ -22,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -293,9 +291,24 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         val unitCasualties = new HashSet<UnitCasualty>();
         Arrays.stream(concludeBattleDto.survivingUnits())
                 .forEach(survivingUnitsDto -> {
-                    val casualties = updateSurvivingUnits(survivingUnitsDto, battle);
+                    val casualties = updateSurvivingUnitsFromDto(survivingUnitsDto, battle);
                     unitCasualties.addAll(casualties);
                 });
+
+        log.debug("Updating all units of armies not present in survivingUnitsDto");
+        val armyNamesMentioned = Arrays.stream(concludeBattleDto.survivingUnits())
+                .map(SurvivingUnitsDto::army).toList();
+        val armiesMentioned = battle.getPartakingArmies().stream()
+                .filter(army -> armyNamesMentioned.contains(army.getName())).toList();
+        log.debug("Armies mentioned in unitCasualties: [{}]", StringUtils.join(armiesMentioned, ", "));
+        val armiesNotMentioned = battle.getPartakingArmies().stream()
+                .filter(army -> !armiesMentioned.contains(army))
+                .toList();
+        log.debug("Armies not mentioned in unitCasualties: [{}]", StringUtils.join(armiesNotMentioned, ", "));
+        log.debug("Killing all units of armies: [{}]", StringUtils.join(armiesNotMentioned, ", "));
+        armiesNotMentioned.forEach(army -> {
+            unitCasualties.addAll(killAllUnitsOfArmy(army, battle));
+        });
 
         log.debug("Updating all player casualties");
         val rpCharCasualties = updateKilledPlayers(concludeBattleDto.playersKilled());
@@ -337,9 +350,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
      * units also specified in the dto
      * @param dto Dto which contains the army and its surviving units
      * @param battle The battle which the casualties happened in
-     * @return A UnitCasualty object of the units that died in the battle. Returns null if no casualties happened
+     * @return A set of UnitCasualty objects of the units that died in the battle.
      */
-    private Set<UnitCasualty> updateSurvivingUnits(SurvivingUnitsDto dto, Battle battle) {
+    private Set<UnitCasualty> updateSurvivingUnitsFromDto(SurvivingUnitsDto dto, Battle battle) {
         log.debug("Updating the surviving units of army [{}]", dto.army());
 
         log.debug("Finding army [{}] in battle [{}]", dto.army(), battle);
@@ -358,7 +371,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
 
         val unitCasualties = new HashSet<UnitCasualty>();
 
-        log.debug("Starting to loop through units");
+        log.debug("Starting to loop through surviving units");
         Arrays.stream(dto.survivingUnits()).forEach(unitDto -> {
             log.debug("Starting calculation for dto [{}]", unitDto);
             log.debug("Checking if unit [{}] is present in army [{}]", unitDto.unitTypeName(), army.getName());
@@ -402,6 +415,33 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         });
 
         log.debug("Finished updating units");
+        log.debug("Created [{}] UnitCasualties", unitCasualties.size());
+
+        return unitCasualties;
+    }
+
+    /**
+     * Kills all the units in the army and returns a set of UnitCasualties for all the units
+     * @param army Army which units should be killed
+     * @param battle The battle which the casualties happened in
+     * @return A set of UnitCasualty objects of the units that died in the battle.
+     */
+    private Set<UnitCasualty> killAllUnitsOfArmy(Army army, Battle battle) {
+        log.debug("Killing all units of army [{}]", army.getName());
+
+        val unitCasualties = new HashSet<UnitCasualty>();
+        val units = army.getUnits();
+
+        units.forEach(unit -> {
+            log.debug("Killing unit [{}]", unit);
+            val casualty = new UnitCasualty(unit, (long) unit.getAmountAlive());
+            log.debug("Created unitCasualty [{}]", casualty);
+            unitCasualties.add(casualty);
+            log.debug("Setting amountAlive to 0");
+            unit.setAmountAlive(0);
+        });
+
+        log.debug("Finished killing units");
         log.debug("Created [{}] UnitCasualties", unitCasualties.size());
 
         return unitCasualties;
