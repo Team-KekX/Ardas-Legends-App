@@ -5,6 +5,7 @@ import com.ardaslegends.domain.AbstractDomainObject;
 import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.war.War;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

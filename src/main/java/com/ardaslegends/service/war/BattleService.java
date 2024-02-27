@@ -257,7 +257,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Finding battle with id [{}]", concludeBattleDto.battleId());
         val battle = battleRepository.findByIdOrElseThrow(concludeBattleDto.battleId());
 
-        if(battle.getBattleResult() != null) {
+        if(battle.getBattleResult().isPresent()) {
             log.warn("Battle [{}] already has a result [{}]", battle.getId(), battle.getBattleResult());
             throw BattleServiceException.battleAlreadyConcluded();
         }
@@ -324,7 +324,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Saving battle");
         val savedBattle = secureSave(battle, battleRepository);
 
-        //TODO send discord message
+        discordService.sendMessageToRpChannel(BattleMessages.concludeBattle(battle, discordService));
 
         log.debug("All entities saved - unfreezing time");
         timeFreezeService.unfreezeTime();
@@ -404,7 +404,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Finished updating units");
         log.debug("Created [{}] UnitCasualties", unitCasualties.size());
 
-        return Collections.unmodifiableSet(unitCasualties);
+        return unitCasualties;
     }
 
     /**
@@ -464,6 +464,6 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("Finished creating playerCasualties");
         log.debug("Created [{}] casualties", allCasualties.size());
 
-        return Collections.unmodifiableSet(allCasualties);
+        return allCasualties;
     }
 }

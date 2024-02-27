@@ -5,6 +5,7 @@ import com.ardaslegends.domain.war.battle.UnitCasualty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,11 +13,11 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
+@NoArgsConstructor
 
 @Embeddable
 public class BattleResult {
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "winner_id", foreignKey = @ForeignKey(name = "fk_battle_result_winner_id"))
     private Faction winner;
@@ -75,5 +76,15 @@ public class BattleResult {
         result = 31 * result + (unitCasualties != null ? unitCasualties.hashCode() : 0);
         result = 31 * result + (rpCharCasualties != null ? rpCharCasualties.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * Returns if a BattleResult is present or not. This is needed because
+     * hibernate always creates a BattleResult instance and initialized all the attributes
+     * with null.
+     * @return If the BattleResult is present
+     */
+    public boolean isPresent() {
+        return winner != null;
     }
 }

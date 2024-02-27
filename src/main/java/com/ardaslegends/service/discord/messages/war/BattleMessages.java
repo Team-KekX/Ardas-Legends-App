@@ -12,6 +12,7 @@ import com.ardaslegends.presentation.discord.utils.Thumbnails;
 import com.ardaslegends.service.discord.DiscordService;
 import com.ardaslegends.service.discord.messages.ALMessage;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
@@ -168,20 +169,98 @@ public class BattleMessages {
                 .addInlineField("Attacking armies", attackingArmiesWithFactionPing)
                 .addInlineField("Defending armies", defendingArmiesWithFactionPings);
 
-        val armyCasualtyEmbed = new EmbedBuilder()
-                .setTitle("Army casualties")
-                .setDescription("The troops that died in battle");
 
+        val armyCasualtiesEmbed = armyCasualtiesEmbed(battleResult.getUnitCasualties());
+        val charCasualtiesEmbed = rpCharCasualtiesEmbed(battle.getBattleResult().getRpCharCasualties());
 
         val embeds = new ArrayList<EmbedBuilder>();
         embeds.add(embed);
+        embeds.add(armyCasualtiesEmbed);
+        embeds.add(charCasualtiesEmbed);
 
         return new ALMessage(message, embeds);
     }
 
-    public EmbedBuilder armyCasualtiesEmbed(Set<UnitCasualty> unitCasualties) {
-        Map<Army, Set<UnitCasualty>> casualtiesByArmy = unitCasualties.stream()
-                .map(UnitCasualty::getUnit)
-                .collect(Collectors.groupingBy(Unit::getArmy));
+    public static EmbedBuilder armyCasualtiesEmbed(Set<UnitCasualty> unitCasualties) {
+        Map<Army, List<UnitCasualty>> casualtiesByArmy = unitCasualties.stream()
+                .collect(Collectors.groupingBy(UnitCasualty::getArmy));
+
+        val armyString = new StringBuilder();
+        val unitString = new StringBuilder();
+        val aliveString = new StringBuilder();
+
+        casualtiesByArmy.forEach((army, casualties) -> {
+            armyString.append(army.getName())
+                    .append("\n".repeat(casualties.size()));
+
+            casualties.forEach(casualty -> {
+                unitString.append(casualty.getAmount())
+                        .append("x")
+                        .append(casualty.getUnit().getUnitType().getUnitName())
+                        .append("\n");
+
+                aliveString.append(casualty.getUnit().getAmountAlive())
+                        .append("/")
+                        .append(casualty.getUnit().getCount())
+                        .append("\n");
+            });
+        });
+
+        if(unitCasualties.isEmpty()) {
+            armyString.delete(0, Integer.MAX_VALUE);
+            unitString.delete(0, Integer.MAX_VALUE);
+            aliveString.delete(0, Integer.MAX_VALUE);
+
+            armyString.append("No units died in this battle!");
+        }
+
+        return new EmbedBuilder()
+                .setTitle("Army casualties")
+                .setDescription("The units that fell in battle")
+                .addInlineField("Army", armyString.toString())
+                .addInlineField("Casualties", unitString.toString())
+                .addInlineField("Now alive", aliveString.toString())
+                .setColor(ALColor.GREEN)
+                .setTimestampToNow();
+    }
+
+    public static EmbedBuilder rpCharCasualtiesEmbed(Set<RpCharCasualty> rpCharCasualties) {
+
+        val charString = new StringBuilder();
+        rpCharCasualties.forEach(casualty -> {
+            charString.append(casualty.getRpChar().getName())
+                    .append(" ");
+            if(casualty.getSlainByChar() != null) {
+                charString.append("got slain by ");
+                if(casualty.getSlainByChar().getActiveCharacter().isPresent()) {
+                    charString.append(casualty.getSlainByChar().getActiveCharacter().get().getName());
+                }
+                else
+                    charString.append(casualty.getSlainByChar().getIgn());
+
+                if(StringUtils.isNotBlank(casualty.getSlainByWeapon())) {
+                    charString.append(" using ")
+                            .append(casualty.getSlainByWeapon());
+                }
+
+            }
+            else if (StringUtils.isNotBlank(casualty.getOptionalCause())){
+                charString.append(casualty.getOptionalCause());
+            }
+            else
+                charString.append("fell in battle");
+
+            charString.append("\n");
+        });
+
+        if(rpCharCasualties.isEmpty())
+            charString.delete(0, Integer.MAX_VALUE).append("No character has died in this battle!");
+
+        return new EmbedBuilder()
+                .setTitle("RpChar casualties")
+                .setDescription("The characters that fell in battle")
+                .addField("Character", charString.toString())
+                .setColor(ALColor.GREEN)
+                .setTimestampToNow();
     }
 }
