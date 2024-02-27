@@ -327,7 +327,17 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 .map(Unit::getArmy).toList();
         val rpChars = rpCharCasualties.stream().map(RpCharCasualty::getRpChar).toList();
 
-        //TODO change CB ownership
+        log.debug("Checking if claimbuild ownership needs to be changed");
+        if(!battle.isFieldBattle()) {
+            val claimbuild = battle.getBattleLocation().getClaimBuild();
+            log.debug("Battle is claimbuild battle");
+            log.debug("Checking if old owner [{}] is different from battle winner [{}]", claimbuild.getOwnedBy().getName(), battleResult.getWinner().getName());
+            if(!claimbuild.getOwnedBy().equals(battleResult.getWinner())) {
+                log.debug("Old owner is different than battle winner - setting new owner to [{}]", battleResult.getWinner().getName());
+                claimBuildService.changeOwner(claimbuild, battleResult.getWinner());
+            }
+
+        }
         //TODO inactivate dead armies
 
         log.debug("Saving armies");
