@@ -338,10 +338,13 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             }
 
         }
-        //TODO inactivate dead armies
-
         log.debug("Saving armies");
         armyService.saveArmies(armies);
+
+        val armiesToDisband = armies.stream().filter(army -> !army.hasUnitsLeft()).toList();
+        log.debug("Disbanding all armies that have no units left [{}]", StringUtils.join(armiesToDisband, ", "));
+        armiesToDisband.forEach(armyService::disband);
+
         log.debug("Saving chars");
         rpCharService.saveRpChars(rpChars);
         log.debug("Saving battle");
