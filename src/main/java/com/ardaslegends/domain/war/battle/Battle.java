@@ -33,6 +33,9 @@ public class Battle extends AbstractDomainObject {
     private Long id;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "wars_battles",
+            joinColumns = { @JoinColumn(name = "battle_id", foreignKey = @ForeignKey(name = "fk_wars_battles_battle_id"))},
+            inverseJoinColumns = { @JoinColumn(name = "war_id", foreignKey = @ForeignKey(name = "fk_wars_battles_war_id")) })
     private Set<War> wars;
 
     private String name;
