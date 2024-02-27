@@ -34,7 +34,7 @@ public class BattleMessages {
 
         val attackingArmy = battle.getInitialAttacker();
         val defendingArmies = battle.getDefendingArmies();
-        val isFieldBattle = battle.getBattleLocation().getFieldBattle();
+        val isFieldBattle = battle.isFieldBattle();
 
         MessageBuilder message = new MessageBuilder()
                 .setAllowedMentions(mentions)
@@ -150,14 +150,14 @@ public class BattleMessages {
         val embed = new EmbedBuilder()
                 .setTitle("Battle concluded!")
                 .setDescription(embedDescription)
-                .addInlineField("Battle type", (battle.getBattleLocation().getFieldBattle() ? "Field battle" : "Claimbuild battle"))
+                .addInlineField("Battle type", (battle.isFieldBattle() ? "Field battle" : "Claimbuild battle"))
                 .addInlineField("Region", battle.getBattleLocation().getRegion().getId())
                 .addField("", "")
                 .setColor(ALColor.GREEN)
                 .setThumbnail(Thumbnails.DECLARE_BATTLE.getUrl())
                 .setTimestampToNow();
 
-        if(!battle.getBattleLocation().getFieldBattle()) {
+        if(!battle.isFieldBattle()) {
             embed.addField("","")
                     .addInlineField("Claimbuild", battle.getBattleLocation().getClaimBuild().getName() +
                             " (" + discordService.getRoleByIdOrElseThrow(battle.getBattleLocation().getClaimBuild().getOwnedBy().getFactionRoleId()).getMentionTag()

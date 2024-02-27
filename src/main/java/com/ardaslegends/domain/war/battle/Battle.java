@@ -107,4 +107,5 @@ public class Battle extends AbstractDomainObject {
                 .orElseThrow(() -> new NullPointerException("Found no defending armies in battle at location %s".formatted(battleLocation.toString())));
     }
     public boolean isOver() { return BattlePhase.CONCLUDED.equals(this.battlePhase); }
+    public boolean isFieldBattle() {return battleLocation.getFieldBattle();}
 }
