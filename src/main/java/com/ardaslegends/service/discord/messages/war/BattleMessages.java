@@ -170,7 +170,7 @@ public class BattleMessages {
                 .addInlineField("Defending armies", defendingArmiesWithFactionPings);
 
 
-        val armyCasualtiesEmbed = armyCasualtiesEmbed(battleResult.getUnitCasualties());
+        val armyCasualtiesEmbed = armyCasualtiesEmbed(battleResult.getUnitCasualties(), discordService);
         val charCasualtiesEmbed = rpCharCasualtiesEmbed(battle.getBattleResult().getRpCharCasualties());
 
         val embeds = new ArrayList<EmbedBuilder>();
@@ -181,7 +181,7 @@ public class BattleMessages {
         return new ALMessage(message, embeds);
     }
 
-    public static EmbedBuilder armyCasualtiesEmbed(Set<UnitCasualty> unitCasualties) {
+    public static EmbedBuilder armyCasualtiesEmbed(Set<UnitCasualty> unitCasualties, DiscordService discordService) {
         Map<Army, List<UnitCasualty>> casualtiesByArmy = unitCasualties.stream()
                 .collect(Collectors.groupingBy(UnitCasualty::getArmy));
 
@@ -191,6 +191,9 @@ public class BattleMessages {
 
         casualtiesByArmy.forEach((army, casualties) -> {
             armyString.append(army.getName())
+                    .append(" (")
+                    .append(discordService.getRoleByIdOrElseThrow(army.getFaction().getFactionRoleId()).getMentionTag())
+                    .append(")")
                     .append("\n".repeat(casualties.size()));
 
             casualties.forEach(casualty -> {
