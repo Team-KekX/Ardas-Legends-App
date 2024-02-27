@@ -66,6 +66,7 @@ public class Battle extends AbstractDomainObject {
     @Setter
     private OffsetDateTime timeFrozenFrom;
 
+    @Setter
     private OffsetDateTime timeFrozenUntil;
 
     private OffsetDateTime agreedBattleDate;

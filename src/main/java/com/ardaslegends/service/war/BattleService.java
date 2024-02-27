@@ -321,11 +321,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         battle.setBattleResult(battleResult);
         log.debug("Setting BattlePhase to [{}]", BattlePhase.CONCLUDED);
         battle.setBattlePhase(BattlePhase.CONCLUDED);
-
-        log.debug("Persisting data");
-        val armies = unitCasualties.stream().map(UnitCasualty::getUnit)
-                .map(Unit::getArmy).toList();
-        val rpChars = rpCharCasualties.stream().map(RpCharCasualty::getRpChar).toList();
+        val now = OffsetDateTime.now();
+        log.debug("Setting timeFrozenUntil to now [{}]", now);
+        battle.setTimeFrozenUntil(now);
 
         log.debug("Checking if claimbuild ownership needs to be changed");
         if(!battle.isFieldBattle()) {
@@ -338,6 +336,12 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
             }
 
         }
+
+        log.debug("Persisting data");
+        val armies = unitCasualties.stream().map(UnitCasualty::getUnit)
+                .map(Unit::getArmy).toList();
+        val rpChars = rpCharCasualties.stream().map(RpCharCasualty::getRpChar).toList();
+
         log.debug("Saving armies");
         armyService.saveArmies(armies);
 
