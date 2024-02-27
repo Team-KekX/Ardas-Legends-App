@@ -314,6 +314,9 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 .map(Unit::getArmy).toList();
         val rpChars = rpCharCasualties.stream().map(RpCharCasualty::getRpChar).toList();
 
+        //TODO change CB ownership
+        //TODO inactivate dead armies
+
         log.debug("Saving armies");
         armyService.saveArmies(armies);
         log.debug("Saving chars");
@@ -326,7 +329,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
         log.debug("All entities saved - unfreezing time");
         timeFreezeService.unfreezeTime();
 
-        return battle;
+        return savedBattle;
     }
 
     /**

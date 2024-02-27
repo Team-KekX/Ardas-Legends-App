@@ -1,5 +1,6 @@
 package com.ardaslegends.domain.war.battle;
 
+import com.ardaslegends.domain.Army;
 import com.ardaslegends.domain.Unit;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ForeignKey;
@@ -29,6 +30,10 @@ public class UnitCasualty {
 
         this.unit = unit;
         this.amount = amount;
+    }
+
+    public Army getArmy() {
+        return unit.getArmy();
     }
 
     @Override
