@@ -526,7 +526,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         return army;
     }
     @Transactional(readOnly = false)
-    public Army disband(DeleteArmyDto dto, boolean forced) {
+    public Army disbandFromDto(DeleteArmyDto dto, boolean forced) {
         log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
 
         log.trace("Validating data");
