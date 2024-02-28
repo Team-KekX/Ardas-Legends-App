@@ -799,12 +799,6 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             log.trace("Length of split: [{}]", unit.length);
 
             String unitName = unit[0];
-            boolean isMounted = false;
-            if(unitName.toLowerCase().startsWith("mounted")) {
-                log.trace("Unit is mounted");
-                isMounted = true;
-                unitName = unitName.split("ounted")[1].stripLeading();
-            }
             int amount = Integer.parseInt(unit[1]);
 
             units.add(new UnitTypeDto(unitName, amount));
