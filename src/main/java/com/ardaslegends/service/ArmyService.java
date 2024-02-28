@@ -97,7 +97,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         for (UnitTypeDto unitDto: dto.units()) {
             UnitType type = unitTypeService.getUnitTypeByName(unitDto.unitTypeName());
             // Get the UnitType cost and multiply it by the count of that unit, which is stored in the units Map
-            Unit unit = new Unit(null, type, null, unitDto.amount(), unitDto.amount(), unitDto.mounted());
+            Unit unit = new Unit(null, type, null, unitDto.amount(), unitDto.amount());
             units.add(unit);
             tokenCount += unit.getCost() * unit.getCount();
         }

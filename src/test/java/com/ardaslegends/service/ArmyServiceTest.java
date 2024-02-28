@@ -60,8 +60,8 @@ public class ArmyServiceTest {
 
         region1 = Region.builder().id("90").build();
         region2 = Region.builder().id("91").build();
-        unitType = UnitType.builder().unitName("Gondor Archer").tokenCost(1.5).build();
-        unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).isMounted(false).build();
+        unitType = UnitType.builder().unitName("Gondor Archer").isMounted(false).tokenCost(1.5).build();
+        unit = Unit.builder().unitType(unitType).army(army).amountAlive(5).count(10).build();
         faction = Faction.builder().name("Gondor").allies(new ArrayList<>()).build();
         claimBuild = ClaimBuild.builder().name("Nimheria").type(ClaimBuildType.CASTLE).siege("Ram, Trebuchet, Tower").region(region1).ownedBy(faction).specialBuildings(List.of(SpecialBuilding.HOUSE_OF_HEALING)).stationedArmies(List.of()).build();
         rpchar = RPChar.builder().name("Belegorn").isHealing(false).injured(false).currentRegion(region1).build();
@@ -98,7 +98,7 @@ public class ArmyServiceTest {
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
-        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
+        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0, false));
         when(mockClaimbuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
         when(mockArmyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
@@ -138,7 +138,7 @@ public class ArmyServiceTest {
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
-        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
+        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0, false));
         when(mockClaimbuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.empty());
 
         log.debug("Expecting IAE on call");
@@ -181,7 +181,7 @@ public class ArmyServiceTest {
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
-        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0));
+        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 1.0, false));
         when(mockClaimbuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
@@ -206,7 +206,7 @@ public class ArmyServiceTest {
 
         when(mockPlayerService.getPlayerByDiscordId(dto.executorDiscordId())).thenReturn(player);
         when(mockArmyRepository.findArmyByName(dto.name())).thenReturn(Optional.empty());
-        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0));
+        when(mockUnitTypeService.getUnitTypeByName(any())).thenReturn(new UnitType("Kek", 3.0, false));
         when(mockClaimbuildRepository.findClaimBuildByName(dto.claimBuildName())).thenReturn(Optional.of(claimBuild));
 
         log.debug("Expecting SE on call");
