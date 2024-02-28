@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -37,5 +38,12 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
 
         log.info("Successfully returning Unit with name [{}]", fetchedUnitType.get().getUnitName());
         return fetchedUnitType.get();
+    }
+
+    public Set<UnitType> getByFactionNames(String[] factions) {
+        log.debug("Getting unitTypes by faction names [{}]", (Object) factions);
+
+
+        return null;
     }
 }
