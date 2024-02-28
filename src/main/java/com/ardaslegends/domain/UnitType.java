@@ -2,13 +2,13 @@ package com.ardaslegends.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,5 +30,11 @@ public final class UnitType extends AbstractDomainObject {
 
     @NotNull
     private Boolean isMounted = false;
+
+    @ManyToMany
+    @JoinTable(name = "factions_units",
+            joinColumns = { @JoinColumn(name = "unit_id", foreignKey = @ForeignKey(name = "fk_factions_units_unit_id"))},
+            inverseJoinColumns = { @JoinColumn(name = "faction_id", foreignKey = @ForeignKey(name = "fk_factions_units_faction_id")) })
+    private Set<Faction> usableBy = new HashSet<>(2);
 
 }
