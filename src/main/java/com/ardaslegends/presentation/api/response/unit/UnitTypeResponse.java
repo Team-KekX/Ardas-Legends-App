@@ -1,5 +1,7 @@
 package com.ardaslegends.presentation.api.response.unit;
 
+import com.ardaslegends.domain.Faction;
+import com.ardaslegends.domain.UnitType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "UnitType", description = "UnitType response")
@@ -14,4 +16,13 @@ public record UnitTypeResponse(
                 example = "[\"Dol Amroth\", \"Gondor\"]")
         String[] usableBy
 ) {
+
+        public UnitTypeResponse(UnitType unitType) {
+                this(
+                        unitType.getUnitName(),
+                        unitType.getTokenCost(),
+                        unitType.getIsMounted(),
+                        unitType.getUsableBy().stream().map(Faction::getName).toArray(String[]::new)
+                );
+        }
 }
