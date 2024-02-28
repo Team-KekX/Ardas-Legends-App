@@ -807,7 +807,7 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
             }
             int amount = Integer.parseInt(unit[1]);
 
-            units.add(new UnitTypeDto(unitName, amount, isMounted));
+            units.add(new UnitTypeDto(unitName, amount));
         }
 
         return units.toArray(new UnitTypeDto[0]);
