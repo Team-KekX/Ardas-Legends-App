@@ -37,4 +37,9 @@ public final class UnitType extends AbstractDomainObject {
             inverseJoinColumns = { @JoinColumn(name = "faction_id", foreignKey = @ForeignKey(name = "fk_factions_units_faction_id")) })
     private Set<Faction> usableBy = new HashSet<>(2);
 
+    public UnitType(String unitName, Double tokenCost, Boolean isMounted) {
+        this.unitName = unitName;
+        this.tokenCost = tokenCost;
+        this.isMounted = isMounted;
+    }
 }
