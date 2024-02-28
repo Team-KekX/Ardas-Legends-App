@@ -2,6 +2,7 @@ package com.ardaslegends.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import jakarta.persistence.Entity;
@@ -26,5 +27,8 @@ public final class UnitType extends AbstractDomainObject {
     private String unitName; //unique, the name of this Unit
     @NotNull(message = "UnitType: tokenCost must not be null")
     private Double tokenCost; //how much tokens this unit costs
+
+    @NotNull
+    private Boolean isMounted = false;
 
 }
