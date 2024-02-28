@@ -4,5 +4,5 @@ import com.ardaslegends.domain.war.battle.Battle;
 
 public interface BattleRepositoryCustom {
 
-    Battle findByIdOrElseThrow(Long id);
+    Battle queryByIdOrElseThrow(Long id);
 }

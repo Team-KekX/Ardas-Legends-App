@@ -15,7 +15,7 @@ public class BattleRepositoryImpl extends QuerydslRepositorySupport implements B
     public BattleRepositoryImpl() { super(Battle.class); }
 
     @Override
-    public Battle findByIdOrElseThrow(Long id) {
+    public Battle queryByIdOrElseThrow(Long id) {
         log.debug("Finding battle by id [{}]", id);
         if(id == null) {
             log.warn("Id was null in BattleRepositoryImpl.findByIdOrElseThrow");

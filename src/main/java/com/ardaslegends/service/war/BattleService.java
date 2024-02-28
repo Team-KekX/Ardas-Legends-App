@@ -253,7 +253,7 @@ public class BattleService extends AbstractService<Battle, BattleRepository> {
                 });
 
         log.debug("Finding battle with id [{}]", concludeBattleDto.battleId());
-        val battle = battleRepository.findByIdOrElseThrow(concludeBattleDto.battleId());
+        val battle = battleRepository.queryByIdOrElseThrow(concludeBattleDto.battleId());
 
         if(battle.getBattleResult().isPresent()) {
             log.warn("Battle [{}] already has a result [{}]", battle.getId(), battle.getBattleResult());
