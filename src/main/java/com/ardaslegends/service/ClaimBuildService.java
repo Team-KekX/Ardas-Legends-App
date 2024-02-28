@@ -238,7 +238,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
         Arrays.stream(names).forEach(str -> ServiceUtils.checkBlankString(str, "Name"));
 
         log.debug("Fetching claimbuilds with names [{}]", (Object) names);
-        List<ClaimBuild> fetchedClaimbuilds = secureFind(names, claimbuildRepository::findClaimBuildsByNames);
+        List<ClaimBuild> fetchedClaimbuilds = secureFind(names, claimbuildRepository::queryByNames);
 
         if(fetchedClaimbuilds.isEmpty()) {
             log.warn("No Claimbuild found with names [{}]", (Object) names);
@@ -259,7 +259,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
         val faction = factionService.getFactionByName(factionName);
 
         log.debug("Fetching claimbuilds of faction [{}]", factionName);
-        List<ClaimBuild> fetchedClaimbuilds = secureFind(faction, claimbuildRepository::findClaimBuildsByFaction);
+        List<ClaimBuild> fetchedClaimbuilds = secureFind(faction, claimbuildRepository::queryByFaction);
 
         if(fetchedClaimbuilds.isEmpty()) {
             log.warn("No Claimbuild found for faction [{}]", faction);

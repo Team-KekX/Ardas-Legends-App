@@ -50,7 +50,7 @@ public class ClaimbuildRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public List<ClaimBuild> findClaimBuildsByNames(String[] names) {
+    public List<ClaimBuild> queryByNames(String[] names) {
         log.debug("Querying claimbuilds by names: {}", names);
         Objects.requireNonNull(names, "Names must not be null");
         QClaimBuild qClaimBuild = QClaimBuild.claimBuild;
@@ -66,7 +66,7 @@ public class ClaimbuildRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public List<ClaimBuild> findClaimBuildsByFaction(Faction faction) {
+    public List<ClaimBuild> queryByFaction(Faction faction) {
         log.debug("Querying claimbuilds of faction [{}]", faction);
         if(faction == null) {
             log.warn("Faction was null in findClaimBuildsByFaction!");

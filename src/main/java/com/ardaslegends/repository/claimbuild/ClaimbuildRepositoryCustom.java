@@ -10,7 +10,7 @@ public interface ClaimbuildRepositoryCustom {
     ClaimBuild queryByNameIgnoreCase(String claimbuildName);
     Optional<ClaimBuild> queryByNameIgnoreCaseOptional(String claimbuildName);
     boolean existsByNameIgnoreCase(String claimbuildName);
-    List<ClaimBuild> findClaimBuildsByNames(String[] names);
-    List<ClaimBuild> findClaimBuildsByFaction(Faction faction);
+    List<ClaimBuild> queryByNames(String[] names);
+    List<ClaimBuild> queryByFaction(Faction faction);
 
 }
