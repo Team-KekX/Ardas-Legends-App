@@ -15,7 +15,7 @@ public record UnitResponse(
                 unit.getUnitType().getUnitName(),
                 unit.getCount(),
                 unit.getAmountAlive(),
-                unit.getUnitType().getIsMounted()
+                unit.isMounted()
         );
     }
 }

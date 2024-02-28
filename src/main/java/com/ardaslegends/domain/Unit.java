@@ -36,9 +36,9 @@ public final class Unit extends AbstractDomainObject {
 
     private Integer amountAlive; //current alive soldiers
 
-    @JsonIgnore
     public Double getCost() {
         return unitType.getTokenCost();
     }
 
+    public boolean isMounted() {return unitType.getIsMounted();}
 }
