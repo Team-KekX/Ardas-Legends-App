@@ -1285,7 +1285,7 @@ public class ArmyServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.length).isEqualTo(3);
-        assertThat(result[0].unitTypeName()).isEqualTo("Gondorian Ranger");
+        assertThat(result[0].unitTypeName()).isEqualTo("Mounted Gondorian Ranger");
         assertThat(result[0].amount()).isEqualTo(5);
         assertThat(result[1].unitTypeName()).isEqualTo("Mordor Orc");
         assertThat(result[1].amount()).isEqualTo(3);
