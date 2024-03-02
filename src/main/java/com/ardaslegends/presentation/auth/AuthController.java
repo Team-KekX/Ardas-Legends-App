@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +45,7 @@ public class AuthController extends AbstractRestController {
         val authTokenResponse = getAuthToken(code, redirectUrl);
 
         val identityResponse = getUserIdentity(authTokenResponse);
+        val guildsResponse = getGuild(authTokenResponse.tokenType(), authTokenResponse.accessToken());
 
         return null;
     }
@@ -65,6 +68,46 @@ public class AuthController extends AbstractRestController {
 
             log.debug("UserIdentity request was successful, response [{}]", response);
             return response.getBody();
+        } catch (RestClientException rcException) {
+            // TODO: Check if a better error message is need
+            throw new AuthException(rcException.getMessage(), rcException);
+        }
+    }
+
+    /**
+     * Fetches the corresponding guild object that is tied to the user if the user is part of the guild
+     * Optional is empty when the user is not part of the guild
+     * @param tokenType
+     * @param accessToken
+     * @return Optional GuildsResponse, since the user may not have joined the host guild
+     */
+    private Optional<GuildsResponse> getGuild(String tokenType, String accessToken) {
+        Objects.requireNonNull(tokenType, "TokenType must not be null!");
+        Objects.requireNonNull(accessToken, "AccessToken must not be null!");
+
+        log.debug("Fetching the user's guilds");
+        try {
+            val response = restClient.get()
+                    .uri("https://discord.com/api/users/@me/guilds")
+                    .header("Authorization", "" + tokenType + " " + accessToken)
+                    .retrieve()
+                    .toEntity(GuildsResponse[].class);
+
+            val guilds = response.getBody();
+            log.debug("Guilds Request was successful, guild count: [{}]", guilds.length);
+
+            log.trace("Filtering for the Host Server Guild");
+
+            val hostGuild = Arrays.stream(guilds)
+                    .filter(guild -> guild.id().equals(botProperties.getServerId()))
+                    .findAny();
+
+
+            hostGuild.ifPresentOrElse(
+                    guild -> log.trace("User is part of the Server [{}]", guild),
+                    () -> log.trace("User is not part of the Host Server"));
+
+            return hostGuild;
         } catch (RestClientException rcException) {
             // TODO: Check if a better error message is need
             throw new AuthException(rcException.getMessage(), rcException);
