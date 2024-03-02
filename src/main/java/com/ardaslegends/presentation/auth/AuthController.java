@@ -47,7 +47,13 @@ public class AuthController extends AbstractRestController {
         return null;
     }
 
+    /**
+     * Fetches the corresponding user with the provided authToken from discord
+     * @param authTokenResponse required authToken for authorization with discord
+     * @return UserIdentity object containing discord id and  username
+     */
     private UserIdentityResponse getUserIdentity(TokenAuthResponse authTokenResponse) {
+        Objects.requireNonNull(authTokenResponse, "AuthToken must not be null!");
         log.debug("Fetching the user identity from discord");
         try {
             val response = restClient.get()
@@ -75,6 +81,7 @@ public class AuthController extends AbstractRestController {
             requestBody.add("redirect_uri", redirectUrl);
             requestBody.add("code", code);
 
+            // Authentication Credentials need to be encoded in this format
             String authCreds64 = encodeBase64(botProperties.getClientId() + ":" + botProperties.getClientSecret());
 
             val response = restClient.post()
