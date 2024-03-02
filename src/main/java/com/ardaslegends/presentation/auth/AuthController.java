@@ -44,6 +44,7 @@ public class AuthController extends AbstractRestController {
 
         val authTokenResponse = getAuthToken(code, redirectUrl);
 
+        // TODO: Parallelize once StructuredConcurrency drops (Java 23)
         val identityResponse = getUserIdentity(authTokenResponse);
         val guildsResponse = getGuild(authTokenResponse.tokenType(), authTokenResponse.accessToken());
 
