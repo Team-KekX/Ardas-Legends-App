@@ -47,23 +47,22 @@ public class AuthController extends AbstractRestController {
         return null;
     }
 
-    private Object getUserIdentity(TokenAuthResponse authTokenResponse) {
+    private UserIdentityResponse getUserIdentity(TokenAuthResponse authTokenResponse) {
         log.debug("Fetching the user identity from discord");
         try {
-
-            val basicAuthValue = encodeBase64(authTokenResponse.tokenType() + ":" + authTokenResponse.accessToken());
-
             val response = restClient.get()
                     .uri("https://discord.com/api/users/@me")
-                    .header("Authorization", "Basic " + basicAuthValue)
-                    .retrieve();
+                    .header("Authorization", "" + authTokenResponse.tokenType() + " " + authTokenResponse.accessToken())
+                    .retrieve()
+                    .toEntity(UserIdentityResponse.class);
 
+
+            log.debug("UserIdentity request was successful, response [{}]", response);
+            return response.getBody();
         } catch (RestClientException rcException) {
             // TODO: Check if a better error message is need
             throw new AuthException(rcException.getMessage(), rcException);
         }
-
-        return null;
     }
 
     private TokenAuthResponse getAuthToken(@NonNull String code,@NonNull String redirectUrl) {
