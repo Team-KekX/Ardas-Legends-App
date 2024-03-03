@@ -52,4 +52,13 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
         log.info("Found unitTypes, [{}]", StringUtils.join(unitTypes, ", "));
         return unitTypes;
     }
+
+    public List<UnitType> getAll() {
+        log.debug("Getting all unitTypes");
+
+        val all = unitTypeRepository.findAll();
+        log.debug("Returning all [{}] unitTypes", all.size());
+
+        return all;
+    }
 }

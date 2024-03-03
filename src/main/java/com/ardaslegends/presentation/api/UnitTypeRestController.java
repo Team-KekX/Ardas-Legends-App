@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -40,8 +41,17 @@ public class UnitTypeRestController extends AbstractRestController {
     public ResponseEntity<UnitTypeResponse[]> getUnitTypes(@PathVariable(name = "faction") List<String> factions) {
         log.debug("Incoming getUnitTypes request with factions: [{}]", StringUtils.join(factions, ", "));
 
-        log.debug("Calling unitTypeService.getByFactions");
-        val unitTypes = unitTypeService.getByFactionNames(factions);
+        val unitTypes = new ArrayList<UnitType>();
+
+        if(!factions.isEmpty()) {
+            log.debug("Searching by faction names");
+            log.debug("Calling unitTypeService.getByFactions");
+            unitTypes.addAll(unitTypeService.getByFactionNames(factions));
+        }
+        else {
+            log.debug("No factions were specified - searching all unit types");
+            unitTypes.addAll(unitTypeService.getAll());
+        }
 
         log.debug("Building response");
         UnitTypeResponse[] response = unitTypes.stream().map(UnitTypeResponse::new).toArray(UnitTypeResponse[]::new);
