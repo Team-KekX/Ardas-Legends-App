@@ -44,6 +44,11 @@ public class TimeFreezeService implements Sleep {
         isTimeFrozen = true;
     }
 
+    public void unfreezeTime() {
+        log.info("Unfreezing time at [{}]", OffsetDateTime.now());
+        isTimeFrozen = false;
+    }
+
     public boolean isTimeFrozen() {
         return isTimeFrozen;
     }

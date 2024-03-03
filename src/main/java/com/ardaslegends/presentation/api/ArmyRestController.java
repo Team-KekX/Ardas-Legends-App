@@ -100,7 +100,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming disbandArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.unbind()");
-        Army disbandedArmy = armyService.disband(dto, false);
+        Army disbandedArmy = armyService.disbandFromDto(dto, false);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(disbandedArmy);
 
@@ -113,7 +113,7 @@ public class ArmyRestController extends AbstractRestController {
         log.debug("Incoming deleteArmy Request: Data [{}]", dto);
 
         log.debug("Calling ArmyService.disband()");
-        Army deletedArmy = armyService.disband(dto, true);
+        Army deletedArmy = armyService.disbandFromDto(dto, true);
         log.debug("Converting to ArmyResponse");
         ArmyResponse response = new ArmyResponse(deletedArmy);
 

@@ -40,7 +40,7 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
     }
 
     @Transactional(readOnly = false)
-    public ClaimBuild setOwnerFaction(UpdateClaimbuildOwnerDto dto) {
+    public ClaimBuild changeOwnerFromDto(UpdateClaimbuildOwnerDto dto) {
         log.debug("Trying to set the controlling faction of Claimbuild [{}] to [{}]", dto.claimbuildName(), dto.newFaction());
 
         ServiceUtils.checkNulls(dto, List.of("claimbuildName", "newFaction"));
@@ -52,13 +52,20 @@ public class ClaimBuildService extends AbstractService<ClaimBuild, ClaimbuildRep
         log.trace("Fetching faction with name [{}]", dto.newFaction());
         Faction faction = factionService.getFactionByName(dto.newFaction());
 
+        return changeOwner(claimBuild, faction);
+    }
+
+    @Transactional(readOnly = false)
+    public ClaimBuild changeOwner(ClaimBuild claimBuild, Faction newOwner) {
+        log.debug("Trying to set owner of claimbuild [{}] to faction [{}]", claimBuild, newOwner);
+
         log.trace("Setting ownedBy");
-        claimBuild.setOwnedBy(faction);
+        claimBuild.setOwnedBy(newOwner);
 
         log.debug("Persisting claimbuild [{}], with owning faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
         claimBuild = secureSave(claimBuild, claimbuildRepository);
 
-        log.info("Successfully returning claimbuild [{}] with new controlling faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
+        log.info("Successfully set ownership of claimbuild [{}] to faction [{}]", claimBuild.getName(), claimBuild.getOwnedBy());
         return claimBuild;
     }
 

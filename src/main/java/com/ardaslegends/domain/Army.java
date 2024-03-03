@@ -124,6 +124,8 @@ public final class Army extends AbstractDomainObject {
         return this.units.stream().allMatch(unit -> Objects.equals(unit.getAmountAlive(), unit.getCount()));
     }
 
+    public boolean hasUnitsLeft() { return units.stream().anyMatch(unit -> unit.getAmountAlive() > 0); }
+
     public Optional<Movement> getActiveMovement() {
         return this.getMovements().stream().filter(Movement::getIsCurrentlyActive).findFirst();
     }

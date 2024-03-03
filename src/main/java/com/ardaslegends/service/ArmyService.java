@@ -525,8 +525,8 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
         log.info("Unstation Army Service Method for Army [{}] completed successfully");
         return army;
     }
-    @Transactional(readOnly = false)
-    public Army disband(DeleteArmyDto dto, boolean forced) {
+
+    public Army disbandFromDto(DeleteArmyDto dto, boolean forced) {
         log.debug("Trying to disband army [{}] executed by player [{}]", dto.armyName(), dto.executorDiscordId());
 
         log.trace("Validating data");
@@ -577,6 +577,23 @@ public class ArmyService extends AbstractService<Army, ArmyRepository> {
          */
         var sieges = army.getSieges().size();
         log.info("Disbanded army [{}] - executed by player [{}]", army, player);
+        return army;
+    }
+
+    @Transactional(readOnly = false)
+    public Army disband(Army army) {
+        log.debug("Disbanding army [{}]", army);
+
+        if(army.getBoundTo() != null) {
+            log.debug("Unbinding bound player [{}]", army.getBoundTo().getOwner().getIgn());
+            army.getBoundTo().setBoundTo(null);
+            army.setBoundTo(null);
+        }
+
+        log.debug("Deleting army [{}]", army);
+        secureDelete(army, armyRepository);
+
+        log.info("Disbanded army [{}]", army);
         return army;
     }
 

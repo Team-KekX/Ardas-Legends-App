@@ -128,7 +128,7 @@ public class ClaimbuildRestController extends AbstractRestController {
         log.debug("Incoming update Claimbuild Owner Request with data [{}]", dto);
 
         log.trace("Calling wrappedServiceExecution of setOwnerFaction");
-        var result = claimBuildService.setOwnerFaction(dto);
+        var result = claimBuildService.changeOwnerFromDto(dto);
 
         log.trace("Building response Dto");
         UpdateClaimbuildOwnerDto response = new UpdateClaimbuildOwnerDto(result.getName(), result.getOwnedBy().getName());
