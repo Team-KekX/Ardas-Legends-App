@@ -3,6 +3,7 @@ package com.ardaslegends.repository;
 import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.UnitType;
 import com.ardaslegends.repository.faction.FactionRepository;
+import com.ardaslegends.repository.war.army.unit.UnitTypeRepository;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 

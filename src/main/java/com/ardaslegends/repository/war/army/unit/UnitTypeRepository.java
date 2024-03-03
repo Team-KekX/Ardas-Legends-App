@@ -1,4 +1,4 @@
-package com.ardaslegends.repository;
+package com.ardaslegends.repository.war.army.unit;
 
 import com.ardaslegends.domain.UnitType;
 import org.springframework.data.jpa.repository.JpaRepository;
