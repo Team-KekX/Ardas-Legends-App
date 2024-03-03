@@ -6,9 +6,12 @@ import com.ardaslegends.service.exceptions.logic.units.UnitServiceException;
 import com.ardaslegends.service.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -40,10 +43,13 @@ public class UnitTypeService extends AbstractService<UnitType, UnitTypeRepositor
         return fetchedUnitType.get();
     }
 
-    public Set<UnitType> getByFactionNames(String[] factions) {
-        log.debug("Getting unitTypes by faction names [{}]", (Object) factions);
+    public List<UnitType> getByFactionNames(List<String> factions) {
+        log.debug("Getting unitTypes by faction names [{}]", StringUtils.join(factions, ", "));
+        Objects.requireNonNull(factions, "getByFactionNames factions were null!");
 
+        val unitTypes = unitTypeRepository.queryByFactionNames(factions);
 
-        return null;
+        log.info("Found unitTypes, [{}]", StringUtils.join(unitTypes, ", "));
+        return unitTypes;
     }
 }

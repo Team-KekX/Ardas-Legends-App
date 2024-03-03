@@ -10,12 +10,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -35,16 +37,16 @@ public class UnitTypeRestController extends AbstractRestController {
             parameters = {@Parameter(name = "faction", 
                     description = "The faction to get the units from. Can pass multiple values to get units from multiple factions")})
     @GetMapping
-    public ResponseEntity<UnitTypeResponse[]> getUnitTypes(@PathVariable(name = "faction") String[] factions) {
-        log.debug("Incoming getUnitTypes request with factions: [{}]", (Object) factions);
+    public ResponseEntity<UnitTypeResponse[]> getUnitTypes(@PathVariable(name = "faction") List<String> factions) {
+        log.debug("Incoming getUnitTypes request with factions: [{}]", StringUtils.join(factions, ", "));
 
         log.debug("Calling unitTypeService.getByFactions");
-        Set<UnitType> unitTypes = unitTypeService.getByFactionNames(factions);
+        val unitTypes = unitTypeService.getByFactionNames(factions);
 
         log.debug("Building response");
         UnitTypeResponse[] response = unitTypes.stream().map(UnitTypeResponse::new).toArray(UnitTypeResponse[]::new);
 
-        log.info("Successfully handled getUnitTypes request - sending response [{}]", (Object) response);
+        log.info("Successfully handled getUnitTypes request - sending response [{}]", StringUtils.join(response, ", "));
         return ResponseEntity.ok(response);
     }
 }
