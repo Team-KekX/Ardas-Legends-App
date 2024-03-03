@@ -2,6 +2,7 @@ package com.ardaslegends.repository;
 
 import com.ardaslegends.domain.*;
 import com.ardaslegends.repository.faction.FactionRepository;
+import com.ardaslegends.repository.war.army.ArmyRepository;
 import io.vavr.collection.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
