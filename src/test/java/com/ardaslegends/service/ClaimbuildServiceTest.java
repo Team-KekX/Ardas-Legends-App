@@ -123,7 +123,7 @@ public class ClaimbuildServiceTest {
         when(mockClaimbuildRepository.save(claimbuild)).thenReturn(claimbuild);
 
         log.debug("Calling setOwnerFaction, expecting no errors");
-        var result = claimBuildService.setOwnerFaction(dto);
+        var result = claimBuildService.changeOwnerFromDto(dto);
 
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo(dto.claimbuildName());

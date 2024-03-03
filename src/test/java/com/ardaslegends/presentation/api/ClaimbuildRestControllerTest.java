@@ -162,7 +162,7 @@ public class ClaimbuildRestControllerTest {
                 .name(dto.claimbuildName())
                 .ownedBy(Faction.builder().name(dto.newFaction()).build())
                 .build();
-        when(mockClaimbuildService.setOwnerFaction(dto)).thenReturn(claimBuild);
+        when(mockClaimbuildService.changeOwnerFromDto(dto)).thenReturn(claimBuild);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);

@@ -1,15 +1,14 @@
 package com.ardaslegends.service;
 
 import com.ardaslegends.domain.*;
-import com.ardaslegends.domain.war.Battle;
-import com.ardaslegends.domain.war.BattleLocation;
+import com.ardaslegends.domain.war.battle.Battle;
+import com.ardaslegends.domain.war.battle.BattleLocation;
 import com.ardaslegends.domain.war.War;
 import com.ardaslegends.domain.war.WarParticipant;
-import com.ardaslegends.repository.BattleRepository;
+import com.ardaslegends.repository.war.battle.BattleRepository;
 import com.ardaslegends.repository.war.WarRepository;
+import com.ardaslegends.service.dto.war.battle.CreateBattleDto;
 import com.ardaslegends.service.discord.DiscordService;
-import com.ardaslegends.service.discord.messages.ALMessage;
-import com.ardaslegends.service.dto.war.CreateBattleDto;
 import com.ardaslegends.service.exceptions.logic.army.ArmyServiceException;
 import com.ardaslegends.service.exceptions.logic.war.BattleServiceException;
 import com.ardaslegends.service.time.TimeFreezeService;
@@ -19,12 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
-import org.javacord.core.entity.user.UserImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -74,12 +70,14 @@ public class BattleServiceTest {
         ArmyService mockArmyService = mock(ArmyService.class);
         PlayerService mockPlayerService = mock(PlayerService.class);
         ClaimBuildService mockClaimBuildService = mock(ClaimBuildService.class);
+        RpCharService mockRpCharService = mock(RpCharService.class);
         TimeFreezeService mockTimeFreezeService = mock(TimeFreezeService.class);
         DiscordService mockDiscordService = mock(DiscordService.class);
+        FactionService mockFactionService = mock(FactionService.class);
         User mockUser1 = mock(User.class);
         User mockUser2 = mock(User.class);
         Role mockRole = mock(Role.class);
-        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockClaimBuildService,mockWarRepository, pathfinder, mockTimeFreezeService, mockDiscordService);
+        battleService = new BattleService(mockBattleRepository, mockArmyService, mockPlayerService, mockRpCharService, mockClaimBuildService,mockWarRepository, pathfinder, mockFactionService, mockTimeFreezeService, mockDiscordService);
 
         region1 = Region.builder().id("90").neighboringRegions(new HashSet<>()).regionType(RegionType.LAND).build();
         region2 = Region.builder().id("91").neighboringRegions(new HashSet<>()).regionType(RegionType.HILL).build();

@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -125,7 +123,7 @@ public class ArmyRestControllerTest {
         // Assign
         DeleteArmyDto dto = new DeleteArmyDto("1234",  "Knights of Gondor");
 
-        when(mockArmyService.disband(dto, false)).thenReturn(army);
+        when(mockArmyService.disbandFromDto(dto, false)).thenReturn(army);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -156,7 +154,7 @@ public class ArmyRestControllerTest {
 
         String requestJson = ow.writeValueAsString(dto);
 
-        when(mockArmyService.disband(eq(dto), anyBoolean())).thenReturn(army);
+        when(mockArmyService.disbandFromDto(eq(dto), anyBoolean())).thenReturn(army);
 
         String expectedResponse = ow.writeValueAsString(new ArmyResponse(army));
 
