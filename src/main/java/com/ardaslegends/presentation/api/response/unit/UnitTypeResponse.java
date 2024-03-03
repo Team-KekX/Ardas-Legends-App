@@ -4,7 +4,7 @@ import com.ardaslegends.domain.Faction;
 import com.ardaslegends.domain.UnitType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "UnitType", description = "UnitType response")
+@Schema(name = "UnitTypeResponse", description = "UnitType response")
 public record UnitTypeResponse(
         @Schema(name = "name", description = "Unit name", example = "Gondor Archer")
         String name,
