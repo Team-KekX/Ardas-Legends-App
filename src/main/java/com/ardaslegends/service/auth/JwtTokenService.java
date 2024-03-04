@@ -3,8 +3,12 @@ package com.ardaslegends.service.auth;
 import com.ardaslegends.domain.Player;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
+import io.jsonwebtoken.security.SecretKeyBuilder;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,14 +18,17 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Provider;
 import java.util.Date;
+import java.util.Objects;
 
+@Slf4j
 public class JwtTokenService implements TokenService {
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    @Value("${jwt.signing.key}")
-    private String jwtSigningKey;
+    @Autowired
+    @Qualifier("jwtKey")
+    private SecretKeySpec key;
 
     @Override
     public String extractDiscordId(String token) {
@@ -30,24 +37,21 @@ public class JwtTokenService implements TokenService {
 
     @Override
     public String generateToken(Player player) {
-        try {
-            Mac g = Mac.getInstance("HmacSHA256");
+        Objects.requireNonNull(player, "Player must not be null when generating authorization credentials");
+        log.debug("Building JWT Auth Token for Player [{}]", player.getIgn());
 
-            val keySpec =  new SecretKeySpec(jwtSigningKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            val key = g.init(keySpec);
+        val jwt = Jwts.builder()
+                .issuer(activeProfile)
+                .subject(player.getDiscordID())
+                .issuedAt(new Date())
+                .expiration(DateUtils.addDays(new Date(), 30))
+                .signWith(key)
+                .compact();
 
-            return Jwts.builder()
-                    .issuer(activeProfile)
-                    .subject(player.getDiscordID())
-                    .issuedAt(new Date())
-                    .expiration(DateUtils.addDays(new Date(), 30))
-                    .signWith(
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-
-
+        log.info("Successfully build JWT Auth Token for Player [{}]", player.getIgn());
+        return jwt;
     }
+
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         return false;
