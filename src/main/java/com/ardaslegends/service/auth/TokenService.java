@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface TokenService {
-    String extractDiscordId(String token);
+    Player extractPlayer(String token);
     String generateToken(Player player);
     boolean isTokenValid(String token, UserDetails userDetails);
 }
