@@ -1,8 +1,11 @@
 package com.ardaslegends.presentation.auth;
 
+import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.exceptions.AuthException;
+import com.ardaslegends.repository.player.PlayerRepository;
+import com.ardaslegends.service.auth.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -32,9 +35,11 @@ public class AuthController extends AbstractRestController {
 
     private final RestClient restClient;
     private final BotProperties botProperties;
+    private final JwtTokenService tokenService;
+    private final PlayerRepository playerRepository;
 
     @GetMapping(PATH_AUTHORIZE)
-    public HttpEntity<Void> authorize(String code, String redirectUrl) {
+    public HttpEntity<String> authorize(String code, String redirectUrl) {
         log.debug("Incoming authorization request with  [code: {}, redirectUrl: {}]", code, redirectUrl);
 
         Objects.requireNonNull(code, "Discord auth code must not be null!");
@@ -47,6 +52,17 @@ public class AuthController extends AbstractRestController {
         // TODO: Parallelize once StructuredConcurrency drops (Java 23)
         val identityResponse = getUserIdentity(authTokenResponse);
         val guildsResponse = getGuild(authTokenResponse.tokenType(), authTokenResponse.accessToken());
+
+        /*
+         *TODO: Check if player exists
+         * if true -> generate Token and return response
+         * if false -> create Player Object
+          */
+
+        val player = playerRepository.findByDiscordID(identityResponse.id())
+                .orElse(registerPlayer(identityResponse));
+
+
 
         return null;
     }
@@ -142,6 +158,10 @@ public class AuthController extends AbstractRestController {
             // TODO: Check if a better error message is need
             throw new AuthException(rcException.getMessage(), rcException);
         }
+    }
+
+    private Player registerPlayer(UserIdentityResponse identityResponse) {
+        return null;
     }
 
     private String encodeBase64(String toEncode) {
