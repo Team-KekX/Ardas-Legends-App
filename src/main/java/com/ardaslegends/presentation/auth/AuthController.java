@@ -59,9 +59,11 @@ public class AuthController extends AbstractRestController {
          * if false -> create Player Object
           */
 
+        /*
+        Next step is throwing with a new code inside, which will be cached in the backend for a while. Very vaguely formulated, nice mirak
+         */
         val player = playerRepository.findByDiscordID(identityResponse.id())
-                .orElse(registerPlayer(identityResponse));
-
+                .orElseThrow(new IllegalState);
 
 
         return null;
@@ -161,6 +163,7 @@ public class AuthController extends AbstractRestController {
     }
 
     private Player registerPlayer(UserIdentityResponse identityResponse) {
+
         return null;
     }
 
