@@ -43,7 +43,7 @@ public class RegionController extends AbstractRestController {
     }
 
     @GetMapping(GET_REGION_BY_ID)
-    public ResponseEntity<RegionResponse> getRegion(@PathVariable String regionId) {
+    public ResponseEntity<RegionResponseDetailed> getRegion(@PathVariable String regionId) {
         log.debug("Incoming getRegion Request with regionId path variable [{}]", regionId);
 
         log.debug("Calling RegionService getRegion()");
@@ -51,7 +51,7 @@ public class RegionController extends AbstractRestController {
         log.debug("Got region [{}]", region);
 
         log.trace("Building RegionResponse");
-        val regionResponse = new RegionResponse(region);
+        val regionResponse = new RegionResponseDetailed(region);
         log.debug("Built RegionResponse {}", regionResponse);
 
         log.info("Succesfully handled GetRegion request and sending response [{}]", regionResponse);
