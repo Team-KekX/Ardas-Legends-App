@@ -2,6 +2,7 @@ package com.ardaslegends.presentation.auth;
 
 import com.ardaslegends.domain.Player;
 import com.ardaslegends.presentation.AbstractRestController;
+import com.ardaslegends.presentation.auth.exceptions.NoPlayerRegisteredAuthException;
 import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.exceptions.AuthException;
 import com.ardaslegends.repository.player.PlayerRepository;
@@ -20,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -37,6 +36,9 @@ public class AuthController extends AbstractRestController {
     private final BotProperties botProperties;
     private final JwtTokenService tokenService;
     private final PlayerRepository playerRepository;
+
+    // Key = Token, Value = DiscordID
+    private final HashMap<String, String> registrationTokenCache = new HashMap<>(2);
 
     @GetMapping(PATH_AUTHORIZE)
     public HttpEntity<String> authorize(String code, String redirectUrl) {
@@ -63,11 +65,11 @@ public class AuthController extends AbstractRestController {
         Next step is throwing with a new code inside, which will be cached in the backend for a while. Very vaguely formulated, nice mirak
          */
         val player = playerRepository.findByDiscordID(identityResponse.id())
-                .orElseThrow(new IllegalState);
-
+                .orElseThrow(() -> createNoPlayerRegisteredAuthException(identityResponse));
 
         return null;
     }
+
 
     /**
      * Fetches the corresponding user with the provided authToken from discord
@@ -171,5 +173,18 @@ public class AuthController extends AbstractRestController {
         byte[] base64EncodedInBytes = Base64.encodeBase64(toEncode.getBytes());
         String base64String = new String(base64EncodedInBytes);
         return base64String;
+    }
+
+    private NoPlayerRegisteredAuthException createNoPlayerRegisteredAuthException(UserIdentityResponse identityResponse) {
+        var keyPresent = true;
+        String token = null;
+
+        while(keyPresent) {
+            token = UUID.randomUUID().toString();
+            keyPresent = registrationTokenCache.containsKey(token);
+        }
+
+        registrationTokenCache.put(token, identityResponse.id());
+        return new NoPlayerRegisteredAuthException(token);
     }
 }
