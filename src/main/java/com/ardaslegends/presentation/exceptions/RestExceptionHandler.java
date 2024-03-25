@@ -46,4 +46,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
                 httpStatus, request);
     }
+    private ResponseEntity<Object> handleException(Exception exception, Object body, HttpStatus httpStatus, WebRequest request) {
+        return handleExceptionInternal(exception, body, new HttpHeaders(),
+                httpStatus, request);
+    }
 }
