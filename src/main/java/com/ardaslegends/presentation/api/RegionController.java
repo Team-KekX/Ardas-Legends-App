@@ -6,7 +6,6 @@ import com.ardaslegends.presentation.AbstractRestController;
 import com.ardaslegends.presentation.api.response.region.RegionResponse;
 import com.ardaslegends.presentation.api.response.region.RegionResponseDetailed;
 import com.ardaslegends.service.RegionService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -27,7 +26,7 @@ public class RegionController extends AbstractRestController {
     private static final String GET_ALL = "/all";
     private static final String GET_ALL_DETAILED = "/all/detailed";
     private static final String GET_REGION_TYPES = "/types";
-    private static final String GET_RPCHARS = "/{id}";
+    private static final String GET_REGION_BY_ID = "/{id}";
 
     private final RegionService regionService;
 
@@ -43,7 +42,7 @@ public class RegionController extends AbstractRestController {
         return ResponseEntity.ok(regionsResponse);
     }
 
-    @GetMapping(GET_RPCHARS)
+    @GetMapping(GET_REGION_BY_ID)
     public ResponseEntity<RegionResponse> getRegion(@PathVariable String regionId) {
         log.debug("Incoming getRegion Request with regionId path variable [{}]", regionId);
 
