@@ -26,7 +26,7 @@ public class RegionController extends AbstractRestController {
     private static final String GET_ALL = "/all";
     private static final String GET_ALL_DETAILED = "/all/detailed";
     private static final String GET_REGION_TYPES = "/types";
-    private static final String GET_REGION_BY_ID = "/{id}";
+    private static final String GET_REGION_BY_ID = "/{regionId}";
 
     private final RegionService regionService;
 
