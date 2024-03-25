@@ -41,6 +41,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(exception, HttpStatus.FORBIDDEN, request);
     }
 
+    @ExceptionHandler
 
     private ResponseEntity<Object> handleException(Exception exception, HttpStatus httpStatus, WebRequest request) {
         return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
