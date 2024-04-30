@@ -66,23 +66,6 @@ public class JwtTokenService implements TokenService {
     }
 
     @Override
-    public String generateRegistrationtoken(String discordId) {
-        Objects.requireNonNull(discordId, "DiscordID must not be null");
-        log.debug("Building JWT Registration Token for Discord ID [{}]", discordId);
-
-        val jwt = Jwts.builder()
-                .issuer(activeProfile)
-                .subject(discordId)
-                .issuedAt(new Date())
-                .expiration(DateUtils.addDays(new Date(), 1))
-                .signWith(key)
-                .compact();
-
-        log.info("Successfully build JWT Registration Token for Discord ID [{}]", discordId);
-        return jwt;
-    }
-
-    @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         return false;
     }

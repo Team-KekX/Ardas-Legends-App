@@ -38,7 +38,7 @@ public class AuthController extends AbstractRestController {
     private final PlayerRepository playerRepository;
 
     // Key = Token, Value = DiscordID
-    private final HashMap<String, String> registrationTokenCache = new HashMap<>(2);
+    private final HashMap<String, String> registrationTokenCache = HashMap.newHashMap(2);
 
     @GetMapping(PATH_AUTHORIZE)
     public HttpEntity<String> authorize(String code, String redirectUrl) {
@@ -55,15 +55,7 @@ public class AuthController extends AbstractRestController {
         val identityResponse = getUserIdentity(authTokenResponse);
         val guildsResponse = getGuild(authTokenResponse.tokenType(), authTokenResponse.accessToken());
 
-        /*
-         *TODO: Check if player exists
-         * if true -> generate Token and return response
-         * if false -> create Player Object
-          */
 
-        /*
-        Next step is throwing with a new code inside, which will be cached in the backend for a while. Very vaguely formulated, nice mirak
-         */
         val player = playerRepository.findByDiscordID(identityResponse.id())
                 .orElseThrow(() -> createNoPlayerRegisteredAuthException(identityResponse));
 
