@@ -49,7 +49,7 @@ public class JwtTokenService implements TokenService {
     }
 
     @Override
-    public String generateToken(Player player) {
+    public String generateAuthenticationToken(Player player) {
         Objects.requireNonNull(player, "Player must not be null when generating authorization credentials");
         log.debug("Building JWT Auth Token for Player [{}]", player.getIgn());
 
