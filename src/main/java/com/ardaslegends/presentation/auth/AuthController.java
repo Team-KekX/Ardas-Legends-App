@@ -7,6 +7,7 @@ import com.ardaslegends.presentation.discord.config.BotProperties;
 import com.ardaslegends.presentation.exceptions.AuthException;
 import com.ardaslegends.repository.player.PlayerRepository;
 import com.ardaslegends.service.auth.JwtTokenService;
+import com.ardaslegends.service.auth.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -34,7 +35,7 @@ public class AuthController extends AbstractRestController {
 
     private final RestClient restClient;
     private final BotProperties botProperties;
-    private final JwtTokenService tokenService;
+    private final TokenService tokenService;
     private final PlayerRepository playerRepository;
 
     // Key = Token, Value = DiscordID
@@ -55,11 +56,14 @@ public class AuthController extends AbstractRestController {
         val identityResponse = getUserIdentity(authTokenResponse);
         val guildsResponse = getGuild(authTokenResponse.tokenType(), authTokenResponse.accessToken());
 
-
+        log.debug("Fetching player with Id [{}]", identityResponse.id());
         val player = playerRepository.findByDiscordID(identityResponse.id())
                 .orElseThrow(() -> createNoPlayerRegisteredAuthException(identityResponse));
 
-        return null;
+        val token = tokenService.generateAuthenticationToken(player);
+
+        log.info("Successfully created authToken for player [{}]", identityResponse.id());
+        return ResponseEntity.ok(token);
     }
 
 
