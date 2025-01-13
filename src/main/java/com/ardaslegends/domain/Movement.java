@@ -1,8 +1,6 @@
 package com.ardaslegends.domain;
 
 import com.ardaslegends.service.utils.ServiceUtils;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -20,9 +18,6 @@ import java.util.Objects;
 @Builder
 @Slf4j
 
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @Entity
 @Table(name = "movements")
 public final class Movement extends AbstractDomainObject {

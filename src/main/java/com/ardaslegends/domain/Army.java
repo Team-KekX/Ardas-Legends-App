@@ -1,6 +1,5 @@
 package com.ardaslegends.domain;
 
-import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -19,9 +18,6 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "armies")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name")
 public final class Army extends AbstractDomainObject {
 
     @Id
@@ -75,7 +71,6 @@ public final class Army extends AbstractDomainObject {
 
     private OffsetDateTime createdAt;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "army", cascade = {CascadeType.REMOVE})
     private List<Movement> movements = new ArrayList<>();
 
@@ -130,7 +125,6 @@ public final class Army extends AbstractDomainObject {
         return this.getMovements().stream().filter(Movement::getIsCurrentlyActive).findFirst();
     }
 
-    @JsonIgnore
     public int getAmountOfHealHours() {
         double tokensMissing = units.stream()
                 .map(unit -> ((unit.getCount()-unit.getAmountAlive())) * unit.getCost())
@@ -146,7 +140,6 @@ public final class Army extends AbstractDomainObject {
         return intHoursHeal + hoursLeftUntil24h;
     }
 
-    @JsonIgnore
     public void resetHealingStats() {
         this.setIsHealing(false);
         this.setHealStart(null);
