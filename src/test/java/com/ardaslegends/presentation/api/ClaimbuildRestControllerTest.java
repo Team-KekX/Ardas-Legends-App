@@ -127,10 +127,16 @@ public class ClaimbuildRestControllerTest {
         CreateClaimBuildDto dto = new CreateClaimBuildDto("Nimheria", "91", "Town", "Gondor", 2, 3, 4,
                 "huehue:huehue:5", "awdad", "awda", "awdw", "adwada", "Luk");
 
+        Faction faction = Faction.builder().name(dto.faction()).build();
         ClaimBuild claimBuild = ClaimBuild.builder()
                 .name(dto.name())
-                .ownedBy(Faction.builder().name(dto.faction()).build()).createdArmies(new ArrayList<>()).specialBuildings(new ArrayList<>())
+                .ownedBy(faction).createdArmies(new ArrayList<>()).specialBuildings(new ArrayList<>())
                 .stationedArmies(new ArrayList<>())
+                .region(Region.builder().id(dto.regionId()).build())
+                .type(ClaimBuildType.TOWN)
+                .coordinates(new Coordinate(2, 3, 4))
+                .productionSites(List.of())
+                .builtBy(Set.of(Player.builder().ign("Luk").faction(faction).build()))
                 .build();
         when(mockClaimbuildService.createClaimbuild(dto, false)).thenReturn(claimBuild);
 
@@ -151,11 +157,11 @@ public class ClaimbuildRestControllerTest {
         request.setCharacterEncoding("UTF-8");
 
         log.debug(result.getResponse().getContentAsString());
-        ClaimBuild response = mapper.readValue(result.getResponse().getContentAsString()
-                ,ClaimBuild.class);
+        ClaimbuildResponse response = mapper.readValue(result.getResponse().getContentAsString()
+                ,ClaimbuildResponse.class);
 
-        assertThat(response.getName()).isEqualTo(claimBuild.getName());
-        assertThat(response.getOwnedBy().getName()).isEqualTo(claimBuild.getOwnedBy().getName());
+        assertThat(response.name()).isEqualTo(claimBuild.getName());
+        assertThat(response.faction()).isEqualTo(claimBuild.getOwnedBy().getName());
 
         log.info("Test passed: createClaimbuild builds the correct response");
     }
