@@ -115,14 +115,16 @@ public class ClaimbuildRestController extends AbstractRestController {
     }
 
     @PatchMapping(PATH_UPDATE_CLAIMBUILD)
-    public HttpEntity<ClaimBuild> updateClaimbuild(@RequestBody CreateClaimBuildDto dto) {
+    public HttpEntity<ClaimbuildResponse> updateClaimbuild(@RequestBody CreateClaimBuildDto dto) {
         log.debug("Incoming updateClaimbuild Request: Data [{}]", dto);
 
         log.debug("Calling claimBuildService.createClaimbuild");
         ClaimBuild claimBuild = claimBuildService.createClaimbuild(dto, false);
 
+        val response = new ClaimbuildResponse(claimBuild);
+
         log.info("Sending successful updateClaimbuild Request for [{}]", claimBuild.getName());
-        return ResponseEntity.ok(claimBuild);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(UPDATE_CLAIMBUILD_FATION)
